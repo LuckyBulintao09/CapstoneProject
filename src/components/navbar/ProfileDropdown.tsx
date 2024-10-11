@@ -10,8 +10,9 @@ import {
 } from '@/components/ui/dropdown-menu';
 import { Avatar, AvatarFallback, AvatarImage } from '../ui/avatar';
 import { IconExchange } from '@tabler/icons-react';
+import { logout } from '@/app/auth/login/actions';
 
-export function ProfileDropdown({ onLogout }) {
+export function ProfileDropdown() {
 	return (
 		<DropdownMenu>
 			<DropdownMenuTrigger>
@@ -54,7 +55,12 @@ export function ProfileDropdown({ onLogout }) {
 				</DropdownMenuGroup>
 
 				<DropdownMenuSeparator />
-				<DropdownMenuItem onClick={onLogout}>
+				<DropdownMenuItem
+					onClick={async () => {
+						await logout(); 
+						window.location.href = '/'; 
+					}}
+				>
 					<LogOut className='mr-2 h-4 w-4' />
 					<span>Log out</span>
 				</DropdownMenuItem>
