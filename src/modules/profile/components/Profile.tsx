@@ -1,5 +1,5 @@
-import { PencilIcon } from "@heroicons/react/24/solid";
-import { PencilSquareIcon } from "@heroicons/react/24/solid";
+import { PencilIcon, PencilSquareIcon } from "@heroicons/react/24/solid";
+import { createClient } from "../../../../utils/supabase/client";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import {
   Modal,
@@ -12,31 +12,86 @@ import {
   Input,
   DatePicker,
 } from "@nextui-org/react";
-import React, { useRef } from "react";
+import React, { useEffect, useRef, useState } from "react";
+
+// Define the shape of profile data
+interface ProfileData {
+  id: string;
+  firstname: string;
+  lastname: string;
+  email: string;
+  address: string;
+  cp_number: string;
+  dob: string;
+  profile_url: string;
+}
 
 const ProfileSection = () => {
   const { isOpen, onOpen, onOpenChange } = useDisclosure();
-  const fileInputRef = useRef(null);
+  const fileInputRef = useRef<HTMLInputElement | null>(null);
+  const [profileData, setProfileData] = useState<ProfileData | null>(null); // State to store profile data
+  const [loading, setLoading] = useState<boolean>(true); // Loading state
 
   const handlePencilClick = () => {
-    fileInputRef.current.click();
+    fileInputRef.current?.click();
   };
 
-  const handleFileChange = (event) => {
-    const file = event.target.files[0];
+  const handleFileChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+    const file = event.target.files?.[0];
     if (file) {
       console.log("Selected file:", file);
     }
   };
 
+  const supabase = createClient();
+
+  async function getProfile(id: string) {
+    const { data, error } = await supabase
+      .from("account")
+      .select("*")
+      .eq("id", id);
+
+    if (error) {
+      console.error("Error fetching profile:", error.message);
+    } else {
+      console.log("Profile data:", data);
+      if (data && data.length > 0) {
+        setProfileData(data[0]); // Store the fetched profile data
+      } else {
+        alert("No profile data found.");
+      }
+    }
+    setLoading(false); // Set loading to false after fetching data
+  }
+
+  useEffect(() => {
+    const checkSession = async () => {
+      const { data, error } = await supabase.auth.getSession();
+      if (data.session) {
+        await getProfile(data.session.user.id);
+      } else {
+        alert("Login to access this function");
+        window.location.href = "/";
+      }
+    };
+
+    checkSession();
+  }, []);
+
+  if (loading) {
+    return <div className="flex justify-center items-center h-full">Loading...</div>; 
+  }
+
   return (
     <section className="w-full p-2">
       <div className="flex p-2 gap-4 h-[20%]">
         <div className="relative">
-          <Avatar className="w-32 h-32 ">
-            <AvatarImage src="https://github.com/shadcn.png" alt="@shadcn" />
-            <AvatarFallback>CN</AvatarFallback>
-          </Avatar>
+        <Avatar className="w-32 h-32">
+          <AvatarImage src={profileData?.profile_url} />
+          <AvatarFallback>
+            {profileData?.firstname.charAt(0)}{profileData?.lastname.charAt(0)}
+          </AvatarFallback>
+        </Avatar>
           <button
             onClick={handlePencilClick}
             className="absolute bottom-0 right-0 bg-white p-1 rounded-full shadow-md hover:bg-gray-200 transition bg-white w-7"
@@ -53,8 +108,8 @@ const ProfileSection = () => {
         </div>
         <div className="flex items-center">
           <div className="flex flex-col">
-            <h1 className="font-bold mb-1">Lucky Calalo</h1>
-            <p>Baguio City, De Baguio</p>
+            <h1 className="font-bold mb-1">{`${profileData?.firstname} ${profileData?.lastname}`}</h1>
+            <p>{profileData?.address}</p>
           </div>
         </div>
       </div>
@@ -73,36 +128,30 @@ const ProfileSection = () => {
 
         <div>
           <p className="text-base font-medium text-default-400">Full Name</p>
-          <h4 className="text-lg font-medium">Lucky Calalo</h4>
+          <h4 className="text-lg font-medium">{`${profileData?.firstname} ${profileData?.lastname}`}</h4>
         </div>
         <div>
-          <p className="text-base font-medium text-default-400">
-            Contact Number
-          </p>
-          <h4 className="text-lg font-medium">091231221312</h4>
+          <p className="text-base font-medium text-default-400">Contact Number</p>
+          <h4 className="text-lg font-medium">{profileData?.cp_number}</h4>
         </div>
         <div>
           <p className="text-base font-medium text-default-400">Address</p>
-          <h4 className="text-lg font-medium">Baguio City, De Baguio</h4>
+          <h4 className="text-lg font-medium">{profileData?.address}</h4>
         </div>
         <div>
-          <p className="text-base font-medium text-default-400">
-            Date of Birth
-          </p>
-          <h4 className="text-lg font-medium">1/1/1999</h4>
+          <p className="text-base font-medium text-default-400">Date of Birth</p>
+          <h4 className="text-lg font-medium">{profileData?.dob}</h4>
         </div>
         <div>
           <p className="text-base font-medium text-default-400">Email</p>
-          <h4 className="text-lg font-medium">asdas@adasd.com</h4>
+          <h4 className="text-lg font-medium">{profileData?.email}</h4>
         </div>
       </div>
       <Modal isOpen={isOpen} placement="center" onOpenChange={onOpenChange}>
         <ModalContent>
           {(onClose) => (
             <>
-              <ModalHeader className="flex flex-col gap-1">
-                Edit Profile
-              </ModalHeader>
+              <ModalHeader className="flex flex-col gap-1">Edit Profile</ModalHeader>
               <ModalBody>
                 <div className="flex flex-col gap-2">
                   <div>
@@ -111,7 +160,7 @@ const ProfileSection = () => {
                       type="text"
                       label="Full Name"
                       labelPlacement="outside"
-                      placeholder="Lucky Calalo"
+                      placeholder={`${profileData?.firstname} ${profileData?.lastname}`}
                     />
                   </div>
                   <div>
@@ -120,7 +169,7 @@ const ProfileSection = () => {
                       type="number"
                       label="Contact Number"
                       labelPlacement="outside"
-                      placeholder="091231221312"
+                      placeholder={profileData?.cp_number}
                     />
                   </div>
                   <div>
@@ -129,7 +178,7 @@ const ProfileSection = () => {
                       type="text"
                       label="Address"
                       labelPlacement="outside"
-                      placeholder="Baguio City, De Baguio"
+                      placeholder={profileData?.address}
                     />
                   </div>
                   <div>
@@ -138,15 +187,16 @@ const ProfileSection = () => {
                       labelPlacement="outside"
                       variant="flat"
                       showMonthAndYearPickers
+                      value={profileData ? new Date(profileData.dob) : null}
                     />
                   </div>
                   <div>
                     <Input
                       key="inside"
                       type="email"
-                      label="Full Name"
+                      label="Email"
                       labelPlacement="outside"
-                      placeholder="asdas@adasd.com"
+                      placeholder={profileData?.email}
                     />
                   </div>
                 </div>
