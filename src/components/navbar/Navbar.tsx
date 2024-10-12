@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { LucideAlignJustify, X } from "lucide-react";
 import spiels from "@/lib/constants/spiels";
 import Image from "next/image";
@@ -11,19 +11,41 @@ import { NavbarModalLogin } from "./NavbarModalLogin";
 import { Button } from "../ui/button";
 import { ProfileDropdown } from "./ProfileDropdown";
 import { NotificationPopover } from "./NotificationPopover";
-
+import { createClient } from "../../../utils/supabase/client";
 function NavBar() {
   const [menu, setMenu] = useState(false);
   const [modalType, setModalType] = useState<null | "login" | "register">(null);
   const [loggedIn, setLoggedIn] = useState(false);
-
+  const [profileData, setProfileData] = useState({
+    firstname: '',
+    lastname: '',
+    initials: '',
+  });
+  const supabase = createClient();
   const toggleMenu = () => setMenu((prev) => !prev);
   const openModal = (type: "login" | "register") => {
     setModalType(type);
     setMenu(false);
   };
   const closeModal = () => setModalType(null);
-
+  useEffect(() => {
+    const checkSession = async () => {
+      const { data, error } = await supabase.auth.getSession();
+      if (data.session) {
+        setLoggedIn(true);
+        setProfileData({
+          firstname: data.session.user.user_metadata.firstname,
+          lastname: data.session.user.user_metadata.lastname,
+          initials: `${data.session.user.user_metadata.firstname} ${data.session.user.user_metadata.lastname}`,
+        });
+      } else {
+        console.log("No session found.");
+      }
+    };
+  
+    checkSession();
+  }, []);
+  
   //trial login
   const handleLoginSuccess = () => {
     setLoggedIn(true);
@@ -59,7 +81,7 @@ function NavBar() {
                 {spiels.BUTTON_SIGN_UP}
               </Button>
             ) : (
-              <ProfileDropdown onLogout={handleLogout} />
+              <ProfileDropdown profileData={profileData.initials} />
             )}
           </div>
         </div>

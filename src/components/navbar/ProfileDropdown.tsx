@@ -12,17 +12,20 @@ import { Avatar, AvatarFallback, AvatarImage } from '../ui/avatar';
 import { IconExchange } from '@tabler/icons-react';
 import { logout } from '@/app/auth/login/actions';
 
-export function ProfileDropdown() {
+
+
+export function ProfileDropdown({ profileData, onLogout }: ProfileDropdownProps) {
 	return (
 		<DropdownMenu>
 			<DropdownMenuTrigger>
-				<Avatar className='w-9 h-9'>
-					<AvatarImage src='https://github.com/shadcn.png' alt='@shadcn' />
-					<AvatarFallback>CN</AvatarFallback>
+					<Avatar className='w-9 h-9'> 
+					<AvatarImage src='https://github.com/shadcn.png'  />
 				</Avatar>
 			</DropdownMenuTrigger>
 			<DropdownMenuContent className='w-56 lg:mr-12 md:mr-12 sm:mr-6 xs:mr-8'>
-				<DropdownMenuLabel>My Account</DropdownMenuLabel>
+			<DropdownMenuLabel>
+				<p>Hello! {profileData}</p>
+			</DropdownMenuLabel>
 				<DropdownMenuSeparator />
 				<DropdownMenuGroup>
 					<DropdownMenuItem
@@ -53,11 +56,10 @@ export function ProfileDropdown() {
 						<span>My Lessor Dashboard</span>
 					</DropdownMenuItem>
 				</DropdownMenuGroup>
-
 				<DropdownMenuSeparator />
 				<DropdownMenuItem
 					onClick={async () => {
-						await logout(); 
+						await logout();
 						window.location.href = '/'; 
 					}}
 				>
