@@ -6,21 +6,22 @@ import { redirect } from 'next/navigation'
 import { createClient } from '../../../../utils/supabase/server'
 
 export async function login(formData: FormData) {
-  const supabase = createClient();
+  const supabase = createClient()
 
   const data = {
+   
     email: formData.get('email') as string,
     password: formData.get('password') as string,
-  };
-
-  const { error } = await supabase.auth.signInWithPassword(data);
+  }
+ 
+  const { error } = await supabase.auth.signInWithPassword(data)
 
   if (error) {
-    return { success: false, error: error.message }; 
+    redirect('/')
   }
 
-  revalidatePath('/client/listings', 'layout');
-  return { success: true };
+  revalidatePath('/client/listings', 'layout')
+  redirect('/client/listings')
 }
 
 export async function signup(formData: FormData) {

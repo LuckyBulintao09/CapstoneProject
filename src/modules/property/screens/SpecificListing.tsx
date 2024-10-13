@@ -1,7 +1,6 @@
 'use client';
 
-import React, { useState, useEffect } from 'react';
-import { createClient } from '../../../../utils/supabase/client';
+import React, { useState } from 'react';
 import ResponsiveLayout from '@/components/ResponsiveLayout';
 import { Card } from '@/components/ui/card';
 import { Image, MapPin } from 'lucide-react';
@@ -10,22 +9,15 @@ import tempValues from '@/lib/constants/tempValues';
 
 import BusinessReviews from '../components/BusinessReviews';
 import MainPreview from '../components/MainPreview';
+import RightPreviewsCarousel from '../components/RightPreviewsCarousel';
 import PropertyDetails from '../components/PropertyDetails';
 import Banner from '../components/Banner';
 import { BookingCard } from '../components/BookingCard';
 import { HeartIcon as HeartOutline } from '@heroicons/react/24/outline';
 import { HeartIcon as HeartSolid } from '@heroicons/react/24/solid';
 
-const supabase = createClient();
-
-interface SpecificListingProps {
-    id: number;
-}
-
-export function SpecificListing({ id }: SpecificListingProps) {
+export function SpecificListing() {
 	const [isOpen, setIsOpen] = useState(false);
-	const [isFavourite, setIsFavourite] = useState(false);
-	const [property, setProperty] = useState(null); 
 
 	const openModal = () => {
 		setIsOpen(true);
@@ -34,55 +26,17 @@ export function SpecificListing({ id }: SpecificListingProps) {
 	const closeModal = () => {
 		setIsOpen(false);
 	};
+	const [isFavourite, setIsFavourite] = useState(false);
 
 	const toggleFavourite = () => {
 		setIsFavourite(!isFavourite);
 	};
-
-	useEffect(() => {
-		const fetchProperty = async () => {
-			const { data: property, error } = await supabase
-				.from('property')
-				.select(`
-					*,
-					company (
-						*, 
-						owner_id (
-							firstname,
-							lastname
-						)
-					)
-				`)
-				.eq('id', id)
-				.single(); 
-	
-			if (error) {
-				console.error('Error fetching property:', error);
-			} else {
-				console.log('Fetched property:', property); 
-				setProperty(property); 
-			}
-		};
-
-	
-		fetchProperty();
-	}, [id]); 
-
-	const mappedData = property && {
-        propertyDetails: property.details,
-        propertyAddress: property.address,
-        propertyPrice: property.price,
-        ownerFirstname: property.company?.owner_id?.firstname,
-        ownerLastname: property.company?.owner_id?.lastname,
-        createdAt: property.created_at,
-    };
-	console.log("=====================")
-	console.log(mappedData)
 	return (
 		<ResponsiveLayout>
 			<div>
 				<div className='grid grid-cols-5 gap-2 mt-4'>
-					<MainPreview openModal={openModal} propertyId={property?.id} />
+					<MainPreview openModal={openModal} />
+					<RightPreviewsCarousel />
 				</div>
 
 				<div>
@@ -93,15 +47,14 @@ export function SpecificListing({ id }: SpecificListingProps) {
 								<div className=' flex justify-between items-center'>
 									<div>
 										<h1 className='font-semibold xs:text-xl sm:text-2xl md:text-3xl lg:text-3xl xl:text-4xl text-left dark:text-white'>
-											{/* {
+											{
 												tempValues.BRANCHES_AND_ROOMS[1].available_rooms[1]
 													.room_title
-											} */}
-											{property?.details}
+											}
 										</h1>
 										<p className='flex items-center text-muted-foreground lg:text-md'>
 											<MapPin className='mr-1' height={18} width={18} />
-											{property?.address} 
+											Baguio City
 										</p>
 									</div>
 									<div className='relative flex items-center mr-3'>
@@ -123,15 +76,11 @@ export function SpecificListing({ id }: SpecificListingProps) {
 
 								<div className='flex items-center border-y border-gray-300 mr-4 py-4'>
 									<Avatar className='mr-3 lg:mr-4'>
-										<AvatarFallback>
-											{property?.company?.owner_id?.firstname?.charAt(0)}
-											{property?.company?.owner_id?.lastname?.charAt(0)}
-										</AvatarFallback>
+										<AvatarFallback>YN</AvatarFallback>
 									</Avatar>
 									<div className='flex flex-col'>
 										<h3 className='font-bold text-sm lg:text-base'>
-											{property?.company?.owner_id?.firstname}{' '} 
-											{property?.company?.owner_id?.lastname}
+											Lessor Name
 										</h3>
 										<p className='text-sm text-gray-700'>Property Owner</p>
 									</div>
@@ -143,7 +92,7 @@ export function SpecificListing({ id }: SpecificListingProps) {
 						</div>
 						<div className='flex lg:justify-end lg:items-start col-span-full lg:col-span-1'>
 							<div className=' w-max h-max sticky top-20'>
-								<BookingCard price={property?.price} />
+								<BookingCard />
 							</div>
 						</div>
 					</div>
@@ -246,8 +195,19 @@ export function SpecificListing({ id }: SpecificListingProps) {
 				</div>
 			</div>
 
-			
-			
+			{/* Modal for Full Image */}
+			{isOpen && (
+				<div
+					className='fixed inset-0 flex items-center justify-center bg-black bg-opacity-75 z-50'
+					onClick={closeModal}
+				>
+					<img
+						src='https://picsum.photos/600/400'
+						alt='Full view property'
+						className='max-w-[90vw] max-h-[90vh] object-contain rounded-md'
+					/>
+				</div>
+			)}
 		</ResponsiveLayout>
 	);
 }
