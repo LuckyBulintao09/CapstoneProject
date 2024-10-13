@@ -1,5 +1,4 @@
 import * as React from 'react';
-
 import { Button } from '@/components/ui/button';
 import {
 	Card,
@@ -22,19 +21,24 @@ import {
 	TableRow,
 } from '@/components/ui/table';
 
-export function BookingCard() {
+interface BookingCardProps {
+    price: number;
+}
+
+export const BookingCard: React.FC<BookingCardProps> = ({ price }) => {
 	const [date, setDate] = React.useState<Date | undefined>(undefined);
 	const [isCalendarOpen, setIsCalendarOpen] = React.useState(false);
 
 	const handleCalendarToggle = () => {
 		setIsCalendarOpen((prev) => !prev);
 	};
+
 	return (
 		<Card className='w-[350px] bg-white dark:bg-secondary shadow-lg lg:mt-0 md:mt-4 sm:mt-4 xs:mt-4'>
 			<CardHeader>
 				<CardTitle>
-					<span className='font-bold mr-1'>P2,500</span>
-					<span className='font-light'>month</span>
+					<span className='font-bold mr-1'>₱{price}</span>
+					<span className='font-light'>/ month</span>
 				</CardTitle>
 			</CardHeader>
 			<CardContent>
@@ -95,7 +99,7 @@ export function BookingCard() {
 						</div>
 					</div>
 					<Table className='min-w-full'>
-						<TableBody>
+						{/* <TableBody>
 							<TableRow className='border-b-0'>
 								<TableCell className='font-semibold py-2'>
 									Cleaning fee
@@ -108,11 +112,11 @@ export function BookingCard() {
 								</TableCell>
 								<TableCell className='text-right py-2'>₱1,666</TableCell>
 							</TableRow>
-						</TableBody>
+						</TableBody> */}
 						<TableFooter>
 							<TableRow className='bg-white dark:bg-accent'>
-								<TableCell className='font-semibold'>Inital Total</TableCell>
-								<TableCell className='text-right'>₱2,516.00</TableCell>
+								<TableCell className='font-semibold'>Initial Total</TableCell>
+								<TableCell className='text-right'>₱{price}</TableCell>
 							</TableRow>
 						</TableFooter>
 					</Table>
@@ -123,4 +127,4 @@ export function BookingCard() {
 			</CardFooter>
 		</Card>
 	);
-}
+};
