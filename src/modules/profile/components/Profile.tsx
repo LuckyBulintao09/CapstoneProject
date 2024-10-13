@@ -14,6 +14,7 @@ import {
 } from "@nextui-org/react";
 import React, { useEffect, useRef, useState } from "react";
 
+// Define the shape of profile data
 interface ProfileData {
   id: string;
   firstname: string;
@@ -28,12 +29,11 @@ interface ProfileData {
 const ProfileSection = () => {
   const { isOpen, onOpen, onOpenChange } = useDisclosure();
   const fileInputRef = useRef<HTMLInputElement | null>(null);
-  const [profileData, setProfileData] = useState<ProfileData | null>(null); 
-  const [loading, setLoading] = useState<boolean>(true); 
+  const [profileData, setProfileData] = useState<ProfileData | null>(null); // State to store profile data
+  const [loading, setLoading] = useState<boolean>(true); // Loading state
 
   const handlePencilClick = () => {
-    alert("Pencil clicked!");
-    // fileInputRef.current?.click();
+    fileInputRef.current?.click();
   };
 
   const handleFileChange = (event: React.ChangeEvent<HTMLInputElement>) => {
@@ -56,12 +56,12 @@ const ProfileSection = () => {
     } else {
       console.log("Profile data:", data);
       if (data && data.length > 0) {
-        setProfileData(data[0]); 
+        setProfileData(data[0]); // Store the fetched profile data
       } else {
         alert("No profile data found.");
       }
     }
-    setLoading(false); 
+    setLoading(false); // Set loading to false after fetching data
   }
 
   useEffect(() => {
@@ -70,7 +70,7 @@ const ProfileSection = () => {
       if (data.session) {
         await getProfile(data.session.user.id);
       } else {
-        alert("Login first to access this function!");
+        alert("Login to access this function");
         window.location.href = "/";
       }
     };
@@ -131,22 +131,20 @@ const ProfileSection = () => {
           <h4 className="text-lg font-medium">{`${profileData?.firstname} ${profileData?.lastname}`}</h4>
         </div>
         <div>
-            <p className="text-base font-medium text-default-400">Contact Number</p>
-            <h4 className="text-lg font-medium">
-              {profileData?.cp_number ? profileData.cp_number : "---"}
-            </h4>
-          </div>
+          <p className="text-base font-medium text-default-400">Contact Number</p>
+          <h4 className="text-lg font-medium">{profileData?.cp_number}</h4>
+        </div>
         <div>
           <p className="text-base font-medium text-default-400">Address</p>
-          <h4 className="text-lg font-medium">{profileData?.address?profileData.address:"---"}</h4>
+          <h4 className="text-lg font-medium">{profileData?.address}</h4>
         </div>
         <div>
           <p className="text-base font-medium text-default-400">Date of Birth</p>
-          <h4 className="text-lg font-medium">{profileData?.dob?profileData.dob:"---"}</h4>
+          <h4 className="text-lg font-medium">{profileData?.dob}</h4>
         </div>
         <div>
           <p className="text-base font-medium text-default-400">Email</p>
-          <h4 className="text-lg font-medium">{profileData?.email?profileData.email:"---"}</h4>
+          <h4 className="text-lg font-medium">{profileData?.email}</h4>
         </div>
       </div>
       <Modal isOpen={isOpen} placement="center" onOpenChange={onOpenChange}>
@@ -160,18 +158,9 @@ const ProfileSection = () => {
                     <Input
                       key="inside"
                       type="text"
-                      label="First Name"
+                      label="Full Name"
                       labelPlacement="outside"
-                      placeholder= {profileData?.firstname}
-                    />
-                  </div>
-                  <div>
-                    <Input
-                      key="inside"
-                      type="text"
-                      label="Last Name"
-                      labelPlacement="outside"
-                      placeholder={profileData?.lastname}
+                      placeholder={`${profileData?.firstname} ${profileData?.lastname}`}
                     />
                   </div>
                   <div>
@@ -185,21 +174,21 @@ const ProfileSection = () => {
                   </div>
                   <div>
                     <Input
-                      label="Address"
                       key="inside"
                       type="text"
+                      label="Address"
                       labelPlacement="outside"
                       placeholder={profileData?.address}
                     />
                   </div>
                   <div>
-                  <DatePicker
-                    label="Birth Date"
-                    labelPlacement="outside"
-                    variant="flat"
-                    showMonthAndYearPickers
-                    value={profileData?.dob ? new Date(profileData.dob) : null} ct
-                  />
+                    <DatePicker
+                      label="Birth Date"
+                      labelPlacement="outside"
+                      variant="flat"
+                      showMonthAndYearPickers
+                      value={profileData ? new Date(profileData.dob) : null}
+                    />
                   </div>
                   <div>
                     <Input
@@ -208,10 +197,8 @@ const ProfileSection = () => {
                       label="Email"
                       labelPlacement="outside"
                       placeholder={profileData?.email}
-                      isDisabled
                     />
                   </div>
-                  <small className="text-red-500">*Email address cannot be changed</small>
                 </div>
               </ModalBody>
               <ModalFooter>
