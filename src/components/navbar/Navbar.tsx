@@ -36,7 +36,7 @@ function NavBar() {
         setProfileData({
           firstname: data.session.user.user_metadata.firstname,
           lastname: data.session.user.user_metadata.lastname,
-          initials: `${data.session.user.user_metadata.firstname} ${data.session.user.user_metadata.lastname}`,
+          initials: data.session.user.user_metadata.firstname[0].toUpperCase() + data.session.user.user_metadata.lastname[0].toUpperCase()
         });
       } else {
         console.log("No session found.");
@@ -81,7 +81,7 @@ function NavBar() {
                 {spiels.BUTTON_SIGN_UP}
               </Button>
             ) : (
-              <ProfileDropdown profileData={profileData.initials} />
+              <ProfileDropdown profileData={profileData.initials} nameData={profileData.firstname + " " + profileData.lastname} />
             )}
           </div>
         </div>

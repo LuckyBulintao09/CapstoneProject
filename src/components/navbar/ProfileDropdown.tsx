@@ -14,17 +14,17 @@ import { logout } from '@/app/auth/login/actions';
 
 
 
-export function ProfileDropdown({ profileData, onLogout }: ProfileDropdownProps) {
+export function ProfileDropdown({ profileData,nameData, onLogout }: ProfileDropdownProps) {
 	return (
 		<DropdownMenu>
 			<DropdownMenuTrigger>
-					<Avatar className='w-9 h-9'> 
-					<AvatarImage src='https://github.com/shadcn.png'  />
-				</Avatar>
+					<Avatar className='mr-3 lg:mr-4'>
+								<AvatarFallback>{profileData}</AvatarFallback>
+					</Avatar>
 			</DropdownMenuTrigger>
 			<DropdownMenuContent className='w-56 lg:mr-12 md:mr-12 sm:mr-6 xs:mr-8'>
 			<DropdownMenuLabel>
-				<p>Hello! {profileData}</p>
+				<p>Hello! {nameData}</p>
 			</DropdownMenuLabel>
 				<DropdownMenuSeparator />
 				<DropdownMenuGroup>
