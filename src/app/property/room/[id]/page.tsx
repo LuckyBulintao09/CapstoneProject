@@ -11,18 +11,13 @@ export const metadata = {
     description: 'Web Platform',
 };
 
+
 export default function Inbox({ params }: Props) {
     const { id } = params; 
 
     return (
-        <div className='h-screen overflow-auto'>
-            <div className='sticky top-0 z-50'>
-                <NavBar />
-            </div>
-            <div className='mt-16 sm:mt-16 md:mt-12 lg:mt-0'>
-                <SpecificListing id={id} />
-            </div>
-            <Footer />
+        <div>
+            <SpecificListing id={id} />
         </div>
     );
 }
