@@ -2,6 +2,13 @@ import * as React from 'react';
 import { Card, CardContent, CardHeader } from '@/components/ui/card';
 import { Label } from '@/components/ui/label';
 import { MultiSelect } from '@/components/multi-select';
+import {
+	APIProvider,
+	Map,
+	AdvancedMarker,
+	Pin,
+	InfoWindow
+} from '@vis.gl/react-google-maps'
 
 const householdAmenities = [
 	{ value: 'wifi', label: 'WiFi' },
@@ -27,17 +34,24 @@ const householdAmenities = [
 ];
 
 export function FilterCard() {
+	const position = { lat: 16.415, lng: 120.597 };
+
 	const [selectedFilter, setSelectedFilter] = React.useState<string[]>([]);
 	return (
 		<Card className='w-full bg-white dark:bg-secondary shadow-md lg:mt-0 md:mt-4 sm:mt-4 xs:mt-4'>
 			<CardHeader>
 				<Card className='h-[370px] border-none'>
-					<iframe
-						src='https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3827.190906189018!2d120.59490157532025!3d16.415127984315635!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x3391a15d8cb0dc9b%3A0xe282b2015f6debba!2sUniversity%20of%20Baguio!5e0!3m2!1sen!2sph!4v1727501045306!5m2!1sen!2sph'
-						className='rounded-md w-full h-full border-none'
-						loading='lazy'
-						referrerPolicy='no-referrer-when-downgrade'
-					></iframe>
+					<div className='rounded-md w-full h-full border-none'>
+						<APIProvider apiKey={process.env.NEXT_PUBLIC_GOOGLE_MAPS_API_KEY}>
+							<Map
+								defaultZoom={15}
+								defaultCenter={position}
+								mapId={process.env.NEXT_PUBLIC_MAP_ID}
+							>
+								
+							</Map>
+						</APIProvider>
+					</div>
 				</Card>
 			</CardHeader>
 			<CardContent>
