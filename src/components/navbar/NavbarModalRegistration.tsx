@@ -20,6 +20,7 @@ export function NavbarModalRegistration({ isOpen, onClose, openModal }) {
     password: ""
   });
   const [confirmPassword, setConfirmPassword] = React.useState("");
+  const [isLoading, setIsLoading] = React.useState(false); 
 
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value } = e.target;
@@ -32,18 +33,27 @@ export function NavbarModalRegistration({ isOpen, onClose, openModal }) {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+    setIsLoading(true);
 
     if (formData.password !== confirmPassword) {
       alert("Passwords do not match");
+      setIsLoading(false);
       return;
     }
 
     const data = new FormData();
     data.append("email", formData.email);
     data.append("password", formData.password);
-    data.append("firstname", formData.fname);  
-    data.append("lastname", formData.lname);    
-    await signup(data);
+    data.append("firstname", formData.fname);
+    data.append("lastname", formData.lname);
+
+    try {
+      await signup(data); 
+      setIsLoading(false); 
+    } catch (error) {
+      console.error("Signup failed:", error);
+      setIsLoading(false); 
+    }
   };
 
   return (
@@ -135,8 +145,15 @@ export function NavbarModalRegistration({ isOpen, onClose, openModal }) {
               <Button
                 type="submit"
                 className="w-full bg-black text-white px-4 py-2 rounded-md hover:bg-gray-800"
+                disabled={isLoading} 
               >
-                Create Account
+                {isLoading ? ( 
+                  <>
+                    <span className="loader mr-2"></span> Creating Account...
+                  </>
+                ) : (
+                  "Create Account"
+                )}
               </Button>
               <div className="mt-4 text-center text-black">
                 <p>
