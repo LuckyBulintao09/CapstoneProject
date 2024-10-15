@@ -4,13 +4,12 @@ import './globals.css';
 
 import { ThemeProvider } from '@/components/theme-provider';
 import { NUIProvider } from '@/components/next-ui-provider';
-import NavBar from '@/components/navbar/Navbar';
-import Footer from '@/modules/home/components/Footer';
+
 
 const geistSans = localFont({
-	src: './fonts/GeistVF.woff',
-	variable: '--font-geist-sans',
-	weight: '100 900',
+    src: "./fonts/GeistVF.woff",
+    variable: "--font-geist-sans",
+    weight: "100 900",
 });
 const geistMono = localFont({
 	src: './fonts/GeistMonoVF.woff',
@@ -40,9 +39,9 @@ export default function RootLayout({
                         enableSystem
                         disableTransitionOnChange
                     >
-                        <NavBar />
+                        
                         <div>{children}</div>
-                        <Footer />
+                        
                     </ThemeProvider>
                 </NUIProvider>
             </body>
