@@ -74,18 +74,9 @@ export function FilterCard() {
             setPins((prevPins) => [...prevPins, newPin]);
             console.log("Pinned Location:", newPin);
 
-            pins.forEach((pin) => {
-              pin.marker && pin.marker.setMap(null);
-            });
 
-            const newMarker = new Marker({
-              position: newPin,
-              map,
-            });
-            setPins((prevPins) => [
-              ...prevPins,
-              { ...newPin, marker: newMarker },
-            ]);
+
+            
           } else {
             console.error(
               "Click event did not have latLng. Please ensure you are clicking directly on the map area."
