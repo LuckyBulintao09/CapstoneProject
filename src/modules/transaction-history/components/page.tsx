@@ -1,7 +1,7 @@
 'use client';
 import React, { useState } from 'react';
 import AddReviewModal from './AddReviewModal';
-import { DataTable } from '@/app/(lessor-dashboard)/reservations/data-table';
+import { DataTable } from '@/app/(auth)/(lessor-dashboard)/reservations/data-table';
 import { transactions } from '@/lib/constants/transactions';
 import { columns, Transaction } from './columns';
 
