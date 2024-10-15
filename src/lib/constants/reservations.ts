@@ -1,4 +1,4 @@
-import { Reservation } from "@/app/(lessor-dashboard)/reservations/columns"
+import { Reservation } from "@/app/(auth)/(lessor-dashboard)/reservations/columns"
 
 export const reservations: Reservation[] = [
     {

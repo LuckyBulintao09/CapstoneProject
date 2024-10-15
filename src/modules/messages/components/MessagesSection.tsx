@@ -52,7 +52,7 @@ interface Message {
 	imageSrc?: string;
 }
 
-export function MessagesSection() {
+export default function MessagesSection() {
 	const [selectedMessage, setSelectedMessage] = useState<Message | null>(null);
 	const [messages, setMessages] = useState<Message[]>(tempValues.LESSORS);
 	const [searchTerm, setSearchTerm] = useState('');

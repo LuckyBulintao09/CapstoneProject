@@ -22,10 +22,25 @@ interface SpecificListingProps {
     id: number;
 }
 
+type Property = {
+	id: number;
+	details: string;
+	address: string;
+	price: number;
+	company: {
+		id: number;
+		owner_id: {
+			firstname: string;
+			lastname: string;
+		};
+	};
+	created_at: string;
+}
+
 export function SpecificListing({ id }: SpecificListingProps) {
 	const [isOpen, setIsOpen] = useState(false);
 	const [isFavourite, setIsFavourite] = useState(false);
-	const [property, setProperty] = useState(null); 
+	const [property, setProperty] = useState<Property>(); 
 
 	const openModal = () => {
 		setIsOpen(true);
@@ -61,12 +76,16 @@ export function SpecificListing({ id }: SpecificListingProps) {
 			} else {
 				console.log('Fetched property:', property); 
 				setProperty(property); 
+				
 			}
 		};
 
 	
 		fetchProperty();
 	}, [id]); 
+
+	console.log("=====================")
+	console.log(property);
 
 	const mappedData = property && {
         propertyDetails: property.details,
@@ -76,8 +95,7 @@ export function SpecificListing({ id }: SpecificListingProps) {
         ownerLastname: property.company?.owner_id?.lastname,
         createdAt: property.created_at,
     };
-	console.log("=====================")
-	console.log(mappedData)
+	
 	return (
 		<ResponsiveLayout>
 			<div>

@@ -1,6 +1,6 @@
 'use client';
 import React from 'react';
-import { DataTable } from '@/app/(lessor-dashboard)/reservations/data-table';
+import { DataTable } from '@/app/(auth)/(lessor-dashboard)/reservations/data-table';
 import { columns, ReportedReviews } from './columns';
 import { reported_reviews } from '@/lib/constants/reported_reviews';
 

@@ -3,6 +3,7 @@ import { BentoGrid, BentoGridItem } from '../ui/bento-grid';
 import { Badge } from '../ui/badge';
 import { Star } from 'lucide-react';
 import { formatDistanceToNow } from 'date-fns'; 
+import { redirect } from 'next/navigation';
 
 interface Amenity {
     amenity_name: string;
@@ -50,12 +51,13 @@ export default function BranchListings({
     const handleClick = () => {
         window.location.href = `/property/room/${id}`;
     };
+    
 
     return (
         <div>
             <BentoGrid className='max-w-screen mx-auto'>
                 <BentoGridItem
-                    onClick={handleClick} 
+                    onClick={() => {handleClick()}} 
                     title={
                         <div className='flex items-center justify-between'>
                             <span className='sm:text-sm xs:text-xs line-clamp-1'>

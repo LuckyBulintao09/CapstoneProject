@@ -4,6 +4,8 @@ import './globals.css';
 
 import { ThemeProvider } from '@/components/theme-provider';
 import { NUIProvider } from '@/components/next-ui-provider';
+import NavBar from '@/components/navbar/Navbar';
+import Footer from '@/modules/home/components/Footer';
 
 const geistSans = localFont({
 	src: './fonts/GeistVF.woff',
@@ -38,7 +40,9 @@ export default function RootLayout({
                         enableSystem
                         disableTransitionOnChange
                     >
-                        {children}
+                        <NavBar />
+                        <div>{children}</div>
+                        <Footer />
                     </ThemeProvider>
                 </NUIProvider>
             </body>
