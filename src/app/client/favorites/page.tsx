@@ -1,7 +1,10 @@
 import NavBar from '@/components/navbar/Navbar';
 import FavoritesScreen from '@/modules/favorites/screens/FavoritesScreen';
 import Footer  from "@/modules/home/components/Footer";
-
+export const metadata = {
+	title: 'Favorites | Unihomes',
+	description: 'Web Platform',
+  }
 export default async function favorites() {
 	return (
 		<div className='h-screen overflow-auto'>

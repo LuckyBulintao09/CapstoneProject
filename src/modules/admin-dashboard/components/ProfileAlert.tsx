@@ -15,10 +15,11 @@ import spiels from '@/lib/constants/spiels';
 
 interface ProfileAlertProps {
 	lessor: NewLessors;
+	isOpen: boolean;
 	onClose: () => void;
 }
 
-export function ProfileAlert({ lessor, onClose }: ProfileAlertProps) {
+export function ProfileAlert({ lessor, isOpen, onClose }: ProfileAlertProps) {
 	const [isApproveModalOpen, setIsApproveModalOpen] = useState(false);
 	const [isRejectModalOpen, setIsRejectModalOpen] = useState(false);
 
@@ -34,7 +35,7 @@ export function ProfileAlert({ lessor, onClose }: ProfileAlertProps) {
 
 	return (
 		<>
-			<Dialog open onOpenChange={onClose}>
+			<Dialog open={isOpen} onOpenChange={onClose}>
 				<DialogContent className='bg-white dark:bg-secondary'>
 					<DialogHeader>
 						<DialogTitle>{spiels.ADMIN_MODAL_HEADER}</DialogTitle>

@@ -101,6 +101,14 @@ const Terms = () => {
               confirmed once the payment has been processed.
             </li>
             <li>
+              If you scheduled an onsite visit and a reservation is made for the
+              same property before your visit, your onsite visitation will be
+              automatically canceled, as the reservation takes priority once
+              payment is confirmed. A notification will be sent to you informing
+              that the reservation has already been made and your onsite visit
+              is now canceled.
+            </li>
+            <li>
               Cancellation policies, including refunds, will be dictated by the
               lessor and displayed on the listing page.
             </li>

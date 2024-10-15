@@ -356,6 +356,241 @@ const tempValues = {
 			],
 			lessor_name: 'Sarah Davis',
 		},
+		{
+			id: 6,
+			title: 'Cozy Corner',
+			description:
+				'Cozy Corner is perfect for students looking for a warm, inviting atmosphere. Located just a few minutes from campus, this listing features spacious rooms with lots of natural light. The shared spaces include a cozy lounge and a fully-equipped kitchen. Enjoy a friendly and respectful community while making memories in Baguio City.',
+			price: 1800,
+			featured: true,
+			amenities: [
+				{
+					amenity_name: 'Air Conditioning',
+					value: true,
+				},
+				{
+					amenity_name: 'Dryer',
+					value: true,
+				},
+				{
+					amenity_name: 'Essentials',
+					value: true,
+				},
+				{
+					amenity_name: 'Heating',
+					value: false,
+				},
+				{
+					amenity_name: 'Hot Water',
+					value: true,
+				},
+				{
+					amenity_name: 'Kitchen',
+					value: true,
+				},
+				{
+					amenity_name: 'TV',
+					value: false,
+				},
+				{
+					amenity_name: 'Washer',
+					value: true,
+				},
+				{
+					amenity_name: 'Wifi',
+					value: true,
+				},
+			],
+			lessor_name: 'Daniel Lee',
+		},
+		{
+			id: 7,
+			title: 'Skyline Views',
+			description:
+				'Skyline Views offers breathtaking panoramic views of the Baguio skyline. This modern apartment features stylish decor and high-end amenities, ensuring a luxurious stay. Ideal for professionals or students seeking comfort and elegance, it includes spacious living areas and a rooftop terrace for relaxation.',
+			price: 3000,
+			featured: true,
+			amenities: [
+				{
+					amenity_name: 'Air Conditioning',
+					value: true,
+				},
+				{
+					amenity_name: 'Dryer',
+					value: true,
+				},
+				{
+					amenity_name: 'Essentials',
+					value: true,
+				},
+				{
+					amenity_name: 'Heating',
+					value: true,
+				},
+				{
+					amenity_name: 'Hot Water',
+					value: true,
+				},
+				{
+					amenity_name: 'Kitchen',
+					value: true,
+				},
+				{
+					amenity_name: 'TV',
+					value: true,
+				},
+				{
+					amenity_name: 'Washer',
+					value: true,
+				},
+				{
+					amenity_name: 'Wifi',
+					value: true,
+				},
+			],
+			lessor_name: 'Laura Thompson',
+		},
+		{
+			id: 8,
+			title: 'Mountain Retreat',
+			description:
+				'Mountain Retreat is a serene getaway nestled among the pines. With spacious rooms and a peaceful ambiance, it’s ideal for those who value tranquility. Enjoy hiking trails nearby, and come home to a cozy space complete with essential amenities and a welcoming community.',
+			price: 2400,
+			featured: false,
+			amenities: [
+				{
+					amenity_name: 'Air Conditioning',
+					value: false,
+				},
+				{
+					amenity_name: 'Dryer',
+					value: true,
+				},
+				{
+					amenity_name: 'Essentials',
+					value: true,
+				},
+				{
+					amenity_name: 'Heating',
+					value: true,
+				},
+				{
+					amenity_name: 'Hot Water',
+					value: true,
+				},
+				{
+					amenity_name: 'Kitchen',
+					value: true,
+				},
+				{
+					amenity_name: 'TV',
+					value: true,
+				},
+				{
+					amenity_name: 'Washer',
+					value: true,
+				},
+				{
+					amenity_name: 'Wifi',
+					value: false,
+				},
+			],
+			lessor_name: 'Chris Evans',
+		},
+		{
+			id: 9,
+			title: 'Sunny Side Up',
+			description:
+				'Sunny Side Up offers a bright and cheerful atmosphere with spacious rooms filled with natural light. Located close to local markets and cafes, this listing provides a vibrant community for students and young professionals. Enjoy modern amenities and the comfort of home in Baguio City.',
+			price: 2000,
+			featured: false,
+			amenities: [
+				{
+					amenity_name: 'Air Conditioning',
+					value: true,
+				},
+				{
+					amenity_name: 'Dryer',
+					value: false,
+				},
+				{
+					amenity_name: 'Essentials',
+					value: true,
+				},
+				{
+					amenity_name: 'Heating',
+					value: false,
+				},
+				{
+					amenity_name: 'Hot Water',
+					value: true,
+				},
+				{
+					amenity_name: 'Kitchen',
+					value: true,
+				},
+				{
+					amenity_name: 'TV',
+					value: false,
+				},
+				{
+					amenity_name: 'Washer',
+					value: true,
+				},
+				{
+					amenity_name: 'Wifi',
+					value: true,
+				},
+			],
+			lessor_name: 'Natalie Perez',
+		},
+		{
+			id: 10,
+			title: 'Forest Hideaway',
+			description:
+				'Forest Hideaway is a unique living space surrounded by nature. Ideal for those who appreciate a blend of indoor comfort and outdoor adventure, this listing features cozy interiors and easy access to hiking trails. With a supportive community and various amenities, it’s perfect for nature lovers.',
+			price: 1900,
+			featured: false,
+			amenities: [
+				{
+					amenity_name: 'Air Conditioning',
+					value: false,
+				},
+				{
+					amenity_name: 'Dryer',
+					value: true,
+				},
+				{
+					amenity_name: 'Essentials',
+					value: true,
+				},
+				{
+					amenity_name: 'Heating',
+					value: true,
+				},
+				{
+					amenity_name: 'Hot Water',
+					value: true,
+				},
+				{
+					amenity_name: 'Kitchen',
+					value: true,
+				},
+				{
+					amenity_name: 'TV',
+					value: true,
+				},
+				{
+					amenity_name: 'Washer',
+					value: true,
+				},
+				{
+					amenity_name: 'Wifi',
+					value: true,
+				},
+			],
+			lessor_name: 'George Smith',
+		},
 	],
 
 	// BRANCHES AND ROOMS

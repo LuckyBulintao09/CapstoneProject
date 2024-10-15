@@ -17,7 +17,6 @@ import spiels from '@/lib/constants/spiels';
 import { Search } from 'lucide-react';
 import { Tabs, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Card } from '@/components/ui/card';
-import ResponsiveLayout from '@/components/ResponsiveLayout';
 
 // for avatar fallback
 const getInitials = (name: string) => {
@@ -94,13 +93,13 @@ export function MessagesSection() {
 		.filter((message) => (tab === 'unread' ? !message.read : true)); // shows unread tab if 'unread' tab is active
 
 	return (
-		<ResponsiveLayout className='h-screen'>
+		<div className='p-5  h-screen'>
 			<Card className='h-full m-2 lg:m-2 md:m-2 bg-white dark:bg-secondary'>
 				<ResizablePanelGroup direction='horizontal' className='h-full'>
 					{/* 1ST COL: Message List with scroll */}
 					<ResizablePanel
 						defaultSize={0}
-						className='min-w-[0px] w-0 lg:w-full lg:min-w-[340px]'
+						className='min-w-[0px] max-w-[400px] w-0 lg:w-full lg:min-w-[340px]'
 					>
 						<div className='flex flex-col h-full'>
 							<div className='flex items-center justify-between px-4 sm:px-6 pt-2'>
@@ -300,6 +299,6 @@ export function MessagesSection() {
 					</ResizablePanel>
 				</ResizablePanelGroup>
 			</Card>
-		</ResponsiveLayout>
+		</div>
 	);
 }

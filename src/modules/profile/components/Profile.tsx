@@ -1,115 +1,306 @@
-"use client";
-
-import { useState } from "react";
-import { Label } from "@/components/ui/label";
-import { Input } from "@/components/ui/input";
-import { Button } from "@/components/ui/button";
-import spiels from "@/lib/constants/spiels";
-import { Badge } from "@/components/ui/badge";
-import { CalendarIcon } from "lucide-react";
+import { PencilIcon, PencilSquareIcon } from "@heroicons/react/24/solid";
+import { createClient } from "../../../../utils/supabase/client";
+import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import {
-  Popover,
-  PopoverContent,
-  PopoverTrigger,
-} from "@/components/ui/popover";
-import { Calendar } from "@/components/ui/calendar";
-import { format } from "date-fns"; // For formatting date
+  Modal,
+  ModalContent,
+  ModalHeader,
+  ModalBody,
+  ModalFooter,
+  Button,
+  useDisclosure,
+  Input,
+  DatePicker,
+} from "@nextui-org/react";
+import React, { useEffect, useRef, useState } from "react";
+import { parseDate } from "@internationalized/date";
 
-const Profile = () => {
-  const [date, setDate] = useState(null); // State for selected date
+interface ProfileData {
+  id: string;
+  firstname: string;
+  lastname: string;
+  email: string;
+  address: string;
+  cp_number: string;
+  dob: string;
+  profile_url: string;
+}
+
+const ProfileSection = () => {
+  const { isOpen, onOpen, onOpenChange } = useDisclosure();
+  const fileInputRef = useRef<HTMLInputElement | null>(null);
+  const [profileData, setProfileData] = useState<ProfileData | null>(null);
+  const [editProfileData, setEditProfileData] = useState<ProfileData | null>(
+    null
+  );
+  const [loading, setLoading] = useState<boolean>(true);
+
+  const supabase = createClient();
+
+  useEffect(() => {
+    const checkSession = async () => {
+      const { data } = await supabase.auth.getSession();
+      if (data.session) {
+        await getProfile(data.session.user.id);
+      } else {
+        alert("Login first to access this function!");
+        window.location.href = "/";
+      }
+    };
+    checkSession();
+  }, []);
+
+  const getProfile = async (id: string) => {
+    const { data, error } = await supabase
+      .from("account")
+      .select("*")
+      .eq("id", id);
+
+    if (data && data.length > 0) {
+      setProfileData(data[0]);
+      setEditProfileData(data[0]);
+    } else if (error) {
+      alert("No profile data found.");
+    }
+    setLoading(false);
+  };
+
+  const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const { name, value } = e.target;
+    setEditProfileData((prevData) =>
+      prevData ? { ...prevData, [name]: value } : prevData
+    );
+  };
+
+  const handleSaveProfile = async () => {
+    if (editProfileData) {
+      const { id, firstname, lastname, address, cp_number, dob } =
+        editProfileData;
+      const { error } = await supabase
+        .from("account")
+        .update({ firstname, lastname, address, cp_number, dob })
+        .eq("id", id);
+
+      if (!error) {
+        alert("Profile updated successfully!");
+        setProfileData(editProfileData);
+        onOpenChange(false);
+      } else {
+        alert("Failed to update profile.");
+      }
+    }
+  };
+
+  const handleFileChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (file && profileData) {
+      try {
+        const fileExt = file.name.split(".").pop();
+        const fileName = `${profileData.id}-${Date.now()}.${fileExt}`;
+        const filePath = `profile images/${fileName}`;
+
+        const { error: uploadError } = await supabase.storage
+          .from("unihomes image storage")
+          .upload(filePath, file);
+
+        if (uploadError) {
+          alert(`Failed to upload image: ${uploadError.message}`);
+          return;
+        }
+
+        const { data: publicUrlData } = supabase.storage
+          .from("unihomes image storage")
+          .getPublicUrl(filePath);
+
+        if (!publicUrlData?.publicUrl) {
+          alert("Failed to get public URL for the uploaded image.");
+          return;
+        }
+
+        const publicUrl = publicUrlData.publicUrl;
+
+        const { error: updateError } = await supabase
+          .from("account")
+          .update({ profile_url: publicUrl })
+          .eq("id", profileData.id);
+
+        if (updateError) {
+          alert(`Failed to update profile URL: ${updateError.message}`);
+          return;
+        }
+
+        setProfileData((prevData) =>
+          prevData ? { ...prevData, profile_url: publicUrl } : prevData
+        );
+
+        alert("Profile image updated successfully!");
+      } catch (error) {
+        alert("An unexpected error occurred during profile image upload.");
+      }
+    }
+  };
+
+  if (loading) {
+    return (
+      <div className="flex justify-center items-center h-full">Loading...</div>
+    );
+  }
 
   return (
     <section className="w-full p-2">
-      <form className="px-2">
-        <div className="flex flex-col gap-4 ">
-          <div className="flex gap-2">
-            <div className="flex-1">
-              <Label>First name</Label>
-              <Input
-                id="first-name"
-                placeholder="Tyler"
-                type="text"
-                className="border-2 border-gray-300 focus:border-gray-500 transition-all duration-200"
-              />
-            </div>
-            <div className="flex-1">
-              <Label>Last name</Label>
-              <Input
-                id="last-name"
-                placeholder="Aasdasd"
-                type="text"
-                className="border-2 border-gray-300 focus:border-gray-500 transition-all duration-200"
-              />
-            </div>
-          </div>
-          <p className="opacity-60">
-            This is your public display name. It can be your real name or a
-            pseudonym. You can only change this once every 30 days.
-          </p>
-          <Label>Contact Number</Label>
-          <Input
-            id="contact-number"
-            placeholder="1234567890"
-            type="text"
-            className="border-2 border-gray-300 focus:border-gray-500 transition-all duration-200"
+      <div className="flex p-2 gap-4 h-[20%]">
+        <div className="relative">
+          <Avatar className="w-32 h-32">
+            <AvatarImage src={profileData?.profile_url} />
+            <AvatarFallback>
+              {profileData?.firstname.charAt(0)}
+              {profileData?.lastname.charAt(0)}
+            </AvatarFallback>
+          </Avatar>
+          <button
+            onClick={() => fileInputRef.current?.click()}
+            className="absolute bottom-0 right-0 bg-white p-1 rounded-full shadow-md hover:bg-gray-200 transition w-7"
+          >
+            <PencilSquareIcon className="w-5 h-5 text-gray-600" />
+          </button>
+          <input
+            type="file"
+            ref={fileInputRef}
+            className="hidden"
+            accept="image/*"
+            onChange={handleFileChange}
           />
-          <Label>Address</Label>
-          <Input
-            id="address"
-            placeholder="123 Main St."
-            type="text"
-            className="border-2 border-gray-300 focus:border-gray-500 transition-all duration-200"
-          />
-
-          {/* Date of Birth Section with Calendar */}
-          <Label>Date of Birth</Label>
-          <Popover>
-            <PopoverTrigger asChild>
-              <Button
-                variant="outline"
-                className="border-2 border-gray-300 focus:border-gray-500 transition-all duration-200 w-full sm:w-auto pl-3 text-left font-normal"
-              >
-                {date ? format(date, "MMMM d, yyyy") : <span>Pick a date</span>}
-                <CalendarIcon className="ml-auto h-4 w-4 opacity-50" />
-              </Button>
-            </PopoverTrigger>
-            <PopoverContent className="w-auto p-0" align="start">
-              <Calendar
-                mode="single"
-                selected={date}
-                onSelect={setDate}
-                className="rounded-md"
-                disabled={(date) =>
-                  date > new Date() || date < new Date("1900-01-01")
-                }
-                initialFocus
-                captionLayout="dropdown-buttons"
-                fromYear={1900}
-                toYear={new Date().getFullYear()}
-              />
-            </PopoverContent>
-          </Popover>
-
-          <Label>Email</Label>
-          <Input
-            id="email"
-            placeholder="example@example.com"
-            type="email"
-            className="border-2 border-gray-300 focus:border-gray-500 transition-all duration-200"
-          />
-
-          <div className="flex gap-2 mb-10 mt-10">
-            <Button className="w-full md:w-auto  bg-black text-white hover:bg-gray-800">
-              {spiels.BUTTON_UPDATE_PROFILE}
-            </Button>
-            <Button className="w-full md:w-auto  bg-red-500 text-white hover:bg-red-600">
-              {spiels.BUTTON_DELETE_ACCOUNT}
-            </Button>
+        </div>
+        <div className="flex items-center">
+          <div className="flex flex-col">
+            <h1 className="font-bold mb-1">{`${profileData?.firstname} ${profileData?.lastname}`}</h1>
+            <p>{profileData?.address}</p>
           </div>
         </div>
-      </form>
+      </div>
+
+      <div className="flex flex-col gap-5 p-4 mt-10">
+        <div className="flex justify-between items-center">
+          <h1 className="text-xl font-bold">Personal Details</h1>
+          <Button
+            onPress={onOpen}
+            className="text-blue-600 underline hover:text-blue-800 bg-transparent"
+          >
+            <PencilIcon className="w-4 h-4 mr-1" />
+            Edit
+          </Button>
+        </div>
+
+        <div>
+          <p className="text-base font-medium text-default-400">Full Name</p>
+          <h4 className="text-lg font-medium">{`${profileData?.firstname} ${profileData?.lastname}`}</h4>
+        </div>
+        <div>
+          <p className="text-base font-medium text-default-400">
+            Contact Number
+          </p>
+          <h4 className="text-lg font-medium">
+            {profileData?.cp_number || "---"}
+          </h4>
+        </div>
+        <div>
+          <p className="text-base font-medium text-default-400">Address</p>
+          <h4 className="text-lg font-medium">
+            {profileData?.address || "---"}
+          </h4>
+        </div>
+        <div>
+          <p className="text-base font-medium text-default-400">
+            Date of Birth
+          </p>
+          <h4 className="text-lg font-medium">{profileData?.dob || "---"}</h4>
+        </div>
+        <div>
+          <p className="text-base font-medium text-default-400">Email</p>
+          <h4 className="text-lg font-medium">{profileData?.email || "---"}</h4>
+        </div>
+      </div>
+
+      <Modal isOpen={isOpen} placement="center" onOpenChange={onOpenChange}>
+        <ModalContent>
+          {() => (
+            <>
+              <ModalHeader>Edit Profile</ModalHeader>
+              <ModalBody>
+                <div className="flex flex-col gap-2">
+                  <Input
+                    type="text"
+                    label="First Name"
+                    name="firstname"
+                    value={editProfileData?.firstname || ""}
+                    onChange={handleInputChange}
+                  />
+                  <Input
+                    type="text"
+                    label="Last Name"
+                    name="lastname"
+                    value={editProfileData?.lastname || ""}
+                    onChange={handleInputChange}
+                  />
+                  <Input
+                    type="number"
+                    label="Contact Number"
+                    name="cp_number"
+                    value={editProfileData?.cp_number || ""}
+                    onChange={handleInputChange}
+                  />
+                  <Input
+                    type="text"
+                    label="Address"
+                    name="address"
+                    value={editProfileData?.address || ""}
+                    onChange={handleInputChange}
+                  />
+                  <DatePicker
+                    label="Birth Date"
+                    showMonthAndYearPickers
+                    value={
+                      editProfileData?.dob
+                        ? parseDate(editProfileData.dob)
+                        : null
+                    }
+                    onChange={(dateValue) =>
+                      setEditProfileData((prevData) =>
+                        prevData
+                          ? { ...prevData, dob: dateValue?.toString() || "" }
+                          : prevData
+                      )
+                    }
+                  />
+                  <Input
+                    type="email"
+                    label="Email"
+                    placeholder={editProfileData?.email}
+                    isDisabled
+                  />
+                  <small className="text-red-500">
+                    *Email address cannot be changed
+                  </small>
+                </div>
+              </ModalBody>
+              <ModalFooter>
+                <Button
+                  color="danger"
+                  variant="light"
+                  onPress={() => onOpenChange(false)}
+                >
+                  Close
+                </Button>
+                <Button color="primary" onPress={handleSaveProfile}>
+                  Save
+                </Button>
+              </ModalFooter>
+            </>
+          )}
+        </ModalContent>
+      </Modal>
     </section>
   );
 };
 
-export default Profile;
+export default ProfileSection;

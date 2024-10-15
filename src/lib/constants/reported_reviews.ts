@@ -1,0 +1,40 @@
+import { ReportedReviews } from '@/modules/admin-dashboard/review-components/columns';
+
+export const reported_reviews: ReportedReviews[] = [
+	{
+		id: 1,
+		user: 'John Doe',
+		userEmail: 'john.doe@example.com',
+		reviewId: 'R001',
+		reviewDate: '2024-10-01',
+		reportedComment: 'This is a sample reported comment for Review ID R001.',
+		reportedBy: 'Jane Smith',
+		reasonForReport: 'Offensive language',
+		associatedProperty: 'Condo XYZ',
+		dateReported: '2024-10-05',
+	},
+	{
+		id: 2,
+		user: 'Alice Johnson',
+		userEmail: 'alice.johnson@example.com',
+		reviewId: 'R002',
+		reviewDate: '2024-09-28',
+		reportedComment: 'This is a sample reported comment for Review ID R002.',
+		reportedBy: 'Bob Lee',
+		reasonForReport: 'Spam',
+		associatedProperty: 'Apartment ABC',
+		dateReported: '2024-10-04',
+	},
+	{
+		id: 3,
+		user: 'Charlie Brown',
+		userEmail: 'charlie.brown@example.com',
+		reviewId: 'R003',
+		reviewDate: '2024-10-02',
+		reportedComment: 'This is a sample reported comment for Review ID R003.',
+		reportedBy: 'Daisy Miller',
+		reasonForReport: 'False information',
+		associatedProperty: 'Dormitory DEF',
+		dateReported: '2024-10-06',
+	},
+];
