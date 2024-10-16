@@ -6,6 +6,7 @@ import {
   AdvancedMarkerAnchorPoint,
   InfoWindow,
 } from "@vis.gl/react-google-maps";
+import { getAllLocation, getSpecificLocation } from "@/actions/listings/listing-filter";
 
 const PublicMap = () => {
   const position = { lat: 16.415, lng: 120.597 };
@@ -21,7 +22,7 @@ const PublicMap = () => {
     return (
       <APIProvider apiKey={process.env.NEXT_PUBLIC_GOOGLE_MAPS_API_KEY}>
         <Map
-          defaultZoom={15}
+          defaultZoom={14}
           defaultCenter={position}
           mapId={process.env.NEXT_PUBLIC_MAP_ID}
           onClick={handleMapClick}
