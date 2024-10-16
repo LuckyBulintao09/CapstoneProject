@@ -17,10 +17,11 @@ export function NavbarModalRegistration({ isOpen, onClose, openModal }) {
     fname: "",
     lname: "",
     email: "",
-    password: ""
+    password: "",
   });
   const [confirmPassword, setConfirmPassword] = React.useState("");
-  const [isLoading, setIsLoading] = React.useState(false); 
+  const [isLoading, setIsLoading] = React.useState(false);
+  const [errorMessage, setErrorMessage] = React.useState(""); 
 
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value } = e.target;
@@ -34,9 +35,10 @@ export function NavbarModalRegistration({ isOpen, onClose, openModal }) {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setIsLoading(true);
+    setErrorMessage(""); 
 
     if (formData.password !== confirmPassword) {
-      alert("Passwords do not match");
+      setErrorMessage("Passwords do not match");
       setIsLoading(false);
       return;
     }
@@ -48,11 +50,18 @@ export function NavbarModalRegistration({ isOpen, onClose, openModal }) {
     data.append("lastname", formData.lname);
 
     try {
-      await signup(data); 
-      setIsLoading(false); 
+      const response = await signup(data);
+
+      if (response && response.error) {
+        setErrorMessage(response.error);
+      } else {
+        onClose(); 
+      }
     } catch (error) {
       console.error("Signup failed:", error);
-      setIsLoading(false); 
+      setErrorMessage("An error occurred during signup");
+    } finally {
+      setIsLoading(false);
     }
   };
 
@@ -138,6 +147,11 @@ export function NavbarModalRegistration({ isOpen, onClose, openModal }) {
                 placeholder="Confirm Password"
               />
             </div>
+
+            {/* Display the error message */}
+            {errorMessage && (
+              <p className="mt-4 text-red-500 text-center">{errorMessage}</p>
+            )}
           </div>
 
           <DialogFooter>
@@ -145,9 +159,9 @@ export function NavbarModalRegistration({ isOpen, onClose, openModal }) {
               <Button
                 type="submit"
                 className="w-full bg-black text-white px-4 py-2 rounded-md hover:bg-gray-800"
-                disabled={isLoading} 
+                disabled={isLoading}
               >
-                {isLoading ? ( 
+                {isLoading ? (
                   <>
                     <span className="loader mr-2"></span> Creating Account...
                   </>

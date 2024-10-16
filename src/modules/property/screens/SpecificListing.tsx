@@ -115,7 +115,7 @@ export function SpecificListing({ id }: SpecificListingProps) {
 												tempValues.BRANCHES_AND_ROOMS[1].available_rooms[1]
 													.room_title
 											} */}
-											{property?.details}
+											{property?.description}
 										</h1>
 										<p className='flex items-center text-muted-foreground lg:text-md'>
 											<MapPin className='mr-1' height={18} width={18} />
