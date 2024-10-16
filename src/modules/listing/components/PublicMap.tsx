@@ -11,10 +11,10 @@ const PublicMap = () => {
   const position = { lat: 16.415, lng: 120.597 };
   const [selectedLocation, setSelectedLocation] = useState(null);
 
-
   const handleMapClick = async (event) => {
     if (event.detail.latLng) {
       setSelectedLocation(event.detail.latLng);
+      console.log(selectedLocation)
     };
   }
 

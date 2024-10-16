@@ -2,10 +2,6 @@ import { Card, CardContent, CardHeader } from "@/components/ui/card";
 import { Label } from "@/components/ui/label";
 import { MultiSelect } from "@/components/multi-select";
 import React, { useState, useEffect, useRef} from 'react';
-import {
-	APIProvider,
-	Map
-} from '@vis.gl/react-google-maps'
 import PublicMap from "./PublicMap";
 
 const householdAmenities = [
