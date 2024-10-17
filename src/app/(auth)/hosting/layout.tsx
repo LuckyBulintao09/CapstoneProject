@@ -1,9 +1,7 @@
-import React from 'react'
+import React from "react";
 
-function LessorLayout() {
-  return (
-    <div>LessorLayout</div>
-  )
+function LessorLayout({ children }: { children: React.ReactNode }) {
+    return <div>{children}</div>;
 }
 
-export default LessorLayout
+export default LessorLayout;

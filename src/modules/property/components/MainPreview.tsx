@@ -1,7 +1,7 @@
 import { Card } from '@/components/ui/card';
 import React, { useEffect, useState } from 'react';
 import { Carousel, CarouselContent, CarouselItem } from '@/components/ui/carousel';
-import { createClient } from '../../../../utils/supabase/client';
+import { createClient } from '../../../utils/supabase/client';
 import { Loader } from 'lucide-react';
 import { Dialog, DialogContent } from '@/components/ui/dialog'; 
 
