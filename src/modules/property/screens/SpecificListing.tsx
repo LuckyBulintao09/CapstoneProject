@@ -64,7 +64,8 @@ export function SpecificListing({ id }: SpecificListingProps) {
 						*, 
 						owner_id (
 							firstname,
-							lastname
+							lastname,
+							id
 						)
 					)
 				`)
@@ -84,9 +85,6 @@ export function SpecificListing({ id }: SpecificListingProps) {
 		fetchProperty();
 	}, [id]); 
 
-	console.log("=====================")
-	console.log(property);
-
 	const mappedData = property && {
         propertyDetails: property.details,
         propertyAddress: property.address,
@@ -101,8 +99,7 @@ export function SpecificListing({ id }: SpecificListingProps) {
 			<div>
 				<div className='grid grid-cols-5 gap-2 mt-4'>
 					<MainPreview openModal={openModal} propertyId={property?.id} />
-				</div>
-
+				</div>	
 				<div>
 					<div className='grid lg:grid-cols-3 grid-cols-1 gap-4 my-6 '>
 						<div className='col-span-2'>
@@ -122,6 +119,7 @@ export function SpecificListing({ id }: SpecificListingProps) {
 											{property?.address} 
 										</p>
 									</div>
+									
 									<div className='relative flex items-center mr-3'>
 										<div className='group'>
 											<div onClick={toggleFavourite} className='cursor-pointer'>
@@ -138,25 +136,12 @@ export function SpecificListing({ id }: SpecificListingProps) {
 										</div>
 									</div>
 								</div>
-
-								<div className='flex items-center border-y border-gray-300 mr-4 py-4'>
-									<Avatar className='mr-3 lg:mr-4'>
-										<AvatarFallback>
-											{property?.company?.owner_id?.firstname?.charAt(0)}
-											{property?.company?.owner_id?.lastname?.charAt(0)}
-										</AvatarFallback>
-									</Avatar>
-									<div className='flex flex-col'>
-										<h3 className='font-bold text-sm lg:text-base'>
-											{property?.company?.owner_id?.firstname}{' '} 
-											{property?.company?.owner_id?.lastname}
-										</h3>
-										<p className='text-sm text-gray-700'>Property Owner</p>
-									</div>
-								</div>
+								<Banner ownerName={property?.company?.owner_id?.firstname} ownerLastname={property?.company?.owner_id?.lastname} 
+								ownerId={property?.company?.owner_id?.id} companyId={property?.company?.id} companyName={property?.company?.company_name} />
+								
 
 								<PropertyDetails />
-								<Banner />
+								
 							</div>
 						</div>
 						<div className='flex lg:justify-end lg:items-start col-span-full lg:col-span-1'>
@@ -269,3 +254,20 @@ export function SpecificListing({ id }: SpecificListingProps) {
 		</ResponsiveLayout>
 	);
 }
+
+
+{/* <div className='flex items-center border-y border-gray-300 mr-4 py-4'>
+									<Avatar className='mr-3 lg:mr-4'>
+										<AvatarFallback>
+											{property?.company?.owner_id?.firstname?.charAt(0)}
+											{property?.company?.owner_id?.lastname?.charAt(0)}
+										</AvatarFallback>
+									</Avatar>
+									<div className='flex flex-col'>
+										<h3 className='font-bold text-sm lg:text-base'>
+											{property?.company?.owner_id?.firstname}{' '} 
+											{property?.company?.owner_id?.lastname}
+										</h3>
+										<p className='text-sm text-gray-700'>Property Owner</p>
+									</div>
+								</div> */}
