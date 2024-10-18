@@ -45,19 +45,19 @@ export const get_nearbyListings = async (latitude: number, longitude: number) =>
     }
 }
 
-const getListing = async (company_id: number[]) => {
+export const returnAllPropertyID = async () => {
     try {
         const { data, error } = await supabase
             .from('property')
             .select('*')
-            .in('company_id', company_id)
 
         if (error) {
             console.error(error)
             return error
         }
 
-        return (data)
+        const id: number[] = data.map(data => data.id)
+        console.log (id)
     } catch (error: any) {
         console.error(error)
         return error

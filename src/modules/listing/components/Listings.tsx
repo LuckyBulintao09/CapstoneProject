@@ -12,7 +12,7 @@ import {
     AdvancedMarkerAnchorPoint,
     InfoWindow,
   } from "@vis.gl/react-google-maps";
-  import { get_nearbyListings } from "@/actions/listings/listing-filter";
+  import { get_nearbyListings, returnAllPropertyID } from "@/actions/listings/listing-filter";
 import { set } from 'date-fns';
 
 interface Amenity {
@@ -60,7 +60,7 @@ export default function Listings() {
             const { data, error } = await supabase
                 .from('property')
                 .select('*')
-                .in('id', currentID); 
+                .in('company_id', currentID); 
 
             if (error) {
                 console.error('Error fetching listings:', error);
@@ -72,6 +72,7 @@ export default function Listings() {
             setLoading(false); 
         };
         fetchListings();
+        returnAllPropertyID();
 
     },[currentID]);
 
