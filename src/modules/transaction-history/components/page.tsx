@@ -7,8 +7,12 @@ import { createClient } from "../../../../utils/supabase/client";
 
 const supabase = createClient();
 
-const getData = async (): Promise<Transaction[]> => {
-  const { data, error } = await supabase.from("transaction").select(`
+const getData = async (userId: string): Promise<Transaction[]> => {
+  const { data, error } = await supabase
+    .from("transaction")
+    .select(
+      `
+      user_id,
       service_option,
       appointment_date,
       transaction_status,
@@ -23,7 +27,9 @@ const getData = async (): Promise<Transaction[]> => {
           )
         )
       )
-    `);
+    `
+    )
+    .eq("user_id", userId);
 
   if (error) {
     console.error("Error fetching transactions:", error);
@@ -36,16 +42,40 @@ const getData = async (): Promise<Transaction[]> => {
 const TransactionDashboard = () => {
   const [data, setData] = useState<Transaction[]>([]);
   const [isLoading, setIsLoading] = useState(true);
+  const [userId, setUserId] = useState<string | null>(null);
+
+  useEffect(() => {
+    const fetchCurrentUser = async () => {
+      const {
+        data: { user },
+        error,
+      } = await supabase.auth.getUser();
+
+      if (error) {
+        console.error("Error fetching user:", error);
+        setIsLoading(false);
+        return;
+      }
+
+      if (user) {
+        setUserId(user.id);
+      }
+    };
+
+    fetchCurrentUser();
+  }, []);
 
   useEffect(() => {
     const fetchTransactions = async () => {
-      const transactionData = await getData();
+      if (!userId) return;
+
+      const transactionData = await getData(userId);
       setData(transactionData);
       setIsLoading(false);
     };
 
     fetchTransactions();
-  }, []);
+  }, [userId]);
 
   return (
     <div className="p-5 bg-white dark:bg-secondary h-full">
