@@ -10,7 +10,7 @@ type ListingButtonProps = {
 
 function ListingStepButton({ hrefTo, hrefFrom }: ListingButtonProps) {
     return (
-        <div className="absolute w-full h-[64px] bottom-0 left-0 px-3 py-2 flex flex-row items-center justify-between border">
+        <div className="absolute w-full h-[64px] bottom-0 left-0 px-3 py-2 flex flex-row items-center justify-between border-t">
             {hrefFrom && (
                 <ShadcnButton
                     className="rounded-full"

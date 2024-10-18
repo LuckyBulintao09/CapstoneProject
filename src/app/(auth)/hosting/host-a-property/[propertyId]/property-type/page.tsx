@@ -1,17 +1,14 @@
-import Link from 'next/link';
-import React from 'react'
+import ResponsiveLayout from '@/components/ResponsiveLayout';
+import PropertyTypeForm from '@/modules/hosting/add-listing/PropertyTypeForm';
 
-function PropertyTypeForm({params}: {params: {propertyId: string}}) {
+function PropertyType({params}: {params: {propertyId: string}}) {
   return (
       <div>
-          <h1>{params.propertyId}</h1>
-          <Link
-              href={`/hosting/host-a-property/${params.propertyId}/property-details`}
-          >
-              next
-          </Link>
+          <ResponsiveLayout className="h-screen flex items-center justify-center border relative">
+            <PropertyTypeForm propertyId={params.propertyId}/>
+        </ResponsiveLayout>
       </div>
   );
 }
 
-export default PropertyTypeForm
+export default PropertyType

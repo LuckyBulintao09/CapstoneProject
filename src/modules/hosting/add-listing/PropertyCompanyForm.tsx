@@ -23,7 +23,8 @@ import {
     SelectTrigger,
     SelectValue,
 } from "@/components/ui/select";
-import { createPropertyCompanySchema } from "@/lib/schemas/createPropertyCompanySchema";
+import { createPropertyCompanySchema } from "@/lib/schemas/createPropertySchema";
+import ListingStepButton from "./ListingStepButton";
 
 type CompanyData = {
     id: string;
@@ -31,11 +32,12 @@ type CompanyData = {
 }[];
 
 
-function PropertyCompanyForm({ companies }: { companies: CompanyData }) {
+function PropertyCompanyForm({ companies, propertyId }: { companies: CompanyData, propertyId: string }) {
     const createPropertyCompany = useForm<
         z.infer<typeof createPropertyCompanySchema>
     >({
         resolver: zodResolver(createPropertyCompanySchema),
+        
     });
 
     function onSubmit(values: z.infer<typeof createPropertyCompanySchema>) {
@@ -51,13 +53,13 @@ function PropertyCompanyForm({ companies }: { companies: CompanyData }) {
                 >
                     <FormField
                         control={createPropertyCompany.control}
-                        name="company_name"
+                        name="company_id"
                         render={({ field }) => (
                             <FormItem>
                                 <FormLabel>Company</FormLabel>
                                 <Select
                                     onValueChange={field.onChange}
-                                    defaultValue={field.value}
+                                    value={field.value}
                                 >
                                     <FormControl>
                                         <SelectTrigger>
@@ -65,9 +67,17 @@ function PropertyCompanyForm({ companies }: { companies: CompanyData }) {
                                         </SelectTrigger>
                                     </FormControl>
                                     <SelectContent>
-                                        {companies?.map(({id, company_name}) => (
-                                          <SelectItem value={company_name} key={id} id={id}>{company_name}</SelectItem>
-                                        ))}
+                                        {companies?.map(
+                                            ({ id, company_name }) => (
+                                                <SelectItem
+                                                    value={id.toString()}
+                                                    key={id}
+                                                    id={id}
+                                                >
+                                                    {company_name}
+                                                </SelectItem>
+                                            )
+                                        )}
                                     </SelectContent>
                                 </Select>
                                 <FormDescription>
@@ -79,6 +89,7 @@ function PropertyCompanyForm({ companies }: { companies: CompanyData }) {
                         )}
                     />
                     <Button type="submit">Submit</Button>
+                    <ListingStepButton hrefTo={`/hosting/host-a-property/${propertyId}/property-type`} hrefFrom={`/hosting/host-a-property/`}/>
                 </form>
             </Form>
         </div>
