@@ -10,7 +10,6 @@ import { Button } from "@/components/ui/button";
 import {
     Form,
     FormControl,
-    FormDescription,
     FormField,
     FormItem,
     FormLabel,
@@ -72,7 +71,6 @@ function PropertyTypeForm({ propertyId }: { propertyId: string }) {
                                         )}
                                     </RadioGroup>
                                 </FormControl>
-                                <FormDescription>Which.</FormDescription>
                                 <FormMessage />
                             </FormItem>
                         )}
@@ -112,18 +110,15 @@ function PropertyTypeForm({ propertyId }: { propertyId: string }) {
                                         )}
                                     </RadioGroup>
                                 </FormControl>
-                                <FormDescription>
-                                    Which.
-                                </FormDescription>
                                 <FormMessage />
                             </FormItem>
                         )}
                     />
                     <Button type="submit">Submit</Button>
-                    {/* <ListingStepButton
+                    <ListingStepButton
                         hrefTo={`/hosting/host-a-property/${propertyId}/property-details`}
                         hrefFrom={`/hosting/host-a-property/${propertyId}/property-type`}
-                    /> */}
+                    />
                 </form>
             </Form>
         </div>

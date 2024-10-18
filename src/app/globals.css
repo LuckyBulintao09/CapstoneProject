@@ -93,4 +93,7 @@ body {
   * {
     @apply border-border;
   }
+  .field-sizing {
+    field-sizing: content;
+  }
 }

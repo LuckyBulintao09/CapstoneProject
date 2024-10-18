@@ -1,6 +1,6 @@
 "use server"
 
-import { getFavoritesById } from "@/actions/favorites/get-favorites-by-id";
+import { getFavoritesById } from "@/actions/favorite/get-favorites-by-id";
 import { getAllProperties } from "@/actions/property/get-all-properties";
 import ListingsContent from "@/modules/hosting/listings/ListingsContent";
 import React from "react";

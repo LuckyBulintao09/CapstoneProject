@@ -12,3 +12,11 @@ export const createPropertyTypeSchema = z.object({
         message: "Please select one of the options.",
     }),
 });
+
+export const createPropertyDetailSchema = z.object({
+    // unit_number: z.string(),
+    occupants: z.number(),
+    bedrooms: z.number(),
+    beds: z.number(),
+    bathrooms: z.number(),
+});
