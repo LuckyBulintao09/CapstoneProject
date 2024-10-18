@@ -6,113 +6,68 @@ const spiels = {
 	ADMIN_CARD_HEADER: 'New Lessors',
 	ADMIN_MODAL_HEADER: 'New Lessor Approval',
 
-  // Home
-  CTA_LABEL: "Call to Action",
-  CTA_DESCRIPTION:
-    "Lorem ipsum dolor sit amet consectetur adipisicing elit. Elig doloremque mollitia fugiat omnis! Porro facilis quo animi consequatur. Explicabo.",
-  FOOTER: "© 2024 UniHomes. All rights reserved.",
-  HERO_BADGE: "New Release",
-  HERO_DESCRIPTION:
-    "Lorem ipsum dolor sit amet consectetur adipisicing elit. Elig doloremque mollitia fugiat omnis! Porro facilis quo animi consequatur. Explicabo.",
-  HOW_IT_WORKS: "How It Works",
-  HOW_IT_WORKS_CARDS: [
-    {
-      label: "Search Property",
-      description:
-        "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip.",
-    },
-    {
-      label: "Explore Property",
-      description:
-        "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip.",
-    },
-    {
-      label: "Choose Property",
-      description:
-        "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip.",
-    },
-  ],
-  BENEFIT_OF_BOOSTING: "Benefits of Boosting Your Listing",
-  BENEFIT_OF_BOOSTING_CARDS: [
-    {
-      label: "Increased visibility on search results",
-      description:
-        "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip.",
-    },
-    {
-      label: "Featured placement on the homepage",
-      description:
-        "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip.",
-    },
-    {
-      label: "Highlighted status for potential guests",
-      description:
-        "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip.",
-    },
-  ],
-  WHY_CHOOSE: "Why Choose Our Reservation Fee Structure?",
-  WHY_CHOOSE_CARDS: [
-    {
-      label: "Affordable",
-      description: "Only pay when you earn!",
-    },
-    {
-      label: "Transparent",
-      description: "No hidden fees or surprise charges.",
-    },
-    {
-      label: "Simple",
-      description:
-        "Easy to calculate, so you can focus on managing your property",
-    },
-  ],
-  HOW_IT_WORKS: "Why Choose Our Reservation Fee Structure?",
-  HOW_IT_WORKS_CARDS: [
-    {
-      label: "List Your Property",
-      description: "Sign up and create a property listing for free !",
-    },
-    {
-      label: "Boost for Visibility",
-      description:
-        "Choose to boost your listing for just ₱100 to reach more potential guests.",
-    },
-    {
-      label: "Receive Bookings",
-      description:
-        "When guests book through our platform, only a 3% fee applies.",
-    },
-  ],
-  STATS_LABEL: "STATS",
-  STATS_HEADER: "Here are some stats to look at",
-  STATS_DATA: [
-    {
-      label: "Clients",
-      stat: "21K",
-      description: "+21 since last hour",
-      avatar: User,
-    },
-    {
-      label: "Properties",
-      stat: "1200",
-      description: "+21 since last hour",
-      avatar: Warehouse,
-    },
-    {
-      label: "Lessors",
-      stat: "100",
-      description: "+21 since last hour",
-      avatar: Users2,
-    },
-    {
-      label: "Ratings",
-      stat: "200",
-      description: "+21 since last hour",
-      avatar: Star,
-    },
-  ],
-  TESTIMONIALS_LABEL: "TESTIMONIALS",
-  TESTIMONIALS_HEADER: "Meet our happy clients",
+	// Home
+	CTA_LABEL: 'Call to Action',
+	CTA_DESCRIPTION: [
+		'Stay in the loop with UniHomes! Sign up with your email to receive the latest updates.',
+		'Don’t miss out — join our community today!',
+	],
+	FOOTER: '© 2024 UniHomes. All rights reserved.',
+	HERO_BADGE: 'New Release',
+	HERO_DESCRIPTION:
+		'Find your perfect rental with ease. Search verified dorms, condos, and apartments, explore listings, and connect with homeowners—all in one simple platform.',
+	HOW_IT_WORKS: 'Why Choose Our Reservation Fee Structure?',
+	HOW_IT_WORKS_DESCRIPTION:
+		'UniHomes simplifies finding rentals in Baguio. Browse listings, explore detailed property information, and connect with homeowners quickly and effortlessly.',
+	HOW_IT_WORKS_CARDS: [
+		{
+			label: 'List Your Property',
+			description: 'Create a property listing for free when you sign up!',
+		},
+		{
+			label: 'Boost Your Listing',
+			description:
+				'Enhance your listing’s visibility for just ₱100 and attract more guests.',
+		},
+		{
+			label: 'Receive Bookings',
+			description:
+				'Only a 3% service fee is applied when guests book through our platform.',
+		},
+	],
+
+	STATS_LABEL: 'STATS',
+	STATS_HEADER: 'Here are some stats to look at',
+	STATS_DATA: [
+		{
+			label: 'Clients',
+			stat: '21K',
+			description: '+21 since last hour',
+			avatar: User,
+		},
+		{
+			label: 'Properties',
+			stat: '1200',
+			description: '+21 since last hour',
+			avatar: Warehouse,
+		},
+		{
+			label: 'Lessors',
+			stat: '100',
+			description: '+21 since last hour',
+			avatar: Users2,
+		},
+		{
+			label: 'Ratings',
+			stat: '200',
+			description: '+21 since last hour',
+			avatar: Star,
+		},
+	],
+	TESTIMONIALS_LABEL: 'TESTIMONIALS',
+	TESTIMONIALS_HEADER: 'Meet our happy clients',
+	TESTIMONIALS_DESCRIPTION:
+		'Discover how UniHomes has simplified the rental search process. Our satisfied clients share their experiences of finding verified dorms, condos, and apartments through our user-friendly platform.',
 
 	//Favorites
 	TAB_ALL: 'All',
@@ -167,7 +122,7 @@ const spiels = {
 	BUTTON_YES_KEEP: 'Yes, Keep',
 	BUTTON_REMOVE: 'Remove',
 	BUTTON_YES_REMOVE: 'Yes, Remove',
-  BUTTON_START_NOW: "Start Now",
+	BUTTON_START_NOW: 'Start Now',
 
 	// INPUT FIELDS
 	FORM_ADDRESS: 'Address',
@@ -199,10 +154,10 @@ const spiels = {
 			href: '/client/favorites',
 		},
 
-    {
-      label: "Pricing",
-      href: "/client/pricing",
-    },
+		{
+			label: 'Pricing',
+			href: '/client/pricing',
+		},
 	],
 	NAVBAR_MENU_LIST_WITH_DROPDOWN: [
 		{
@@ -226,10 +181,10 @@ const spiels = {
 			label: 'Favorites',
 			href: '/client/favorites',
 		},
-    {
-      label: "Pricing",
-      href: "/client/pricing",
-    },
+		{
+			label: 'Pricing',
+			href: '/client/pricing',
+		},
 	],
 
 	NAVBAR_HOME_MENUCONTENT: [
