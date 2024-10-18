@@ -12,8 +12,8 @@ import AddReviewModal from "./AddReviewModal";
 const TransactionActionsCell = ({ row }: { row: Row<Transaction> }) => {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const transactionStatus = row.getValue("transaction_status") as string;
-  const property_id = row.getValue("property.id") as string;
-  console.log("Property ID passed to TransactionActionsCell:", property_id);
+  const propertyId = row.original.property?.id;
+
   return (
     <div className="flex flex-row gap-3">
       {(transactionStatus === "Confirmed" ||
@@ -31,7 +31,7 @@ const TransactionActionsCell = ({ row }: { row: Row<Transaction> }) => {
           <AddReviewModal
             isOpen={isModalOpen}
             onClose={() => setIsModalOpen(false)}
-            property_id={property_id}
+            property_id={propertyId}
           />
         </>
       )}
@@ -43,15 +43,11 @@ export const columns: ColumnDef<Transaction>[] = [
   {
     accessorKey: "property.property_code",
     header: ({ column }) => (
-      <DataTableColumnHeader
-        column={column}
-        title="Room Code"
-        className="font-bold"
-      />
+      <DataTableColumnHeader column={column} title="Room Code" />
     ),
   },
   {
-    accessorKey: "property.title",
+    accessorKey: "property.id",
     header: ({ column }) => (
       <DataTableColumnHeader column={column} title="Room Name" />
     ),
@@ -63,13 +59,17 @@ export const columns: ColumnDef<Transaction>[] = [
     ),
     cell: ({ row }) => {
       const serviceOption = row.getValue("service_option") as string;
-      const titleCaseServiceOption = serviceOption
-        .split(" ")
-        .map(
-          (word) => word.charAt(0).toUpperCase() + word.slice(1).toLowerCase()
-        )
-        .join(" ");
-      return <span className="truncate">{titleCaseServiceOption}</span>;
+      return (
+        <span className="truncate">
+          {serviceOption
+            .split(" ")
+            .map(
+              (word) =>
+                word.charAt(0).toUpperCase() + word.slice(1).toLowerCase()
+            )
+            .join(" ")}
+        </span>
+      );
     },
   },
   {
@@ -78,32 +78,25 @@ export const columns: ColumnDef<Transaction>[] = [
       <DataTableColumnHeader column={column} title="Appointment Date" />
     ),
     cell: ({ row }) => {
-      const date = row.getValue("appointment_date") as string | undefined;
-      if (date) {
-        return (
-          <span className="truncate">
-            {format(parseISO(date), "dd MMMM, yyyy")}
-          </span>
-        );
-      } else {
-        return <span className="truncate">No date available</span>;
-      }
+      const date = row.getValue("appointment_date") as string;
+      return date ? (
+        <span className="truncate">
+          {format(parseISO(date), "dd MMMM, yyyy")}
+        </span>
+      ) : (
+        <span className="truncate">No date available</span>
+      );
     },
     filterFn: (row, id, value) => {
       const { from, to } = value;
       const theDate = parseISO(row.getValue(id));
 
-      if ((from || to) && !theDate) {
-        return false;
-      } else if (from && !to) {
-        return theDate.getTime() >= from.getTime();
-      } else if (!from && to) {
-        return theDate.getTime() <= to.getTime();
-      } else if (from && to) {
+      if ((from || to) && !theDate) return false;
+      if (from && !to) return theDate.getTime() >= from.getTime();
+      if (!from && to) return theDate.getTime() <= to.getTime();
+      if (from && to)
         return isWithinInterval(theDate, { start: from, end: to });
-      } else {
-        return true;
-      }
+      return true;
     },
   },
   {
@@ -116,8 +109,6 @@ export const columns: ColumnDef<Transaction>[] = [
         row.original.property?.company?.account?.firstname || "No";
       const lastname =
         row.original.property?.company?.account?.lastname || "Name";
-
-      // Corrected line
       return `${firstname} ${lastname}`;
     },
   },
@@ -128,22 +119,12 @@ export const columns: ColumnDef<Transaction>[] = [
     ),
     cell: ({ row }) => {
       const transactionStatus = row.getValue("transaction_status") as string;
-      let badgeColor = "";
-
-      switch (transactionStatus) {
-        case "Reserved":
-          badgeColor = "bg-green-700 hover:bg-green-800";
-          break;
-        case "Pending":
-          badgeColor = "bg-amber-600 hover:bg-amber-700";
-          break;
-        case "Cancelled":
-          badgeColor = "bg-destructive hover:bg-red-800";
-          break;
-        case "Visited":
-          badgeColor = "bg-primary hover:bg-blue-800";
-          break;
-      }
+      const badgeColor = {
+        Reserved: "bg-green-700 hover:bg-green-800",
+        Pending: "bg-amber-600 hover:bg-amber-700",
+        Cancelled: "bg-destructive hover:bg-red-800",
+        Visited: "bg-primary hover:bg-blue-800",
+      }[transactionStatus];
 
       return (
         <Badge

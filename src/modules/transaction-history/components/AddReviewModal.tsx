@@ -28,12 +28,9 @@ const AddReviewModal = ({
   const [hoverRating, setHoverRating] = useState<number>(0);
   const [reviewText, setReviewText] = useState<string>("");
   const [userId, setUserId] = useState<string | null>(null);
-  const [propertyId, setPropertyId] = useState<number | null>(null);
-
-  console.log("Property Code passed to AddReviewModal:", property_id);
 
   useEffect(() => {
-    const getUserId = async () => {
+    const fetchUserId = async () => {
       const {
         data: { session },
         error,
@@ -41,66 +38,46 @@ const AddReviewModal = ({
 
       if (error) {
         console.error("Error retrieving session:", error.message);
+        return;
       }
 
       if (session?.user) {
         setUserId(session.user.id);
-        console.log("Logged in User ID:", session.user.id);
-      } else {
-        console.log("No user session found");
       }
     };
 
-    getUserId();
+    fetchUserId();
   }, []);
 
-  const handleStarClick = (index: number) => {
-    setRating(index + 1);
-  };
+  const handleStarClick = (index: number) => setRating(index + 1);
+  const handleStarHover = (index: number) => setHoverRating(index + 1);
+  const resetHover = () => setHoverRating(0);
 
-  const handleStarHover = (index: number) => {
-    setHoverRating(index + 1);
-  };
-
-  const resetHover = () => {
-    setHoverRating(0);
-  };
-
-  const stars = Array(5).fill(null);
-
-  // Submit the review to Supabase
   const handleSubmit = async () => {
-    console.log("Submitting review...");
-    console.log("Rating:", rating);
-    console.log("Review Text:", reviewText);
-    console.log("User ID:", userId);
-    console.log("Property ID:", propertyId); // This can be null now
-
-    // Check if the required fields are present
-    if (!rating || !reviewText || !userId) {
+    if (!rating || !reviewText || !userId || !property_id) {
       alert("Please provide a rating, review, and ensure you're logged in.");
       return;
     }
 
     try {
-      // Insert the review into the ratings_review table with the property_id and user_id
       const { error } = await supabase.from("ratings_review").insert([
         {
-          property_id: propertyId, // This can now be null if not found
-          user_id: userId, // Taken from the logged-in session
+          property_id,
+          user_id: userId,
           ratings: rating,
           comment: reviewText,
-          isReported: false, // Default value for 'isReported'
+          isReported: false,
         },
       ]);
 
       if (error) {
         console.error("Error saving review:", error.message);
         alert("Failed to save review. Please try again.");
-      } else {
-        alert("Review submitted successfully!");
-        onClose(); // Close the modal after successful submission
+        return;
       }
+
+      alert("Review submitted successfully!");
+      onClose();
     } catch (error) {
       console.error("Error submitting review:", error);
     }
@@ -114,7 +91,7 @@ const AddReviewModal = ({
             How was your experience?
           </DialogTitle>
           <div className="flex justify-center">
-            {stars.map((_, index) => (
+            {Array.from({ length: 5 }).map((_, index) => (
               <Star
                 key={index}
                 onClick={() => handleStarClick(index)}
@@ -128,7 +105,6 @@ const AddReviewModal = ({
               />
             ))}
           </div>
-
           <div className="py-4">
             <Textarea
               placeholder="Write your review here"
