@@ -1,7 +1,7 @@
 import Link from 'next/link'
 import React from 'react'
 import { Button as ShadcnButton } from "@/components/ui/button";
-import { MoveRight } from 'lucide-react';
+import { MoveLeft, MoveRight } from 'lucide-react';
 
 type ListingButtonProps = {
   hrefTo: string
@@ -17,7 +17,13 @@ function ListingStepButton({ hrefTo, hrefFrom }: ListingButtonProps) {
                     variant={"outline"}
                     asChild
                 >
-                    <Link href={hrefFrom}>Go Back</Link>
+                    <Link href={hrefFrom}className="flex flex-row items-center gap-2"
+                >
+                    <span>
+                        <MoveLeft className="w-5 h-5" />
+                    </span>
+                    Go back
+                </Link>
                 </ShadcnButton>
             )}
             <ShadcnButton className="rounded-full" asChild>

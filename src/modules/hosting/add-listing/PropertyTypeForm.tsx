@@ -117,7 +117,7 @@ function PropertyTypeForm({ propertyId }: { propertyId: string }) {
                     <Button type="submit">Submit</Button>
                     <ListingStepButton
                         hrefTo={`/hosting/host-a-property/${propertyId}/property-details`}
-                        hrefFrom={`/hosting/host-a-property/${propertyId}/property-type`}
+                        hrefFrom={`/hosting/host-a-property/${propertyId}/company`}
                     />
                 </form>
             </Form>

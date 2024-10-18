@@ -13,10 +13,31 @@ export const createPropertyTypeSchema = z.object({
     }),
 });
 
+// unit_number: z.string(),
 export const createPropertyDetailSchema = z.object({
-    // unit_number: z.string(),
     occupants: z.number(),
     bedrooms: z.number(),
     beds: z.number(),
     bathrooms: z.number(),
+});
+
+export const createPropertyAmenitySchema = z.object({
+    amenities: z
+        .array(
+            z.object({
+                id: z.number(),
+                amenity_name: z.string(),
+            })
+        )
+        .refine((value) => value.some((item) => item.id && item.amenity_name), {
+            message: "You have to select at least one item.",
+        }),
+    additional_amenities: z
+        .array(
+            z.object({
+                id: z.string(),
+                text: z.string(),
+            })
+        )
+        .optional(),
 });

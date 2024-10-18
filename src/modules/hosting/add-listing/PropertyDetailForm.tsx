@@ -12,6 +12,7 @@ import { Button as ShadCnButton } from "@/components/ui/button";
 
 import { createPropertyDetailSchema } from "@/lib/schemas/createPropertySchema";
 import { Minus, Plus } from "lucide-react";
+import ListingStepButton from "./ListingStepButton";
 
 type PropertyDetailData = z.infer<typeof createPropertyDetailSchema>;
 
@@ -21,6 +22,7 @@ function PropertyDetailForm({ propertyId }: { propertyId: string }) {
         defaultValues: {
             occupants: 1,
             bedrooms: 1,
+            beds: 1,
             bathrooms: 1,
             // unit_number: "",
         },
@@ -31,7 +33,7 @@ function PropertyDetailForm({ propertyId }: { propertyId: string }) {
     };
 
     return (
-        <div className="w-full max-w-2xl border">
+        <div className="w-full max-w-2xl">
             <Form {...propertyDetailForm}>
                 <form onSubmit={propertyDetailForm.handleSubmit(onSubmit)} className="space-y-7">
                     <FormField
@@ -39,7 +41,7 @@ function PropertyDetailForm({ propertyId }: { propertyId: string }) {
                         name="occupants"
                         render={({ field, fieldState }) => (
                             <NextUiInput
-                                type="text"
+                                type={field.value >= 10 ? "text" : "number"}
                                 {...field}
                                 value={field.value >= 10 ? "10+" : `${field.value}`}
                                 onChange={(e) => {
@@ -99,7 +101,7 @@ function PropertyDetailForm({ propertyId }: { propertyId: string }) {
                         name="bedrooms"
                         render={({ field, fieldState }) => (
                             <NextUiInput
-                                type="text"
+                                type={field.value >= 10 ? "text" : "number"}
                                 {...field}
                                 value={field.value >= 10 ? "10+" : `${field.value}`}
                                 onChange={(e) => {
@@ -156,10 +158,70 @@ function PropertyDetailForm({ propertyId }: { propertyId: string }) {
 
                     <FormField
                         control={propertyDetailForm.control}
+                        name="beds"
+                        render={({ field, fieldState }) => (
+                            <NextUiInput
+                                type={field.value >= 10 ? "text" : "number"}
+                                {...field}
+                                value={field.value >= 10 ? "10+" : `${field.value}`}
+                                onChange={(e) => {
+                                    propertyDetailForm.setValue("beds", parseInt(e.target.value) || 1);
+                                }}
+                                classNames={{
+                                    input: "field-sizing max-w-[128px] text-xl [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none",
+                                    inputWrapper: "hover:bg-none dark:hover:bg-none border-none px-0",
+                                    innerWrapper: "flex items-center justify-between w-max min-w-max gap-3",
+                                    base: "flex flex-row items-center justify-between w-full",
+                                    label: "ps-0 pe-0",
+                                }}
+                                variant="bordered"
+                                label={<span className="text-xl">Beds</span>}
+                                labelPlacement="outside-left"
+                                startContent={
+                                    <NextUiButton
+                                        type="button"
+                                        isIconOnly
+                                        variant="bordered"
+                                        size="lg"
+                                        aria-label="Decrease beds"
+                                        className="rounded-full border"
+                                        onClick={() => {
+                                            propertyDetailForm.setValue("beds", Math.max(propertyDetailForm.getValues("beds") - 1, 1));
+                                        }}
+                                        isDisabled={propertyDetailForm.getValues("beds") <= 1}
+                                    >
+                                        <Minus className="h-5 w-5" />
+                                    </NextUiButton>
+                                }
+                                endContent={
+                                    <NextUiButton
+                                        type="button"
+                                        isIconOnly
+                                        aria-label="Increase beds"
+                                        variant="bordered"
+                                        size="lg"
+                                        className="rounded-full border"
+                                        onClick={() => {
+                                            propertyDetailForm.setValue("beds", propertyDetailForm.getValues("beds") + 1);
+                                        }}
+                                        isDisabled={propertyDetailForm.getValues("beds") >= 10}
+                                    >
+                                        <Plus className="h-5 w-5" />
+                                    </NextUiButton>
+                                }
+                                isReadOnly
+                                isInvalid={!!fieldState?.error?.message}
+                                errorMessage={fieldState?.error?.message}
+                            />
+                        )}
+                    />
+
+                    <FormField
+                        control={propertyDetailForm.control}
                         name="bathrooms"
                         render={({ field, fieldState }) => (
                             <NextUiInput
-                                type="text"
+                                type={field.value >= 10 ? "text" : "number"}
                                 {...field}
                                 value={field.value >= 10 ? "10+" : `${field.value}`}
                                 onChange={(e) => {
@@ -215,6 +277,7 @@ function PropertyDetailForm({ propertyId }: { propertyId: string }) {
                     />
 
                     <ShadCnButton type="submit">Submit</ShadCnButton>
+                    <ListingStepButton hrefTo={`/hosting/host-a-property/${propertyId}/ameneties`} hrefFrom={`/hosting/host-a-property/${propertyId}/property-type`}/>
                 </form>
             </Form>
         </div>

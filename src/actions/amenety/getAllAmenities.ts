@@ -2,14 +2,14 @@
 
 import { createClient } from "@/utils/supabase/server"
 
-export const getAllCompanies = async () => {
+export const getAllAmenities = async () => {
     const supabase = createClient()
 
     // authenticated?
 
     try {
         
-        const {data, error} = await supabase.from('ameneties').select(`id, amenety_name`)
+        const {data, error} = await supabase.from('amenity').select(`id, amenity_name`)
 
         if (error?.code) {
             return error
