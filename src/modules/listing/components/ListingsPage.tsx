@@ -1,9 +1,10 @@
 'use client';
 
 import tempValues from '@/lib/constants/tempValues';
-import { useState } from 'react';
+import { useState, createContext } from 'react';
 import ListingHero from './ListingHero';
 import Listings from './Listings';
+import { map } from 'zod';
 
 interface Amenity {
 	amenity_name: string;
@@ -20,10 +21,11 @@ interface Favorites {
 	lessor_name: string;
 }
 
+
+
 export default function ListingsPage() {
 	const [favoriteLists] = useState<Favorites[]>(tempValues.LISTINGS);
 	const [searchTerm, setSearchTerm] = useState('');
-
 	const filteredList = favoriteLists.filter((favoriteList) =>
 		favoriteList.title.toLowerCase().includes(searchTerm.toLowerCase())
 	);

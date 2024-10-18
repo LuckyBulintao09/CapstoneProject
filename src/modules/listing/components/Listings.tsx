@@ -1,9 +1,19 @@
 import React, { useEffect, useState } from 'react';
 import BranchListings from '@/components/cardListings/BranchListings';
-import { FilterCard } from './FilterCard';
 import { Button } from '@/components/ui/button';
 import { ArrowDownUp } from 'lucide-react';
 import { createClient } from '../../../../utils/supabase/client'; 
+import { dataFocusVisibleClasses } from '@nextui-org/theme';
+import { Card, CardContent, CardHeader } from "@/components/ui/card";
+import {
+    APIProvider,
+    Map,
+    AdvancedMarker,
+    AdvancedMarkerAnchorPoint,
+    InfoWindow,
+  } from "@vis.gl/react-google-maps";
+  import { get_nearbyListings } from "@/actions/listings/listing-filter";
+import { set } from 'date-fns';
 
 interface Amenity {
     amenity_name: string;
@@ -32,11 +42,25 @@ export default function Listings() {
     const [sortOrder, setSortOrder] = useState<'asc' | 'desc'>('asc'); 
     const supabase = createClient(); 
 
+    const position = { lat: 16.420039834357972, lng: 120.59708426196893 };
+    const [selectedLocation, setSelectedLocation] = useState(null);
+    const [currentID, setCurrentID] = useState([1,2,3,4])
+
+
+    const handleMapClick = async (event) => {
+        if (event.detail.latLng) {
+        setSelectedLocation(event.detail.latLng);
+        setCurrentID(await get_nearbyListings(event.detail.latLng.lat, event.detail.latLng.lng))
+        };
+    }
+
+
     useEffect(() => {
         const fetchListings = async () => {
             const { data, error } = await supabase
                 .from('property')
-                .select('*'); 
+                .select('*')
+                .in('id', currentID); 
 
             if (error) {
                 console.error('Error fetching listings:', error);
@@ -47,9 +71,11 @@ export default function Listings() {
             }
             setLoading(false); 
         };
-
         fetchListings();
-    }, [supabase]);
+
+    },[currentID]);
+
+    
 
     const sortedListings = [...listings].sort((a, b) => {
         return sortOrder === 'asc' ? a.price - b.price : b.price - a.price;
@@ -88,7 +114,29 @@ export default function Listings() {
 
                 <div className='flex lg:justify-end lg:items-start lg:col-span-2 col-span-3'>
                     <div className='sticky top-20 w-full'>
-                        <FilterCard />
+                    <Card className='w-full bg-white dark:bg-secondary shadow-md lg:mt-0 md:mt-4 sm:mt-4 xs:mt-4'>
+                        <CardHeader>
+                            <Card className='h-[370px] border-none'>
+                                <div className='rounded-md w-full h-full border-none'>
+                                <APIProvider apiKey={process.env.NEXT_PUBLIC_GOOGLE_MAPS_API_KEY}>
+                                    <Map
+                                    defaultZoom={15}
+                                    defaultCenter={position}
+                                    mapId={process.env.NEXT_PUBLIC_MAP_ID}
+                                    onClick={handleMapClick}
+                                    >
+                                    {selectedLocation && (
+                                        <AdvancedMarker
+                                        position={selectedLocation}
+                                        >
+                                        </AdvancedMarker>
+                                    )}
+                                    </Map>
+                                </APIProvider>
+                                </div>
+                            </Card>
+                        </CardHeader>
+                    </Card>
                     </div>
                 </div>
             </div>

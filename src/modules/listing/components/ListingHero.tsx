@@ -3,12 +3,14 @@
 import spiels from '@/lib/constants/spiels';
 import { SearchIcon } from 'lucide-react';
 import { MdOutlineMyLocation } from 'react-icons/md';
-import React from 'react';
+import React, { useContext } from 'react';
 
 interface HeroSectionProps {
 	searchTerm: string;
 	setSearchTerm: (term: string) => void;
 }
+
+
 
 export default function ListingHero({
 	searchTerm,
