@@ -42,9 +42,11 @@ export default function Listings() {
     const [sortOrder, setSortOrder] = useState<'asc' | 'desc'>('asc'); 
     const supabase = createClient(); 
 
+    //Map Filtering States
     const position = { lat: 16.420039834357972, lng: 120.59708426196893 };
     const [selectedLocation, setSelectedLocation] = useState(null);
-    const [currentID, setCurrentID] = useState([1,2,3,4])
+    const [currentID, setCurrentID] = useState([])
+    const [mapClicked, setMapClicked] = useState(false);
 
 
     const handleMapClick = async (event) => {
@@ -52,28 +54,45 @@ export default function Listings() {
         setSelectedLocation(event.detail.latLng);
         setCurrentID(await get_nearbyListings(event.detail.latLng.lat, event.detail.latLng.lng))
         };
+        setMapClicked(true);
     }
 
 
     useEffect(() => {
-        const fetchListings = async () => {
-            const { data, error } = await supabase
-                .from('property')
-                .select('*')
-                .in('company_id', currentID); 
-
-            if (error) {
-                console.error('Error fetching listings:', error);
-                setError('Failed to fetch listings');
-            } else {
-                setListings(data || []); 
-                console.log('Listings fetched successfully:', data);
-            }
-            setLoading(false); 
-        };
-        fetchListings();
-        returnAllPropertyID();
-
+        if(mapClicked){
+            const fetchFilteredListings = async () => {
+                const { data, error } = await supabase
+                    .from('property')
+                    .select('*')
+                    .in('company_id', currentID); 
+    
+                if (error) {
+                    console.error('Error fetching listings:', error);
+                    setError('Failed to fetch listings');
+                } else {
+                    setListings(data || []); 
+                    console.log('Listings fetched successfully:', data);
+                }
+                setLoading(false); 
+            };
+            fetchFilteredListings();
+        }else{
+            const fetchAllListings = async () => {
+                const { data, error } = await supabase
+                    .from('property')
+                    .select('*');
+    
+                if (error) {
+                    console.error('Error fetching listings:', error);
+                    setError('Failed to fetch listings');
+                } else {
+                    setListings(data || []); 
+                    console.log('Listings fetched successfully:', data);
+                }
+                setLoading(false); 
+            };
+            fetchAllListings();
+        }
     },[currentID]);
 
     

@@ -23,6 +23,7 @@ interface Favorites {
 
 
 
+
 export default function ListingsPage() {
 	const [favoriteLists] = useState<Favorites[]>(tempValues.LISTINGS);
 	const [searchTerm, setSearchTerm] = useState('');

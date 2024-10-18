@@ -10,7 +10,15 @@ interface HeroSectionProps {
 	setSearchTerm: (term: string) => void;
 }
 
+const handleCurrentLocationClick = () => {
+	if (navigator.geolocation) {
+		navigator.geolocation.getCurrentPosition((position) => {
+			const { latitude, longitude, accuracy } = position.coords;
 
+			console.log(`Device location: ${latitude}, ${longitude}, accuracy: ${accuracy}m`);
+		});
+	}
+};
 
 export default function ListingHero({
 	searchTerm,
@@ -46,7 +54,7 @@ export default function ListingHero({
 								className='absolute inset-y-0 right-0 pr-3 flex items-center p-1 bg-transparent border-0 focus:outline-none'
 								aria-label='Use my location'
 								onClick={() => {
-									console.log("Getting user's location...");
+									handleCurrentLocationClick();
 								}}
 							>
 								<MdOutlineMyLocation className='h-5 w-5 text-black dark:text-muted-foreground' />

@@ -44,23 +44,3 @@ export const get_nearbyListings = async (latitude: number, longitude: number) =>
         return error
     }
 }
-
-export const returnAllPropertyID = async () => {
-    try {
-        const { data, error } = await supabase
-            .from('property')
-            .select('*')
-
-        if (error) {
-            console.error(error)
-            return error
-        }
-
-        const id: number[] = data.map(data => data.id)
-        console.log (id)
-    } catch (error: any) {
-        console.error(error)
-        return error
-    }
-}
-
