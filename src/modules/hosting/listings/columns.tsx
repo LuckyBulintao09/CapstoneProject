@@ -6,32 +6,38 @@ import { ColumnDef } from "@tanstack/react-table";
 
 export type Property = {
     id: string;
-    structure: "apartment" | "condominium" | "dormitory";
-    privacy_type: "room" | "shared room" | "entire place";
-    address: string;
-    occupants: number;
-    bedrooms: number;
-    beds: number;
-    bathrooms: number;
-    bedroom_lock: boolean;
-    ameneties: {
-        id: string;
-        text: string;
-    }[];
-    additional_ameneties: {
-        id: number;
-        name: string;
-    }[];
-    safety_items?: {
-        id: string;
-        text: string;
-    }[];
-    title: string;
-    description: string;
-    price: number;
-    thumbnail: string;
-    house_rules: string;
-    images: string[];
+    structure?: "apartment" | "condominium" | "dormitory" | null;
+    privacy_type?: "room" | "shared room" | "entire place" | null;
+    address?: string | null;
+    occupants?: number | null;
+    bedrooms?: number | null;
+    beds?: number | null;
+    bathrooms?: number | null;
+    bedroom_lock?: boolean | null;
+    ameneties?:
+        | {
+              id: string;
+              text: string;
+          }[]
+        | null;
+    additional_ameneties?:
+        | {
+              id: number;
+              name: string;
+          }[]
+        | null;
+    safety_items?:
+        | {
+              id: string;
+              text: string;
+          }[]
+        | null;
+    title?: string | null;
+    description?: string | null;
+    price?: number | null;
+    thumbnail?: string | null;
+    house_rules?: string | null;
+    images?: string[] | null;
 };
 
 export const columns: ColumnDef<Property>[] = [
@@ -41,18 +47,22 @@ export const columns: ColumnDef<Property>[] = [
     },
     {
         accessorKey: "thumbnail_url",
-        header:"Thumbnail",
-        cell: ({row}) => {
+        header: "Thumbnail",
+        cell: ({ row }) => {
+            const thumbnailUrl = row.getValue<string>("thumbnail_url");
+            const title = row.getValue<string>("title");
             return (
-                <Image
-                    src={row.getValue<string>("thumbnail_url")}
-                    alt={row.getValue<string>("title")}
-                    width={64}
-                    height={64}
-                    className="rounded-md aspect-square object-cover"
-                />
+                <div className="">
+                    <Image
+                        src={thumbnailUrl || "/placeholderImage.webp"}
+                        alt={title || "Thumbnail"}
+                        width={64}
+                        height={64}
+                        className="rounded-md aspect-square object-cover"
+                    />
+                </div>
             );
-        }
+        },
     },
     {
         accessorKey: "title",

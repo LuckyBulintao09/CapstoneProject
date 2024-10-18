@@ -1,12 +1,7 @@
-import React from 'react'
+import React from "react";
 
 function LessorPage() {
-  return (
-    <div>
-      
-      
-    </div>
-  )
+    return <div>Lessor page</div>;
 }
 
-export default LessorPage
+export default LessorPage;
