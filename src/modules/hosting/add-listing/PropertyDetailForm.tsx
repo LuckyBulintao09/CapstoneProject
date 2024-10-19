@@ -38,6 +38,28 @@ function PropertyDetailForm({ propertyId }: { propertyId: string }) {
                 <form onSubmit={propertyDetailForm.handleSubmit(onSubmit)} className="space-y-7">
                     <FormField
                         control={propertyDetailForm.control}
+                        name="unit_number"
+                        render={({ field, fieldState }) => (
+                            <NextUiInput
+                                label="Unit number"
+                                isInvalid={!!fieldState?.error?.message}
+                                isRequired
+                                variant="bordered"
+                                classNames={{
+                                    inputWrapper: "hover:bg-none dark:hover:bg-none",
+                                    errorMessage: "text-destructive",
+                                    input: "text-xl"
+                                }}
+                                radius="sm"
+                                size="lg"
+                                autoComplete="on"
+                                {...field}
+                            />
+                        )}
+                    />
+
+                    <FormField
+                        control={propertyDetailForm.control}
                         name="occupants"
                         render={({ field, fieldState }) => (
                             <NextUiInput
@@ -277,7 +299,10 @@ function PropertyDetailForm({ propertyId }: { propertyId: string }) {
                     />
 
                     <ShadCnButton type="submit">Submit</ShadCnButton>
-                    <ListingStepButton hrefTo={`/hosting/host-a-property/${propertyId}/ameneties`} hrefFrom={`/hosting/host-a-property/${propertyId}/property-type`}/>
+                    <ListingStepButton
+                        hrefTo={`/hosting/host-a-property/${propertyId}/amenities`}
+                        hrefFrom={`/hosting/host-a-property/${propertyId}/property-type`}
+                    />
                 </form>
             </Form>
         </div>

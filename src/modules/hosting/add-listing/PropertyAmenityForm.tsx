@@ -104,6 +104,8 @@ function PropertyAmenityForm({ propertyId, amenities }: { propertyId: string, am
                     />
 
                     <ShadCnButton type="submit">Submit</ShadCnButton>
+
+                    <ListingStepButton hrefTo={`/hosting/host-a-property/${propertyId}/name-your-property`} hrefFrom={`/hosting/host-a-property/${propertyId}/property-details`}/>
                 </form>
             </Form>
         </div>

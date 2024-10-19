@@ -13,8 +13,8 @@ export const createPropertyTypeSchema = z.object({
     }),
 });
 
-// unit_number: z.string(),
 export const createPropertyDetailSchema = z.object({
+    unit_number: z.string({ message: "Please enter a unit number." }),
     occupants: z.number(),
     bedrooms: z.number(),
     beds: z.number(),
@@ -40,4 +40,9 @@ export const createPropertyAmenitySchema = z.object({
             })
         )
         .optional(),
+});
+
+export const createPropertyTitleSchema = z.object({
+    title: z.string().min(1).max(32),
+    description: z.string().min(1).max(500),
 });
