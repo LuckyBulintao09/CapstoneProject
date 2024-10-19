@@ -1,5 +1,7 @@
 "use server"
+import { number } from 'zod'
 import { createClient } from '../../../utils/supabase/server'
+import { id } from 'date-fns/locale'
 
 const supabase = createClient()
 
@@ -37,10 +39,33 @@ export const get_nearbyListings = async (latitude: number, longitude: number) =>
             return error
         }
         const id: number[] = data.map(data => data.company_id)
-        return (id);
+        return id
 
     } catch (error: any) {
         console.error(error)
         return error
     }
+}
+
+// const get_nearbyResult = async (id: number[]) => {
+//     const { data, error } = await supabase
+//         .from('property')
+//         .select('*')
+//         .in('company_id', id);
+    
+//     return data
+// }
+
+export const get_allListings = async () => {
+    const { data, error } = await supabase
+        .from('property')
+        .select('*');
+
+    if (error) {
+        console.error(error)
+        return error
+    }
+
+    return data
+
 }

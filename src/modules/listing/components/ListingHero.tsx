@@ -4,26 +4,33 @@ import spiels from '@/lib/constants/spiels';
 import { SearchIcon } from 'lucide-react';
 import { MdOutlineMyLocation } from 'react-icons/md';
 import React, { useContext } from 'react';
+import { MapContext } from './ListingsPage';
+import { set } from 'date-fns';
 
 interface HeroSectionProps {
 	searchTerm: string;
 	setSearchTerm: (term: string) => void;
 }
 
-const handleCurrentLocationClick = () => {
-	if (navigator.geolocation) {
-		navigator.geolocation.getCurrentPosition((position) => {
-			const { latitude, longitude, accuracy } = position.coords;
-
-			console.log(`Device location: ${latitude}, ${longitude}, accuracy: ${accuracy}m`);
-		});
-	}
-};
 
 export default function ListingHero({
 	searchTerm,
 	setSearchTerm,
 }: HeroSectionProps) {
+
+	const [deviceLocation,setDeviceLocation] = useContext(MapContext);
+	const handleCurrentLocationClick = () => {
+	if (navigator.geolocation) {
+		navigator.geolocation.getCurrentPosition((position) => {
+			setDeviceLocation({
+				lat: 16.413370982072074,
+				lng: 120.59988498687744
+			});
+			//add accuracy
+		});
+	}
+};
+	
 	return (
 		<div className='flex items-center justify-center h-[250px] w-screen'>
 			<div className='w-full px-2 py-8'>
@@ -53,9 +60,7 @@ export default function ListingHero({
 								type='button'
 								className='absolute inset-y-0 right-0 pr-3 flex items-center p-1 bg-transparent border-0 focus:outline-none'
 								aria-label='Use my location'
-								onClick={() => {
-									handleCurrentLocationClick();
-								}}
+								onClick={handleCurrentLocationClick}
 							>
 								<MdOutlineMyLocation className='h-5 w-5 text-black dark:text-muted-foreground' />
 							</button>

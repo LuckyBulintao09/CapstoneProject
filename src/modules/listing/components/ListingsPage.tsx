@@ -22,6 +22,7 @@ interface Favorites {
 }
 
 
+export const MapContext = createContext<any>(null);
 
 
 export default function ListingsPage() {
@@ -30,8 +31,11 @@ export default function ListingsPage() {
 	const filteredList = favoriteLists.filter((favoriteList) =>
 		favoriteList.title.toLowerCase().includes(searchTerm.toLowerCase())
 	);
+	const [deviceLocation, setDeviceLocation] = useState<any>(null);
 
 	return (
+		<MapContext.Provider value={[deviceLocation,
+									setDeviceLocation]}>
         <div className="dark:bg-secondary min-h-screen flex flex-col">
             <div className="row-span-1 bg-dot lg:mt-0 md:mt-8 sm:mt-3 xs:mt-2">
                 <div className="h-[250px] flex justify-center rounded-b-3xl">
@@ -46,5 +50,6 @@ export default function ListingsPage() {
                 <Listings />
             </div>
         </div>
+		</MapContext.Provider>
     );
 }

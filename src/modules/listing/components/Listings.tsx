@@ -1,10 +1,12 @@
-import React, { useEffect, useState } from 'react';
+import React, { useContext, useEffect, useState } from 'react';
 import BranchListings from '@/components/cardListings/BranchListings';
 import { Button } from '@/components/ui/button';
 import { ArrowDownUp } from 'lucide-react';
 import { createClient } from '../../../../utils/supabase/client'; 
 import { dataFocusVisibleClasses } from '@nextui-org/theme';
 import { Card, CardContent, CardHeader } from "@/components/ui/card";
+import { Label } from "@/components/ui/label";
+import { MultiSelect } from "@/components/multi-select";
 import {
     APIProvider,
     Map,
@@ -12,8 +14,10 @@ import {
     AdvancedMarkerAnchorPoint,
     InfoWindow,
   } from "@vis.gl/react-google-maps";
-  import { get_nearbyListings, returnAllPropertyID } from "@/actions/listings/listing-filter";
+  import { get_allListings, get_nearbyListings, returnAllPropertyID } from "@/actions/listings/listing-filter";
 import { set } from 'date-fns';
+import { get } from 'http';
+import { MapContext } from './ListingsPage';
 
 interface Amenity {
     amenity_name: string;
@@ -35,7 +39,33 @@ interface Favorites {
     lessor_name: string;
 }
 
+
+const householdAmenities = [
+    { value: "wifi", label: "WiFi" },
+    { value: "air_conditioning", label: "Air Conditioning" },
+    { value: "heating", label: "Heating" },
+    { value: "washing_machine", label: "Washing Machine" },
+    { value: "dryer", label: "Dryer" },
+    { value: "dishwasher", label: "Dishwasher" },
+    { value: "refrigerator", label: "Refrigerator" },
+    { value: "microwave", label: "Microwave" },
+    { value: "oven", label: "Oven" },
+    { value: "stove", label: "Stove" },
+    { value: "television", label: "Television" },
+    { value: "iron", label: "Iron" },
+    { value: "vacuum_cleaner", label: "Vacuum Cleaner" },
+    { value: "coffee_maker", label: "Coffee Maker" },
+    { value: "kettle", label: "Kettle" },
+    { value: "toaster", label: "Toaster" },
+    { value: "blender", label: "Blender" },
+    { value: "hair_dryer", label: "Hair Dryer" },
+    { value: "bed_linen", label: "Bed Linen" },
+    { value: "towels", label: "Towels" },
+  ];
+  
+
 export default function Listings() {
+    const [selectedFilter, setSelectedFilter] = useState<string[]>([]);
     const [listings, setListings] = useState<Favorites[]>([]);
     const [loading, setLoading] = useState<boolean>(true);
     const [error, setError] = useState<string | null>(null);
@@ -43,10 +73,11 @@ export default function Listings() {
     const supabase = createClient(); 
 
     //Map Filtering States
-    const position = { lat: 16.420039834357972, lng: 120.59708426196893 };
-    const [selectedLocation, setSelectedLocation] = useState(null);
-    const [currentID, setCurrentID] = useState([])
-    const [mapClicked, setMapClicked] = useState(false);
+    const [deviceLocation, setDeviceLocation] = useContext(MapContext);
+
+    const position = { lat: 16.420039834357972, lng: 120.59908426196893 };
+    const [selectedLocation, setSelectedLocation] = useState(deviceLocation);
+    const [currentID, setCurrentID] = useState(null);
 
 
     const handleMapClick = async (event) => {
@@ -54,12 +85,22 @@ export default function Listings() {
         setSelectedLocation(event.detail.latLng);
         setCurrentID(await get_nearbyListings(event.detail.latLng.lat, event.detail.latLng.lng))
         };
-        setMapClicked(true);
+    }
+    const handleDeviceLocation = async () => {
+        if(deviceLocation){
+            setSelectedLocation(deviceLocation);
+            setCurrentID(await get_nearbyListings(deviceLocation.lat, deviceLocation.lng))
+            setDeviceLocation(null);
+        }
     }
 
 
     useEffect(() => {
-        if(mapClicked){
+        console.log("repeated")
+        if(deviceLocation){
+            handleDeviceLocation();
+        }
+        if(currentID){
             const fetchFilteredListings = async () => {
                 const { data, error } = await supabase
                     .from('property')
@@ -71,29 +112,21 @@ export default function Listings() {
                     setError('Failed to fetch listings');
                 } else {
                     setListings(data || []); 
-                    console.log('Listings fetched successfully:', data);
+                    // console.log('Listings fetched successfully:', data);
                 }
+                // console.log(selectedLocation)
                 setLoading(false); 
             };
             fetchFilteredListings();
-        }else{
+        }
+        if(currentID===null){
             const fetchAllListings = async () => {
-                const { data, error } = await supabase
-                    .from('property')
-                    .select('*');
-    
-                if (error) {
-                    console.error('Error fetching listings:', error);
-                    setError('Failed to fetch listings');
-                } else {
-                    setListings(data || []); 
-                    console.log('Listings fetched successfully:', data);
-                }
+                setListings(await get_allListings());
                 setLoading(false); 
             };
             fetchAllListings();
         }
-    },[currentID]);
+    },[currentID,  deviceLocation]);
 
     
 
@@ -156,6 +189,23 @@ export default function Listings() {
                                 </div>
                             </Card>
                         </CardHeader>
+                        <CardContent>
+                            <form>
+                                <div>
+                                    <Label htmlFor='amenities' className='font-semibold'>
+                                        Filter Amenities
+                                    </Label>
+                                    <MultiSelect
+                                        options={householdAmenities}
+                                        onValueChange={setSelectedFilter}
+                                        defaultValue={selectedFilter}
+                                        placeholder='Select amenities'
+                                        variant='inverted'
+                                        maxCount={6}
+                                    />
+                                </div>
+                            </form>
+                        </CardContent>
                     </Card>
                     </div>
                 </div>
