@@ -71,7 +71,7 @@ export default function BranchListings({
                     }
                     description={
                         <div>
-                            <p className='line-clamp-1'>{description}</p>
+                            <p className='line-clamp-1'><strong>{description}</strong> </p>
                             <strong><p className='line-clamp-1'> {details}</p></strong>
                             <p className='line-clamp-1'> {address}</p>
                             <p className='line-clamp-1'>Listed {timeAgo}</p>
