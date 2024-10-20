@@ -16,11 +16,11 @@ const getData = async (userId: string): Promise<Transaction[]> => {
       service_option,
       appointment_date,
       transaction_status,
-      property:property_id(
+      unit:unit_id(
         id,
         title,
-        property_code,
-        company:company_id(
+        unit_code,
+        company:property_id(
           account:owner_id(
             firstname,
             lastname
@@ -35,7 +35,7 @@ const getData = async (userId: string): Promise<Transaction[]> => {
     console.error("Error fetching transactions:", error);
     return [];
   }
-
+  console.log("Fetched transactions data:", data);
   return data as Transaction[];
 };
 

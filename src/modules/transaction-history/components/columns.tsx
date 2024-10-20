@@ -12,11 +12,11 @@ import AddReviewModal from "./AddReviewModal";
 const TransactionActionsCell = ({ row }: { row: Row<Transaction> }) => {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const transactionStatus = row.getValue("transaction_status") as string;
-  const propertyId = row.original.property?.id;
+  const unitId = row.original.unit?.id;
 
   return (
     <div className="flex flex-row gap-3">
-      {(transactionStatus === "Confirmed" ||
+      {(transactionStatus === "Reviewed" ||
         transactionStatus === "Visited") && (
         <>
           <Button
@@ -31,7 +31,7 @@ const TransactionActionsCell = ({ row }: { row: Row<Transaction> }) => {
           <AddReviewModal
             isOpen={isModalOpen}
             onClose={() => setIsModalOpen(false)}
-            property_id={propertyId}
+            unit_id={unitId}
           />
         </>
       )}
@@ -41,13 +41,13 @@ const TransactionActionsCell = ({ row }: { row: Row<Transaction> }) => {
 
 export const columns: ColumnDef<Transaction>[] = [
   {
-    accessorKey: "property.property_code",
+    accessorKey: "unit.unit_code",
     header: ({ column }) => (
       <DataTableColumnHeader column={column} title="Room Code" />
     ),
   },
   {
-    accessorKey: "property.id",
+    accessorKey: "unit.title",
     header: ({ column }) => (
       <DataTableColumnHeader column={column} title="Room Name" />
     ),
@@ -100,15 +100,13 @@ export const columns: ColumnDef<Transaction>[] = [
     },
   },
   {
-    accessorKey: "property.company.owner",
+    accessorKey: "unit.company.owner",
     header: ({ column }) => (
       <DataTableColumnHeader column={column} title="Lessor Name" />
     ),
     cell: ({ row }) => {
-      const firstname =
-        row.original.property?.company?.account?.firstname || "No";
-      const lastname =
-        row.original.property?.company?.account?.lastname || "Name";
+      const firstname = row.original.unit?.company?.account?.firstname || "No";
+      const lastname = row.original.unit?.company?.account?.lastname || "Name";
       return `${firstname} ${lastname}`;
     },
   },

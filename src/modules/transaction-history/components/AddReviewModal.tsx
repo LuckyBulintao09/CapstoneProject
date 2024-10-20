@@ -16,14 +16,10 @@ const supabase = createClient();
 interface AddReviewModalProps {
   isOpen: boolean;
   onClose: () => void;
-  property_id: string;
+  unit_id: string;
 }
 
-const AddReviewModal = ({
-  isOpen,
-  onClose,
-  property_id,
-}: AddReviewModalProps) => {
+const AddReviewModal = ({ isOpen, onClose, unit_id }: AddReviewModalProps) => {
   const [rating, setRating] = useState<number>(0);
   const [hoverRating, setHoverRating] = useState<number>(0);
   const [reviewText, setReviewText] = useState<string>("");
@@ -43,6 +39,7 @@ const AddReviewModal = ({
 
       if (session?.user) {
         setUserId(session.user.id);
+        console.log("Fetched userId:", session.user.id);
       }
     };
 
@@ -54,7 +51,7 @@ const AddReviewModal = ({
   const resetHover = () => setHoverRating(0);
 
   const handleSubmit = async () => {
-    if (!rating || !reviewText || !userId || !property_id) {
+    if (!rating || !reviewText || !userId || !unit_id) {
       alert("Please provide a rating, review, and ensure you're logged in.");
       return;
     }
@@ -62,7 +59,7 @@ const AddReviewModal = ({
     try {
       const { error } = await supabase.from("ratings_review").insert([
         {
-          property_id,
+          unit_id,
           user_id: userId,
           ratings: rating,
           comment: reviewText,
