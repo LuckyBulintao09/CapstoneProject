@@ -22,7 +22,7 @@ const MainPreview: React.FC<MainPreviewProps> = ({ openModal, propertyId }) => {
             const { data, error } = await supabase
                 .from('unit_images')
                 .select('*')
-                .eq('property_id', propertyId); 
+                .eq('unit_id', propertyId); 
 
             if (error) {
                 console.error("Error fetching property images:", error);
