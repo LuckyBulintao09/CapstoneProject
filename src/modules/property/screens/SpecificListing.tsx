@@ -71,7 +71,7 @@ export function SpecificListing({ id }: SpecificListingProps) {
   useEffect(() => {
     const fetchProperty = async () => {
       const { data: property, error } = await supabase
-        .from("property")
+        .from("unit")
         .select(
           `
 			*,

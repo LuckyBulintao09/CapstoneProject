@@ -35,7 +35,7 @@ export default function Listings() {
     useEffect(() => {
         const fetchListings = async () => {
             const { data, error } = await supabase
-                .from('property')
+                .from('unit')
                 .select('*'); 
 
             if (error) {

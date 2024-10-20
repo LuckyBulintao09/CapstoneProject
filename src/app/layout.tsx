@@ -5,6 +5,7 @@ import "./globals.css";
 import { ThemeProvider } from "@/components/theme-provider";
 import { NUIProvider } from "@/components/next-ui-provider";
 import { TooltipProvider } from "@/components/ui/tooltip";
+import NavBar from "@/components/navbar/Navbar";
 
 const geistSans = localFont({
     src: "./fonts/GeistVF.woff",
@@ -34,6 +35,7 @@ export default function RootLayout({
                     <ThemeProvider attribute="class" defaultTheme="system" enableSystem disableTransitionOnChange>
                         <TooltipProvider>
                             <div>{children}</div>
+                           
                         </TooltipProvider>
                     </ThemeProvider>
                 </NUIProvider>
