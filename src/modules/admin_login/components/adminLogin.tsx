@@ -1,43 +1,62 @@
 "use client";
+
 import { Card, CardHeader, CardBody, CardFooter } from "@nextui-org/card";
 import { Input } from "@nextui-org/input";
-import React from "react";
+import React, { useState } from "react";
 import { EyeFilledIcon } from "@/modules/admin_login/components/EyeFilledIcon";
 import { EyeSlashFilledIcon } from "@/modules/admin_login/components/EyeSlashFilledIcon";
 import { Button } from "@nextui-org/react";
 import spiels from "@/lib/constants/spiels";
-const adminLogin = () => {
-  const [isVisible, setIsVisible] = React.useState(false);
+import { login } from "./actions";
+
+const AdminLogin = () => {
+  const [isVisible, setIsVisible] = useState(false);
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
+  const [error, setError] = useState<string | null>(null);
 
   const toggleVisibility = () => setIsVisible(!isVisible);
+
+  const handleLogin = async (e: React.FormEvent) => {
+    e.preventDefault();
+    const { success, error } = await login({ email, password });
+    if (!success) {
+      setError(error || "An error occurred.");
+    } else {
+      setError(null);
+      console.log("Login successful");
+    }
+  };
+
   return (
-    <section className="h-screen  flex justify-center items-center">
+    <section className="h-screen flex justify-center items-center">
       <Card
-        isBlurred
         className="border-none bg-background/20 dark:bg-default-100/50 w-[500px] p-4"
         shadow="sm"
       >
         <CardHeader className="flex flex-col gap-3">
-          <div className="w-full">
-            <h1 className="text-3xl font-semibold">Admin Sign In</h1>
-          </div>
-          <div className="w-full">
-            <p>Enter the email and password</p>
-          </div>
+          <h1 className="text-3xl font-semibold">Admin Sign In</h1>
+          <p>Enter your email and password</p>
         </CardHeader>
         <CardBody>
-          <div className="flex flex-col gap-4">
+          <form onSubmit={handleLogin} className="flex flex-col gap-4">
             <Input
               isClearable
               type="email"
               label="Email"
               variant="bordered"
-              defaultValue="junior@nextui.org"
-              onClear={() => console.log("input cleared")}
+              value={email}
+              onChange={(e) => setEmail(e.target.value)}
+              placeholder="m@example.com"
+              required
             />
             <Input
               label="Password"
               variant="bordered"
+              type={isVisible ? "text" : "password"}
+              value={password}
+              onChange={(e) => setPassword(e.target.value)}
+              required
               endContent={
                 <button
                   className="focus:outline-none"
@@ -46,29 +65,25 @@ const adminLogin = () => {
                   aria-label="toggle password visibility"
                 >
                   {isVisible ? (
-                    <EyeSlashFilledIcon className="text-2xl text-default-400 pointer-events-none" />
+                    <EyeSlashFilledIcon className="text-2xl text-default-400" />
                   ) : (
-                    <EyeFilledIcon className="text-2xl text-default-400 pointer-events-none" />
+                    <EyeFilledIcon className="text-2xl text-default-400" />
                   )}
                 </button>
               }
-              type={isVisible ? "text" : "password"}
             />
-          </div>
-        </CardBody>
-        <CardFooter>
-          <div className="flex flex-col w-full gap-4">
+            {error && <p className="text-red-500">{error}</p>}
             <Button
-              size="md"
-              className="bg-gradient-to-tr from-blue-500 to-teal-500 text-white shadow-lg w-full"
+              type="submit"
+              className="w-full bg-gradient-to-tr from-blue-500 to-teal-500 text-white shadow-lg"
             >
               {spiels.BUTTON_LOGIN}
             </Button>
-          </div>
-        </CardFooter>
+          </form>
+        </CardBody>
       </Card>
     </section>
   );
 };
 
-export default adminLogin;
+export default AdminLogin;
