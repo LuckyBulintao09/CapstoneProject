@@ -1,5 +1,5 @@
 import { PencilIcon, PencilSquareIcon } from "@heroicons/react/24/solid";
-import { createClient } from "../../../../utils/supabase/client";
+import { createClient } from "../../../utils/supabase/client";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import {
   Modal,

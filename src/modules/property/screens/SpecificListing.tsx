@@ -1,7 +1,7 @@
 'use client';
 
 import React, { useState, useEffect } from 'react';
-import { createClient } from '../../../../utils/supabase/client';
+import { createClient } from '../../../utils/supabase/client';
 import ResponsiveLayout from '@/components/ResponsiveLayout';
 import { Card } from '@/components/ui/card';
 import { Image, MapPin } from 'lucide-react';
