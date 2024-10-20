@@ -9,22 +9,23 @@ const supabase = createClient()
 
 //For specific listing to show the specific location (lon and lat)
 //needs this to pass to advance marker
-export const getSpecificLocation = async (property_id : number) => {
-    try {
-        const { data, error } = await supabase
-            .rpc('get_specific_location',{property_id: property_id})
+//not yet fixed
+// export const getSpecificLocation = async (property_id : number) => {
+//     try {
+//         const { data, error } = await supabase
+//             .rpc('get_specific_location',{property_id: property_id})
 
-        if (error) {
-            console.error(error)
-            return error
-        }
+//         if (error) {
+//             console.error(error)
+//             return error
+//         }
     
-        console.log(data)
-    } catch (error: any) {
-        console.error(error)
-        return error
-    }
-}
+//         console.log(data)
+//     } catch (error: any) {
+//         console.error(error)
+//         return error
+//     }
+// }
 
 
 //this returns company id that are within the 500 meters radius
@@ -38,7 +39,7 @@ export const get_nearbyListings = async (latitude: number, longitude: number) =>
             console.error(error)
             return error
         }
-        const id: number[] = data.map(data => data.company_id)
+        const id: number[] = data.map(data => data.id)
         return id
 
     } catch (error: any) {
@@ -58,7 +59,7 @@ export const get_nearbyListings = async (latitude: number, longitude: number) =>
 
 export const get_allListings = async () => {
     const { data, error } = await supabase
-        .from('property')
+        .from('unit')
         .select('*');
 
     if (error) {
