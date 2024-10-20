@@ -1,4 +1,5 @@
-'use client';
+"use client";
+
 
 import tempValues from '@/lib/constants/tempValues';
 import { useState, createContext } from 'react';
@@ -6,19 +7,20 @@ import ListingHero from './ListingHero';
 import Listings from './Listings';
 import { map } from 'zod';
 
+
 interface Amenity {
-	amenity_name: string;
-	value: boolean;
+  amenity_name: string;
+  value: boolean;
 }
 
 interface Favorites {
-	id: number;
-	title: string;
-	description: string;
-	price: number;
-	featured: boolean;
-	amenities: Amenity[];
-	lessor_name: string;
+  id: number;
+  title: string;
+  description: string;
+  price: number;
+  featured: boolean;
+  amenities: Amenity[];
+  lessor_name: string;
 }
 
 

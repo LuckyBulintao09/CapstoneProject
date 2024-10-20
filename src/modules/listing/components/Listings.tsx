@@ -20,6 +20,7 @@ import { get } from 'http';
 import { MapContext } from './ListingsPage';
 import { getAllAmenities } from '@/actions/listings/amenities';
 
+
 interface Amenity {
     amenity_name: string;
     value: boolean;

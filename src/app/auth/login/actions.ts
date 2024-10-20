@@ -3,7 +3,7 @@
 import { revalidatePath } from 'next/cache'
 import { redirect } from 'next/navigation'
 
-import { createClient } from '../../../../utils/supabase/server'
+import { createClient } from '../../../utils/supabase/server'
 
 export async function login(formData: FormData) {
   const supabase = createClient();
@@ -23,6 +23,15 @@ export async function login(formData: FormData) {
   return { success: true };
 }
 
+
+
+export async function logout() {
+  const supabase = createClient()
+  await supabase.auth.signOut()
+  revalidatePath('/', 'layout')
+  redirect('/')
+}
+
 export async function signup(formData: FormData) {
   const supabase = createClient();
   const email = formData.get('email') as string;
@@ -32,46 +41,53 @@ export async function signup(formData: FormData) {
   console.log("signup request= lastname", lastName)
   console.log("signup request= firstname", firstName)
 
-  const { data: user, error: signUpError } = await supabase.auth.signUp({
-    email,
-    password,
-    options: {
-      data: {
-        firstname: firstName,
-        lastname: lastName,
-      },
-    }
-  });
-
-  if (signUpError) {
-    console.log('Sign up error:', signUpError);
-    redirect('/login?message=error signing up');
-    return;
-  }
-
- 
-  const { error: profileError } = await supabase
-    .from('account')
-    .insert({
-      id: user.user.id,  
-      email: email,
-      firstname: firstName,
-      lastname: lastName,
-    });
-
-  if (profileError) {
-    console.log('Profile insertion error:', profileError);
-    return;  
-  }
-
-  revalidatePath('/', 'layout');
-  redirect('/auth/verify');
-}
+        const { data: existingUser } = await supabase
+      .from('account') 
+      .select('email')
+      .eq('email', email)
+      .single();
+              
 
 
-export async function logout() {
-  const supabase = createClient()
-  await supabase.auth.signOut()
-  revalidatePath('/', 'layout')
-  redirect('/')
-}
+      if (existingUser && existingUser.email === email) {
+      console.log('Email already exists:', email);
+      return { success: false, error: 'Email already exists' };
+      } else {
+            console.log('Email is AVAILABLE:', email);
+            console.log("signup request=============")
+            const { data: user, error: signUpError } = await supabase.auth.signUp({
+              email,
+              password,
+              options: {
+                data: {
+                  firstname: firstName,
+                  lastname: lastName,
+                },
+              }
+            });
+
+            if (signUpError) {
+              console.log('Sign up error:', signUpError);
+              redirect('/login?message=error signing up');
+              return;
+            }
+
+          
+            const { error: profileError } = await supabase
+              .from('account')
+              .insert({
+                id: user.user.id,  
+                email: email,
+                firstname: firstName,
+                lastname: lastName,
+              });
+
+            if (profileError) {
+              console.log('Profile insertion error:', profileError);
+              return;  
+            }
+            revalidatePath('/', 'layout');
+            redirect('/auth/verify');
+            return { success: true };
+          }
+      }

@@ -1,5 +1,5 @@
 import { PencilIcon, PencilSquareIcon } from "@heroicons/react/24/solid";
-import { createClient } from "../../../../utils/supabase/client";
+import { createClient } from "../../../utils/supabase/client";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import {
   Modal,
@@ -74,22 +74,33 @@ const ProfileSection = () => {
 
   const handleSaveProfile = async () => {
     if (editProfileData) {
-      const { id, firstname, lastname, address, cp_number, dob } =
-        editProfileData;
-      const { error } = await supabase
+      const { id, firstname, lastname, address, cp_number, dob } = editProfileData;
+  
+      // Update account data in the database
+      const { error: updateProfileError } = await supabase
         .from("account")
         .update({ firstname, lastname, address, cp_number, dob })
         .eq("id", id);
-
-      if (!error) {
-        alert("Profile updated successfully!");
-        setProfileData(editProfileData);
-        onOpenChange(false);
+  
+      if (!updateProfileError) {
+        // Update metadata in the authentication session
+        const { error: updateAuthError } = await supabase.auth.updateUser({
+          data: { firstname, lastname },  // Update the user metadata
+        });
+  
+        if (!updateAuthError) {
+          alert("Profile updated successfully!");
+          setProfileData(editProfileData);
+          onOpenChange(false);
+        } else {
+          alert(`Failed to update auth metadata: ${updateAuthError.message}`);
+        }
       } else {
-        alert("Failed to update profile.");
+        alert(`Failed to update profile: ${updateProfileError.message}`);
       }
     }
   };
+  
 
   const handleFileChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
