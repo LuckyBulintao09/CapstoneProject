@@ -69,7 +69,7 @@ export default function Listings() {
         setSelectedLocation(event.detail.latLng);
         setCurrentID(await get_nearbyListings(event.detail.latLng.lat, event.detail.latLng.lng))
         };
-        console.log(selectedFilter);
+        // console.log(selectedFilter);
     }
     const handleDeviceLocation = async () => {
         if(deviceLocation){
@@ -200,7 +200,7 @@ export default function Listings() {
                                         defaultValue={selectedPrivacyType}
                                         placeholder='Select privacy type'
                                         variant='inverted'
-                                        maxCount={1}
+                                        maxCount={3}
                                     />
                                 </div>
                             </form>
