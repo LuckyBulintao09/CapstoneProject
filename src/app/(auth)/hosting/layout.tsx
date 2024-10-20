@@ -1,11 +1,14 @@
 import React from "react";
 
-import { AddPropertyProvider } from "@/components/AddPropertyProvider";
+import NavBar from '@/components/navbar/Navbar';
+import Footer from "@/modules/home/components/Footer";
 
 function LessorLayout({ children }: { children: React.ReactNode }) {
     return (
         <div>
-            <AddPropertyProvider>{children}</AddPropertyProvider>
+            <NavBar />
+            <div>{children}</div>
+            <Footer />
         </div>
     );
 }

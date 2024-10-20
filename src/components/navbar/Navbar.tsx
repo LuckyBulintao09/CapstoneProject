@@ -11,7 +11,7 @@ import { NavbarModalLogin } from './NavbarModalLogin';
 import { Button } from '../ui/button';
 import { ProfileDropdown } from './ProfileDropdown';
 import { NotificationPopover } from './NotificationPopover';
-import { createClient } from '../../../utils/supabase/client';
+import { createClient } from '@/utils/supabase/client';
 function NavBar() {
 	const [menu, setMenu] = useState(false);
 	const [modalType, setModalType] = useState<null | 'login' | 'register'>(null);
