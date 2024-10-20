@@ -4,7 +4,6 @@ import React, { useState, useEffect } from "react";
 import { createClient } from "../../../utils/supabase/client";
 import ResponsiveLayout from "@/components/ResponsiveLayout";
 import { MapPin } from "lucide-react";
-import { Avatar, AvatarFallback } from "@/components/ui/avatar";
 import BusinessReviews from "../components/BusinessReviews";
 import MainPreview from "../components/MainPreview";
 import PropertyDetails from "../components/PropertyDetails";
@@ -24,11 +23,19 @@ type Property = {
   details: string;
   address: string;
   price: number;
+  thumbnail_url: string;
+  privacy_type: string;
+  structure: string;
+  bedrooms: number;
+  beds: number;
+  occupants: number;
   company: {
     owner_id: {
       firstname: string;
       lastname: string;
+      id?: string;
     };
+    name?: string;
   };
   created_at: string;
 };
@@ -39,8 +46,8 @@ export function SpecificListing({ id }: SpecificListingProps) {
   const [property, setProperty] = useState<Property | null>(null);
   const [userId, setUserId] = useState<string | null>(null);
   const [propertyAddress, setPropertyAddress] = useState<string>("");
+  const [loading, setLoading] = useState(true);
 
-  // Fetch authenticated user
   useEffect(() => {
     const fetchUser = async () => {
       const { data: { user }, error } = await supabase.auth.getUser();
@@ -55,18 +62,23 @@ export function SpecificListing({ id }: SpecificListingProps) {
     fetchUser();
   }, []);
 
-  // Fetch unit and property address
   useEffect(() => {
     const fetchProperty = async () => {
+      setLoading(true);
       const { data: unit, error } = await supabase
         .from("unit")
         .select(
           `
           *,
-          company (
-            owner_id (
-              firstname,
-              lastname
+          property (
+            address,
+            company (
+              owner_id (
+                firstname,
+                lastname,
+                id
+              ),
+              company_name
             )
           )
         `
@@ -76,26 +88,13 @@ export function SpecificListing({ id }: SpecificListingProps) {
 
       if (error) {
         console.error("Error fetching unit:", error);
+        setLoading(false);
         return;
       }
+
       setProperty(unit);
+      setPropertyAddress(unit.property?.address || "");
 
-      // Use property_id from unit to fetch the address from the property table
-      if (unit.property_id) {
-        const { data: propertyData, error: propertyError } = await supabase
-          .from("property")
-          .select("address")
-          .eq("id", unit.property_id)
-          .single();
-
-        if (propertyError) {
-          console.error("Error fetching property address:", propertyError);
-          return;
-        }
-        setPropertyAddress(propertyData?.address || "");
-      }
-
-      // Check if the unit is a favourite for the logged-in user
       if (userId) {
         const { data: favorite, error: favError } = await supabase
           .from("favorites")
@@ -108,6 +107,8 @@ export function SpecificListing({ id }: SpecificListingProps) {
           setIsFavourite(true);
         }
       }
+
+      setLoading(false);
     };
 
     if (id) fetchProperty();
@@ -140,19 +141,34 @@ export function SpecificListing({ id }: SpecificListingProps) {
     }
   };
 
-  if (!property) {
+  if (loading) {
     return <div>Loading...</div>;
   }
 
-  const mappedData = {
-    propertyDetails: property.details,
-    propertyAddress: propertyAddress,
-    propertyPrice: property.price,
-    ownerFirstname: property.company?.owner_id?.firstname,
-    ownerLastname: property.company?.owner_id?.lastname,
-    createdAt: property.created_at,
-  };
+  if (!property) {
+    return <div>No property found.</div>;
+  }
 
+  const mappedData = {
+    propertyDetails: property.title,
+    propertyAddress: property.property?.address,
+    propertyPrice: property.price,
+    ownerFirstname: property.property?.company?.owner_id?.firstname,
+    ownerLastname: property.property?.company?.owner_id?.lastname,
+    ownerId: property.property?.company?.owner_id?.id,
+    companyName: property.property?.company?.company_name,
+    propertyDescription: property.description,
+    createdAt: property.created_at,
+    thumbnailUrl: property.thumbnail_url,
+    privacyType: property.privacy_type,
+    structure: property.structure,
+    bedrooms: property.bedrooms,
+    beds: property.beds,
+    occupants: property.occupants,
+  };
+  
+  console.log(property);
+  
   return (
     <ResponsiveLayout>
       <div className="grid grid-cols-5 gap-2 mt-4">
@@ -161,10 +177,11 @@ export function SpecificListing({ id }: SpecificListingProps) {
 
       <div className="grid lg:grid-cols-3 grid-cols-1 gap-4 my-6">
         <div className="col-span-2 space-y-5">
-          {/* Header */}
           <div className="flex justify-between items-center">
             <div>
               <h1 className="font-semibold text-3xl dark:text-white">{mappedData.propertyDetails}</h1>
+              <p className="text-sm ">{mappedData.propertyDescription}</p>
+              <p>{property.company?.name}</p>
               <p className="flex items-center text-muted-foreground">
                 <MapPin className="mr-1" height={18} width={18} />
                 {mappedData.propertyAddress}
@@ -182,25 +199,22 @@ export function SpecificListing({ id }: SpecificListingProps) {
               </div>
             </div>
           </div>
+          <Banner
+              ownerName={mappedData.ownerFirstname}
+              ownerLastname={mappedData.ownerLastname}
+              ownerId={mappedData.ownerId}
+              companyId={property.property?.company?.id}
+              companyName={mappedData.companyName}
+              propertyId={property.id}
+            />
 
-          {/* Owner Info */}
-          <div className="flex items-center border-y border-gray-300 py-4">
-            <Avatar className="mr-4">
-              <AvatarFallback>
-                {mappedData.ownerFirstname?.[0]}
-                {mappedData.ownerLastname?.[0]}
-              </AvatarFallback>
-            </Avatar>
-            <div className="flex flex-col">
-              <h3 className="font-bold text-base">
-                {mappedData.ownerFirstname} {mappedData.ownerLastname}
-              </h3>
-              <p className="text-sm text-gray-700">Property Owner</p>
-            </div>
-          </div>
-
-          <PropertyDetails />
-          <Banner />
+          <PropertyDetails
+            privacyType={mappedData.privacyType}
+            structure={mappedData.structure}
+            bedrooms={mappedData.bedrooms}
+            beds={mappedData.beds}
+            occupants={mappedData.occupants}
+          />
         </div>
 
         <div className="lg:col-span-1 col-span-full flex lg:justify-end sticky top-20">
@@ -208,7 +222,6 @@ export function SpecificListing({ id }: SpecificListingProps) {
         </div>
       </div>
 
-      {/* Reviews and Other Sections */}
       <div className="border-t border-gray-300 py-8">
         <BusinessReviews />
       </div>
