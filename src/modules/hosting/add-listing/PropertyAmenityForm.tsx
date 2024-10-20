@@ -8,7 +8,6 @@ import { z } from "zod";
 
 import { CheckboxGroup, Checkbox as NextUiCheckbox } from "@nextui-org/checkbox";
 
-import { Button as ShadCnButton } from "@/components/ui/button";
 import {
   Form,
   FormControl,
@@ -24,22 +23,37 @@ import { Tag, TagInput } from "emblor";
 
 import { createPropertyAmenitySchema } from "@/lib/schemas/createPropertySchema";
 
+import { useRouter } from "next/navigation";
+import { usePropertyAddFormContext } from "./PropertyAddFormProvider";
+
 type PropertyAmenityData = z.infer<typeof createPropertyAmenitySchema>;
-
-
 
 function PropertyAmenityForm({ propertyId, amenities }: { propertyId: string, amenities: {id: string, amenity_name: string}[] }) {
 
     const [tags, setTags] = React.useState<Tag[]>([]);
     const [activeTagIndex, setActiveTagIndex] = React.useState<number | null>(null);
+
+    const router = useRouter();
+    const {formData, setFormData} = usePropertyAddFormContext();
     
     const propertyAmenityForm = useForm<PropertyAmenityData>({
         resolver: zodResolver(createPropertyAmenitySchema),
-        defaultValues: {},
+        defaultValues: {
+            amenities: [],
+            additional_amenities: [],
+        },
     });
 
     const onSubmit = (values: PropertyAmenityData) => {
-        console.log(values);
+        router.push(`/hosting/host-a-property/${propertyId}/name-your-property`);
+        if (setFormData) {
+            setFormData((prev) => ({
+                ...prev,
+                amenities: values.amenities,
+                additional_amenities: values.additional_amenities,
+            }));
+            console.log(formData, "formdata")
+        }
     };
 
     return (
@@ -53,7 +67,7 @@ function PropertyAmenityForm({ propertyId, amenities }: { propertyId: string, am
                             <CheckboxGroup
                                 label="Select Ameneties"
                                 value={field.value?.map(({amenity_name}) => amenity_name)}
-                                onChange={(values) => {
+                                onValueChange={(values) => {
                                     field.onChange(
                                         values.map((value) => ({
                                             id: amenities?.find(({id, amenity_name}) => amenity_name === value)?.id,
@@ -72,7 +86,7 @@ function PropertyAmenityForm({ propertyId, amenities }: { propertyId: string, am
                             </CheckboxGroup>
                         )}
                     />
-
+                    <p className="text-default-500 text-small">Selected: {propertyAmenityForm.getValues("amenities").length}</p>
                     <FormField
                         control={propertyAmenityForm.control}
                         name="additional_amenities"
@@ -103,9 +117,10 @@ function PropertyAmenityForm({ propertyId, amenities }: { propertyId: string, am
                         )}
                     />
 
-                    <ShadCnButton type="submit">Submit</ShadCnButton>
-
-                    <ListingStepButton hrefTo={`/hosting/host-a-property/${propertyId}/name-your-property`} hrefFrom={`/hosting/host-a-property/${propertyId}/property-details`}/>
+                    <ListingStepButton
+                        hrefFrom={`/hosting/host-a-property/${propertyId}/property-details`}
+                        propertyId={propertyId}
+                    />
                 </form>
             </Form>
         </div>

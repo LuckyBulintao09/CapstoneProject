@@ -46,3 +46,11 @@ export const createPropertyTitleSchema = z.object({
     title: z.string().min(1).max(32),
     description: z.string().min(1).max(500),
 });
+
+export const createPropertySchema = createPropertyCompanySchema
+    .merge(createPropertyTypeSchema)
+    .merge(createPropertyDetailSchema)
+    .merge(createPropertyAmenitySchema)
+    .merge(createPropertyTitleSchema);
+
+export type CreatePropertyType = z.infer<typeof createPropertySchema>;

@@ -14,9 +14,16 @@ import { createPropertyDetailSchema } from "@/lib/schemas/createPropertySchema";
 import { Minus, Plus } from "lucide-react";
 import ListingStepButton from "./ListingStepButton";
 
+import { useRouter } from "next/navigation";
+import { usePropertyAddFormContext } from "./PropertyAddFormProvider";
+
 type PropertyDetailData = z.infer<typeof createPropertyDetailSchema>;
 
 function PropertyDetailForm({ propertyId }: { propertyId: string }) {
+
+    const router = useRouter();
+    const {formData, setFormData} = usePropertyAddFormContext();
+
     const propertyDetailForm = useForm<PropertyDetailData>({
         resolver: zodResolver(createPropertyDetailSchema),
         defaultValues: {
@@ -24,12 +31,23 @@ function PropertyDetailForm({ propertyId }: { propertyId: string }) {
             bedrooms: 1,
             beds: 1,
             bathrooms: 1,
-            // unit_number: "",
+            unit_number: "",
         },
     });
 
     const onSubmit = (values: PropertyDetailData) => {
-        console.log(values);
+        router.push(`/hosting/host-a-property/${propertyId}/amenities`);
+        if (setFormData) {
+            setFormData((prev) => ({
+                ...prev,
+                occupants: values.occupants,
+                bedrooms: values.bedrooms,
+                beds: values.beds,
+                bathrooms: values.bathrooms,
+                unit_number: values.unit_number,
+            }));
+            console.log(formData, "formdata")
+        }
     };
 
     return (
@@ -53,6 +71,8 @@ function PropertyDetailForm({ propertyId }: { propertyId: string }) {
                                 radius="sm"
                                 size="lg"
                                 autoComplete="on"
+                                defaultValue={field.value}
+                                // onChange={field.onChange}
                                 {...field}
                             />
                         )}
@@ -300,8 +320,8 @@ function PropertyDetailForm({ propertyId }: { propertyId: string }) {
 
                     <ShadCnButton type="submit">Submit</ShadCnButton>
                     <ListingStepButton
-                        hrefTo={`/hosting/host-a-property/${propertyId}/amenities`}
                         hrefFrom={`/hosting/host-a-property/${propertyId}/property-type`}
+                        propertyId={propertyId}
                     />
                 </form>
             </Form>

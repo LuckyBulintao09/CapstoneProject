@@ -26,6 +26,8 @@ import {
 
 import { createPropertyCompanySchema } from "@/lib/schemas/createPropertySchema";
 import ListingStepButton from "./ListingStepButton";
+import { useRouter } from "next/navigation";
+import { usePropertyAddFormContext } from "./PropertyAddFormProvider";
 
 type CompanyData = {
     id: string;
@@ -34,6 +36,9 @@ type CompanyData = {
 
 
 function PropertyCompanyForm({ companies, propertyId }: { companies: CompanyData, propertyId: string }) {
+    const router = useRouter();
+    const {formData, setFormData} = usePropertyAddFormContext();
+    
     const createPropertyCompany = useForm<
         z.infer<typeof createPropertyCompanySchema>
     >({
@@ -42,7 +47,11 @@ function PropertyCompanyForm({ companies, propertyId }: { companies: CompanyData
     });
 
     function onSubmit(values: z.infer<typeof createPropertyCompanySchema>) {
-        console.log(values);
+        router.push(`/hosting/host-a-property/${propertyId}/property-type`);
+        if (setFormData) {
+            setFormData(prev => ({...prev, company_id: values.company_id}));
+            console.log(formData, "formdata")
+        }
     }
 
     return (
@@ -89,8 +98,8 @@ function PropertyCompanyForm({ companies, propertyId }: { companies: CompanyData
                             </FormItem>
                         )}
                     />
-                    <Button type="submit">Submit</Button>
-                    <ListingStepButton hrefTo={`/hosting/host-a-property/${propertyId}/property-type`} hrefFrom={`/hosting/host-a-property/`}/>
+                    {/* <Button type="submit">Next</Button> */}
+                    <ListingStepButton propertyId={propertyId}/>
                 </form>
             </Form>
         </div>

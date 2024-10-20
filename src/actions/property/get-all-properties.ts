@@ -1,6 +1,6 @@
 "use server"
 
-import { createClient } from "@/utils/supabase/server"
+import { createClient } from "@/utils/supabase/client"
 
 export const getAllProperties = async () => {
     const supabase = createClient()

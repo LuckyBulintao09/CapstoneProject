@@ -20,7 +20,15 @@ import { createPropertyTypeSchema } from "@/lib/schemas/createPropertySchema";
 import ListingStepButton from "./ListingStepButton";
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 
+import { useRouter } from "next/navigation";
+import { usePropertyAddFormContext } from "./PropertyAddFormProvider";
+
+
 function PropertyTypeForm({ propertyId }: { propertyId: string }) {
+
+    const router = useRouter();
+    const {formData, setFormData} = usePropertyAddFormContext();
+
     const createPropertyType = useForm<
         z.infer<typeof createPropertyTypeSchema>
     >({
@@ -28,7 +36,15 @@ function PropertyTypeForm({ propertyId }: { propertyId: string }) {
     });
 
     function onSubmit(values: z.infer<typeof createPropertyTypeSchema>) {
-        console.log(values);
+        router.push(`/hosting/host-a-property/${propertyId}/property-details`);
+        if (setFormData) {
+            setFormData((prev) => ({
+                ...prev,
+                structure: values.structure,
+                privacy_type: values.privacy_type,
+            }));
+            console.log(formData, "formdata")
+        }
     }
     return (
         <div>
@@ -114,10 +130,9 @@ function PropertyTypeForm({ propertyId }: { propertyId: string }) {
                             </FormItem>
                         )}
                     />
-                    <Button type="submit">Submit</Button>
                     <ListingStepButton
-                        hrefTo={`/hosting/host-a-property/${propertyId}/property-details`}
                         hrefFrom={`/hosting/host-a-property/${propertyId}/company`}
+                        propertyId={propertyId}
                     />
                 </form>
             </Form>

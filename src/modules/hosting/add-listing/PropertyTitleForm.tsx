@@ -19,17 +19,34 @@ import { MinimalTiptapEditor } from '@/components/minimal-tiptap'
 
 import { createPropertyTitleSchema } from "@/lib/schemas/createPropertySchema";
 
+import { useRouter } from "next/navigation";
+import { usePropertyAddFormContext } from "./PropertyAddFormProvider";
+
 type PropertyTitleData = z.infer<typeof createPropertyTitleSchema>;
 
 function PropertyTitleForm({ propertyId }: { propertyId: string }) {
+
+    const router = useRouter();
+    const {formData, setFormData} = usePropertyAddFormContext();
+
     const propertyTitleForm = useForm<PropertyTitleData>({
         resolver: zodResolver(createPropertyTitleSchema),
         defaultValues: {
+            title: "",
+            description: "",
         },
     });
 
     const onSubmit = (values: PropertyTitleData) => {
-        console.log(values);
+        router.push(`/hosting/host-a-property/${propertyId}`);
+        if (setFormData) {
+            setFormData((prev) => ({
+                ...prev,
+                title: values.title,
+                description: values.description,
+            }));
+        console.log(formData, "formdata")
+        }
     };
     return (
         <div className="w-full">
@@ -52,6 +69,7 @@ function PropertyTitleForm({ propertyId }: { propertyId: string }) {
                                 radius="sm"
                                 size="lg"
                                 autoComplete="on"
+                                defaultValue={field.value}
                                 {...field}
                             />
                         )}
@@ -74,6 +92,7 @@ function PropertyTitleForm({ propertyId }: { propertyId: string }) {
                                         autofocus={true}
                                         editable={true}
                                         editorClassName="focus:outline-none"
+                                        immediatelyRender={false}
                                     />
                                 </FormControl>
                                 <FormMessage />
@@ -84,8 +103,8 @@ function PropertyTitleForm({ propertyId }: { propertyId: string }) {
                     <ShadCnButton type="submit">Submit</ShadCnButton>
 
                     <ListingStepButton
-                        hrefTo={`/hosting/host-a-property`}
-                        hrefFrom={`/hosting/host-a-property/${propertyId}/property-details`}
+                        hrefFrom={`/hosting/host-a-property/${propertyId}/amenities`}
+                        propertyId={propertyId}
                     />
                 </form>
             </Form>
