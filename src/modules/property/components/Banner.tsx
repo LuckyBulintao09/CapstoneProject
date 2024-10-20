@@ -3,7 +3,7 @@ import { MessageSquare } from 'lucide-react';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { Button } from '@/components/ui/button';
 import spiels from '@/lib/constants/spiels';
-
+import { sendMessage } from '@/app/serverActions/initiateConversation';
 
 interface BannerProps {
   ownerName: string | undefined;
@@ -11,9 +11,10 @@ interface BannerProps {
   ownerId: string | undefined;
   companyId: string | undefined;
   companyName: string | undefined;
+  propertyId: number | undefined;
 }
 
-const Banner: React.FC<BannerProps> = ({ ownerName, ownerLastname, ownerId, companyId, companyName }) => {
+const Banner: React.FC<BannerProps> = ({ ownerName, ownerLastname, ownerId, companyId, companyName, propertyId }) => {
   return (
     <div className='col-span-8 mt-9'>
       <div className='flex flex-row justify-between bg-primary rounded-xl p-5'>
@@ -21,16 +22,16 @@ const Banner: React.FC<BannerProps> = ({ ownerName, ownerLastname, ownerId, comp
           <Avatar className='h-16 w-auto'>
             <AvatarImage src='https://github.com/shadcn.png' />
             <AvatarFallback>
-		    {ownerName?.charAt(0)}
-		    {ownerLastname?.charAt(0)}
-		  </AvatarFallback>
+              {ownerName?.charAt(0)}
+              {ownerLastname?.charAt(0)}
+            </AvatarFallback>
           </Avatar>
           <div className='flex flex-col'>
             <p className='text-xl leading-7 [&:not(:first-child)]:mt-6 text-primary-foreground'>
-			  {companyName}
+              {companyName}
             </p>
             <small className='text-sm text-primary-foreground'>
-			{ownerName} {ownerLastname} 
+              {ownerName} {ownerLastname}
             </small>
           </div>
         </div>
@@ -39,8 +40,9 @@ const Banner: React.FC<BannerProps> = ({ ownerName, ownerLastname, ownerId, comp
             <Button
               variant='outline'
               className='border-white text-white hover:bg-white hover:text-black'
-              onClick={() => {
-                window.location.href = '/client/inbox';
+              onClick={async () => {
+               sendMessage(ownerId, propertyId);
+                  
               }}
             >
               <span className='flex flex-row items-center gap-1'>
@@ -52,7 +54,7 @@ const Banner: React.FC<BannerProps> = ({ ownerName, ownerLastname, ownerId, comp
               variant='secondary'
               className='bg-white text-black border border-white hover:bg-secondary dark:hover:bg-popover-foreground rounded-lg px-4 py-2 transition duration-200 ease-in-out'
               onClick={() => {
-                window.location.href = '/property/company';
+                // Add logic for visiting the property if needed
               }}
             >
               {spiels.BUTTON_VISIT_PROPERTY}

@@ -137,7 +137,7 @@ export function SpecificListing({ id }: SpecificListingProps) {
 									</div>
 								</div>
 								<Banner ownerName={property?.company?.owner_id?.firstname} ownerLastname={property?.company?.owner_id?.lastname} 
-								ownerId={property?.company?.owner_id?.id} companyId={property?.company?.id} companyName={property?.company?.company_name} />
+								ownerId={property?.company?.owner_id?.id} companyId={property?.company?.id} companyName={property?.company?.company_name} propertyId={property?.id} />
 								
 
 								<PropertyDetails />
@@ -256,18 +256,3 @@ export function SpecificListing({ id }: SpecificListingProps) {
 }
 
 
-{/* <div className='flex items-center border-y border-gray-300 mr-4 py-4'>
-									<Avatar className='mr-3 lg:mr-4'>
-										<AvatarFallback>
-											{property?.company?.owner_id?.firstname?.charAt(0)}
-											{property?.company?.owner_id?.lastname?.charAt(0)}
-										</AvatarFallback>
-									</Avatar>
-									<div className='flex flex-col'>
-										<h3 className='font-bold text-sm lg:text-base'>
-											{property?.company?.owner_id?.firstname}{' '} 
-											{property?.company?.owner_id?.lastname}
-										</h3>
-										<p className='text-sm text-gray-700'>Property Owner</p>
-									</div>
-								</div> */}
