@@ -34,28 +34,26 @@ type Property = {
 };
 
 export function SpecificListing({ id }: SpecificListingProps) {
-  const [isOpen, setIsOpen] = useState(false);
   const [isFavourite, setIsFavourite] = useState(false);
   const [property, setProperty] = useState<Property | null>(null);
   const [userId, setUserId] = useState<string | null>(null);
   const [propertyAddress, setPropertyAddress] = useState<string>("");
 
-  // Fetch authenticated user
   useEffect(() => {
     const fetchUser = async () => {
-      const { data: { user }, error } = await supabase.auth.getUser();
+      const {
+        data: { user },
+        error,
+      } = await supabase.auth.getUser();
       if (error) {
         console.error("Error fetching user:", error);
         return;
       }
-      if (user) {
-        setUserId(user.id);
-      }
+      setUserId(user?.id || null);
     };
     fetchUser();
   }, []);
 
-  // Fetch unit and property address
   useEffect(() => {
     const fetchProperty = async () => {
       const { data: unit, error } = await supabase
@@ -78,10 +76,10 @@ export function SpecificListing({ id }: SpecificListingProps) {
         console.error("Error fetching unit:", error);
         return;
       }
+
       setProperty(unit);
 
-      // Use property_id from unit to fetch the address from the property table
-      if (unit.property_id) {
+      if (unit?.property_id) {
         const { data: propertyData, error: propertyError } = await supabase
           .from("property")
           .select("address")
@@ -95,7 +93,6 @@ export function SpecificListing({ id }: SpecificListingProps) {
         setPropertyAddress(propertyData?.address || "");
       }
 
-      // Check if the unit is a favourite for the logged-in user
       if (userId) {
         const { data: favorite, error: favError } = await supabase
           .from("favorites")
@@ -119,34 +116,26 @@ export function SpecificListing({ id }: SpecificListingProps) {
       return;
     }
 
-    try {
-      if (isFavourite) {
-        const { error } = await supabase
+    const action = isFavourite
+      ? supabase
           .from("favorites")
           .delete()
           .eq("Account_ID", userId)
-          .eq("Property_ID", property.id);
-
-        if (!error) setIsFavourite(false);
-      } else {
-        const { error } = await supabase
+          .eq("Property_ID", property.id)
+      : supabase
           .from("favorites")
           .insert([{ Account_ID: userId, Property_ID: property.id }]);
 
-        if (!error) setIsFavourite(true);
-      }
-    } catch (error) {
-      console.error("Error toggling favourite:", error);
-    }
+    const { error } = await action;
+
+    if (!error) setIsFavourite(!isFavourite);
   };
 
-  if (!property) {
-    return <div>Loading...</div>;
-  }
+  if (!property) return <div>Loading...</div>;
 
   const mappedData = {
     propertyDetails: property.details,
-    propertyAddress: propertyAddress,
+    propertyAddress,
     propertyPrice: property.price,
     ownerFirstname: property.company?.owner_id?.firstname,
     ownerLastname: property.company?.owner_id?.lastname,
@@ -156,34 +145,30 @@ export function SpecificListing({ id }: SpecificListingProps) {
   return (
     <ResponsiveLayout>
       <div className="grid grid-cols-5 gap-2 mt-4">
-        <MainPreview openModal={() => setIsOpen(true)} propertyId={property.id} />
+        <MainPreview openModal={() => {}} propertyId={property.id} />
       </div>
 
       <div className="grid lg:grid-cols-3 grid-cols-1 gap-4 my-6">
         <div className="col-span-2 space-y-5">
-          {/* Header */}
           <div className="flex justify-between items-center">
             <div>
-              <h1 className="font-semibold text-3xl dark:text-white">{mappedData.propertyDetails}</h1>
+              <h1 className="font-semibold text-3xl dark:text-white">
+                {mappedData.propertyDetails}
+              </h1>
               <p className="flex items-center text-muted-foreground">
                 <MapPin className="mr-1" height={18} width={18} />
                 {mappedData.propertyAddress}
               </p>
             </div>
-            <div className="relative flex items-center">
-              <div className="group">
-                <div onClick={toggleFavourite} className="cursor-pointer">
-                  {isFavourite ? (
-                    <HeartSolid className="h-8 w-8 text-red-500" />
-                  ) : (
-                    <HeartOutline className="h-8 w-8 text-gray-500" />
-                  )}
-                </div>
-              </div>
+            <div className="cursor-pointer" onClick={toggleFavourite}>
+              {isFavourite ? (
+                <HeartSolid className="h-8 w-8 text-red-500" />
+              ) : (
+                <HeartOutline className="h-8 w-8 text-gray-500" />
+              )}
             </div>
           </div>
 
-          {/* Owner Info */}
           <div className="flex items-center border-y border-gray-300 py-4">
             <Avatar className="mr-4">
               <AvatarFallback>
@@ -208,9 +193,8 @@ export function SpecificListing({ id }: SpecificListingProps) {
         </div>
       </div>
 
-      {/* Reviews and Other Sections */}
       <div className="border-t border-gray-300 py-8">
-        <BusinessReviews />
+        <BusinessReviews unitId={property?.id} />
       </div>
     </ResponsiveLayout>
   );
