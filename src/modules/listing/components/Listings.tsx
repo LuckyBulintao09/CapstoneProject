@@ -2,7 +2,7 @@ import React, { useContext, useEffect, useState } from 'react';
 import BranchListings from '@/components/cardListings/BranchListings';
 import { Button } from '@/components/ui/button';
 import { ArrowDownUp } from 'lucide-react';
-import { createClient } from '../../../../utils/supabase/client'; 
+import { createClient } from '@/utils/supabase/client'; 
 import { dataFocusVisibleClasses } from '@nextui-org/theme';
 import { Card, CardContent, CardHeader } from "@/components/ui/card";
 import { Label } from "@/components/ui/label";

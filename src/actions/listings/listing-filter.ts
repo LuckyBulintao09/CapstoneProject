@@ -1,6 +1,6 @@
 "use server"
 import { number } from 'zod'
-import { createClient } from '../../../utils/supabase/server'
+import { createClient } from '@/utils/supabase/server'
 import { id } from 'date-fns/locale'
 
 const supabase = createClient()
