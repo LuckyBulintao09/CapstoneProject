@@ -1,19 +1,20 @@
 "use client";
 
-import React, { useState, useEffect } from "react";
-import { createClient } from "../../../../utils/supabase/client";
-import ResponsiveLayout from "@/components/ResponsiveLayout";
-import { Card } from "@/components/ui/card";
-import { Image, MapPin } from "lucide-react";
-import { Avatar, AvatarFallback } from "@/components/ui/avatar";
-import tempValues from "@/lib/constants/tempValues";
-import BusinessReviews from "../components/BusinessReviews";
-import MainPreview from "../components/MainPreview";
-import PropertyDetails from "../components/PropertyDetails";
-import Banner from "../components/Banner";
-import { BookingCard } from "../components/BookingCard";
-import { HeartIcon as HeartOutline } from "@heroicons/react/24/outline";
-import { HeartIcon as HeartSolid } from "@heroicons/react/24/solid";
+import React, { useState, useEffect } from 'react';
+import { createClient } from '../../../utils/supabase/client';
+import ResponsiveLayout from '@/components/ResponsiveLayout';
+import { Card } from '@/components/ui/card';
+import { Image, MapPin } from 'lucide-react';
+import { Avatar, AvatarFallback } from '@/components/ui/avatar';
+import tempValues from '@/lib/constants/tempValues';
+
+import BusinessReviews from '../components/BusinessReviews';
+import MainPreview from '../components/MainPreview';
+import PropertyDetails from '../components/PropertyDetails';
+import Banner from '../components/Banner';
+import { BookingCard } from '../components/BookingCard';
+import { HeartIcon as HeartOutline } from '@heroicons/react/24/outline';
+import { HeartIcon as HeartSolid } from '@heroicons/react/24/solid';
 
 const supabase = createClient();
 interface SpecificListingProps {
@@ -329,3 +330,20 @@ export function SpecificListing({ id }: SpecificListingProps) {
     </ResponsiveLayout>
   );
 }
+
+
+{/* <div className='flex items-center border-y border-gray-300 mr-4 py-4'>
+									<Avatar className='mr-3 lg:mr-4'>
+										<AvatarFallback>
+											{property?.company?.owner_id?.firstname?.charAt(0)}
+											{property?.company?.owner_id?.lastname?.charAt(0)}
+										</AvatarFallback>
+									</Avatar>
+									<div className='flex flex-col'>
+										<h3 className='font-bold text-sm lg:text-base'>
+											{property?.company?.owner_id?.firstname}{' '} 
+											{property?.company?.owner_id?.lastname}
+										</h3>
+										<p className='text-sm text-gray-700'>Property Owner</p>
+									</div>
+								</div> */}

@@ -13,7 +13,12 @@ const CTA = () => {
 						{spiels.CTA_LABEL}
 					</h1>
 					<p className='mb-8 max-w-3xl text-muted-foreground lg:text-lg'>
-						{spiels.CTA_DESCRIPTION}
+						{spiels.CTA_DESCRIPTION.map((line, index) => (
+							<span key={index}>
+								{line}
+								{index < spiels.CTA_DESCRIPTION.length - 1 && <br />}
+							</span>
+						))}
 					</p>
 					<div className='w-full md:max-w-lg'>
 						<div className='flex flex-col justify-center gap-4 sm:flex-row'>
