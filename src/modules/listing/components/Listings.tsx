@@ -3,7 +3,7 @@ import BranchListings from '@/components/cardListings/BranchListings';
 import { FilterCard } from './FilterCard';
 import { Button } from '@/components/ui/button';
 import { ArrowDownUp } from 'lucide-react';
-import { createClient } from '../../../../utils/supabase/client'; 
+import { createClient } from '../../../utils/supabase/client'; 
 
 interface Amenity {
     amenity_name: string;
