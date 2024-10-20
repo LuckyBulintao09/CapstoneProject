@@ -26,7 +26,7 @@ export default function ListingHero({
 				lat: 16.413370982072074,
 				lng: 120.59988498687744
 			});
-			//add accuracy
+			//add accuracy, if else statement
 		});
 	}
 };

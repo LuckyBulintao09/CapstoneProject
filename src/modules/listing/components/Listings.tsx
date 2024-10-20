@@ -14,10 +14,11 @@ import {
     AdvancedMarkerAnchorPoint,
     InfoWindow,
   } from "@vis.gl/react-google-maps";
-  import { get_allListings, get_nearbyListings, returnAllPropertyID } from "@/actions/listings/listing-filter";
+  import { get_allListings, get_nearbyListings } from "@/actions/listings/listing-filter";
 import { set } from 'date-fns';
 import { get } from 'http';
 import { MapContext } from './ListingsPage';
+import { getAllAmenities } from '@/actions/listings/amenities';
 
 interface Amenity {
     amenity_name: string;
@@ -39,33 +40,17 @@ interface Favorites {
     lessor_name: string;
 }
 
-
-const householdAmenities = [
-    { value: "wifi", label: "WiFi" },
-    { value: "air_conditioning", label: "Air Conditioning" },
-    { value: "heating", label: "Heating" },
-    { value: "washing_machine", label: "Washing Machine" },
-    { value: "dryer", label: "Dryer" },
-    { value: "dishwasher", label: "Dishwasher" },
-    { value: "refrigerator", label: "Refrigerator" },
-    { value: "microwave", label: "Microwave" },
-    { value: "oven", label: "Oven" },
-    { value: "stove", label: "Stove" },
-    { value: "television", label: "Television" },
-    { value: "iron", label: "Iron" },
-    { value: "vacuum_cleaner", label: "Vacuum Cleaner" },
-    { value: "coffee_maker", label: "Coffee Maker" },
-    { value: "kettle", label: "Kettle" },
-    { value: "toaster", label: "Toaster" },
-    { value: "blender", label: "Blender" },
-    { value: "hair_dryer", label: "Hair Dryer" },
-    { value: "bed_linen", label: "Bed Linen" },
-    { value: "towels", label: "Towels" },
-  ];
   
+  const householdPrivacyTypes = [
+    { value: "Shared Room", label: "Shared Room" },
+    { value: "Whole Place", label: "Whole Place" },
+    { value: "Private Room", label: "Private Room" }
+  ];
 
 export default function Listings() {
+    const [householdAmenities, setHouseholdAmenities] = useState<any>([]);
     const [selectedFilter, setSelectedFilter] = useState<string[]>([]);
+    const [selectedPrivacyType, setSelectedPrivacyType] = useState<string[]>([]);
     const [listings, setListings] = useState<Favorites[]>([]);
     const [loading, setLoading] = useState<boolean>(true);
     const [error, setError] = useState<string | null>(null);
@@ -74,7 +59,6 @@ export default function Listings() {
 
     //Map Filtering States
     const [deviceLocation, setDeviceLocation] = useContext(MapContext);
-
     const position = { lat: 16.420039834357972, lng: 120.59908426196893 };
     const [selectedLocation, setSelectedLocation] = useState(deviceLocation);
     const [currentID, setCurrentID] = useState(null);
@@ -85,6 +69,7 @@ export default function Listings() {
         setSelectedLocation(event.detail.latLng);
         setCurrentID(await get_nearbyListings(event.detail.latLng.lat, event.detail.latLng.lng))
         };
+        console.log(selectedFilter);
     }
     const handleDeviceLocation = async () => {
         if(deviceLocation){
@@ -122,6 +107,7 @@ export default function Listings() {
         if(currentID===null){
             const fetchAllListings = async () => {
                 setListings(await get_allListings());
+                setHouseholdAmenities(await getAllAmenities());
                 setLoading(false); 
             };
             fetchAllListings();
@@ -202,6 +188,19 @@ export default function Listings() {
                                         placeholder='Select amenities'
                                         variant='inverted'
                                         maxCount={6}
+                                    />
+                                </div>
+                                <div>
+                                    <Label htmlFor='amenities' className='font-semibold'>
+                                        Privacy Type
+                                    </Label>
+                                    <MultiSelect
+                                        options={householdPrivacyTypes}
+                                        onValueChange={setSelectedPrivacyType}
+                                        defaultValue={selectedPrivacyType}
+                                        placeholder='Select privacy type'
+                                        variant='inverted'
+                                        maxCount={1}
                                     />
                                 </div>
                             </form>
