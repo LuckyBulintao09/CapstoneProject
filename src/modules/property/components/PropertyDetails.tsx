@@ -4,12 +4,12 @@ import { Image } from 'lucide-react';
 import React from 'react';
 import { Shield, Building, Bed,UserIcon} from 'lucide-react';
 interface PropertyDetailsProps {
-  details: string;        // Type for details
-  privacyType: string;    // Type for privacy type
-  structure: string;      // Type for structure
-  bedrooms: number;       // Type for number of bedrooms
-  beds: number;           // Type for number of beds
-  occupants: number;      // Type for number of occupants
+  details: string;        
+  privacyType: string;    
+  structure: string;      
+  bedrooms: number;       
+  beds: number;           
+  occupants: number;      
 }
 
 const PropertyDetails: React.FC<PropertyDetailsProps> = ({
