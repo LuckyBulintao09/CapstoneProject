@@ -1,9 +1,14 @@
 "use client";
 
 import React, { useState, useEffect } from "react";
-import { createClient } from "../../../utils/supabase/client";
+
+import { createClient } from "../../../../utils/supabase/client";
 import ResponsiveLayout from "@/components/ResponsiveLayout";
-import { MapPin } from "lucide-react";
+import { Card } from "@/components/ui/card";
+import { Image, MapPin } from "lucide-react";
+import { Avatar, AvatarFallback } from "@/components/ui/avatar";
+import tempValues from "@/lib/constants/tempValues";
+
 import BusinessReviews from "../components/BusinessReviews";
 import MainPreview from "../components/MainPreview";
 import PropertyDetails from "../components/PropertyDetails";
@@ -23,6 +28,8 @@ type Property = {
   details: string;
   address: string;
   price: number;
+
+ 
   thumbnail_url: string;
   privacy_type: string;
   structure: string;
@@ -36,6 +43,7 @@ type Property = {
       id?: string;
     };
     name?: string;
+
   };
   created_at: string;
 };
@@ -43,6 +51,7 @@ type Property = {
 export function SpecificListing({ id }: SpecificListingProps) {
   const [isOpen, setIsOpen] = useState(false);
   const [isFavourite, setIsFavourite] = useState(false);
+
   const [property, setProperty] = useState<Property | null>(null);
   const [userId, setUserId] = useState<string | null>(null);
   const [propertyAddress, setPropertyAddress] = useState<string>("");
@@ -87,6 +96,7 @@ export function SpecificListing({ id }: SpecificListingProps) {
         .single();
 
       if (error) {
+
         console.error("Error fetching unit:", error);
         setLoading(false);
         return;
@@ -195,10 +205,12 @@ export function SpecificListing({ id }: SpecificListingProps) {
                   ) : (
                     <HeartOutline className="h-8 w-8 text-gray-500" />
                   )}
+
                 </div>
               </div>
             </div>
           </div>
+
           <Banner
               ownerName={mappedData.ownerFirstname}
               ownerLastname={mappedData.ownerLastname}
