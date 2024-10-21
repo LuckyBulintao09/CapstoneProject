@@ -1,42 +1,45 @@
 import { useEffect, useState } from "react";
 import { BentoGrid, BentoGridItem } from "@/components/ui/bento-grid";
 import { Star } from "lucide-react";
-import { createClient } from "../../../../utils/supabase/client";
+
+import { createClient } from "../../../utils/supabase/client";
 
 interface BusinessReviewsProps {
-  propertyId: number | undefined;
+  unitId: number | undefined;
+
 }
 
 const supabase = createClient();
 
-const BusinessReviews: React.FC<BusinessReviewsProps> = ({ propertyId }) => {
+const BusinessReviews: React.FC<BusinessReviewsProps> = ({ unitId }) => {
   const [reviews, setReviews] = useState<any[]>([]);
 
   useEffect(() => {
-    if (propertyId) {
-      const fetchReviews = async () => {
-        const { data, error } = await supabase
-          .from("ratings_review")
-          .select(
-            `
-            user_id, 
-            ratings, 
-            comment, 
-            account (firstname, lastname)
+    const fetchReviews = async () => {
+      if (!unitId) return;
+
+      const { data, error } = await supabase
+        .from("ratings_review")
+        .select(
           `
-          )
-          .eq("property_id", propertyId);
+          user_id, 
+          ratings, 
+          comment, 
+          account (firstname, lastname)
+        `
+        )
+        .eq("unit_id", unitId);
 
-        if (!error) {
-          setReviews(data);
-        } else {
-          console.error("Error fetching reviews:", error);
-        }
-      };
+      if (error) {
+        console.error("Error fetching reviews:", error);
+      } else {
+        setReviews(data);
+      }
+    };
 
-      fetchReviews();
-    }
-  }, [propertyId]);
+    fetchReviews();
+  }, [unitId]);
+
 
   return (
     <div className="grid md:grid-cols-2 xl:grid-cols-3 gap-4 justify-items-center">
