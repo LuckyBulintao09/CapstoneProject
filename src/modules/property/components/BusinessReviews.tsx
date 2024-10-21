@@ -6,7 +6,6 @@ import { createClient } from "../../../utils/supabase/client";
 
 interface BusinessReviewsProps {
   unitId: number | undefined;
-
 }
 
 const supabase = createClient();
@@ -39,7 +38,6 @@ const BusinessReviews: React.FC<BusinessReviewsProps> = ({ unitId }) => {
 
     fetchReviews();
   }, [unitId]);
-
 
   return (
     <div className="grid md:grid-cols-2 xl:grid-cols-3 gap-4 justify-items-center">

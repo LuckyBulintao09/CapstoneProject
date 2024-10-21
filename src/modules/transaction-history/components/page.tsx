@@ -3,7 +3,8 @@
 import React, { useState, useEffect } from "react";
 import { DataTable } from "@/app/(auth)/(lessor-dashboard)/reservations/data-table";
 import { columns, Transaction } from "./columns";
-import { createClient } from "../../../../utils/supabase/client";
+import { createClient } from "../../../utils/supabase/client";
+
 
 const supabase = createClient();
 
@@ -12,30 +13,36 @@ const getData = async (userId: string): Promise<Transaction[]> => {
     .from("transaction")
     .select(
       `
-      user_id,
-      service_option,
-      appointment_date,
-      transaction_status,
-      unit:unit_id(
-        id,
-        title,
-        unit_code,
-        company:property_id(
-          account:owner_id(
-            firstname,
-            lastname
-          )
-        )
-      )
-    `
+
+		user_id,
+		service_option,
+		appointment_date, 
+		transaction_status,  
+		unit:unit_id(
+			id,
+			title,
+			unit_code,
+        	property:property_id(
+				company:company_id(
+					account:owner_id(
+						firstname,
+						lastname
+					)
+					)	
+				)
+			)
+		)
+	  `
     )
     .eq("user_id", userId);
+
+  console.log("Fetched transactions data:", data);
 
   if (error) {
     console.error("Error fetching transactions:", error);
     return [];
   }
-  console.log("Fetched transactions data:", data);
+
   return data as Transaction[];
 };
 

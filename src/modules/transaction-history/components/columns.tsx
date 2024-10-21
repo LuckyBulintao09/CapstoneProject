@@ -20,7 +20,6 @@ const TransactionActionsCell = ({ row }: { row: Row<Transaction> }) => {
         transactionStatus === "Visited") && (
         <>
           <Button
-            variant="link"
             className="dark:text-amber-400"
             size="sm"
             onClick={() => setIsModalOpen(true)}
@@ -105,8 +104,11 @@ export const columns: ColumnDef<Transaction>[] = [
       <DataTableColumnHeader column={column} title="Lessor Name" />
     ),
     cell: ({ row }) => {
-      const firstname = row.original.unit?.company?.account?.firstname || "No";
-      const lastname = row.original.unit?.company?.account?.lastname || "Name";
+      const firstname =
+        row.original.unit?.property?.company?.account?.firstname || "No";
+      const lastname =
+        row.original.unit?.property?.company?.account?.lastname || "Name";
+
       return `${firstname} ${lastname}`;
     },
   },

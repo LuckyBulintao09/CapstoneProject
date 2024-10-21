@@ -1,5 +1,5 @@
 "use client";
-import { createClient } from "../../../../utils/supabase/client";
+import { createClient } from "../../../utils/supabase/client";
 import { useState, useEffect } from "react";
 import {
   Dialog,

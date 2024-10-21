@@ -181,22 +181,26 @@ export function SpecificListing({ id }: SpecificListingProps) {
     beds: property.beds,
     occupants: property.occupants,
   };
-  
+
   console.log(property);
-  
+
   return (
     <ResponsiveLayout>
       <div className="grid grid-cols-5 gap-2 mt-4">
-        <MainPreview openModal={() => {}} propertyId={property.id} />
+        <MainPreview
+          openModal={() => setIsOpen(true)}
+          propertyId={property.id}
+        />
       </div>
 
       <div className="grid lg:grid-cols-3 grid-cols-1 gap-4 my-6">
         <div className="col-span-2 space-y-5">
           <div className="flex justify-between items-center">
             <div>
+              <h1 className="font-semibold text-3xl dark:text-white">
+                {mappedData.propertyDetails}
+              </h1>
 
-              <h1 className="font-semibold text-3xl dark:text-white">{mappedData.propertyDetails}</h1>
-              <p className="text-sm ">{mappedData.propertyDescription}</p>
               <p>{property.company?.name}</p>
 
               <p className="flex items-center text-muted-foreground">
@@ -227,18 +231,36 @@ export function SpecificListing({ id }: SpecificListingProps) {
               <p className="text-sm text-gray-700">Property Owner</p>
             </div>
           </div>
+          <Banner
+            ownerName={mappedData.ownerFirstname}
+            ownerLastname={mappedData.ownerLastname}
+            ownerId={mappedData.ownerId}
+            companyId={property.property?.company?.id}
+            companyName={mappedData.companyName}
+            propertyId={property.id}
+          />
 
-          <PropertyDetails />
-          <Banner />
-
+          <PropertyDetails
+            privacyType={mappedData.privacyType}
+            structure={mappedData.structure}
+            bedrooms={mappedData.bedrooms}
+            beds={mappedData.beds}
+            occupants={mappedData.occupants}
+            description={mappedData.propertyDescription}
+          />
         </div>
 
-        <div className="lg:col-span-1 col-span-full flex lg:justify-end sticky top-20">
-          <BookingCard price={mappedData.propertyPrice} />
+        <div className="flex lg:justify-end lg:items-start col-span-full lg:col-span-1">
+          <div className=" w-max h-max sticky top-20">
+            <BookingCard price={property?.price} />
+          </div>
         </div>
       </div>
 
-      <div className="border-t border-gray-300 py-8">
+      <div className="flex flex-col  border-t border-gray-300 py-8 mr-4">
+        <h4 className="text-2xl font-semibold tracking-tight pb-4">
+          Customer Reviews
+        </h4>
         <BusinessReviews unitId={property?.id} />
       </div>
     </ResponsiveLayout>
