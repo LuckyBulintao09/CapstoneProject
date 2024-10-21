@@ -1,7 +1,7 @@
 import { Card } from '@/components/ui/card';
 import React, { useEffect, useState } from 'react';
 import { Carousel, CarouselContent, CarouselItem } from '@/components/ui/carousel';
-import { createClient } from '../../../../utils/supabase/client';
+import { createClient } from '../../../utils/supabase/client';
 import { Loader } from 'lucide-react';
 import { Dialog, DialogContent } from '@/components/ui/dialog'; 
 
@@ -20,9 +20,9 @@ const MainPreview: React.FC<MainPreviewProps> = ({ openModal, propertyId }) => {
             setLoading(true); 
             const supabase = createClient();
             const { data, error } = await supabase
-                .from('property_images')
+                .from('unit_images')
                 .select('*')
-                .eq('property_id', propertyId); 
+                .eq('unit_id', propertyId); 
 
             if (error) {
                 console.error("Error fetching property images:", error);
