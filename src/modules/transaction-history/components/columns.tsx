@@ -108,6 +108,7 @@ export const columns: ColumnDef<Transaction>[] = [
         row.original.unit?.property?.company?.account?.firstname || "No";
       const lastname =
         row.original.unit?.property?.company?.account?.lastname || "Name";
+
       return `${firstname} ${lastname}`;
     },
   },

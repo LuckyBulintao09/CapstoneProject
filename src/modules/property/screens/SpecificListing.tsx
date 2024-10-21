@@ -1,9 +1,14 @@
 "use client";
 
 import React, { useState, useEffect } from "react";
-import { createClient } from "../../../utils/supabase/client";
+
+import { createClient } from "../../../../utils/supabase/client";
 import ResponsiveLayout from "@/components/ResponsiveLayout";
-import { MapPin } from "lucide-react";
+import { Card } from "@/components/ui/card";
+import { Image, MapPin } from "lucide-react";
+import { Avatar, AvatarFallback } from "@/components/ui/avatar";
+import tempValues from "@/lib/constants/tempValues";
+
 import BusinessReviews from "../components/BusinessReviews";
 import MainPreview from "../components/MainPreview";
 import PropertyDetails from "../components/PropertyDetails";
@@ -23,6 +28,8 @@ type Property = {
   details: string;
   address: string;
   price: number;
+
+ 
   thumbnail_url: string;
   privacy_type: string;
   structure: string;
@@ -36,13 +43,14 @@ type Property = {
       id?: string;
     };
     name?: string;
+
   };
   created_at: string;
 };
 
 export function SpecificListing({ id }: SpecificListingProps) {
-  const [isOpen, setIsOpen] = useState(false);
   const [isFavourite, setIsFavourite] = useState(false);
+
   const [property, setProperty] = useState<Property | null>(null);
   const [userId, setUserId] = useState<string | null>(null);
   const [propertyAddress, setPropertyAddress] = useState<string>("");
@@ -58,9 +66,7 @@ export function SpecificListing({ id }: SpecificListingProps) {
         console.error("Error fetching user:", error);
         return;
       }
-      if (user) {
-        setUserId(user.id);
-      }
+      setUserId(user?.id || null);
     };
     fetchUser();
   }, []);
@@ -90,10 +96,21 @@ export function SpecificListing({ id }: SpecificListingProps) {
         .single();
 
       if (error) {
+
         console.error("Error fetching unit:", error);
         setLoading(false);
         return;
       }
+
+      setProperty(unit);
+
+      if (unit?.property_id) {
+        const { data: propertyData, error: propertyError } = await supabase
+          .from("property")
+          .select("address")
+          .eq("id", unit.property_id)
+          .single();
+
 
       setProperty(unit);
       setPropertyAddress(unit.property?.address || "");
@@ -123,25 +140,19 @@ export function SpecificListing({ id }: SpecificListingProps) {
       return;
     }
 
-    try {
-      if (isFavourite) {
-        const { error } = await supabase
+    const action = isFavourite
+      ? supabase
           .from("favorites")
           .delete()
           .eq("Account_ID", userId)
-          .eq("Property_ID", property.id);
-
-        if (!error) setIsFavourite(false);
-      } else {
-        const { error } = await supabase
+          .eq("Property_ID", property.id)
+      : supabase
           .from("favorites")
           .insert([{ Account_ID: userId, Property_ID: property.id }]);
 
-        if (!error) setIsFavourite(true);
-      }
-    } catch (error) {
-      console.error("Error toggling favourite:", error);
-    }
+    const { error } = await action;
+
+    if (!error) setIsFavourite(!isFavourite);
   };
 
   if (loading) {
@@ -153,6 +164,7 @@ export function SpecificListing({ id }: SpecificListingProps) {
   }
 
   const mappedData = {
+
     propertyDetails: property.title,
     propertyAddress: property.property?.address,
     propertyPrice: property.price,
@@ -188,22 +200,35 @@ export function SpecificListing({ id }: SpecificListingProps) {
               <h1 className="font-semibold text-3xl dark:text-white">
                 {mappedData.propertyDetails}
               </h1>
+
               <p>{property.company?.name}</p>
+
               <p className="flex items-center text-muted-foreground">
                 <MapPin className="mr-1" height={18} width={18} />
                 {mappedData.propertyAddress}
               </p>
             </div>
-            <div className="relative flex items-center">
-              <div className="group">
-                <div onClick={toggleFavourite} className="cursor-pointer">
-                  {isFavourite ? (
-                    <HeartSolid className="h-8 w-8 text-red-500" />
-                  ) : (
-                    <HeartOutline className="h-8 w-8 text-gray-500" />
-                  )}
-                </div>
-              </div>
+            <div className="cursor-pointer" onClick={toggleFavourite}>
+              {isFavourite ? (
+                <HeartSolid className="h-8 w-8 text-red-500" />
+              ) : (
+                <HeartOutline className="h-8 w-8 text-gray-500" />
+              )}
+            </div>
+          </div>
+
+          <div className="flex items-center border-y border-gray-300 py-4">
+            <Avatar className="mr-4">
+              <AvatarFallback>
+                {mappedData.ownerFirstname?.[0]}
+                {mappedData.ownerLastname?.[0]}
+              </AvatarFallback>
+            </Avatar>
+            <div className="flex flex-col">
+              <h3 className="font-bold text-base">
+                {mappedData.ownerFirstname} {mappedData.ownerLastname}
+              </h3>
+              <p className="text-sm text-gray-700">Property Owner</p>
             </div>
           </div>
           <Banner

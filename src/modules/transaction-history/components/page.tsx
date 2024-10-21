@@ -5,6 +5,7 @@ import { DataTable } from "@/app/(auth)/(lessor-dashboard)/reservations/data-tab
 import { columns, Transaction } from "./columns";
 import { createClient } from "../../../utils/supabase/client";
 
+
 const supabase = createClient();
 
 const getData = async (userId: string): Promise<Transaction[]> => {
@@ -12,6 +13,7 @@ const getData = async (userId: string): Promise<Transaction[]> => {
     .from("transaction")
     .select(
       `
+
 		user_id,
 		service_option,
 		appointment_date, 
@@ -35,10 +37,12 @@ const getData = async (userId: string): Promise<Transaction[]> => {
     .eq("user_id", userId);
 
   console.log("Fetched transactions data:", data);
+
   if (error) {
     console.error("Error fetching transactions:", error);
     return [];
   }
+
   return data as Transaction[];
 };
 
