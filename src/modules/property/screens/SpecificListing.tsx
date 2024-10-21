@@ -2,7 +2,7 @@
 
 import React, { useState, useEffect } from "react";
 
-import { createClient } from "../../../../utils/supabase/client";
+import { createClient } from "../../../utils/supabase/client";
 import ResponsiveLayout from "@/components/ResponsiveLayout";
 import { Card } from "@/components/ui/card";
 import { Image, MapPin } from "lucide-react";
@@ -29,7 +29,6 @@ type Property = {
   address: string;
   price: number;
 
- 
   thumbnail_url: string;
   privacy_type: string;
   structure: string;
@@ -43,14 +42,12 @@ type Property = {
       id?: string;
     };
     name?: string;
-
   };
   created_at: string;
 };
 
 export function SpecificListing({ id }: SpecificListingProps) {
   const [isFavourite, setIsFavourite] = useState(false);
-
   const [property, setProperty] = useState<Property | null>(null);
   const [userId, setUserId] = useState<string | null>(null);
   const [propertyAddress, setPropertyAddress] = useState<string>("");
@@ -96,7 +93,6 @@ export function SpecificListing({ id }: SpecificListingProps) {
         .single();
 
       if (error) {
-
         console.error("Error fetching unit:", error);
         setLoading(false);
         return;
@@ -111,9 +107,14 @@ export function SpecificListing({ id }: SpecificListingProps) {
           .eq("id", unit.property_id)
           .single();
 
+        if (propertyError) {
+          console.error("Error fetching property:", propertyError);
+          setLoading(false);
+          return;
+        }
 
-      setProperty(unit);
-      setPropertyAddress(unit.property?.address || "");
+        setPropertyAddress(propertyData?.address || "");
+      }
 
       if (userId) {
         const { data: favorite, error: favError } = await supabase
@@ -164,7 +165,6 @@ export function SpecificListing({ id }: SpecificListingProps) {
   }
 
   const mappedData = {
-
     propertyDetails: property.title,
     propertyAddress: property.property?.address,
     propertyPrice: property.price,
@@ -172,7 +172,7 @@ export function SpecificListing({ id }: SpecificListingProps) {
     ownerLastname: property.property?.company?.owner_id?.lastname,
     ownerId: property.property?.company?.owner_id?.id,
     companyName: property.property?.company?.company_name,
-    propertyDescription: property.description,
+    propertyDescription: property.details,
     createdAt: property.created_at,
     thumbnailUrl: property.thumbnail_url,
     privacyType: property.privacy_type,
@@ -182,15 +182,10 @@ export function SpecificListing({ id }: SpecificListingProps) {
     occupants: property.occupants,
   };
 
-  console.log(property);
-
   return (
     <ResponsiveLayout>
       <div className="grid grid-cols-5 gap-2 mt-4">
-        <MainPreview
-          openModal={() => setIsOpen(true)}
-          propertyId={property.id}
-        />
+        <MainPreview openModal={() => {}} propertyId={property.id} />
       </div>
 
       <div className="grid lg:grid-cols-3 grid-cols-1 gap-4 my-6">
@@ -251,7 +246,7 @@ export function SpecificListing({ id }: SpecificListingProps) {
         </div>
 
         <div className="flex lg:justify-end lg:items-start col-span-full lg:col-span-1">
-          <div className=" w-max h-max sticky top-20">
+          <div className="w-max h-max sticky top-20">
             <BookingCard price={property?.price} />
           </div>
         </div>
