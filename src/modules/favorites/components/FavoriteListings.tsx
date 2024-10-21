@@ -1,7 +1,7 @@
 "use client";
 import React, { useEffect, useState } from "react";
 import BranchListings from "@/components/cardListings/BranchListings";
-import { createClient } from "../../../../utils/supabase/client";
+import { createClient } from "@/utils/supabase/client";
 
 const supabase = createClient();
 
@@ -45,7 +45,7 @@ export default function FavoriteListings() {
 
   useEffect(() => {
     if (userId) {
-      console.log("Fetching favorites for User ID:", userId); 
+      console.log("Fetching favorites for User ID:", userId);
 
       const fetchFavorites = async () => {
         try {
@@ -54,8 +54,7 @@ export default function FavoriteListings() {
             .select(
               `
               Account_ID,
-              Property_ID,
-              property (
+              unit:unit_ID(
                 id,
                 title,
                 description,
@@ -71,7 +70,7 @@ export default function FavoriteListings() {
           }
 
           console.log("Fetched Favorites Data:", data);
-          const favoriteProperties = data.map((fav) => fav.property);
+          const favoriteProperties = data.map((fav) => fav.unit);
           setFavorites(favoriteProperties || []);
         } catch (error) {
           console.error("Error fetching favorites:", error.message);

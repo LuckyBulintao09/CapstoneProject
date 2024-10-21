@@ -16,8 +16,8 @@ const TransactionActionsCell = ({ row }: { row: Row<Transaction> }) => {
 
   return (
     <div className="flex flex-row gap-3">
-      {(transactionStatus === "Reviewed" ||
-        transactionStatus === "Visited") && (
+      {(transactionStatus === "reserved" ||
+        transactionStatus === "visited") && (
         <>
           <Button
             className="dark:text-amber-400"

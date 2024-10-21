@@ -1,14 +1,10 @@
 "use client";
 
 import React, { useState, useEffect } from "react";
-
 import { createClient } from "../../../utils/supabase/client";
 import ResponsiveLayout from "@/components/ResponsiveLayout";
-import { Card } from "@/components/ui/card";
-import { Image, MapPin } from "lucide-react";
+import { MapPin } from "lucide-react";
 import { Avatar, AvatarFallback } from "@/components/ui/avatar";
-import tempValues from "@/lib/constants/tempValues";
-
 import BusinessReviews from "../components/BusinessReviews";
 import MainPreview from "../components/MainPreview";
 import PropertyDetails from "../components/PropertyDetails";
@@ -28,7 +24,6 @@ type Property = {
   details: string;
   address: string;
   price: number;
-
   thumbnail_url: string;
   privacy_type: string;
   structure: string;
@@ -55,15 +50,12 @@ export function SpecificListing({ id }: SpecificListingProps) {
 
   useEffect(() => {
     const fetchUser = async () => {
-      const {
-        data: { user },
-        error,
-      } = await supabase.auth.getUser();
+      const { data, error } = await supabase.auth.getUser();
       if (error) {
         console.error("Error fetching user:", error);
         return;
       }
-      setUserId(user?.id || null);
+      setUserId(data.user?.id || null);
     };
     fetchUser();
   }, []);
@@ -71,6 +63,7 @@ export function SpecificListing({ id }: SpecificListingProps) {
   useEffect(() => {
     const fetchProperty = async () => {
       setLoading(true);
+
       const { data: unit, error } = await supabase
         .from("unit")
         .select(
@@ -107,13 +100,9 @@ export function SpecificListing({ id }: SpecificListingProps) {
           .eq("id", unit.property_id)
           .single();
 
-        if (propertyError) {
-          console.error("Error fetching property:", propertyError);
-          setLoading(false);
-          return;
+        if (!propertyError) {
+          setPropertyAddress(propertyData?.address || "");
         }
-
-        setPropertyAddress(propertyData?.address || "");
       }
 
       if (userId) {
@@ -121,7 +110,7 @@ export function SpecificListing({ id }: SpecificListingProps) {
           .from("favorites")
           .select("id")
           .eq("Account_ID", userId)
-          .eq("Property_ID", id)
+          .eq("unit_ID", id)
           .single();
 
         if (!favError && favorite) {
@@ -136,33 +125,28 @@ export function SpecificListing({ id }: SpecificListingProps) {
   }, [id, userId]);
 
   const toggleFavourite = async () => {
-    if (!property || !userId) {
-      console.error("Missing property or user ID");
-      return;
+    if (!property || !userId) return;
+
+    if (isFavourite) {
+      const { error } = await supabase
+        .from("favorites")
+        .delete()
+        .eq("Account_ID", userId)
+        .eq("unit_ID", property.id);
+
+      if (!error) setIsFavourite(false);
+    } else {
+      const { data, error } = await supabase
+        .from("favorites")
+        .insert([{ Account_ID: userId, unit_ID: property.id }]);
+
+      if (!error) setIsFavourite(true);
     }
-
-    const action = isFavourite
-      ? supabase
-          .from("favorites")
-          .delete()
-          .eq("Account_ID", userId)
-          .eq("Property_ID", property.id)
-      : supabase
-          .from("favorites")
-          .insert([{ Account_ID: userId, Property_ID: property.id }]);
-
-    const { error } = await action;
-
-    if (!error) setIsFavourite(!isFavourite);
   };
 
-  if (loading) {
-    return <div>Loading...</div>;
-  }
+  if (loading) return <div>Loading...</div>;
 
-  if (!property) {
-    return <div>No property found.</div>;
-  }
+  if (!property) return <div>No property found.</div>;
 
   const mappedData = {
     propertyDetails: property.title,
@@ -172,7 +156,7 @@ export function SpecificListing({ id }: SpecificListingProps) {
     ownerLastname: property.property?.company?.owner_id?.lastname,
     ownerId: property.property?.company?.owner_id?.id,
     companyName: property.property?.company?.company_name,
-    propertyDescription: property.details,
+    propertyDescription: property.description,
     createdAt: property.created_at,
     thumbnailUrl: property.thumbnail_url,
     privacyType: property.privacy_type,
@@ -203,12 +187,20 @@ export function SpecificListing({ id }: SpecificListingProps) {
                 {mappedData.propertyAddress}
               </p>
             </div>
-            <div className="cursor-pointer" onClick={toggleFavourite}>
-              {isFavourite ? (
-                <HeartSolid className="h-8 w-8 text-red-500" />
-              ) : (
-                <HeartOutline className="h-8 w-8 text-gray-500" />
-              )}
+            <div className="relative flex items-center mr-3">
+              <div className="group">
+                <div onClick={toggleFavourite} className="cursor-pointer">
+                  {isFavourite ? (
+                    <HeartSolid className="h-8 w-8 text-red-500" />
+                  ) : (
+                    <HeartOutline className="h-8 w-8 text-gray-500" />
+                  )}
+                </div>
+
+                <div className="absolute left-0 hidden group-hover:block bg-black text-white text-xs rounded-md p-2 w-32">
+                  {isFavourite ? "Remove from favourites" : "Add to favourites"}
+                </div>
+              </div>
             </div>
           </div>
 
@@ -226,6 +218,7 @@ export function SpecificListing({ id }: SpecificListingProps) {
               <p className="text-sm text-gray-700">Property Owner</p>
             </div>
           </div>
+
           <Banner
             ownerName={mappedData.ownerFirstname}
             ownerLastname={mappedData.ownerLastname}
@@ -252,7 +245,7 @@ export function SpecificListing({ id }: SpecificListingProps) {
         </div>
       </div>
 
-      <div className="flex flex-col  border-t border-gray-300 py-8 mr-4">
+      <div className="flex flex-col border-t border-gray-300 py-8 mr-4">
         <h4 className="text-2xl font-semibold tracking-tight pb-4">
           Customer Reviews
         </h4>
