@@ -2,16 +2,67 @@ import spiels from '@/lib/constants/spiels';
 import tempValues from '@/lib/constants/tempValues';
 import { Image } from 'lucide-react';
 import React from 'react';
+import { Shield, Building, Bed,UserIcon} from 'lucide-react';
+interface PropertyDetailsProps {
+  details: string;        
+  privacyType: string;    
+  structure: string;      
+  bedrooms: number;       
+  beds: number;           
+  occupants: number;      
+}
 
-const PropertyDetails = () => {
+const PropertyDetails: React.FC<PropertyDetailsProps> = ({
+  privacyType,
+  structure,
+  bedrooms,
+  beds,
+  occupants,
+}) => {
 	return (
 		<>
-			{/* property details */}
-			<div className='col-span-full border-b border-gray-300 pb-6 mr-4'>
-				<p className='leading-7 [&:not(:first-child)]:mt-6'>{spiels.LOREM}</p>
-				<p className='leading-7 [&:not(:first-child)]:mt-6'>{spiels.LOREM}</p>
-			</div>
-
+				<div className='border-b border-gray-300 pb-6 mb-6'>
+				<h5 className='text-lg font-semibold'>Unit Overview:</h5>
+					<div className='bg-white shadow-md rounded-lg p-6'>
+						<div className='flex flex-col space-y-4'>
+						<div className='flex items-center justify-between'>
+							<div className='flex items-center'>
+							<Shield className='w-6 h-6 text-gray-700 mr-2' />
+							<h5 className='text-lg font-semibold'>Privacy Type</h5>
+							</div>
+							<p className='text-gray-700'>{privacyType}</p>
+						</div>
+						<div className='flex items-center justify-between'>
+							<div className='flex items-center'>
+							<Building className='w-6 h-6 text-gray-700 mr-2' />
+							<h5 className='text-lg font-semibold'>Building Structure</h5>
+							</div>
+							<p className='text-gray-700'>{structure}</p>
+						</div>
+						<div className='flex items-center justify-between'>
+							<div className='flex items-center'>
+							<Bed className='w-6 h-6 text-gray-700 mr-2' />
+							<h5 className='text-lg font-semibold'>Number of Bedrooms</h5>
+							</div>
+							<p className='text-gray-700'>{bedrooms}</p>
+						</div>
+						<div className='flex items-center justify-between'>
+							<div className='flex items-center'>
+							<Bed className='w-6 h-6 text-gray-700 mr-2' />
+							<h5 className='text-lg font-semibold'>Number of Beds</h5>
+							</div>
+							<p className='text-gray-700'>{beds}</p>
+						</div>
+						<div className='flex items-center justify-between'>
+							<div className='flex items-center'>
+							<UserIcon className='w-6 h-6 text-gray-700 mr-2' />
+							<h5 className='text-lg font-semibold'>Current Occupants</h5>
+							</div>
+							<p className='text-gray-700'>{occupants}</p>
+						</div>
+						</div>
+					</div>
+					</div>
 			{/* general */}
 			<div className='flex flex-col border-b border-gray-300 pb-8 mr-4'>
 				<h4 className='scroll-m-20 text-2xl font-semibold tracking-tight'>
