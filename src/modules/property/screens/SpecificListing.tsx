@@ -240,7 +240,7 @@ export function SpecificListing({ id }: SpecificListingProps) {
 
         <div className="flex lg:justify-end lg:items-start col-span-full lg:col-span-1">
           <div className="w-max h-max sticky top-20">
-            <BookingCard price={property?.price} />
+            <BookingCard price={property?.price} unitId={property?.id} />
           </div>
         </div>
       </div>
