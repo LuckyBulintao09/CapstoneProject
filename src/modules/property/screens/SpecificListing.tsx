@@ -1,5 +1,4 @@
 "use client";
-
 import React, { useState, useEffect } from "react";
 import { createClient } from "../../../utils/supabase/client";
 import ResponsiveLayout from "@/components/ResponsiveLayout";
@@ -12,6 +11,11 @@ import Banner from "../components/Banner";
 import { BookingCard } from "../components/BookingCard";
 import { HeartIcon as HeartOutline } from "@heroicons/react/24/outline";
 import { HeartIcon as HeartSolid } from "@heroicons/react/24/solid";
+<<<<<<< Updated upstream
+=======
+import { Card } from "@/components/ui/card";
+import { NavbarModalLogin } from "@/components/navbar/NavbarModalLogin";
+>>>>>>> Stashed changes
 
 const supabase = createClient();
 
@@ -45,17 +49,16 @@ export function SpecificListing({ id }: SpecificListingProps) {
   const [isFavourite, setIsFavourite] = useState(false);
   const [property, setProperty] = useState<Property | null>(null);
   const [userId, setUserId] = useState<string | null>(null);
+  const [isLoginModalOpen, setIsLoginModalOpen] = useState(false);
   const [propertyAddress, setPropertyAddress] = useState<string>("");
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
     const fetchUser = async () => {
       const { data, error } = await supabase.auth.getUser();
-      if (error) {
-        console.error("Error fetching user:", error);
-        return;
+      if (!error) {
+        setUserId(data.user?.id || null);
       }
-      setUserId(data.user?.id || null);
     };
     fetchUser();
   }, []);
@@ -85,36 +88,28 @@ export function SpecificListing({ id }: SpecificListingProps) {
         .eq("id", id)
         .single();
 
-      if (error) {
-        console.error("Error fetching unit:", error);
-        setLoading(false);
-        return;
-      }
+      if (!error) {
+        setProperty(unit);
 
-      setProperty(unit);
+        if (unit?.property_id) {
+          const { data: propertyData } = await supabase
+            .from("property")
+            .select("address")
+            .eq("id", unit.property_id)
+            .single();
 
-      if (unit?.property_id) {
-        const { data: propertyData, error: propertyError } = await supabase
-          .from("property")
-          .select("address")
-          .eq("id", unit.property_id)
-          .single();
-
-        if (!propertyError) {
           setPropertyAddress(propertyData?.address || "");
         }
-      }
 
-      if (userId) {
-        const { data: favorite, error: favError } = await supabase
-          .from("favorites")
-          .select("id")
-          .eq("Account_ID", userId)
-          .eq("unit_ID", id)
-          .single();
+        if (userId) {
+          const { data: favorite } = await supabase
+            .from("favorites")
+            .select("id")
+            .eq("Account_ID", userId)
+            .eq("unit_ID", id)
+            .single();
 
-        if (!favError && favorite) {
-          setIsFavourite(true);
+          setIsFavourite(!!favorite);
         }
       }
 
@@ -125,7 +120,12 @@ export function SpecificListing({ id }: SpecificListingProps) {
   }, [id, userId]);
 
   const toggleFavourite = async () => {
-    if (!property || !userId) return;
+    if (!userId) {
+      setIsLoginModalOpen(true);
+      return;
+    }
+
+    if (!property) return;
 
     if (isFavourite) {
       const { error } = await supabase
@@ -136,12 +136,17 @@ export function SpecificListing({ id }: SpecificListingProps) {
 
       if (!error) setIsFavourite(false);
     } else {
-      const { data, error } = await supabase
+      const { error } = await supabase
         .from("favorites")
         .insert([{ Account_ID: userId, unit_ID: property.id }]);
 
       if (!error) setIsFavourite(true);
     }
+  };
+
+  const handleLoginSuccess = () => {
+    setIsLoginModalOpen(false);
+    fetchUser();
   };
 
   if (loading) return <div>Loading...</div>;
@@ -169,7 +174,7 @@ export function SpecificListing({ id }: SpecificListingProps) {
   return (
     <ResponsiveLayout>
       <div className="grid grid-cols-5 gap-2 mt-4">
-        <MainPreview openModal={() => {}} propertyId={property.id} />
+        <MainPreview propertyId={property.id} />
       </div>
 
       <div className="grid lg:grid-cols-3 grid-cols-1 gap-4 my-6">
@@ -179,9 +184,7 @@ export function SpecificListing({ id }: SpecificListingProps) {
               <h1 className="font-semibold text-3xl dark:text-white">
                 {mappedData.propertyDetails}
               </h1>
-
               <p>{property.company?.name}</p>
-
               <p className="flex items-center text-muted-foreground">
                 <MapPin className="mr-1" height={18} width={18} />
                 {mappedData.propertyAddress}
@@ -196,7 +199,6 @@ export function SpecificListing({ id }: SpecificListingProps) {
                     <HeartOutline className="h-8 w-8 text-gray-500" />
                   )}
                 </div>
-
                 <div className="absolute left-0 hidden group-hover:block bg-black text-white text-xs rounded-md p-2 w-32">
                   {isFavourite ? "Remove from favourites" : "Add to favourites"}
                 </div>
@@ -251,6 +253,31 @@ export function SpecificListing({ id }: SpecificListingProps) {
         </h4>
         <BusinessReviews unitId={property?.id} />
       </div>
+<<<<<<< Updated upstream
+=======
+      <div className="flex flex-col border-t border-gray-300 py-8 mr-4">
+        <h4 className="text-2xl font-semibold tracking-tight pb-4">
+          Where you'll be
+        </h4>
+        <Card className="lg:h-[550px] md:h-full sm:h-[300px] xs:h-[365px] border-none">
+          <iframe
+            src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3827.190906189018!2d120.59490157532025!3d16.415127984315635!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x3391a15d8cb0dc9b%3A0xe282b2015f6debba!2sUniversity%20of%20Baguio!5e0!3m2!1sen!2sph!4v1727501045306!5m2!1sen!2sph"
+            className="rounded-md w-full h-full border-none"
+            loading="lazy"
+            referrerPolicy="no-referrer-when-downgrade"
+          ></iframe>
+        </Card>
+      </div>
+
+      {isLoginModalOpen && (
+        <NavbarModalLogin
+          isOpen={isLoginModalOpen}
+          onClose={() => setIsLoginModalOpen(false)}
+          openModal={() => setIsLoginModalOpen(true)}
+          onLoginSuccess={handleLoginSuccess}
+        />
+      )}
+>>>>>>> Stashed changes
     </ResponsiveLayout>
   );
 }
