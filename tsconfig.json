@@ -30,6 +30,6 @@
 		"src/modules/home/screens/HomeScreen.js",
 		"src/modules/home/components/Hero.js",
 		"src/modules/favorites/screens/FavoritesScreen.TSX"
-	],
+, "src/modules/subscriptions/screen/Pricing.js"	],
 	"exclude": ["node_modules"]
 }
