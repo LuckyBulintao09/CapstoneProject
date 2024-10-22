@@ -12,7 +12,7 @@ import Banner from "../components/Banner";
 import { BookingCard } from "../components/BookingCard";
 import { HeartIcon as HeartOutline } from "@heroicons/react/24/outline";
 import { HeartIcon as HeartSolid } from "@heroicons/react/24/solid";
-
+import { Card } from "@/components/ui/card";
 const supabase = createClient();
 
 interface SpecificListingProps {
@@ -250,6 +250,19 @@ export function SpecificListing({ id }: SpecificListingProps) {
           Customer Reviews
         </h4>
         <BusinessReviews unitId={property?.id} />
+      </div>
+      <div className="flex flex-col border-t border-gray-300 py-8 mr-4">
+        <h4 className="text-2xl font-semibold tracking-tight pb-4">
+          Where you&apos;ll be
+        </h4>
+        <Card className="lg:h-[550px] md:h-full sm:h-[300px] xs:h-[365px] border-none">
+          <iframe
+            src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3827.190906189018!2d120.59490157532025!3d16.415127984315635!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x3391a15d8cb0dc9b%3A0xe282b2015f6debba!2sUniversity%20of%20Baguio!5e0!3m2!1sen!2sph!4v1727501045306!5m2!1sen!2sph"
+            className="rounded-md w-full h-full border-none"
+            loading="lazy"
+            referrerPolicy="no-referrer-when-downgrade"
+          ></iframe>
+        </Card>
       </div>
     </ResponsiveLayout>
   );
