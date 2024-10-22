@@ -27,3 +27,22 @@ export const getAllAmenities = async () => {
         return error;
     }
 }
+
+export const getSpecificAmenity = async (amenity_name: string[]) => {
+    try {
+        const { data, error } = await supabase
+            .from('amenity')
+            .select('id')
+            .in('amenity_name', amenity_name)
+
+        if (error) {
+            console.error(error);
+            return error;
+        }
+
+        return (data?.map(data => data.id))
+    } catch (error: any) {
+        console.error(error);
+        return error;
+    }
+}
