@@ -12,6 +12,7 @@ import { BookingCard } from "../components/BookingCard";
 import { HeartIcon as HeartOutline } from "@heroicons/react/24/outline";
 import { HeartIcon as HeartSolid } from "@heroicons/react/24/solid";
 import { Card } from "@/components/ui/card";
+
 import { NavbarModalLogin } from "@/components/navbar/NavbarModalLogin";
 
 const supabase = createClient();
@@ -252,7 +253,9 @@ export function SpecificListing({ id }: SpecificListingProps) {
       </div>
       <div className="flex flex-col border-t border-gray-300 py-8 mr-4">
         <h4 className="text-2xl font-semibold tracking-tight pb-4">
-          Where you'll be
+
+          Where you&apos;ll be
+
         </h4>
         <Card className="lg:h-[550px] md:h-full sm:h-[300px] xs:h-[365px] border-none">
           <iframe
@@ -264,6 +267,7 @@ export function SpecificListing({ id }: SpecificListingProps) {
         </Card>
       </div>
 
+
       {isLoginModalOpen && (
         <NavbarModalLogin
           isOpen={isLoginModalOpen}
@@ -272,6 +276,7 @@ export function SpecificListing({ id }: SpecificListingProps) {
           onLoginSuccess={handleLoginSuccess}
         />
       )}
+
     </ResponsiveLayout>
   );
 }

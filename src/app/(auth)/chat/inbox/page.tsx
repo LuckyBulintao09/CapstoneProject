@@ -34,6 +34,7 @@ const Page = () => {
           .from('conversations')
           .select('user2')
           .eq('user1', currentUserId);
+          
 
         if (conversationError) {
           console.error('Error fetching conversations:', conversationError);
@@ -113,81 +114,3 @@ const Page = () => {
 export default Page;
 
 
-// ===================PWEDE DI GUMAMIT NG USE-EFFECT PERO MAS MATAGAL MAG LOAD YUNG CONVERSATIONS========
-// "use client"; 
-
-// import React, { useState } from 'react';
-// import { createClient } from '../../../../../supabase/client';
-// import Inbox from './messages/page';
-
-// const supabase = createClient();
-
-// const Page = () => {
-//   const [currentUserId, setCurrentUserId] = useState(null);
-//   const [conversations, setConversations] = useState([]);
-//   const [selectedReceiverId, setSelectedReceiverId] = useState(null); 
-
-//   // Async function to fetch current user ID and conversations
-//   const fetchData = async () => {
-//     const session = await supabase.auth.getSession();
-//     if (session.data.session) {
-//       const userId = session.data.session.user.id;
-//       setCurrentUserId(userId);
-
-//       // Fetch conversations
-//       const { data, error } = await supabase
-//         .from('conversations')
-//         .select('user2, receiver_firstname, receiver_lastname') 
-//         .eq('user1', userId);
-
-//       if (error) {
-//         console.error('Error fetching conversations:', error);
-//       } else {
-//         setConversations(data);
-//       }
-//     }
-//   };
-
-//   // Immediately invoke fetchData on component mount
-//   fetchData();
-
-//   const handleSelectConversation = (receiverId) => {
-//     setSelectedReceiverId(receiverId); 
-//   };
-
-//   // Function to get initials from names
-//   const getInitials = (firstname, lastname) => {
-//     return `${firstname.charAt(0)}${lastname.charAt(0)}`.toUpperCase();
-//   };
-
-//   return (
-//     <div className="flex h-screen">
-//       {/* Sidebar */}
-//       <div className="bg-gray-200 p-4 rounded-lg shadow-md w-1/4">
-//         <h2 className="text-lg font-bold mb-4">Conversations</h2>
-//         <ul>
-//           {conversations.map((conversation) => (
-//             <li key={conversation.user2} className="mb-2 flex items-center">
-//               <div className="flex-shrink-0 w-10 h-10 flex items-center justify-center bg-blue-500 text-white rounded-full mr-3">
-//                 {getInitials(conversation.receiver_firstname, conversation.receiver_lastname)}
-//               </div>
-//               <button
-//                 className="w-full text-left p-2 bg-white rounded hover:bg-gray-300"
-//                 onClick={() => handleSelectConversation(conversation.user2)} 
-//       
-//                 {`${conversation.receiver_firstname} ${conversation.receiver_lastname}`}
-//               </button>
-//             </li>
-//           ))}
-//         </ul>
-//       </div>
-
-//       {/* Inbox */}
-//       <div className="flex-grow p-4">
-//         <Inbox receiver_id={selectedReceiverId} />
-//       </div>
-//     </div>
-//   );
-// };
-
-// export default Page;

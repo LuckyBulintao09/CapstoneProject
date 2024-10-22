@@ -2,10 +2,46 @@
 import { number } from 'zod'
 import { createClient } from '@/utils/supabase/server'
 import { id } from 'date-fns/locale'
+import { getSpecificAmenity } from './amenities'
 
 const supabase = createClient()
 
-//NOTE: it still uses console log, need to change to return data
+
+
+export const get_allListings = async () => {
+    const { data, error } = await supabase
+        .from('unit')
+        .select('*');
+
+    if (error) {
+        console.error(error)
+        return error
+    }
+
+    return data
+
+}
+
+//this returns company id that are within the 500 meters radius
+//use the company id to fetch all listings from that property
+//add radius
+export const get_nearbyListings = async (latitude: number, longitude: number) => {
+    try {
+        const { data, error } = await supabase
+            .rpc('get_nearby', {lat: latitude, lon: longitude})
+
+        if (error) {
+            console.error(error)
+            return error
+        }
+        return(data?.map(data => data.id))
+
+    } catch (error: any) {
+        console.error(error)
+        return error
+    }
+}
+
 
 //For specific listing to show the specific location (lon and lat)
 //needs this to pass to advance marker
@@ -27,46 +63,34 @@ const supabase = createClient()
 //     }
 // }
 
-
-//this returns company id that are within the 500 meters radius
-//use the company id to fetch all listings from that company
-export const get_nearbyListings = async (latitude: number, longitude: number) => {
-    try {
+export const getFilteredListings = async (property_id: number[]|null, amenity_name: string[], privacy_type: string[]) => {
+    const filteredAmenitys = async () => {
         const { data, error } = await supabase
-            .rpc('get_nearby', {lat: latitude, lon: longitude})
-
-        if (error) {
-            console.error(error)
-            return error
-        }
-        const id: number[] = data.map(data => data.id)
-        return id
-
-    } catch (error: any) {
-        console.error(error)
-        return error
+            .from('unit_amenities')
+            .select('unit_id')
+            .in('amenity_id', (await getSpecificAmenity(amenity_name)));
+        return(data?.map(data => data.unit_id))
     }
-}
 
-// const get_nearbyResult = async (id: number[]) => {
-//     const { data, error } = await supabase
-//         .from('property')
-//         .select('*')
-//         .in('company_id', id);
-    
-//     return data
-// }
-
-export const get_allListings = async () => {
-    const { data, error } = await supabase
+    let query = supabase
         .from('unit')
-        .select('*');
+        .select(`
+            *
+        `)
+    
 
-    if (error) {
-        console.error(error)
-        return error
+    if (property_id != null) {
+        query = query.in('property_id', property_id);
     }
-
-    return data
-
+    if (privacy_type && privacy_type.length > 0) {
+        query = query.in('privacy_type', privacy_type);
+    }
+    let unit_id = await filteredAmenitys();
+    if (unit_id && unit_id.length > 0) {
+        query = query.in('id', unit_id);
+    }
+    const { data, error } = await query;
+    return(data)
 }
+
+

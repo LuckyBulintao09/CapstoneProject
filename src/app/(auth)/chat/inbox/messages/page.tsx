@@ -1,33 +1,60 @@
-"use client";
 import { useEffect, useState, useRef } from 'react';
 import { createClient } from '../../../../../../supabase/client';
+import { checkConversation } from '@/actions/chat/checkConversation'; 
+import { sendMessage } from '@/actions/chat/sendMessage'; 
+import { fetchReceiverName } from '@/actions/chat/fetchReceiverName'; 
+
 const supabase = createClient();
+
 
 const Inbox = ({ receiver_id }) => {
   const [messages, setMessages] = useState([]);
   const [messageContent, setMessageContent] = useState('');
   const [user, setUser] = useState(null);
-  const [conversationId, setConversationId] = useState(null);
+  const [conversationId, setConversationId] = useState(null); 
   const [receiverName, setReceiverName] = useState(null);
-  const messagesEndRef = useRef(null); 
+  const messagesEndRef = useRef(null);
+
+  // Re-introduce fetchMessages inside the component
+  const fetchMessages = async (currentUserId, currentReceiverId) => {
+    if (!currentUserId || !currentReceiverId) return;
+
+    const { data, error } = await supabase
+      .from('messages')
+      .select('*')
+      .or(`sender_id.eq.${currentUserId},receiver_id.eq.${currentUserId}`)
+      .or(`sender_id.eq.${currentReceiverId},receiver_id.eq.${currentReceiverId}`)
+      .order('created_at', { ascending: true });
+
+    if (error) {
+      console.error('Error fetching messages:', error);
+      return [];
+    }
+    return data;
+  };
 
   useEffect(() => {
     const fetchUserAndMessages = async () => {
       const session = await supabase.auth.getSession();
       if (!session.data.session) {
         console.error('User not logged in.');
+        window.location.href = '/';
         return;
       }
       setUser(session.data.session.user);
       if (receiver_id) {
-        await checkConversation(session.data.session.user.id, receiver_id);
-        await fetchMessages(session.data.session.user.id, receiver_id);
-        await fetchReceiverName(receiver_id);
+        const convId = await checkConversation(session.data.session.user.id, receiver_id);
+        setConversationId(convId); 
+        const messagesData = await fetchMessages(session.data.session.user.id, receiver_id);
+        setMessages(messagesData);
+        const nameData = await fetchReceiverName(receiver_id); 
+        setReceiverName(nameData);
       }
     };
 
     fetchUserAndMessages();
-//CONNECT TO CHANNEL
+
+    // CONNECT TO CHANNEL
     const channel = supabase.channel('messages');
 
     channel
@@ -41,124 +68,30 @@ const Inbox = ({ receiver_id }) => {
     return () => {
       channel.unsubscribe();
     };
-  }, [receiver_id]); 
+  }, [receiver_id]);
 
   useEffect(() => {
     if (user && receiver_id) {
-      fetchMessages(user.id, receiver_id);
+      fetchMessages(user.id, receiver_id);  
     }
-  }, [user, receiver_id]); 
+  }, [user, receiver_id]);
 
   useEffect(() => {
     if (messagesEndRef.current) {
       messagesEndRef.current.scrollIntoView({ behavior: 'smooth' });
     }
-  }, [messages]); 
+  }, [messages]);
 
-
-// FETCH MESSAGES AND MAP TO COMPONENT
-  const fetchMessages = async (currentUserId, currentReceiverId) => {
-    if (!currentUserId || !currentReceiverId) return; 
-    const { data, error } = await supabase
-      .from('messages')
-      .select('*')
-      .or(`sender_id.eq.${currentUserId},receiver_id.eq.${currentUserId}`)
-      .or(`sender_id.eq.${currentReceiverId},receiver_id.eq.${currentReceiverId}`)
-      .order('created_at', { ascending: true });
-
-    if (error) {
-      console.error('Error fetching messages:', error);
-    } else {
-      setMessages(data);
-    }
-  };
-// SEND MESSAGE
-const sendMessage = async (e) => {
-  e.preventDefault();
-  if (!conversationId) {
-    console.error('Conversation ID is not set.');
-    return;
-  }
-
-  if (!messageContent.trim()) {
-    console.warn('Message cannot be empty');
-    return;
-  }
-
-  const { data, error } = await supabase.from('messages').insert([{
-    sender_id: user.id,
-    receiver_id: receiver_id,
-    content: messageContent,
-    conversation_id: conversationId,
-    created_at: new Date(),
-    read: false, // Set read to false when sending a new message
-  }]);
-
-  if (error) {
-    console.error('Error sending message:', error);
-    alert('Error sending message. Please try again.');
-  } else if (data && data.length > 0) {
-    setMessages(prevMessages => [
-      ...prevMessages,
-      { ...data[0], sender_id: user.id }
-    ]);
-  }
-  setMessageContent('');
-};
-
-
-//   INITIALIZE CONVERSATION
-  const checkConversation = async (currentUserId, currentReceiverId) => {
-    if (!currentUserId || !currentReceiverId) return;
-
-    const conversationId = `${currentUserId}_${currentReceiverId}`;
-
-    const { data: existingConversation, error: conversationError } = await supabase
-      .from('conversations')
-      .select('id')
-      .eq('id', conversationId);
-
-    if (existingConversation && existingConversation.length > 0) {
-      setConversationId(conversationId);
-      return;
-    }
-
-    const receiverName = await supabase
-      .from('account')
-      .select('firstname, lastname')
-      .eq('id', currentReceiverId)
-      .single();
-
-    const { error: createError } = await supabase
-      .from('conversations')
-      .insert([{
-        id: conversationId,
-        user1: currentUserId,
-        user2: currentReceiverId,
-        receiver_firstname: receiverName.data.firstname,
-        receiver_lastname: receiverName.data.lastname,
-        created_at: new Date(),
-      }]);
-
-    if (createError) {
-      console.error('Error creating conversation:', createError);
-    } else {
-      setConversationId(conversationId);
-    }
-  };
-
-  const fetchReceiverName = async (currentReceiverId: any) => {
-    const { data, error } = await supabase
-      .from('account')
-      .select('firstname, lastname')
-      .eq('id', currentReceiverId)
-      .single();
-
-    if (error) {
-      console.error('Error fetching receiver name:', error);
-    } else {
-      setReceiverName(data);
-    }
+  const sendMessageHandler = async (e) => {
+    e.preventDefault();
+    await sendMessage({
+      userId: user.id,
+      receiverId: receiver_id,
+      conversationId,
+      messageContent,
+      setMessages,
+    });
+    setMessageContent(''); 
   };
 
   return (
@@ -185,7 +118,7 @@ const sendMessage = async (e) => {
       </div>
 
       {/* Messages Container */}
-      <div className="flex-grow overflow-y-auto mb-4 p-2 bg-white rounded-lg shadow-inner ">
+      <div className="flex-grow overflow-y-auto mb-4 p-2 bg-white rounded-lg shadow-inner">
         {messages.length === 0 ? (
           <p className="text-center text-gray-500">No messages yet.</p>
         ) : (
@@ -199,11 +132,14 @@ const sendMessage = async (e) => {
             </div>
           ))
         )}
-        <div ref={messagesEndRef} /> 
+        <div ref={messagesEndRef} />
       </div>
 
       {/* Message Input */}
-      <form onSubmit={sendMessage} className="flex items-center bg-white p-2 rounded-full shadow-md">
+      <form
+        onSubmit={sendMessageHandler}
+        className="flex items-center bg-white p-2 rounded-full shadow-md"
+      >
         <input
           type="text"
           value={messageContent}

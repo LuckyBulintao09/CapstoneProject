@@ -156,7 +156,7 @@ const spiels = {
 
 		{
 			label: 'Pricing',
-			href: '/client/pricing',
+			href: '/pricing',
 		},
 	],
 	NAVBAR_MENU_LIST_WITH_DROPDOWN: [
@@ -183,7 +183,7 @@ const spiels = {
 		},
 		{
 			label: 'Pricing',
-			href: '/client/pricing',
+			href: '/pricing',
 		},
 	],
 
