@@ -32,7 +32,27 @@ interface BranchListings {
 	}[];
 }
 
-export function BusinessDetails() {
+interface BusinessDetailsProps {
+	companyName: string;
+	about: string;
+	created_at: string;
+	companyId: number;
+	firstname: string;
+	lastname: string;
+	email: string;
+	cp_number: string;
+}
+
+export function BusinessDetails({
+	companyName,
+	about,
+	created_at,
+	companyId,
+	firstname,
+	lastname,
+	email,
+	cp_number,
+}: BusinessDetailsProps) {
 	const [specificBranchList] = useState<BranchListings[]>(
 		tempValues.BRANCHES_AND_ROOMS
 	);
@@ -53,7 +73,7 @@ export function BusinessDetails() {
 				<TabsList className='grid grid-cols-3 dark:text-white dark:bg-opacity-15 dark:bg-transparent'>
 					<TabsTrigger value='about'>About</TabsTrigger>
 					<TabsTrigger value='branchesAndRooms'>
-						Branches & Available Rooms
+						Properties 
 					</TabsTrigger>
 					<TabsTrigger value='reviews'>Customer Reviews</TabsTrigger>
 				</TabsList>
@@ -62,23 +82,25 @@ export function BusinessDetails() {
 				<TabsContent value='about'>
 					<Card className='dark:bg-transparent dark:border-none'>
 						<CardHeader className='dark:border-t-2 dark:border-sky-900'>
-							<CardTitle>About {tempValues.LISTINGS[0].title}</CardTitle>
-							<CardDescription>On UniHomes since 2024</CardDescription>
+							<CardTitle>About {companyName}</CardTitle>
+							<CardDescription>On UniHomes since {new Date(created_at).toLocaleDateString('en-US', {
+                                year: 'numeric',
+                                month: 'long',
+                                day: 'numeric'
+                            })}</CardDescription>
 						</CardHeader>
 						<CardContent className='space-y-2 dark:text-white'>
-							<div className='space-y-1'>
-								{tempValues.LISTINGS[0].description}
-							</div>
+							<div className='space-y-1'>{about}</div>
 						</CardContent>
 					</Card>
 				</TabsContent>
 
 				{/* BRANCHES SECTION */}
 				<TabsContent value='branchesAndRooms'>
-					<Card className='dark:bg-transparent dark:border-none' >
+					<Card className='dark:bg-transparent dark:border-none'>
 						<CardHeader className='dark:border-t-2 dark:border-sky-900'>
-							<CardTitle>Branches</CardTitle>
-							<CardDescription>Explore our different branches</CardDescription>
+							<CardTitle>Properties</CardTitle>
+							<CardDescription>Explore our different properties</CardDescription>
 						</CardHeader>
 						<CardContent className='space-y-1'>
 							<Carousel>
@@ -95,7 +117,6 @@ export function BusinessDetails() {
 														? 'bg-sky-800 text-white'
 														: 'bg-none'
 												}`}
-												
 											>
 												<CardContent className='flex h-16 items-center justify-center p-0'>
 													{branch.branch}
@@ -108,9 +129,9 @@ export function BusinessDetails() {
 
 							{/* Display available rooms for selected branch */}
 							{selectedBranch ? (
-								<div className='space-y-1 pt-1 pl-2'
-								onClick={() => {window.location.href = "/property/room";}}>
+								<div className='space-y-1 pt-1 pl-2' onClick={() => { window.location.href = "/property/room"; }}>
 									<SpecificBranchListings
+										// companyId={companyId}
 										listings={selectedBranch.available_rooms}
 									/>
 								</div>

@@ -76,16 +76,16 @@ const ProfileSection = () => {
     if (editProfileData) {
       const { id, firstname, lastname, address, cp_number, dob } = editProfileData;
   
-      // Update account data in the database
+      
       const { error: updateProfileError } = await supabase
         .from("account")
         .update({ firstname, lastname, address, cp_number, dob })
         .eq("id", id);
   
       if (!updateProfileError) {
-        // Update metadata in the authentication session
+      
         const { error: updateAuthError } = await supabase.auth.updateUser({
-          data: { firstname, lastname },  // Update the user metadata
+          data: { firstname, lastname },  
         });
   
         if (!updateAuthError) {

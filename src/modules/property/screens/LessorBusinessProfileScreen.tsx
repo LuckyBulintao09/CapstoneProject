@@ -6,10 +6,11 @@ import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { BusinessDetails } from '../../property/components/BusinessDetails';
 import tempValues from '@/lib/constants/tempValues';
 import ResponsiveLayout from '@/components/ResponsiveLayout';
+import { getSpecificCompany } from '@/actions/company/getSpecificCompany';
 
-const LessorBusinessProfileScreen = () => {
+const LessorBusinessProfileScreen = async ({ companyId }: { companyId: { params: { id: string }, searchParams: object } }) => {
 	const { title, lessor_name } = tempValues.LISTINGS[0];
-
+	const data = await getSpecificCompany(companyId.params.id);
 	return (
 		<ResponsiveLayout className='h-screen'>
 			<div className='xl:w-full xl:flex xl:justify-center'>
@@ -23,19 +24,26 @@ const LessorBusinessProfileScreen = () => {
 							<div className='flex items-center col-span-3 w-[580px] xl:w-full'>
 								<BusinessLogo />
 								<div className='pt-4 w-full'>
-									<Badge className='inline-block ml-4 py-1 mb-2'>
+									{/* <Badge className='inline-block ml-4 py-1 mb-2'>
 										Dormitory
-									</Badge>
+									</Badge> */}
 									<div className='flex flex-col'>
 										<h1 className='font-semibold xs:text-xl sm:text-2xl md:text-3xl lg:text-3xl xl:text-4xl text-left dark:text-white ml-4'>
-											{title}
+											{data.company?.company_name}
 										</h1>
 										<p className='flex items-center text-muted-foreground lg:text-md ml-4'>
 											<MapPin className='mr-1' height={18} width={18} />
-											Baguio City | on UniHomes since 2024
+											{data.company?.address}
 										</p>
+										<p className='flex items-center text-muted-foreground lg:text-md ml-4'>
+											  Joined UniHomes since {new Date(data.company?.created_at).toLocaleDateString('en-US', {
+												year: 'numeric',
+												month: 'long',
+												day: 'numeric'
+											})}
+											</p>
 									</div>
-									<div className='flex items-center pt-6'>
+									{/* <div className='flex items-center pt-6'>
 										<Button
 											variant='link'
 											className='flex items-center justify-start text-left p-l-4'
@@ -48,7 +56,7 @@ const LessorBusinessProfileScreen = () => {
 												<p className='text-xs'>15 Reviews</p>
 											</span>
 										</Button>
-									</div>
+									</div> */}
 								</div>
 							</div>
 
@@ -57,13 +65,13 @@ const LessorBusinessProfileScreen = () => {
 								<div className='flex flex-col items-center'>
 									<Avatar className='mb-1'>
 										<AvatarImage
-											src='https://github.com/shadcn.png'
+											src={data?.owner?.profile_url} 
 											alt='@shadcn'
 										/>
 										<AvatarFallback>CN</AvatarFallback>
 									</Avatar>
 									<h1 className='font-semibold xl:text-md text-center dark:text-primary-foreground'>
-										{lessor_name}
+										{data?.owner?.firstname} {data?.owner?.lastname}
 									</h1>
 									<p className='text-sm text-gray-700'>Proprietor</p>
 								</div>
@@ -108,7 +116,16 @@ const LessorBusinessProfileScreen = () => {
 			</div>
 
 			{/* Business Details Section */}
-			<BusinessDetails />
+			<BusinessDetails
+				companyName={data.company?.company_name}
+				about={data.company?.about}
+				created_at={data.company?.created_at}
+				companyId={data.company?.id}
+				firstname={data.owner?.firstname}
+				lastname={data.owner?.lastname}
+				email={data.owner?.email}
+				cp_number={data.owner?.cp_number}
+				/>
 		</ResponsiveLayout>
 	);
 };

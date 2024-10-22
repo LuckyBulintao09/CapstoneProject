@@ -1,9 +1,9 @@
 import LessorBusinessProfileScreen from "@/modules/property/screens/LessorBusinessProfileScreen";
 
-export default async function inbox() {
+export default async function inbox(companyId: Number) {
     return (
         <div>
-            <LessorBusinessProfileScreen />
+            <LessorBusinessProfileScreen companyId={companyId} />
         </div>
     );
 }

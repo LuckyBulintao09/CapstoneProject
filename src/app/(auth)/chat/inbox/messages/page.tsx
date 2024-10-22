@@ -15,7 +15,6 @@ const Inbox = ({ receiver_id }) => {
   const [receiverName, setReceiverName] = useState(null);
   const messagesEndRef = useRef(null);
 
-  // Re-introduce fetchMessages inside the component
   const fetchMessages = async (currentUserId, currentReceiverId) => {
     if (!currentUserId || !currentReceiverId) return;
 

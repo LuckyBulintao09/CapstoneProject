@@ -26,9 +26,11 @@ export const fetchProperty = async (
           owner_id (
             firstname,
             lastname,
-            id
+            id,
+            profile_url
           ),
-          company_name
+          company_name,
+          id
         )
       )
     `
