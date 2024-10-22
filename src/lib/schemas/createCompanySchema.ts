@@ -17,3 +17,6 @@ export const companySchema = z.object({
         }, `Max image size is 5MB.`)
         .refine((files) => ACCEPTED_IMAGE_MIME_TYPES.includes(files?.[0]?.type), "Only .jpg, .jpeg, .png and .webp formats are supported."),
 });
+
+
+export type CompanySchemaTypes = z.infer<typeof companySchema>
