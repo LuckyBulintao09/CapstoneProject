@@ -5,6 +5,7 @@ import { Button } from '@/components/ui/button';
 import spiels from '@/lib/constants/spiels';
 import { initializeSendMessage } from '@/actions/chat/initiateConversation';
 
+
 interface BannerProps {
   ownerName: string | undefined;
   ownerLastname: string | undefined;
@@ -12,6 +13,7 @@ interface BannerProps {
   companyId: string | undefined;
   companyName: string | undefined;
   propertyId: number | undefined;
+  profileUrl: string | undefined;
 }
 
 const Banner: React.FC<BannerProps> = ({
@@ -21,6 +23,7 @@ const Banner: React.FC<BannerProps> = ({
   companyId,
   companyName,
   propertyId,
+  profileUrl
 }) => {
   const [isLoading, setIsLoading] = useState(false);
 
@@ -43,7 +46,8 @@ const Banner: React.FC<BannerProps> = ({
       <div className='flex flex-row justify-between bg-primary rounded-xl p-5'>
         <div className='flex flex-row items-center gap-3 '>
           <Avatar className='h-16 w-auto'>
-            <AvatarImage src='https://github.com/shadcn.png' />
+            <AvatarImage src={profileUrl} />
+
             <AvatarFallback>
               {ownerName?.charAt(0)}
               {ownerLastname?.charAt(0)}
@@ -78,7 +82,7 @@ const Banner: React.FC<BannerProps> = ({
               variant='secondary'
               className='bg-white text-black border border-white hover:bg-secondary dark:hover:bg-popover-foreground rounded-lg px-4 py-2 transition duration-200 ease-in-out'
               onClick={() => {
-
+                window.location.href = `/property/company/${companyId}`;
               }}
             >
               {spiels.BUTTON_VISIT_PROPERTY}

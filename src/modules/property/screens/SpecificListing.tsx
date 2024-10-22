@@ -3,7 +3,7 @@
 import React, { useState, useEffect } from "react";
 import ResponsiveLayout from "@/components/ResponsiveLayout";
 import { MapPin } from "lucide-react";
-import { Avatar, AvatarFallback } from "@/components/ui/avatar";
+import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import BusinessReviews from "../components/BusinessReviews";
 import MainPreview from "../components/MainPreview";
 import PropertyDetails from "../components/PropertyDetails";
@@ -72,6 +72,7 @@ export function SpecificListing({ id }: SpecificListingProps) {
     price,
     property: { address, company },
     thumbnail_url,
+    profile_url,
     privacy_type,
     structure,
     bedrooms,
@@ -116,12 +117,14 @@ export function SpecificListing({ id }: SpecificListingProps) {
           </div>
 
           <div className="flex items-center border-y border-gray-300 py-4">
-            <Avatar className="mr-4">
-              <AvatarFallback>
-                {company?.owner_id?.firstname[0]}
-                {company?.owner_id?.lastname[0]}
-              </AvatarFallback>
-            </Avatar>
+           
+            <Avatar className='mr-4'>
+            <AvatarImage src={company?.owner_id?.profile_url} />
+            <AvatarFallback>
+            {company?.owner_id?.firstname[0]}
+            {company?.owner_id?.lastname[0]}
+            </AvatarFallback>
+          </Avatar>
             <div className="flex flex-col">
               <h3 className="font-bold text-base">
                 {company?.owner_id?.firstname} {company?.owner_id?.lastname}
@@ -134,9 +137,10 @@ export function SpecificListing({ id }: SpecificListingProps) {
             ownerName={company?.owner_id?.firstname}
             ownerLastname={company?.owner_id?.lastname}
             ownerId={company?.owner_id?.id}
-            companyId={property?.property?.company?.id}
+            companyId={company.id}
             companyName={company?.company_name}
-            propertyId={property.id}
+            propertyId={property?.id}
+            profileUrl={company?.owner_id?.profile_url}
           />
 
           <PropertyDetails
