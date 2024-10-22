@@ -11,11 +11,8 @@ import Banner from "../components/Banner";
 import { BookingCard } from "../components/BookingCard";
 import { HeartIcon as HeartOutline } from "@heroicons/react/24/outline";
 import { HeartIcon as HeartSolid } from "@heroicons/react/24/solid";
-<<<<<<< Updated upstream
-=======
 import { Card } from "@/components/ui/card";
 import { NavbarModalLogin } from "@/components/navbar/NavbarModalLogin";
->>>>>>> Stashed changes
 
 const supabase = createClient();
 
@@ -242,7 +239,7 @@ export function SpecificListing({ id }: SpecificListingProps) {
 
         <div className="flex lg:justify-end lg:items-start col-span-full lg:col-span-1">
           <div className="w-max h-max sticky top-20">
-            <BookingCard price={property?.price} />
+            <BookingCard price={property?.price} unitId={property?.id} />
           </div>
         </div>
       </div>
@@ -253,8 +250,6 @@ export function SpecificListing({ id }: SpecificListingProps) {
         </h4>
         <BusinessReviews unitId={property?.id} />
       </div>
-<<<<<<< Updated upstream
-=======
       <div className="flex flex-col border-t border-gray-300 py-8 mr-4">
         <h4 className="text-2xl font-semibold tracking-tight pb-4">
           Where you'll be
@@ -277,7 +272,6 @@ export function SpecificListing({ id }: SpecificListingProps) {
           onLoginSuccess={handleLoginSuccess}
         />
       )}
->>>>>>> Stashed changes
     </ResponsiveLayout>
   );
 }
