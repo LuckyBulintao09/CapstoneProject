@@ -14,9 +14,7 @@ import {
     AdvancedMarkerAnchorPoint,
     InfoWindow,
   } from "@vis.gl/react-google-maps";
-  import { get_allListings, get_nearbyListings } from "@/actions/listings/listing-filter";
-import { set } from 'date-fns';
-import { get } from 'http';
+  import { get_allListings, get_nearbyListings, getFilteredListings } from "@/actions/listings/listing-filter";
 import { MapContext } from './ListingsPage';
 import { getAllAmenities } from '@/actions/listings/amenities';
 
@@ -50,19 +48,19 @@ interface Favorites {
 
 export default function Listings() {
     const [householdAmenities, setHouseholdAmenities] = useState<any>([]);
-    const [selectedFilter, setSelectedFilter] = useState<string[]>([]);
-    const [selectedPrivacyType, setSelectedPrivacyType] = useState<string[]>([]);
     const [listings, setListings] = useState<Favorites[]>([]);
     const [loading, setLoading] = useState<boolean>(true);
     const [error, setError] = useState<string | null>(null);
     const [sortOrder, setSortOrder] = useState<'asc' | 'desc'>('asc'); 
     const supabase = createClient(); 
 
-    //Map Filtering States
+    //Filtering States
     const [deviceLocation, setDeviceLocation] = useContext(MapContext);
     const position = { lat: 16.420039834357972, lng: 120.59908426196893 };
     const [selectedLocation, setSelectedLocation] = useState(deviceLocation);
     const [currentID, setCurrentID] = useState(null);
+    const [selectedFilter, setSelectedFilter] = useState<string[]>([]);
+    const [selectedPrivacyType, setSelectedPrivacyType] = useState<string[]>([]);
 
 
     const handleMapClick = async (event) => {
@@ -70,6 +68,7 @@ export default function Listings() {
         setSelectedLocation(event.detail.latLng);
         setCurrentID(await get_nearbyListings(event.detail.latLng.lat, event.detail.latLng.lng))
         };
+        getFilteredListings(currentID, selectedFilter, selectedPrivacyType);
     }
     const handleDeviceLocation = async () => {
         if(deviceLocation){
@@ -81,38 +80,19 @@ export default function Listings() {
 
 
     useEffect(() => {
-        console.log("repeated")
         if(deviceLocation){
             handleDeviceLocation();
         }
-        if(currentID){
+        if(true) {
             const fetchFilteredListings = async () => {
-                const { data, error } = await supabase
-                    .from('unit')
-                    .select('*')
-                    .in('property_id', currentID); 
-    
-                if (error) {
-                    console.error('Error fetching listings:', error);
-                    setError('Failed to fetch listings');
-                } else {
-                    setListings(data || []); 
-                    // console.log('Listings fetched successfully:', data);
-                }
-                // console.log(selectedLocation)
+                setHouseholdAmenities(await getAllAmenities());
+                setListings(await getFilteredListings(currentID, selectedFilter, selectedPrivacyType) || []);
+                getFilteredListings(currentID, selectedFilter, selectedPrivacyType);
                 setLoading(false); 
             };
             fetchFilteredListings();
         }
-        if(currentID===null){
-            const fetchAllListings = async () => {
-                setListings(await get_allListings());
-                setHouseholdAmenities(await getAllAmenities());
-                setLoading(false); 
-            };
-            fetchAllListings();
-        }
-    },[currentID,  deviceLocation]);
+    },[currentID,  deviceLocation, selectedFilter, selectedPrivacyType]);
 
     
 
@@ -187,7 +167,7 @@ export default function Listings() {
                                         defaultValue={selectedFilter}
                                         placeholder='Select amenities'
                                         variant='inverted'
-                                        maxCount={6}
+                                        maxCount={2}
                                     />
                                 </div>
                                 <div>
@@ -200,7 +180,7 @@ export default function Listings() {
                                         defaultValue={selectedPrivacyType}
                                         placeholder='Select privacy type'
                                         variant='inverted'
-                                        maxCount={3}
+                                        maxCount={2}
                                     />
                                 </div>
                             </form>
