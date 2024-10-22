@@ -3,7 +3,7 @@ import { MessageSquare } from 'lucide-react';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { Button } from '@/components/ui/button';
 import spiels from '@/lib/constants/spiels';
-import { sendMessage } from '@/app/serverActions/initiateConversation';
+import { initializeSendMessage } from '@/actions/chat/initiateConversation';
 
 interface BannerProps {
   ownerName: string | undefined;
@@ -28,7 +28,7 @@ const Banner: React.FC<BannerProps> = ({
     if (!ownerId || !propertyId) return;
     setIsLoading(true);
     try {
-      await sendMessage(ownerId, propertyId);
+      await initializeSendMessage(ownerId, propertyId,ownerName,ownerLastname);
 
     } catch (error) {
 
