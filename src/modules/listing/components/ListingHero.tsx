@@ -6,6 +6,7 @@ import { MdOutlineMyLocation } from 'react-icons/md';
 import React, { useContext } from 'react';
 import { MapContext } from './ListingsPage';
 import { set } from 'date-fns';
+import { toast } from 'sonner';
 
 interface HeroSectionProps {
 	searchTerm: string;
@@ -22,11 +23,15 @@ export default function ListingHero({
 	const handleCurrentLocationClick = () => {
 	if (navigator.geolocation) {
 		navigator.geolocation.getCurrentPosition((position) => {
-			setDeviceLocation({
-				lat: 16.413370982072074,
-				lng: 120.59988498687744
-			});
-			//add accuracy, if else statement
+			if (position.coords.accuracy > 100) {
+				toast.error("Location accuracy is too low. Manually search location or use a mobile device instead.");
+			}else{
+				toast.success("Device Location Retrieved!");
+				setDeviceLocation({
+					lat: position.coords.latitude,
+					lng: position.coords.longitude
+				});
+			}
 		});
 	}
 };
