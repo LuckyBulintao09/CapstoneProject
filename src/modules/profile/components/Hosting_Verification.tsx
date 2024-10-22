@@ -162,7 +162,7 @@ const HostingVerification: React.FC = () => {
             </div>
             {!govIdUrl && (
               <Button
-                className="w-full md:w-auto bg-black text-white hover:bg-gray-800"
+                className="w-full md:w-[48%] lg:w-[30%] xl:w-[25%] bg-black text-white hover:bg-gray-800"
                 onClick={handleSubmit}
               >
                 {spiels.BUTTON_SEND_REQUEST}
