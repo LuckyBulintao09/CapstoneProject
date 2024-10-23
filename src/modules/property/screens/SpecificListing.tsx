@@ -26,6 +26,8 @@ import {
   InfoWindow,
 } from "@vis.gl/react-google-maps";
 import { getSpecificLocation } from "@/actions/listings/listing-filter";
+import { get_unitAmenities } from "@/actions/listings/amenities";
+import { get } from "http";
 
 interface SpecificListingProps {
   id: number;
@@ -37,6 +39,7 @@ export function SpecificListing({ id }: SpecificListingProps) {
   const [userId, setUserId] = useState<string | null>(null);
   const [isLoginModalOpen, setIsLoginModalOpen] = useState(false);
   const [loading, setLoading] = useState(true);
+  const [amenitiesList, setAmenitiesList] = useState<any[]>([]);
 
 
   //map
@@ -51,8 +54,8 @@ export function SpecificListing({ id }: SpecificListingProps) {
 
       const { unit, favorite } = await fetchProperty(id, fetchedUserId);
       setProperty(unit);
+      setAmenitiesList(await get_unitAmenities(unit?.id));
       setIsFavourite(favorite);
-
       setPosition({
         lat: (await getSpecificLocation(unit?.id))?.lat,
         lng: (await getSpecificLocation(unit?.id))?.lng,
@@ -72,6 +75,7 @@ export function SpecificListing({ id }: SpecificListingProps) {
     const success = await toggleFavourite(isFavourite, userId, property?.id);
     if (success) {
       setIsFavourite(!isFavourite);
+      console.log(await get_unitAmenities(property?.id));
     }
   };
 
@@ -96,7 +100,7 @@ export function SpecificListing({ id }: SpecificListingProps) {
     bedrooms,
     beds,
     occupants,
-    description,
+    description
   } = property;
 
   return (
@@ -168,6 +172,7 @@ export function SpecificListing({ id }: SpecificListingProps) {
             beds={beds}
             occupants={occupants}
             description={description}
+            amenitiesList={amenitiesList}
           />
         </div>
 

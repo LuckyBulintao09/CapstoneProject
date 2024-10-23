@@ -11,6 +11,7 @@ interface PropertyDetailsProps {
   beds: number;
   occupants: number;
   description: string;
+  amenitiesList: any[];
 }
 
 const PropertyDetails: React.FC<PropertyDetailsProps> = ({
@@ -20,6 +21,7 @@ const PropertyDetails: React.FC<PropertyDetailsProps> = ({
   beds,
   occupants,
   description,
+  amenitiesList
 }) => {
   return (
     <>
@@ -73,29 +75,28 @@ const PropertyDetails: React.FC<PropertyDetailsProps> = ({
         <hr className="mt-4 border-gray-600 opacity-25" />
       </div>
       {/* general */}
-      <div className="flex flex-col border-b border-gray-300 pb-8 mr-4">
-        <h4 className="scroll-m-20 text-2xl font-semibold tracking-tight">
-          General
-        </h4>
-        <div className="grid grid-cols-2 lg:grid-cols-2 md:grid-cols-1 gap-2">
-          {tempValues.LISTINGS[0].amenities.map((amenity) => (
-            <div
-              className="flex flex-row items-center gap-3 my-2"
-              key={amenity.amenity_name}
-            >
-              <Image />
-              <div>
-                <h5 className="scroll-m-20 text-lg font-semibold tracking-tight">
-                  {amenity.amenity_name}
-                </h5>
-                <p className="text-sm text-muted-foreground">
-                  Amenemenemeneties Lorem, ipsum dolor.
-                </p>
+      {amenitiesList.length > 0 && (
+        <div className="flex flex-col border-b border-gray-300 pb-8 mr-4">
+          <h4 className="scroll-m-20 text-2xl font-semibold tracking-tight">
+            General
+          </h4>
+          <div className="grid grid-cols-2 lg:grid-cols-2 md:grid-cols-1 gap-2">
+            {amenitiesList.map((amenity) => (
+              <div
+                className="flex flex-row items-center gap-3 my-2"
+                key={amenity.id}
+              >
+                <span className="inline-block w-2 h-2 bg-gray-700 rounded-full mr-2" />
+                <div>
+                  <h5 className="scroll-m-20 text-lg font-semibold tracking-tight">
+                    {amenity.amenity_name}
+                  </h5>
+                </div>
               </div>
-            </div>
-          ))}
+            ))}
+          </div>
         </div>
-      </div>
+      )}
     </>
   );
 };
