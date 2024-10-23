@@ -18,6 +18,14 @@ import {
   fetchProperty,
   toggleFavourite,
 } from "@/actions/listings/specific-listing";
+import {
+  APIProvider,
+  Map,
+  AdvancedMarker,
+  AdvancedMarkerAnchorPoint,
+  InfoWindow,
+} from "@vis.gl/react-google-maps";
+import { getSpecificLocation } from "@/actions/listings/listing-filter";
 
 interface SpecificListingProps {
   id: number;
@@ -30,6 +38,12 @@ export function SpecificListing({ id }: SpecificListingProps) {
   const [isLoginModalOpen, setIsLoginModalOpen] = useState(false);
   const [loading, setLoading] = useState(true);
 
+
+  //map
+  const [position, setPosition] = useState({ lat: 16.420039834357972, lng: 120.59908426196893 })
+
+
+
   useEffect(() => {
     const loadUserAndProperty = async () => {
       const fetchedUserId = await fetchUser();
@@ -39,6 +53,10 @@ export function SpecificListing({ id }: SpecificListingProps) {
       setProperty(unit);
       setIsFavourite(favorite);
 
+      setPosition({
+        lat: (await getSpecificLocation(unit?.id))?.lat,
+        lng: (await getSpecificLocation(unit?.id))?.lng,
+      });
       setLoading(false);
     };
 
@@ -172,12 +190,20 @@ export function SpecificListing({ id }: SpecificListingProps) {
           Where you&apos;ll be
         </h4>
         <Card className="lg:h-[550px] md:h-full sm:h-[300px] xs:h-[365px] border-none">
-          <iframe
-            src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3827.190906189018!2d120.59490157532025!3d16.415127984315635!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x3391a15d8cb0dc9b%3A0xe282b2015f6debba!2sUniversity%20of%20Baguio!5e0!3m2!1sen!2sph!4v1727501045306!5m2!1sen!2sph"
-            className="rounded-md w-full h-full border-none"
-            loading="lazy"
-            referrerPolicy="no-referrer-when-downgrade"
-          ></iframe>
+          <APIProvider apiKey={process.env.NEXT_PUBLIC_GOOGLE_MAPS_API_KEY}>
+                <Map
+                defaultZoom={15}
+                defaultCenter={position}
+                mapId={process.env.NEXT_PUBLIC_MAP_ID}
+                >
+                {position && (
+                    <AdvancedMarker
+                    position={position}
+                    >
+                    </AdvancedMarker>
+                )}
+                </Map>
+            </APIProvider>
         </Card>
       </div>
 

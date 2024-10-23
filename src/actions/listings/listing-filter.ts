@@ -46,22 +46,21 @@ export const get_nearbyListings = async (latitude: number, longitude: number) =>
 //For specific listing to show the specific location (lon and lat)
 //needs this to pass to advance marker
 //not yet fixed
-// export const getSpecificLocation = async (property_id : number) => {
-//     try {
-//         const { data, error } = await supabase
-//             .rpc('get_specific_location',{property_id: property_id})
+export const getSpecificLocation = async (unit_id : number) => {
+    try {
+        const { data, error } = await supabase
+            .rpc('get_specific_location',{p_id: unit_id})
 
-//         if (error) {
-//             console.error(error)
-//             return error
-//         }
-    
-//         console.log(data)
-//     } catch (error: any) {
-//         console.error(error)
-//         return error
-//     }
-// }
+        if (error) {
+            console.error(error)
+            return error
+        }
+        return(data[0])
+    } catch (error: any) {
+        console.error(error)
+        return error
+    } 
+}
 
 export const getFilteredListings = async (property_id: number[]|null, amenity_name: string[], privacy_type: string[]) => {
     const filteredAmenitys = async () => {
