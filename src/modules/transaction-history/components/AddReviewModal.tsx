@@ -1,5 +1,4 @@
 "use client";
-import { createClient } from "../../../utils/supabase/client";
 import { useState, useEffect } from "react";
 import {
   Dialog,
@@ -10,39 +9,55 @@ import {
 import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
 import { Star } from "lucide-react";
+import {
+  getSessionUserId,
+  addReview,
+  updateReview,
+} from "@/actions/transaction/addreviewmodal";
 
-const supabase = createClient();
+interface Review {
+  id: number;
+  created_at: string;
+  user_id: string;
+  ratings: number;
+  comment: string;
+  isReported: boolean;
+  unit_id: number;
+}
 
 interface AddReviewModalProps {
   isOpen: boolean;
   onClose: () => void;
   unit_id: string;
+  reviewData: Review | null;
 }
 
-const AddReviewModal = ({ isOpen, onClose, unit_id }: AddReviewModalProps) => {
+const AddReviewModal = ({
+  isOpen,
+  onClose,
+  unit_id,
+  reviewData,
+}: AddReviewModalProps) => {
   const [rating, setRating] = useState<number>(0);
   const [hoverRating, setHoverRating] = useState<number>(0);
   const [reviewText, setReviewText] = useState<string>("");
   const [userId, setUserId] = useState<string | null>(null);
 
   useEffect(() => {
+    if (reviewData) {
+      setRating(reviewData.ratings);
+      setReviewText(reviewData.comment);
+    } else {
+      setRating(0);
+      setReviewText("");
+    }
+  }, [reviewData]);
+
+  useEffect(() => {
     const fetchUserId = async () => {
-      const {
-        data: { session },
-        error,
-      } = await supabase.auth.getSession();
-
-      if (error) {
-        console.error("Error retrieving session:", error.message);
-        return;
-      }
-
-      if (session?.user) {
-        setUserId(session.user.id);
-        console.log("Fetched userId:", session.user.id);
-      }
+      const id = await getSessionUserId();
+      setUserId(id);
     };
-
     fetchUserId();
   }, []);
 
@@ -56,69 +71,60 @@ const AddReviewModal = ({ isOpen, onClose, unit_id }: AddReviewModalProps) => {
       return;
     }
 
-    try {
-      const { error } = await supabase.from("ratings_review").insert([
-        {
-          unit_id,
-          user_id: userId,
-          ratings: rating,
-          comment: reviewText,
-          isReported: false,
-        },
-      ]);
+    let success = false;
+    if (reviewData) {
+      success = await updateReview(reviewData.id, rating, reviewText);
+    } else {
+      success = await addReview(unit_id, userId, rating, reviewText);
+    }
 
-      if (error) {
-        console.error("Error saving review:", error.message);
-        alert("Failed to save review. Please try again.");
-        return;
-      }
-
-      alert("Review submitted successfully!");
+    if (success) {
+      window.location.reload();
       onClose();
-    } catch (error) {
-      console.error("Error submitting review:", error);
+    } else {
+      alert("Failed to save review. Please try again.");
     }
   };
 
   return (
-    <div className="px-4 mx-4">
-      <Dialog open={isOpen} onOpenChange={onClose}>
-        <DialogContent className="bg-white dark:bg-secondary">
-          <DialogTitle className="text-center text-2xl font-bold">
-            How was your experience?
-          </DialogTitle>
-          <div className="flex justify-center">
-            {Array.from({ length: 5 }).map((_, index) => (
-              <Star
-                key={index}
-                onClick={() => handleStarClick(index)}
-                onMouseEnter={() => handleStarHover(index)}
-                onMouseLeave={resetHover}
-                className={`h-8 w-8 cursor-pointer ${
-                  (hoverRating || rating) > index
-                    ? "text-amber-500"
-                    : "text-gray-400"
-                }`}
-              />
-            ))}
-          </div>
-          <div className="py-4">
-            <Textarea
-              placeholder="Write your review here"
-              value={reviewText}
-              onChange={(e) => setReviewText(e.target.value)}
-              className="min-h-[150px] dark:bg-tertiary dark:text-white"
+    <Dialog open={isOpen} onOpenChange={onClose}>
+      <DialogContent className="bg-white dark:bg-secondary">
+        <DialogTitle className="text-center text-2xl font-bold">
+          {reviewData ? "Edit Your Review" : "How was your experience?"}
+        </DialogTitle>
+        <div className="flex justify-center">
+          {Array.from({ length: 5 }).map((_, index) => (
+            <Star
+              key={index}
+              onClick={() => handleStarClick(index)}
+              onMouseEnter={() => handleStarHover(index)}
+              onMouseLeave={resetHover}
+              className={`h-8 w-8 cursor-pointer ${
+                (hoverRating || rating) > index
+                  ? "text-amber-500"
+                  : "text-gray-400"
+              }`}
             />
-          </div>
-          <DialogFooter>
-            <Button variant="outline" onClick={onClose}>
-              Cancel
-            </Button>
-            <Button onClick={handleSubmit}>Submit Review</Button>
-          </DialogFooter>
-        </DialogContent>
-      </Dialog>
-    </div>
+          ))}
+        </div>
+        <div className="py-4">
+          <Textarea
+            placeholder="Write your review here"
+            value={reviewText}
+            onChange={(e) => setReviewText(e.target.value)}
+            className="min-h-[150px] dark:bg-tertiary dark:text-white"
+          />
+        </div>
+        <DialogFooter>
+          <Button variant="outline" onClick={onClose}>
+            Cancel
+          </Button>
+          <Button onClick={handleSubmit}>
+            {reviewData ? "Update Review" : "Submit Review"}
+          </Button>
+        </DialogFooter>
+      </DialogContent>
+    </Dialog>
   );
 };
 
