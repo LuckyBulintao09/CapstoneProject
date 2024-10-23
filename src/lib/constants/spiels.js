@@ -112,7 +112,7 @@ const spiels = {
 	BUTTON_SHOW_LISTINGS: 'Show Listings',
 	BUTTON_BACK_HOME: 'Back to Home',
 	BUTTON_SEARCH: 'Search',
-	BUTTON_VISIT_PROPERTY: 'Visit Property Page',
+	BUTTON_VISIT_COMPANY: 'Visit Company Page',
 	BUTTON_MESSAGE: 'Message',
 	BUTTON_RESERVE: 'Reserve',
 	BUTTON_UPDATE_PROFILE: 'Update Profile',
