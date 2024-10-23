@@ -16,8 +16,6 @@ import {
 	fetchProperty,
 	toggleFavourite,
 } from '@/actions/listings/specific-listing';
-import { APIProvider, Map, AdvancedMarker } from '@vis.gl/react-google-maps';
-import { getSpecificLocation } from '@/actions/listings/listing-filter';
 import ErrorPage from '@/components/ui/ErrorPage';
 import {
 

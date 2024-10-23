@@ -72,7 +72,6 @@ export const get_unitAmenities = async (unit_id: number) => {
                 console.error(AmenitiesError);
                 return AmenitiesError;
             }
-            console.log(Amenities)
             return(Amenities)
 
     }catch (error: any) {
