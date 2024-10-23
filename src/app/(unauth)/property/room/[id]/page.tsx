@@ -1,6 +1,5 @@
 // src/app/client/property/[id]/inbox.tsx
-import NavBar from '@/components/navbar/Navbar';
-import Footer from "@/modules/home/components/Footer";
+
 import { SpecificListing } from '@/modules/property/screens/SpecificListing';
 
 interface Props {

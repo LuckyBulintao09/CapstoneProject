@@ -20,9 +20,9 @@ const MainPreview: React.FC<MainPreviewProps> = ({ openModal, propertyId }) => {
             setLoading(true); 
             const supabase = createClient();
             const { data, error } = await supabase
-                .from('property_images')
+                .from('unit_images')
                 .select('*')
-                .eq('property_id', propertyId); 
+                .eq('unit_id', propertyId); 
 
             if (error) {
                 console.error("Error fetching property images:", error);
