@@ -6,10 +6,7 @@ const LoadingPage = () => {
 		<ResponsiveLayout>
 			<div className='flex flex-col justify-center items-center h-screen text-center'>
 				<h1 className='text-xl font-bold mb-4'>Loading . . .</h1>
-				{/* Loader Implementation */}
 				<div className='loader'></div>
-
-				{/* Styles for Loader */}
 				<style jsx>{`
 					.loader {
 						width: 60px;
@@ -20,7 +17,7 @@ const LoadingPage = () => {
 					.loader:after {
 						content: '';
 						grid-area: 1/1;
-						color: hsl(216, 83%, 34%); /* Blue color using HSL */
+						color: hsl(216, 83%, 34%);
 						animation: l19 1.5s infinite linear;
 					}
 					.loader:before {
