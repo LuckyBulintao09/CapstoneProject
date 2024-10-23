@@ -1,11 +1,15 @@
-import React from "react";
-
-import { AddPropertyProvider } from "@/components/AddPropertyProvider";
+import NavBar from "@/components/navbar/Navbar";
+import ResponsiveLayout from "@/components/ResponsiveLayout";
+import Footer from "@/modules/home/components/Footer";
+import { Toaster } from "sonner";
 
 function LessorLayout({ children }: { children: React.ReactNode }) {
     return (
         <div>
-            <AddPropertyProvider>{children}</AddPropertyProvider>
+            <NavBar />
+            <ResponsiveLayout>{children}</ResponsiveLayout>
+            <Footer />
+            <Toaster position="top-center" />
         </div>
     );
 }

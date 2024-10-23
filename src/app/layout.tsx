@@ -2,10 +2,11 @@ import type { Metadata } from 'next';
 import localFont from 'next/font/local';
 import './globals.css';
 
-import { ThemeProvider } from '@/components/theme-provider';
-import { NUIProvider } from '@/components/next-ui-provider';
-import NavBar from '@/components/navbar/Navbar';
-import Footer from '@/modules/home/components/Footer';
+import { ThemeProvider } from "@/components/theme-provider";
+import { NUIProvider } from "@/components/next-ui-provider";
+import { TooltipProvider } from "@/components/ui/tooltip";
+import GoogleMapsProvider from "@/components/GoogleMapsProvider";
+import QueryProvider from "@/components/TansTackQueryProvider";
 
 const geistSans = localFont({
 	src: './fonts/GeistVF.woff',
@@ -30,21 +31,18 @@ export default function RootLayout({
 }>) {
 	return (
         <html lang="en">
-            <body
-                className={`${geistSans.variable} ${geistMono.variable} antialiased`}
-            >
-                <NUIProvider>
-                    <ThemeProvider
-                        attribute="class"
-                        defaultTheme="system"
-                        enableSystem
-                        disableTransitionOnChange
-                    >
-                        <NavBar />
-                        <div>{children}</div>
-                        <Footer />
-                    </ThemeProvider>
-                </NUIProvider>
+            <body className={`${geistSans.variable} ${geistMono.variable} antialiased`}>
+                <QueryProvider>
+                    <NUIProvider>
+                        <ThemeProvider attribute="class" defaultTheme="system" enableSystem disableTransitionOnChange>
+                            <GoogleMapsProvider google_maps_api_key={process.env.NEXT_PUBLIC_GOOGLE_MAPS_API_KEY!}>
+                                <TooltipProvider>
+                                    <div>{children}</div>
+                                </TooltipProvider>
+                            </GoogleMapsProvider>
+                        </ThemeProvider>
+                    </NUIProvider>
+                </QueryProvider>
             </body>
         </html>
     );
