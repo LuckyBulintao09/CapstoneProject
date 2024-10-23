@@ -19,6 +19,12 @@ import {
 import { APIProvider, Map, AdvancedMarker } from '@vis.gl/react-google-maps';
 import { getSpecificLocation } from '@/actions/listings/listing-filter';
 import ErrorPage from '@/components/ui/ErrorPage';
+import {
+	Tooltip,
+	TooltipContent,
+	TooltipProvider,
+	TooltipTrigger,
+} from '@/components/ui/tooltip';
 
 interface SpecificListingProps {
 	id: number;
@@ -126,18 +132,29 @@ export function SpecificListing({ id }: SpecificListingProps) {
 							</p>
 						</div>
 						<div className='relative flex items-center mr-3'>
-							<div className='group'>
-								<div onClick={handleToggleFavourite} className='cursor-pointer'>
-									{isFavourite ? (
-										<HeartSolid className='h-8 w-8 text-red-500' />
-									) : (
-										<HeartOutline className='h-8 w-8 text-gray-500' />
-									)}
-								</div>
-								<div className='absolute left-0 hidden group-hover:block bg-black text-white text-xs rounded-md p-2 w-32'>
-									{isFavourite ? 'Remove from favourites' : 'Add to favourites'}
-								</div>
-							</div>
+							<TooltipProvider>
+								<Tooltip>
+									<TooltipTrigger>
+										<div
+											onClick={handleToggleFavourite}
+											className='cursor-pointer'
+										>
+											{isFavourite ? (
+												<HeartSolid className='h-8 w-8 text-red-500' />
+											) : (
+												<HeartOutline className='h-8 w-8 text-gray-500' />
+											)}
+										</div>
+									</TooltipTrigger>
+									<TooltipContent>
+										<p>
+											{isFavourite
+												? 'Remove from favorites'
+												: 'Add to favorites'}
+										</p>
+									</TooltipContent>
+								</Tooltip>
+							</TooltipProvider>
 						</div>
 					</div>
 
