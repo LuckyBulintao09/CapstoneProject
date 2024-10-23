@@ -1,6 +1,6 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import {
 	Card,
 	CardContent,
@@ -14,22 +14,24 @@ import {
 	CarouselItem,
 } from '@/components/ui/carousel';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
-import tempValues from '@/lib/constants/tempValues';
 import SpecificBranchListings from '../../lessor-dashboard/components/SpecificBranchListings';
 import BusinessReviews from './BusinessReviews';
+import { getAllPropertyUnderSpecificCompany } from '@/actions/property/getAllPropertyUnderSpecificCompany';
+import { getAllUnitUnderProperty } from '@/actions/unit/getAllUnitUnderProperty';
+import { MapPin } from 'lucide-react';
 
-interface BranchListings {
+interface Unit {
 	id: number;
-	branch: string;
-	available_rooms: {
-		room_id: number;
-		room_title: string;
-		room_capacity: number;
-		lifestyle: string;
-		description: string;
-		price: number;
-		availability: boolean;
-	}[];
+	title: string;
+	capacity: number;
+	price: number;
+	availability: boolean;
+}
+
+interface Property {
+	id: number;
+	title: string;
+	address: string;
 }
 
 interface BusinessDetailsProps {
@@ -53,15 +55,41 @@ export function BusinessDetails({
 	email,
 	cp_number,
 }: BusinessDetailsProps) {
-	const [specificBranchList] = useState<BranchListings[]>(
-		tempValues.BRANCHES_AND_ROOMS
-	);
-	const [selectedBranch, setSelectedBranch] = useState<BranchListings | null>(
-		null
-	);
+	const [properties, setProperties] = useState<Property[]>([]);
+	const [selectedProperty, setSelectedProperty] = useState<Property | null>(null);
+	const [units, setUnits] = useState<Unit[]>([]);
+	const [loading, setLoading] = useState<boolean>(true); 
+	const [loadingUnits, setLoadingUnits] = useState<boolean>(false); 
 
-	const handleBranchClick = (branch: BranchListings) => {
-		setSelectedBranch(branch);
+
+	useEffect(() => {
+		const fetchProperties = async () => {
+			setLoading(true); 
+			try {
+				const properties = await getAllPropertyUnderSpecificCompany(companyId);
+				setProperties(properties);
+			} catch (error) {
+				console.error('Error fetching properties:', error);
+			} finally {
+				setLoading(false); 
+			}
+		};
+
+		fetchProperties();
+	}, [companyId]);
+
+
+	const handlePropertyClick = async (property: Property) => {
+		setSelectedProperty(property);
+		setLoadingUnits(true); 
+		try {
+			const units = await getAllUnitUnderProperty(property.id);
+			setUnits(units);
+		} catch (error) {
+			console.error('Error fetching units:', error);
+		} finally {
+			setLoadingUnits(false); 
+		}
 	};
 
 	return (
@@ -72,9 +100,7 @@ export function BusinessDetails({
 			>
 				<TabsList className='grid grid-cols-3 dark:text-white dark:bg-opacity-15 dark:bg-transparent'>
 					<TabsTrigger value='about'>About</TabsTrigger>
-					<TabsTrigger value='branchesAndRooms'>
-						Properties 
-					</TabsTrigger>
+					<TabsTrigger value='branchesAndRooms'>Properties</TabsTrigger>
 					<TabsTrigger value='reviews'>Customer Reviews</TabsTrigger>
 				</TabsList>
 
@@ -83,11 +109,14 @@ export function BusinessDetails({
 					<Card className='dark:bg-transparent dark:border-none'>
 						<CardHeader className='dark:border-t-2 dark:border-sky-900'>
 							<CardTitle>About {companyName}</CardTitle>
-							<CardDescription>On UniHomes since {new Date(created_at).toLocaleDateString('en-US', {
-                                year: 'numeric',
-                                month: 'long',
-                                day: 'numeric'
-                            })}</CardDescription>
+							<CardDescription>
+								On UniHomes since{' '}
+								{new Date(created_at).toLocaleDateString('en-US', {
+									year: 'numeric',
+									month: 'long',
+									day: 'numeric',
+								})}
+							</CardDescription>
 						</CardHeader>
 						<CardContent className='space-y-2 dark:text-white'>
 							<div className='space-y-1'>{about}</div>
@@ -95,7 +124,7 @@ export function BusinessDetails({
 					</Card>
 				</TabsContent>
 
-				{/* BRANCHES SECTION */}
+				{/* PROPERTIES SECTION */}
 				<TabsContent value='branchesAndRooms'>
 					<Card className='dark:bg-transparent dark:border-none'>
 						<CardHeader className='dark:border-t-2 dark:border-sky-900'>
@@ -103,40 +132,51 @@ export function BusinessDetails({
 							<CardDescription>Explore our different properties</CardDescription>
 						</CardHeader>
 						<CardContent className='space-y-1'>
-							<Carousel>
-								<CarouselContent>
-									{specificBranchList.map((branch) => (
-										<CarouselItem
-											key={branch.id}
-											className='lg:basis-1/4 md:basis-1/3 sm:basis-1/2 xs:basis-1/2'
-											onClick={() => handleBranchClick(branch)}
-										>
-											<Card
-												className={`border-slate-400 ${
-													selectedBranch?.id === branch.id
-														? 'bg-sky-800 text-white'
-														: 'bg-none'
-												}`}
-											>
-												<CardContent className='flex h-16 items-center justify-center p-0'>
-													{branch.branch}
-												</CardContent>
-											</Card>
-										</CarouselItem>
-									))}
-								</CarouselContent>
-							</Carousel>
-
-							{/* Display available rooms for selected branch */}
-							{selectedBranch ? (
-								<div className='space-y-1 pt-1 pl-2' onClick={() => { window.location.href = "/property/room"; }}>
-									<SpecificBranchListings
-										// companyId={companyId}
-										listings={selectedBranch.available_rooms}
-									/>
-								</div>
+							{loading ? ( 
+								<div>Loading properties...</div>
 							) : (
-								<p>Please select a branch to see available rooms.</p>
+								<Carousel>
+									<CarouselContent>
+										{properties?.map((property) => (
+											<CarouselItem
+												key={property.id}
+												className='lg:basis-1/4 md:basis-1/3 sm:basis-1/2 xs:basis-1/2'
+												onClick={() => handlePropertyClick(property)}
+											>
+												<Card
+													className={`border-slate-400 ${
+														selectedProperty?.id === property.id
+															? 'bg-sky-800 text-white'
+															: 'bg-none'
+													}`}
+												>
+													<CardContent className='flex flex-col h-16 items-center justify-center p-0'>
+														<div>{property.title}</div>
+														<div className='flex items-center'>
+															<MapPin className='mr-1' height={18} width={18} />
+															<small>{property.address}</small>
+														</div>
+													</CardContent>
+												</Card>
+											</CarouselItem>
+										))}
+									</CarouselContent>
+								</Carousel>
+							)}
+
+							{/* Display available units for selected property */}
+							{loadingUnits ? ( 
+								<div>Loading units...</div>
+							) : selectedProperty ? (
+								units.length > 0 ? ( 
+									<div className='space-y-1 pt-1 pl-2'>
+										<SpecificBranchListings listings={units} />
+									</div>
+								) : (
+									<p>No units available under this property.</p> 
+								)
+							) : (
+								<p>Please select a property to see available units.</p>
 							)}
 						</CardContent>
 					</Card>
@@ -151,7 +191,7 @@ export function BusinessDetails({
 						</CardHeader>
 						<CardContent>
 							<div className='space-y-1'>
-								<BusinessReviews />
+								<BusinessReviews companyId={companyId} />
 							</div>
 						</CardContent>
 					</Card>
