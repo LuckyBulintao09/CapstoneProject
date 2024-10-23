@@ -8,50 +8,51 @@ const LoadingPage = () => {
 				<h1 className='text-xl font-bold mb-4'>Loading . . .</h1>
 				<div className='loader'></div>
 				<style jsx>{`
+					/* CSS for the loader */
 					.loader {
-						width: 60px;
-						aspect-ratio: 1; /* Maintains a square aspect ratio */
-						display: grid;
+						width: 65px;
+						aspect-ratio: 1;
+						position: relative;
 					}
 					.loader:before,
 					.loader:after {
 						content: '';
-						grid-area: 1/1;
-						color: hsl(216, 83%, 34%);
-						animation: l19 1.5s infinite linear;
-					}
-					.loader:before {
-						margin: 5px 20px;
-						background: currentColor;
+						position: absolute;
+						border-radius: 50px;
+						box-shadow: 0 0 0 3px inset hsl(216, 83%, 34%); /* Set the blue color using HSL */
+						animation: l5 2.5s infinite;
 					}
 					.loader:after {
-						border: solid;
-						border-width: 5px 20px;
-						--s: 0;
+						animation-delay: -1.25s;
+						border-radius: 0;
 					}
-					@keyframes l19 {
+					@keyframes l5 {
 						0% {
-							transform: perspective(100px) rotate3d(1, var(--s, 1), 0, 0);
+							inset: 0 35px 35px 0;
+						}
+						12.5% {
+							inset: 0 35px 0 0;
 						}
 						25% {
-							transform: perspective(100px) rotate3d(1, var(--s, 1), 0, 90deg);
+							inset: 35px 35px 0 0;
 						}
-						25.01% {
-							transform: perspective(100px) rotate3d(1, var(--s, 1), 0, 90deg);
+						37.5% {
+							inset: 35px 0 0 0;
 						}
-						40%,
-						60% {
-							transform: perspective(100px) rotate3d(1, var(--s, 1), 0, 180deg);
+						50% {
+							inset: 35px 0 0 35px;
+						}
+						62.5% {
+							inset: 0 0 0 35px;
 						}
 						75% {
-							transform: perspective(100px) rotate3d(1, var(--s, 1), 0, 270deg);
+							inset: 0 0 35px 35px;
 						}
-						75.01% {
-							transform: perspective(100px) rotate3d(1, var(--s, 1), 0, 270deg);
+						87.5% {
+							inset: 0 0 35px 0;
 						}
-						90%,
 						100% {
-							transform: perspective(100px) rotate3d(1, var(--s, 1), 0, 360deg);
+							inset: 0 35px 35px 0;
 						}
 					}
 				`}</style>

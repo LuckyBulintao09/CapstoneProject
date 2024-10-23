@@ -1,6 +1,6 @@
-import { NewLessors } from '@/modules/admin-dashboard/newLessors-components/columns';
+import { NewCompanies } from '@/modules/admin-dashboard/components/newCompanies-components/columns';
 
-export const new_lessors: NewLessors[] = [
+export const new_companies: NewCompanies[] = [
 	{
 		id: 1,
 		name: 'John Doe',

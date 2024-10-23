@@ -1,15 +1,14 @@
 'use client';
 
-import { format, isWithinInterval, parseISO } from 'date-fns';
 import { ColumnDef, Row } from '@tanstack/react-table';
 import { Button } from '@/components/ui/button';
 import { DataTableColumnHeader } from '@/app/(auth)/(lessor-dashboard)/reservations/data-column-header';
 import { useState } from 'react';
-import ApproveConfirmationModal from '../components/ApproveConfirmationModal';
-import RejectConfirmationModal from '../components/RejectConfirmationModal';
-import { ProfileAlert } from '../components/ProfileAlert';
 
-export type NewLessors = {
+import ApproveCompanyModal from '../ApproveCompanyModal';
+import RejectCompanyModal from '../RejectCompanyModal';
+
+export type NewCompanies = {
 	id: number;
 	name: string;
 	message: string;
@@ -23,7 +22,7 @@ export type NewLessors = {
 	read: boolean;
 };
 
-const ReportedReviewsActionsCell = ({ row }: { row: Row<NewLessors> }) => {
+const NewCompaniesActionsCell = ({}: { row: Row<NewCompanies> }) => {
 	const [isApproveModalOpen, setIsApproveModalOpen] = useState(false);
 	const [isRejectModalOpen, setIsRejectModalOpen] = useState(false);
 
@@ -57,13 +56,13 @@ const ReportedReviewsActionsCell = ({ row }: { row: Row<NewLessors> }) => {
 				Reject
 			</Button>
 
-			<ApproveConfirmationModal
+			<ApproveCompanyModal
 				isOpen={isApproveModalOpen}
 				onClose={() => setIsApproveModalOpen(false)}
 				handleApprove={handleApprove}
 			/>
 
-			<RejectConfirmationModal
+			<RejectCompanyModal
 				isOpen={isRejectModalOpen}
 				onClose={() => setIsRejectModalOpen(false)}
 				handleReject={handleReject}
@@ -72,31 +71,17 @@ const ReportedReviewsActionsCell = ({ row }: { row: Row<NewLessors> }) => {
 	);
 };
 
-const ReportedReviewsViewActionsCell = ({ row }: { row: Row<NewLessors> }) => {
-	const [isModalOpen, setIsModalOpen] = useState(false);
-
-	const lessor: NewLessors = row.original;
-
+const BusinessPermitViewActionsCell = ({}: { row: Row<NewCompanies> }) => {
 	return (
 		<>
-			<Button
-				variant='link'
-				className='dark:text-gray-400 underline'
-				size='sm'
-				onClick={() => setIsModalOpen(true)}
-			>
-				View More
+			<Button variant='link' className='dark:text-gray-400 underline' size='sm'>
+				View Business Permit
 			</Button>
-			<ProfileAlert
-				lessor={lessor}
-				isOpen={isModalOpen}
-				onClose={() => setIsModalOpen(false)}
-			/>
 		</>
 	);
 };
 
-export const columns: ColumnDef<NewLessors>[] = [
+export const columns: ColumnDef<NewCompanies>[] = [
 	{
 		accessorKey: 'id',
 		header: ({ column }) => (
@@ -110,20 +95,20 @@ export const columns: ColumnDef<NewLessors>[] = [
 		),
 	},
 	{
-		accessorKey: 'email',
+		accessorKey: 'company_name',
 		header: ({ column }) => (
-			<DataTableColumnHeader column={column} title='Email' />
+			<DataTableColumnHeader column={column} title='Company Name' />
 		),
 	},
 	{
-		accessorKey: 'additional_info',
+		accessorKey: 'business_permit',
 		header: ({ column }) => (
-			<DataTableColumnHeader column={column} title='Additional Information' />
+			<DataTableColumnHeader column={column} title='Business Permit' />
 		),
-		cell: ReportedReviewsViewActionsCell,
+		cell: BusinessPermitViewActionsCell,
 	},
 	{
 		id: 'actions',
-		cell: ReportedReviewsActionsCell,
+		cell: NewCompaniesActionsCell,
 	},
 ];

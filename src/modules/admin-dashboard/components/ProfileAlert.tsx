@@ -68,15 +68,7 @@ export function ProfileAlert({ lessor, isOpen, onClose }: ProfileAlertProps) {
 										disabled
 									/>
 								</div>
-								<div className='grid w-full max-w-auto items-center gap-1.5'>
-									<Label htmlFor='address'>{spiels.FORM_ADDRESS}</Label>
-									<Input
-										type='text'
-										id='address'
-										placeholder={lessor.address}
-										disabled
-									/>
-								</div>
+
 								<div className='grid w-full max-w-auto items-center gap-1.5'>
 									<Label htmlFor='date'>{spiels.FORM_BIRTHDATE}</Label>
 									<Input
@@ -95,17 +87,6 @@ export function ProfileAlert({ lessor, isOpen, onClose }: ProfileAlertProps) {
 										className='text-blue-600 dark:text-primary underline'
 									>
 										{spiels.FORM_VIEW_GOVERNMENT_ID}
-									</a>
-								</div>
-								<div className='grid w-full max-w-auto items-center gap-1.5'>
-									<Label>{spiels.FORM_BUSINESS_LICENSE}</Label>
-									<a
-										href={lessor.businessLicenseUrl}
-										target='_blank'
-										rel='noopener noreferrer'
-										className='text-blue-600 dark:text-primary underline'
-									>
-										{spiels.FORM_VIEW_BUSINESS_LICENSE}
 									</a>
 								</div>
 							</div>

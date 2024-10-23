@@ -18,16 +18,15 @@ import {
 } from '@/actions/listings/specific-listing';
 import ErrorPage from '@/components/ui/ErrorPage';
 import {
-
-  APIProvider,
-  Map,
-  AdvancedMarker,
-  AdvancedMarkerAnchorPoint,
-  InfoWindow,
-} from "@vis.gl/react-google-maps";
-import { getSpecificLocation } from "@/actions/listings/listing-filter";
-import { get_unitAmenities } from "@/actions/listings/amenities";
-import { get } from "http";
+	APIProvider,
+	Map,
+	AdvancedMarker,
+	AdvancedMarkerAnchorPoint,
+	InfoWindow,
+} from '@vis.gl/react-google-maps';
+import { getSpecificLocation } from '@/actions/listings/listing-filter';
+import { get_unitAmenities } from '@/actions/listings/amenities';
+import { get } from 'http';
 import {
 	Tooltip,
 	TooltipContent,
@@ -35,7 +34,6 @@ import {
 	TooltipTrigger,
 } from '@/components/ui/tooltip';
 import LoadingPage from '@/components/LoadingPage';
-
 
 interface SpecificListingProps {
 	id: number;
@@ -48,7 +46,7 @@ export function SpecificListing({ id }: SpecificListingProps) {
 	const [isLoginModalOpen, setIsLoginModalOpen] = useState(false);
 	const [loading, setLoading] = useState(true);
 	const [error, setError] = useState(false);
-  const [amenitiesList, setAmenitiesList] = useState<any[]>([]);
+	const [amenitiesList, setAmenitiesList] = useState<any[]>([]);
 
 	//map
 	const [position, setPosition] = useState({
@@ -71,7 +69,7 @@ export function SpecificListing({ id }: SpecificListingProps) {
 
 				setProperty(unit);
 				setIsFavourite(favorite);
-        setAmenitiesList(await get_unitAmenities(unit?.id));
+				setAmenitiesList(await get_unitAmenities(unit?.id));
 				setPosition({
 					lat: (await getSpecificLocation(unit?.id))?.lat,
 					lng: (await getSpecificLocation(unit?.id))?.lng,
@@ -208,7 +206,7 @@ export function SpecificListing({ id }: SpecificListingProps) {
 						beds={beds}
 						occupants={occupants}
 						description={description}
-            amenitiesList={amenitiesList}
+						amenitiesList={amenitiesList}
 					/>
 				</div>
 
@@ -230,7 +228,7 @@ export function SpecificListing({ id }: SpecificListingProps) {
 				<h4 className='text-2xl font-semibold tracking-tight pb-4'>
 					Where you&apos;ll be
 				</h4>
-				<Card className='lg:h-[550px] md:h-full sm:h-[300px] xs:h-[365px] border-none'>
+				<Card className='lg:h-[550px] xs:h-[365px] border-none'>
 					<APIProvider apiKey={process.env.NEXT_PUBLIC_GOOGLE_MAPS_API_KEY}>
 						<Map
 							defaultZoom={15}

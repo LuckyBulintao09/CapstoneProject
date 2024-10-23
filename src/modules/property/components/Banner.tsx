@@ -44,7 +44,7 @@ const Banner: React.FC<BannerProps> = ({
 	};
 
 	return (
-		<div className='col-span-8 mt-9'>
+		<div className='col-span-8 mt-9 border-b border-gray-300 mb-6 pb-6'>
 			<div className='flex flex-row justify-between bg-primary rounded-xl p-5'>
 				<div className='flex flex-row items-center gap-3 '>
 					<Avatar className='h-16 w-16 rounded-full overflow-hidden'>
