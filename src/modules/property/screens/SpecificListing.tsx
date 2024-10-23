@@ -25,6 +25,7 @@ import {
 	TooltipProvider,
 	TooltipTrigger,
 } from '@/components/ui/tooltip';
+import LoadingPage from '@/components/LoadingPage';
 
 interface SpecificListingProps {
 	id: number;
@@ -92,7 +93,12 @@ export function SpecificListing({ id }: SpecificListingProps) {
 		setUserId(fetchedUserId);
 	};
 
-	if (loading) return <div>Loading...</div>;
+	if (loading)
+		return (
+			<div>
+				<LoadingPage />
+			</div>
+		);
 	if (error) {
 		return <ErrorPage />;
 	}
