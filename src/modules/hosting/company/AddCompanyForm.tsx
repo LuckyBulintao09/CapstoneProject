@@ -2,64 +2,68 @@
 
 import React from "react";
 
+import { redirect } from "next/navigation";
+
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
 import { companySchema, CompanySchemaTypes } from "@/lib/schemas/createCompanySchema";
 
 import { Button } from "@/components/ui/button";
 import { Form, FormControl, FormDescription, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form";
-import { toast } from "sonner";
 import { Input } from "@/components/ui/input";
+import { toast } from "sonner";
 
-import { getErrorMessage } from "@/lib/handle-error";
-import { useUploadFile } from "@/hooks/use-upload-file";
+import { MinimalTiptapEditor } from "@/components/minimal-tiptap";
 
-import { FileUploader } from "@/components/file-uploader/file-uploader";
-
-import { GoogleMap, useJsApiLoader, Marker } from "@react-google-maps/api";
-
-import PlacesAutoComplete from "./PlacesAutoComplete";
+import { addACompany } from "@/actions/company/addACompany";
+import useGetUser from "@/hooks/user/useGetUser";
+import { useMediaQuery } from "@/hooks/use-media-query";
 
 function AddCompanyForm() {
-    // maps
     const [loading, setLoading] = React.useState(false);
-    const [selectedPlace, setSelectedPlace] = React.useState<any>(null);
 
-    const { isLoaded } = useJsApiLoader({
-        googleMapsApiKey: process.env.NEXT_PUBLIC_GOOGLE_MAPS_API_KEY!,
-        libraries: ["places"],
-    });
-
-    // file upload
-    const { onUpload, progresses, isUploading } = useUploadFile("imageUploader", { defaultUploadedFiles: [] });
+    const { data: user } = useGetUser();
 
     // forms
     const createCompanyForm = useForm<CompanySchemaTypes>({
         resolver: zodResolver(companySchema),
+        defaultValues: {
+            company_name: "",
+            about: "",
+        },
     });
 
-    function onSubmit(values: CompanySchemaTypes) {
+    async function onSubmit(values: CompanySchemaTypes) {
         setLoading(true);
-
-        toast.promise(onUpload(values.business_permit), {
-            loading: "Uploading images...",
+        if (!user) {
+            toast.error("You must be logged in to add a company");
+            setLoading(false);
+            redirect("/");
+        }
+        toast.promise(addACompany(values, user?.id), {
+            loading: "Adding company...",
             success: () => {
+                setLoading(false);
                 createCompanyForm.reset();
-                setLoading(false);
-                return "Images uploaded";
+                createCompanyForm.setValue("about", "");
+                return "Company added successfully";
             },
-            error: (err) => {
+
+            error: () => {
                 setLoading(false);
-                return getErrorMessage(err);
+                return "Something went wrong. Failed to add company";
             },
         });
     }
 
     return (
-        <div className="bg-secondary py-20">
+        <div className="bg-secondary py-32 airBnbDesktop:py-20 h-screen px-7 airBnbDmobile:px-0">
             <h1 className="text-center text-3xl font-bold mb-7">Add a Company</h1>
             <Form {...createCompanyForm}>
-                <form onSubmit={createCompanyForm.handleSubmit(onSubmit)} className="flex w-full flex-col gap-6 max-w-xl mx-auto">
+                <form
+                    onSubmit={createCompanyForm.handleSubmit(onSubmit)}
+                    className="flex w-full flex-col gap-6 max-w-5xl airBnbDtablet:px-11 mx-auto"
+                >
                     <FormField
                         control={createCompanyForm.control}
                         name="company_name"
@@ -67,52 +71,40 @@ function AddCompanyForm() {
                             <FormItem>
                                 <FormLabel>Company name</FormLabel>
                                 <FormControl>
-                                    <Input {...field} />
+                                    <Input placeholder="Type your company name here" {...field} />
                                 </FormControl>
                                 <FormDescription>This is your company's public display name.</FormDescription>
                                 <FormMessage />
                             </FormItem>
                         )}
                     />
-                    <div>
-                        <div>
-                            <PlacesAutoComplete setSelectedPlace={setSelectedPlace} />
-                        </div>
-                        <div className="mt-6">
-                            {isLoaded && (
-                                <GoogleMap zoom={13} center={{ lat: 16.4023, lng: 120.596 }} mapContainerClassName="w-full h-[300px] rounded-lg">
-                                    {selectedPlace && <Marker position={selectedPlace} />}
-                                </GoogleMap>
-                            )}
-                        </div>
-                    </div>
                     <FormField
                         control={createCompanyForm.control}
-                        name="business_permit"
+                        name="about"
                         render={({ field }) => (
-                            <div className="space-y-6">
-                                <FormItem className="w-full">
-                                    <FormLabel>Business permit</FormLabel>
-                                    <FormControl>
-                                        <FileUploader
-                                            value={field.value}
-                                            onValueChange={field.onChange}
-                                            maxFileCount={4}
-                                            maxSize={4 * 1024 * 1024}
-                                            progresses={progresses}
-                                            // pass the onUpload function here for direct upload
-                                            // onUpload={uploadFiles}
-                                            disabled={isUploading}
-                                        />
-                                    </FormControl>
-                                    <FormDescription>Upload your business permit here. Pdf, png, and jpg are accepted formats.</FormDescription>
-                                    <FormMessage />
-                                </FormItem>
-                            </div>
+                            <FormItem>
+                                <FormLabel>About the company</FormLabel>
+                                <FormControl>
+                                    <MinimalTiptapEditor
+                                        value={field.value}
+                                        onChange={field.onChange}
+                                        className="w-full text-base"
+                                        editorContentClassName="p-5"
+                                        output="html"
+                                        placeholder="Type your description here..."
+                                        autofocus={false}
+                                        editable={true}
+                                        editorClassName="focus:outline-none"
+                                        immediatelyRender={false}
+                                    />
+                                </FormControl>
+                                <FormDescription>Tell us about your company.</FormDescription>
+                                <FormMessage />
+                            </FormItem>
                         )}
                     />
                     <Button className="w-fit" disabled={loading}>
-                        Save
+                        Submit
                     </Button>
                 </form>
             </Form>

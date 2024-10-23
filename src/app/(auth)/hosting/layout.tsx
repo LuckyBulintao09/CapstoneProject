@@ -1,15 +1,15 @@
-
-import NavBar from '@/components/navbar/Navbar';
+import NavBar from "@/components/navbar/Navbar";
+import ResponsiveLayout from "@/components/ResponsiveLayout";
 import Footer from "@/modules/home/components/Footer";
-import { Toaster } from 'sonner';
+import { Toaster } from "sonner";
 
 function LessorLayout({ children }: { children: React.ReactNode }) {
     return (
         <div>
             <NavBar />
-            <div>{children}</div>
+            <ResponsiveLayout>{children}</ResponsiveLayout>
             <Footer />
-            <Toaster />
+            <Toaster position="top-center" />
         </div>
     );
 }

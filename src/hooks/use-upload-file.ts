@@ -1,5 +1,6 @@
 import * as React from "react";
 import { toast } from "sonner";
+
 import { getErrorMessage } from "@/lib/handle-error";
 
 import { createClient } from "@/utils/supabase/client";
@@ -20,11 +21,11 @@ export function useUploadFile(bucketName: string, { defaultUploadedFiles = [], .
         setIsUploading(true);
         try {
             const uploadPromises = files.map(async (file) => {
-                const filePath = `public/${file.name}`;
+                const filePath = `${file.name}`;
 
-                const { data, error } = await supabase.storage.from(bucketName).upload(filePath, file);
-
-                console.log("Supabase upload response:", { data, error });
+                const { data, error } = await supabase.storage.from(bucketName).upload(filePath, file, {
+                    upsert: true
+                });
 
                 if (error) {
                     console.error("Error uploading file:", error);
@@ -32,11 +33,10 @@ export function useUploadFile(bucketName: string, { defaultUploadedFiles = [], .
                 }
 
                 // Track progress (assuming Supabase returns progress in future updates)
-                setProgresses((prev) => ({
-                    ...prev,
-                    [file.name]: 100, // Assuming upload is complete without progress API
-                }));
-                console.log("File uploaded successfully:", data?.path);
+                // setProgresses((prev) => ({
+                //     ...prev,
+                //     [file.name]: 100, // Assuming upload is complete without progress API
+                // }));
 
                 const imgUrl = `${process.env.NEXT_PUBLIC_SUPABASE_URL!}/storage/v1/object/public/${bucketName}/${data?.path}`;
 
@@ -45,8 +45,6 @@ export function useUploadFile(bucketName: string, { defaultUploadedFiles = [], .
 
             const res = await Promise.all(uploadPromises);
             setUploadedFiles((prev) => [...prev, ...res]);
-            console.log("Uploaded files:", res);
-            console.log("Current uploaded files:", uploadedFiles);
         } catch (error) {
             toast.error(getErrorMessage(error));
         } finally {

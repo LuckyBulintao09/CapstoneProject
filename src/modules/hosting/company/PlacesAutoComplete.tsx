@@ -17,9 +17,17 @@ function PlacesAutoComplete({ setSelectedPlace }: {setSelectedPlace: React.Dispa
         setValue,
         suggestions: {status, data},
         clearSuggestions,
-    } = usePlacesAutocomplete()
+    } = usePlacesAutocomplete({
+        debounce: 300,
+        requestOptions: {
+            componentRestrictions: {
+                country: 'AU',
+            },
+        },
+        initOnMount: false,
+    })
 
-    const [buttonText ,setButtonText] = React.useState("Select address...");
+    const [buttonText ,setButtonText] = React.useState<string>("Select address...");
     const [popoverOpen, setPopoverOpen] = React.useState<boolean>(false);
 
     const handleSelectedValue = async (selectedAddress) => {
@@ -32,17 +40,19 @@ function PlacesAutoComplete({ setSelectedPlace }: {setSelectedPlace: React.Dispa
         setSelectedPlace({ lat, lng });
     }
 
+    console.log("Component Mounted", { value, status, data });    
+
     return (
         <div>
             <Popover open={popoverOpen} onOpenChange={setPopoverOpen}>
                 <PopoverTrigger asChild >
-                    <Button variant="outline" role="combobox" className={cn("w-full justify-start", !value && "text-muted-foreground")} >
+                    <Button variant="outline" role="combobox" className={cn("w-full justify-start", !value && "text-muted-foreground")} disabled={!ready}>
                         <ChevronsUpDown className="mr-2 h-4 w-4 shrink-0 opacity-50" />
                         <span>{buttonText}</span>
                     </Button>
                 </PopoverTrigger>
                 <PopoverContent className="w-full p-0" align="start" side="bottom" >
-                    <Command className="w-full">
+                    <Command className="">
                         <CommandInput placeholder="Search address..." onValueChange={setValue} />
                         <CommandList>
                             <CommandEmpty>Address not found.</CommandEmpty>
