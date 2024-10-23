@@ -3,6 +3,7 @@
 import React, { useEffect, useState } from 'react';
 import { createClient } from '../../../../../supabase/client';
 import Inbox from './messages/page';
+import { Card, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 
 const supabase = createClient();
 
@@ -78,26 +79,33 @@ const Page = () => {
   };
 
   return (
+    <Card className='bg-transparent m-2'>
     <div className="flex h-screen">
       {/* Sidebar */}
-      <div className="bg-gray-200 p-4 rounded-lg shadow-md w-1/4">
+      <div className=" p-4 rounded-lg m-2 shadow-md w-1/4 ">
         <h2 className="text-lg font-bold mb-4">Conversations ({conversations.length})</h2>
         {loading ? (
+
           <div className="text-center text-gray-600">Loading conversations...</div>
         ) : (
+         
           <ul>
             {conversations.map((conversation) => (
+               <Card className='m-1 bg-transparent pl-3 '>
               <li key={conversation.user2} className="mb-2 flex items-center"> 
-                <div className="flex-shrink-0 w-10 h-10 flex items-center justify-center bg-blue-500 text-white rounded-full mr-3">
+                <div className="flex-shrink-0 w-10 h-10 flex items-center justify-center bg-secondary rounded-full mr-2">
                   {getInitials(conversation.firstname, conversation.lastname)}
                 </div>
                 <button
-                  className="w-full text-left p-2 bg-white rounded hover:bg-gray-300"
+                  className="w-full text-left p-2  rounded "
                   onClick={() => handleSelectConversation(conversation.user2)} 
                 >
-                  {`${conversation.firstname} ${conversation.lastname}`}
+                  <strong>{`${conversation.firstname} ${conversation.lastname}`}</strong>
+                  <br />
+                  <small className='text-gray-500 text-xs'>Placeholder for text</small>
                 </button>
               </li>
+              </Card>
             ))}
           </ul>
         )}
@@ -108,6 +116,7 @@ const Page = () => {
         <Inbox receiver_id={selectedReceiverId} />
       </div>
     </div>
+    </Card>
   );
 };
 

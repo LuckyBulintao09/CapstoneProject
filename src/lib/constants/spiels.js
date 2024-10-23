@@ -147,7 +147,7 @@ const spiels = {
 		// For logged in users
 		{
 			label: 'Messages',
-			href: '/client/inbox',
+			href: '/chat/inbox',
 		},
 		{
 			label: 'Favorites',
@@ -175,7 +175,7 @@ const spiels = {
 		// For logged in users
 		{
 			label: 'Messages',
-			href: '/client/inbox',
+			href: '/chat/inbox',
 		},
 		{
 			label: 'Favorites',

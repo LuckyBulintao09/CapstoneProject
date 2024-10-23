@@ -3,9 +3,11 @@ import { createClient } from '../../../../../../supabase/client';
 import { checkConversation } from '@/actions/chat/checkConversation'; 
 import { sendMessage } from '@/actions/chat/sendMessage'; 
 import { fetchReceiverName } from '@/actions/chat/fetchReceiverName'; 
-
+import { Card } from '@/components/ui/card';
+import { ScrollArea } from '@/components/ui/scroll-area'; 
+import { Button } from '@/components/ui/button';
+import { Input } from '@/components/ui/input';
 const supabase = createClient();
-
 
 const Inbox = ({ receiver_id }) => {
   const [messages, setMessages] = useState([]);
@@ -53,7 +55,6 @@ const Inbox = ({ receiver_id }) => {
 
     fetchUserAndMessages();
 
-    // CONNECT TO CHANNEL
     const channel = supabase.channel('messages');
 
     channel
@@ -94,64 +95,63 @@ const Inbox = ({ receiver_id }) => {
   };
 
   return (
-    <div className="w-full h-full flex flex-col p-4 bg-white">
-      {/* Receiver's Name and Avatar */}
-      <div className="mb-4 bg-gray-200 rounded">
-        {receiver_id ? (
-          receiverName && (
-            <div className="flex items-center bg-gray-200 rounded p-2 shadow-sm rounded-md">
-              <div className="flex items-center justify-center w-10 h-10 bg-blue-500 text-white rounded-full mr-3">
-                {`${receiverName.firstname.charAt(0)}${receiverName.lastname.charAt(0)}`}
-              </div>
-              <div>
-                <h1 className="text-md font-semibold text-gray-900">
-                  {receiverName.firstname} {receiverName.lastname}
-                </h1>
-                <p className="text-xs text-green-500">Active now</p>
-              </div>
+    <Card className='w-full h-full bg-transparent'>
+      <div className="w-full h-full flex flex-col p-4">
+        {/* Receiver's Name and Avatar */}
+        {receiver_id && receiverName && (
+          <Card className="flex items-center p-2 shadow-sm mb-4 bg-transparent">
+            <div className="flex items-center justify-center w-10 h-10 bg-secondary rounded-full mr-3">
+              {`${receiverName.firstname.charAt(0)}${receiverName.lastname.charAt(0)}`}
             </div>
-          )
-        ) : (
-          <p className="text-center text-gray-500"></p>
-        )}
-      </div>
-
-      {/* Messages Container */}
-      <div className="flex-grow overflow-y-auto mb-4 p-2 bg-white rounded-lg shadow-inner">
-        {messages.length === 0 ? (
-          <p className="text-center text-gray-500">No messages yet.</p>
-        ) : (
-          messages.map((msg) => (
-            <div
-              key={msg.id}
-              className={`mb-2 max-w-xs ${msg.sender_id === user.id ? 'ml-auto bg-blue-500 text-white' : 'mr-auto bg-gray-200 text-black'} p-2 rounded-lg text-sm break-words`}
-            >
-              <p>{msg.content}</p>
-              <small className="block text-xs text-gray-400 mt-1">{new Date(msg.created_at).toLocaleTimeString()}</small>
+            <div>
+              <h1 className="text-md font-semibold">
+                {receiverName.firstname} {receiverName.lastname}
+              </h1>
+              <p className="text-xs text-green-500">Active now</p>
             </div>
-          ))
+          </Card>
         )}
-        <div ref={messagesEndRef} />
-      </div>
 
-      {/* Message Input */}
-      <form
-        onSubmit={sendMessageHandler}
-        className="flex items-center bg-white p-2 rounded-full shadow-md"
-      >
-        <input
-          type="text"
-          value={messageContent}
-          onChange={(e) => setMessageContent(e.target.value)}
-          placeholder="Type a message..."
-          className="flex-grow bg-gray-100 p-2 text-sm rounded-full outline-none focus:ring focus:ring-blue-300"
-          required
-        />
-        <button type="submit" className="ml-2 bg-blue-500 text-white p-2 rounded-full hover:bg-blue-600">
-          Send
-        </button>
-      </form>
-    </div>
+        {/* Messages Container */}
+        <ScrollArea className="flex-1 p-4  rounded-lg mb-4 bg-transparent">
+          {messages.length === 0 ? (
+            <p className="text-center text-muted-foreground">No conversation selected.</p>
+          ) : (
+            messages.map((msg) => (
+              <div
+                key={msg.id}
+                className={`mb-2 max-w-xs p-2 rounded-lg text-sm break-words ${
+                  msg.sender_id === user.id
+                    ? 'ml-auto bg-primary text-primary-foreground'
+                    : 'mr-auto bg-gray-200 '
+                }`}
+              >
+                <p>{msg.content}</p>
+                <small className="block text-xs text-gray-400 mt-1">
+                  {new Date(msg.created_at).toLocaleTimeString()}
+                </small>
+              </div>
+            ))
+          )}
+          <div ref={messagesEndRef} />
+        </ScrollArea>
+
+        {/* Message Input */}
+        <Card className="p-2 bg-transparent">
+          <form onSubmit={sendMessageHandler} className="flex items-center">
+            <Input
+              type="text"
+              value={messageContent}
+              onChange={(e) => setMessageContent(e.target.value)}
+              placeholder="Type a message..."
+              className="flex-grow mr-2"
+              required
+            />
+            <Button type="submit">Send</Button>
+          </form>
+        </Card>
+      </div>
+    </Card>
   );
 };
 
