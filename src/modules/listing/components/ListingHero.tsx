@@ -3,7 +3,7 @@
 import spiels from '@/lib/constants/spiels';
 import { SearchIcon } from 'lucide-react';
 import { MdOutlineMyLocation } from 'react-icons/md';
-import React, { useContext } from 'react';
+import React, { useContext, useRef, useEffect } from 'react';
 import { MapContext } from './ListingsPage';
 import { set } from 'date-fns';
 import { toast } from 'sonner';
@@ -20,6 +20,31 @@ export default function ListingHero({
 }: HeroSectionProps) {
 
 	const [deviceLocation,setDeviceLocation] = useContext(MapContext);
+	const inputRef = useRef(null);
+
+	const initAutocomplete = async () => {
+		const [{Autocomplete}] = await Promise.all([
+			google.maps.importLibrary("places"),
+		]);
+		const autocomplete = new Autocomplete(inputRef.current);
+		autocomplete.setFields(["place_id", "geometry", "name", "formatted_address"]);
+		const bounds = new google.maps.LatLngBounds(
+			new google.maps.LatLng(16.25, 120.396),
+			new google.maps.LatLng(16.569, 120.778)
+		);
+		autocomplete.setBounds(bounds);
+		autocomplete.setOptions({ strictBounds: true });
+		autocomplete.addListener("place_changed", () => {
+			const place = autocomplete.getPlace();
+			if (place.geometry) {
+				const { lat, lng } = place.geometry.location.toJSON();
+				setDeviceLocation({
+					lat,
+					lng
+				});
+			}
+		});
+	}
 	const handleCurrentLocationClick = () => {
 	if (navigator.geolocation) {
 		navigator.geolocation.getCurrentPosition((position) => {
@@ -35,6 +60,10 @@ export default function ListingHero({
 		});
 	}
 };
+
+useEffect(() => {
+    initAutocomplete();
+  }, []);
 	
 	return (
 		<div className='flex items-center justify-center h-[250px] w-screen'>
@@ -53,6 +82,7 @@ export default function ListingHero({
 						<div className='relative flex lg:w-full md:w-[75%] xs:w-[50%]'>
 							<SearchIcon className='absolute left-3 top-1/2 -translate-y-1/2 h-5 w-5 text-black dark:text-muted-foreground' />
 							<input
+								ref={inputRef}
 								type='search'
 								name='search'
 								id='search'

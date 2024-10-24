@@ -43,6 +43,8 @@ interface Favorites {
 	lessor_name: string;
 }
 
+
+
 const householdPrivacyTypes = [
 	{ value: 'Shared Room', label: 'Shared Room' },
 	{ value: 'Whole Place', label: 'Whole Place' },
@@ -75,6 +77,7 @@ export default function Listings() {
 				)
 			);
 		}
+		console.log(searchTerm)
 		getFilteredListings(currentID, selectedFilter, selectedPrivacyType);
 	};
 	const handleDeviceLocation = async () => {
