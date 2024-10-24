@@ -57,12 +57,11 @@ function AddCompanyForm() {
     }
 
     return (
-        <div className="bg-secondary py-32 airBnbDesktop:py-20 h-screen px-7 airBnbDmobile:px-0">
-            <h1 className="text-center text-3xl font-bold mb-7">Add a Company</h1>
+        <>
             <Form {...createCompanyForm}>
                 <form
                     onSubmit={createCompanyForm.handleSubmit(onSubmit)}
-                    className="flex w-full flex-col gap-6 max-w-5xl airBnbDtablet:px-11 mx-auto"
+                    className="flex w-full flex-col gap-6 airBnbDtablet:px-11"
                 >
                     <FormField
                         control={createCompanyForm.control}
@@ -108,7 +107,7 @@ function AddCompanyForm() {
                     </Button>
                 </form>
             </Form>
-        </div>
+        </>
     );
 }
 
