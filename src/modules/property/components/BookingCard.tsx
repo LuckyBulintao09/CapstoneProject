@@ -13,11 +13,15 @@ import { Calendar } from "@/components/ui/calendar";
 import { CalendarIcon } from "lucide-react";
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 import { Table, TableFooter, TableRow, TableCell } from "@/components/ui/table";
-import { createClient } from "@/utils/supabase/client";
-import { format } from "date-fns";
 import { NavbarModalLogin } from "@/components/navbar/NavbarModalLogin";
-
-const supabase = createClient();
+import {
+  fetchUserData,
+  checkUnitReservationStatus,
+  createReservation,
+  checkExistingReservation,
+} from "@/actions/listings/booking-process";
+import { Toaster, toast } from "sonner";
+import { format } from "date-fns";
 
 interface BookingCardProps {
   price: number;
@@ -31,47 +35,30 @@ export const BookingCard: React.FC<BookingCardProps> = ({ price, unitId }) => {
   const [selectedService, setSelectedService] = useState<string>("");
   const [hasReservation, setHasReservation] = useState<boolean>(false);
   const [isLoginModalOpen, setIsLoginModalOpen] = useState<boolean>(false);
+  const [isUnitReserved, setIsUnitReserved] = useState<boolean>(false);
 
   const today = new Date();
 
-  const fetchUserData = async () => {
-    const {
-      data: { session },
-      error,
-    } = await supabase.auth.getSession();
-
-    if (error) {
-      console.error("Error retrieving session:", error.message);
-      return null;
-    }
-
-    if (session?.user) {
-      setUserId(session.user.id);
-      await checkExistingReservation(session.user.id);
-      return session.user.id;
-    }
-
-    return null;
-  };
-
-  const checkExistingReservation = async (userId: string) => {
-    const { data, error } = await supabase
-      .from("transaction")
-      .select("*")
-      .eq("user_id", userId)
-      .eq("unit_id", unitId)
-      .eq("transaction_status", "pending");
-
-    if (error) {
-      console.error("Error checking reservation:", error.message);
-      return;
-    }
-
-    setHasReservation(data && data.length > 0);
-  };
-
   useEffect(() => {
-    fetchUserData();
+    async function fetchData() {
+      const user = await fetchUserData();
+      if (user) {
+        setUserId(user);
+
+        const existingReservation = await checkExistingReservation(
+          user,
+          unitId
+        );
+        if (existingReservation) {
+          setHasReservation(true);
+        }
+
+        const reservedStatus = await checkUnitReservationStatus(unitId);
+        setIsUnitReserved(reservedStatus);
+      }
+    }
+
+    fetchData();
   }, [unitId]);
 
   const handleReserve = async () => {
@@ -82,31 +69,40 @@ export const BookingCard: React.FC<BookingCardProps> = ({ price, unitId }) => {
       return;
     }
 
+    if (isUnitReserved) {
+      toast.error(
+        "This unit is already reserved. You cannot make a reservation."
+      );
+      return;
+    }
+
+    if (hasReservation) {
+      toast.error("You already have a reservation for this unit.");
+      return;
+    }
+
     if (!date || !selectedService) {
-      alert("Please select a date and service option.");
+      toast.error("Please select a date and service option.");
       return;
     }
 
-    const formattedDate = format(date, "yyyy-MM-dd");
-    const { error } = await supabase.from("transaction").insert([
-      {
-        user_id: userId,
-        service_option: selectedService,
-        appointment_date: formattedDate,
-        transaction_status: "pending",
-        isPaid: false,
-        unit_id: unitId,
-      },
-    ]);
+    const result = await createReservation(
+      userSessionId,
+      unitId,
+      selectedService,
+      date
+    );
 
-    if (error) {
-      console.error("Error saving reservation:", error.message);
-      alert("Failed to save reservation. Please try again.");
+    if (!result.success) {
+      toast.error(
+        result.error || "Failed to save reservation. Please try again."
+      );
       return;
     }
 
-    alert("Reservation submitted successfully!");
+    toast.success("Reservation submitted successfully!");
     setHasReservation(true);
+    setIsUnitReserved(true);
   };
 
   const handleLoginSuccess = () => {
@@ -116,6 +112,7 @@ export const BookingCard: React.FC<BookingCardProps> = ({ price, unitId }) => {
 
   return (
     <>
+      <Toaster position="top-center" className="mt-[3%]" />
       <Card className="w-[350px] bg-white dark:bg-secondary shadow-lg mt-4">
         <CardHeader>
           <CardTitle>
@@ -125,6 +122,7 @@ export const BookingCard: React.FC<BookingCardProps> = ({ price, unitId }) => {
         </CardHeader>
         <CardContent>
           <div className="grid w-full items-center gap-4">
+            {/* Service Option Section */}
             <div className="flex flex-col space-y-1.5">
               <Label htmlFor="service" className="font-semibold">
                 Service Option
@@ -144,6 +142,7 @@ export const BookingCard: React.FC<BookingCardProps> = ({ price, unitId }) => {
                 </div>
               </RadioGroup>
             </div>
+            {/* Appointment Date Section */}
             <div className="relative">
               <Label htmlFor="date" className="font-semibold">
                 Appointment Date
@@ -184,6 +183,7 @@ export const BookingCard: React.FC<BookingCardProps> = ({ price, unitId }) => {
               )}
             </div>
           </div>
+          {/* Total Section */}
           <Table className="min-w-full">
             <TableFooter>
               <TableRow className="bg-white dark:bg-accent">
@@ -198,6 +198,10 @@ export const BookingCard: React.FC<BookingCardProps> = ({ price, unitId }) => {
             <Button disabled className="w-full">
               Already Has a Reservation
             </Button>
+          ) : isUnitReserved ? (
+            <Button disabled className="w-full">
+              Already Reserved
+            </Button>
           ) : (
             <Button onClick={handleReserve} className="w-full">
               Reserve
@@ -205,7 +209,7 @@ export const BookingCard: React.FC<BookingCardProps> = ({ price, unitId }) => {
           )}
         </CardFooter>
       </Card>
-
+      {/* Login Modal */}
       {isLoginModalOpen && (
         <NavbarModalLogin
           isOpen={isLoginModalOpen}
