@@ -5,25 +5,46 @@ import { redirect } from 'next/navigation'
 
 import { createClient } from '../../../utils/supabase/server'
 
+
 export async function login(formData: FormData) {
   const supabase = createClient();
 
-  const data = {
+  const credentials = {
     email: formData.get('email') as string,
     password: formData.get('password') as string,
   };
 
-  const { error } = await supabase.auth.signInWithPassword(data);
+  const { data: authResult, error: authError } = await supabase.auth.signInWithPassword(credentials);
 
-  if (error) {
-    return { success: false, error: error.message }; 
+  if (authError) {
+    console.log('Error during login:', authError.message);
+    return { success: false, error: authError.message };
   }
 
-  revalidatePath('/client/listings', 'layout');
-  return { success: true };
+  if (authResult?.user) {
+    const userId = authResult.user.id;
+
+    const { data: accountData, error: accountError } = await supabase
+      .from('account')
+      .select('role')
+      .eq('id', userId)
+      .single();
+
+    if (accountError) {
+      console.log('Error fetching account details:', accountError.message);
+      return { success: false, error: accountError.message };
+    }
+    console.log('User role:', accountData?.role);
+    if (accountData?.role === "Client") { 
+      revalidatePath('/client/listings', 'layout');
+      return { success: true };
+    } else if (accountData?.role === "Admin") {
+      redirect('/administrator/dashboard');
+    }
+  }
+  
+  return { success: false, error: 'User not found or role not assigned.' };
 }
-
-
 
 export async function logout() {
   const supabase = createClient()

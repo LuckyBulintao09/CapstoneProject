@@ -42,7 +42,7 @@ export function NavbarModalLogin({
 			}
 		} catch (error) {
 			console.error('Login failed:', error);
-			setErrorMessage('Something went wrong. Please try again.');
+			// setErrorMessage('Something went wrong. Please try again.');
 		} finally {
 			setIsLoading(false);
 		}
