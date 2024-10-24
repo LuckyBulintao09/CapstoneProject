@@ -123,11 +123,11 @@ const Inbox = ({ receiver_id }) => {
                 className={`mb-2 max-w-xs p-2 rounded-lg text-sm break-words ${
                   msg.sender_id === user.id
                     ? 'ml-auto bg-primary text-primary-foreground'
-                    : 'mr-auto bg-gray-200 '
+                    : 'mr-auto bg-gray-300 text-gray-800 '
                 }`}
               >
                 <p>{msg.content}</p>
-                <small className="block text-xs text-gray-400 mt-1">
+                <small className="block text-xs mt-1">
                   {new Date(msg.created_at).toLocaleTimeString()}
                 </small>
               </div>

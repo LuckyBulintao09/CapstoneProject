@@ -1,4 +1,5 @@
 import { createClient } from "@/utils/supabase/client";
+import { updateInbox } from "./updateInbox";
 
 const supabase = createClient();
 
@@ -35,6 +36,8 @@ export const sendMessage = async ({
     created_at: new Date(),
     read: false,
   }]);
+
+  await updateInbox(userId, receiverId,messageContent);
 
   if (error) {
     console.error('Error sending message:', error);
