@@ -59,7 +59,7 @@ export default function Listings() {
 
 	//Filtering States
 	const [deviceLocation, setDeviceLocation] = useContext(MapContext);
-	const position = { lat: 16.420039834357972, lng: 120.59908426196893 };
+	const [position, setPosition] = useState({ lat: 16.420039834357972, lng: 120.59908426196893 });
 	const [selectedLocation, setSelectedLocation] = useState(deviceLocation);
 	const [currentID, setCurrentID] = useState(null);
 	const [selectedFilter, setSelectedFilter] = useState<string[]>([]);
@@ -74,6 +74,7 @@ export default function Listings() {
 					event.detail.latLng.lng
 				)
 			);
+			setPosition(event.detail.latLng);
 		}
 		getFilteredListings(currentID, selectedFilter, selectedPrivacyType);
 	};
@@ -83,29 +84,26 @@ export default function Listings() {
 			setCurrentID(
 				await get_nearbyListings(deviceLocation.lat, deviceLocation.lng)
 			);
+			setPosition(deviceLocation);
 			setDeviceLocation(null);
 		}
 	};
+	const fetchFilteredListings = async () => {
+		setHouseholdAmenities(await getAllAmenities());
+		setListings(
+			(await getFilteredListings(
+				currentID,
+				selectedFilter,
+				selectedPrivacyType
+			)) || []
+		);
+		getFilteredListings(currentID, selectedFilter, selectedPrivacyType);
+		setLoading(false);
+	};
 
 	useEffect(() => {
-		if (deviceLocation) {
-			handleDeviceLocation();
-		}
-		if (true) {
-			const fetchFilteredListings = async () => {
-				setHouseholdAmenities(await getAllAmenities());
-				setListings(
-					(await getFilteredListings(
-						currentID,
-						selectedFilter,
-						selectedPrivacyType
-					)) || []
-				);
-				getFilteredListings(currentID, selectedFilter, selectedPrivacyType);
-				setLoading(false);
-			};
-			fetchFilteredListings();
-		}
+		handleDeviceLocation();
+		fetchFilteredListings();
 	}, [currentID, deviceLocation, selectedFilter, selectedPrivacyType]);
 
 	const sortedListings = [...listings].sort((a, b) => {
@@ -162,7 +160,7 @@ export default function Listings() {
 										>
 											<Map
 												defaultZoom={15}
-												defaultCenter={position}
+												center={position}
 												mapId={process.env.NEXT_PUBLIC_MAP_ID}
 												onClick={handleMapClick}
 											>
@@ -213,3 +211,5 @@ export default function Listings() {
 		</div>
 	);
 }
+
+

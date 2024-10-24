@@ -13,26 +13,13 @@ interface Amenity {
   value: boolean;
 }
 
-interface Favorites {
-  id: number;
-  title: string;
-  description: string;
-  price: number;
-  featured: boolean;
-  amenities: Amenity[];
-  lessor_name: string;
-}
 
 
 export const MapContext = createContext<any>(null);
 
 
 export default function ListingsPage() {
-	const [favoriteLists] = useState<Favorites[]>(tempValues.LISTINGS);
 	const [searchTerm, setSearchTerm] = useState('');
-	const filteredList = favoriteLists.filter((favoriteList) =>
-		favoriteList.title.toLowerCase().includes(searchTerm.toLowerCase())
-	);
 	const [deviceLocation, setDeviceLocation] = useState<any>(null);
 
 	return (
@@ -49,7 +36,7 @@ export default function ListingsPage() {
             </div>
 
             <div className="flex-grow p-8">
-                <Listings />
+                <Listings/>
             </div>
         </div>
 		</MapContext.Provider>
