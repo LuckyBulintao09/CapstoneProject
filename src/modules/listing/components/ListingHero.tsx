@@ -90,6 +90,7 @@ useEffect(() => {
 								placeholder='Search'
 								value={searchTerm}
 								onChange={(e) => setSearchTerm(e.target.value)}
+								onKeyDown={(e) => e.key === 'Enter' && e.preventDefault()}
 							/>
 							<button
 								type='button'
@@ -106,3 +107,4 @@ useEffect(() => {
 		</div>
 	);
 }
+
