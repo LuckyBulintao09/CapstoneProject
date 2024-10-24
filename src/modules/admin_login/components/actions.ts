@@ -1,6 +1,8 @@
 "use server";
 
 import { createClient } from "../../../utils/supabase/client";
+import { revalidatePath } from 'next/cache'
+import { redirect } from 'next/navigation'
 
 const supabase = createClient();
 
@@ -27,6 +29,8 @@ export async function login({ email, password }: LoginParams) {
     if (password !== "admin1234") {
       return { success: false, error: "Incorrect password." };
     }
+    
+    revalidatePath("/");
     return { success: true };
   } catch (error) {
     console.error("Error during login:", error);

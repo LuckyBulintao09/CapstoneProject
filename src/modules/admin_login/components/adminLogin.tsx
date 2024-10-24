@@ -24,7 +24,6 @@ const AdminLogin = () => {
       setError(error || "An error occurred.");
     } else {
       setError(null);
-      console.log("Login successful");
     }
   };
 
