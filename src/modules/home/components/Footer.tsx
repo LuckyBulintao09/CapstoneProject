@@ -12,7 +12,7 @@ const Footer = () => {
             <div className="flex flex-row justify-center items-center gap-1 text-xs text-muted-foreground">
                 <span>{spiels.FOOTER}</span>
                 <Separator orientation="vertical" className="h-5 mx-2 w-0.5"/>
-                <Link href={`/TermsAndConditions`} target="_blank" className={cn(buttonVariants({ variant: "link", size: "sm" }), "mx-0 px-0")}>
+                <Link href={`/TermsAndCondition`} target="_blank" className={cn(buttonVariants({ variant: "link", size: "sm" }), "mx-0 px-0")}>
                     Terms and Conditions
                 </Link>
                 <Separator orientation="vertical" className="h-5 mx-2 w-0.5"/>
