@@ -1,48 +1,56 @@
-import Landing from "../components/Landing";
-import Just100 from "../components/Just100";
-import Boost1 from "../components/Boost1";
-import Boost2 from "../components/Boost2";
-import Reservation from "../components/Reservation";
-import WhyChoose1 from "../components/WhyChoose1";
-import WhyChoose2 from "../components/WhyChoose2";
-import HowItWorks1 from "../components/HowItWorks1";
-import HowItWorks2 from "../components/HowItWorks2";
-import GetStarted from "../components/GetStarted";
+import Boost1 from '../components/Boost1';
+import HowItWorks1 from '../components/HowItWorks1';
+import GetStarted from '../components/GetStarted';
+import { FAQS } from '../components/FAQs';
+import PricingTextArea from '../components/PricingTextArea';
+import pricing from '@/lib/constants/pricing';
 const Pricing = () => {
-  return (
-    <section className="pt-[10%] lg:pt-[5%] xl:mx-[15%]">
-      <Landing />
-      <Just100 />
-      <div className="flex flex-col md:flex-row flex-col-reverse  mt-32 mx-6">
-        <div className="md:w-[55%] ">
-          <Boost1 />
-        </div>
+	return (
+		<div className='dark:bg-secondary'>
+			<section className='pt-[15%] lg:pt-[4%] md:pt-[12%] xs:pt-[20%] xl:mx-[15%]'>
+				{/* 1ST SECTION */}
+				<PricingTextArea
+					title={pricing.PRICING_PLAN}
+					description={pricing.PRICING_PLAN_BODY}
+				/>
 
-        <div className="md:w-[45%] md:ml-10 md:mt-6 mb-10">
-          <Boost2 />
-        </div>
-      </div>
-      <Reservation />
-      <div className="flex flex-col md:flex-row-reverse flex-col-reverse mt-32 mx-6">
-        <div className=" md:w-[55%]">
-          <WhyChoose1 />
-        </div>
-        <div className="md:w-[45%] md:mr-10 md:mt-6 mb-10">
-          <WhyChoose2 />
-        </div>
-      </div>
-      <div className="flex flex-col flex-col-reverse mt-32 mx-6 ">
-        <div className=" ">
-          <HowItWorks1 />
-        </div>
-        <div className="mb-10">
-          <HowItWorks2 />
-        </div>
-      </div>
+				{/* 2ND SECTION - ACCORDION  */}
+				<FAQS />
 
-      <GetStarted />
-    </section>
-  );
+				{/* 3RD SECTION */}
+				<div className='flex flex-col md:flex-row flex-col-reverse py-8 px-10'>
+					<div className='md:w-[55%]'>
+						<Boost1 />
+					</div>
+
+					<div className='md:w-[50%] flex justify-center items-center'>
+						<PricingTextArea
+							title={pricing.BENEFITS_OF_BOOSTING}
+							description={pricing.BENEFITS_OF_BOOSTING_BODY}
+						/>
+					</div>
+				</div>
+
+				{/* 4TH SECTION */}
+				<div className='flex flex-col flex-col-reverse py-8 px-8'>
+					<div>
+						<HowItWorks1 />
+					</div>
+					<div>
+						<PricingTextArea
+							title={pricing.HOW_IT_WORKS}
+							description={pricing.HOW_IT_WORKS_BODY}
+						/>
+					</div>
+				</div>
+
+				{/* 5TH SECTION */}
+				<div className='py-12'>
+					<GetStarted />
+				</div>
+			</section>
+		</div>
+	);
 };
 
 export default Pricing;

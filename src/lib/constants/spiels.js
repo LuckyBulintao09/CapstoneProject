@@ -16,23 +16,24 @@ const spiels = {
 	HERO_BADGE: 'New Release',
 	HERO_DESCRIPTION:
 		'Find your perfect rental with ease. Search verified dorms, condos, and apartments, explore listings, and connect with homeowners—all in one simple platform.',
-	HOW_IT_WORKS: 'Why Choose Our Reservation Fee Structure?',
+	HOW_IT_WORKS: 'How It Works',
 	HOW_IT_WORKS_DESCRIPTION:
 		'UniHomes simplifies finding rentals in Baguio. Browse listings, explore detailed property information, and connect with homeowners quickly and effortlessly.',
 	HOW_IT_WORKS_CARDS: [
 		{
-			label: 'List Your Property',
-			description: 'Create a property listing for free when you sign up!',
+			label: 'Search Property',
+			description:
+				'Use our search tools to find available rental properties in Baguio that meet your preferences, such as location, price range, and amenities.',
 		},
 		{
-			label: 'Boost Your Listing',
+			label: 'Explore Property',
 			description:
-				'Enhance your listing’s visibility for just ₱100 and attract more guests.',
+				'View detailed information for each property, including photos, descriptions, and nearby points of interest to help you make an informed decision.',
 		},
 		{
-			label: 'Receive Bookings',
+			label: 'Choose Property',
 			description:
-				'Only a 3% service fee is applied when guests book through our platform.',
+				'Once you’ve found the perfect rental, contact the homeowner directly through our platform to arrange a viewing or secure the property.',
 		},
 	],
 
