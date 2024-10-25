@@ -1,3 +1,4 @@
+import { profanityList } from "../../../profanityList/profanityList";
 import { createClient } from "@/utils/supabase/client";
 
 const supabase = createClient();
@@ -10,6 +11,17 @@ export const getSessionUserId = async (): Promise<string | null> => {
   return session?.user?.id || null;
 };
 
+const censorProfanity = (comment: string): string => {
+  let censoredComment = comment;
+
+  for (const profaneWord of profanityList) {
+    const regex = new RegExp(profaneWord, 'gi'); 
+    censoredComment = censoredComment.replace(regex, '*'.repeat(profaneWord.length));
+  }
+
+  return censoredComment;
+};
+
 export const addReview = async (
   unitId: string,
   userId: string,
@@ -17,12 +29,14 @@ export const addReview = async (
   comment: string
 ) => {
   try {
+    const sanitizedComment = censorProfanity(comment);
+
     const { error } = await supabase.from("ratings_review").insert([
       {
         unit_id: unitId,
         user_id: userId,
         ratings: rating,
-        comment: comment,
+        comment: sanitizedComment,
         isReported: false,
       },
     ]);
@@ -44,11 +58,13 @@ export const updateReview = async (
   comment: string
 ) => {
   try {
+    const sanitizedComment = censorProfanity(comment);
+
     const { error } = await supabase
       .from("ratings_review")
       .update({
         ratings: rating,
-        comment: comment,
+        comment: sanitizedComment, 
       })
       .eq("id", reviewId);
 
