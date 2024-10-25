@@ -15,7 +15,7 @@ import {
 } from '@/components/ui/carousel';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import SpecificBranchListings from '../../lessor-dashboard/components/SpecificBranchListings';
-import BusinessReviews from './BusinessReviews';
+import ReviewsUnderCompany from './ReviewsUnderCompany';
 import { getAllPropertyUnderSpecificCompany } from '@/actions/property/getAllPropertyUnderSpecificCompany';
 import { getAllUnitUnderProperty } from '@/actions/unit/getAllUnitUnderProperty';
 import { MapPin } from 'lucide-react';
@@ -58,37 +58,35 @@ export function BusinessDetails({
 	const [properties, setProperties] = useState<Property[]>([]);
 	const [selectedProperty, setSelectedProperty] = useState<Property | null>(null);
 	const [units, setUnits] = useState<Unit[]>([]);
-	const [loading, setLoading] = useState<boolean>(true); 
-	const [loadingUnits, setLoadingUnits] = useState<boolean>(false); 
-
+	const [loading, setLoading] = useState<boolean>(true);
+	const [loadingUnits, setLoadingUnits] = useState<boolean>(false);
 
 	useEffect(() => {
 		const fetchProperties = async () => {
-			setLoading(true); 
+			setLoading(true);
 			try {
 				const properties = await getAllPropertyUnderSpecificCompany(companyId);
 				setProperties(properties);
 			} catch (error) {
 				console.error('Error fetching properties:', error);
 			} finally {
-				setLoading(false); 
+				setLoading(false);
 			}
 		};
 
 		fetchProperties();
 	}, [companyId]);
 
-
 	const handlePropertyClick = async (property: Property) => {
 		setSelectedProperty(property);
-		setLoadingUnits(true); 
+		setLoadingUnits(true);
 		try {
 			const units = await getAllUnitUnderProperty(property.id);
 			setUnits(units);
 		} catch (error) {
 			console.error('Error fetching units:', error);
 		} finally {
-			setLoadingUnits(false); 
+			setLoadingUnits(false);
 		}
 	};
 
@@ -101,7 +99,7 @@ export function BusinessDetails({
 				<TabsList className='grid grid-cols-3 dark:text-white dark:bg-opacity-15 dark:bg-transparent'>
 					<TabsTrigger value='about'>About</TabsTrigger>
 					<TabsTrigger value='branchesAndRooms'>Properties</TabsTrigger>
-					<TabsTrigger value='reviews'>Customer Reviews</TabsTrigger>
+					<TabsTrigger value='reviews'>Reviews Under this Company</TabsTrigger>
 				</TabsList>
 
 				{/* ABOUT SECTION */}
@@ -132,7 +130,7 @@ export function BusinessDetails({
 							<CardDescription>Explore our different properties</CardDescription>
 						</CardHeader>
 						<CardContent className='space-y-1'>
-							{loading ? ( 
+							{loading ? (
 								<div>Loading properties...</div>
 							) : (
 								<Carousel>
@@ -165,15 +163,15 @@ export function BusinessDetails({
 							)}
 
 							{/* Display available units for selected property */}
-							{loadingUnits ? ( 
+							{loadingUnits ? (
 								<div>Loading units...</div>
 							) : selectedProperty ? (
-								units.length > 0 ? ( 
+								units.length > 0 ? (
 									<div className='space-y-1 pt-1 pl-2'>
 										<SpecificBranchListings listings={units} />
 									</div>
 								) : (
-									<p>No units available under this property.</p> 
+									<p>No units available under this property.</p>
 								)
 							) : (
 								<p>Please select a property to see available units.</p>
@@ -191,7 +189,7 @@ export function BusinessDetails({
 						</CardHeader>
 						<CardContent>
 							<div className='space-y-1'>
-								<BusinessReviews companyId={companyId} />
+								<ReviewsUnderCompany companyId={companyId} />
 							</div>
 						</CardContent>
 					</Card>

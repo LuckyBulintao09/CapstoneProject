@@ -5,7 +5,6 @@ import { sendMessage } from './sendMessage';
 const supabase = createClient();
 
 export const initializeSendMessage = async (ownerId: string, propertyId: string, ownerName: string, ownerLastname: string) => {
-  console.log("ownerName", ownerName);
   const currentUser = await supabase.auth.getUser();
   
   const conversationId = await generateMessage(currentUser.data.user.id, ownerId, propertyId, ownerName);
@@ -22,12 +21,10 @@ const generateMessage = async (currentUserId, currentReceiverId, propertyId, own
   const unitName = unitDetails.data.title;
   const unitPrice = unitDetails.data.price;
   const messageTemplate = `Hi ${ownerName}, I am interested in ${unitName} at ${unitPrice} dollars.`;
-  console.log("messageTemplate", messageTemplate);
-  
+ 
   const conversationId = await checkConversation(currentUserId, currentReceiverId,ownerName,ownerLastname);
 
   if (conversationId) {
-    console.log("Conversation ID:", conversationId);
 
     await sendMessage({
       userId: currentUserId,
