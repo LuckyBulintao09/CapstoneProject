@@ -26,42 +26,44 @@ const PropertyDetails: React.FC<PropertyDetailsProps> = ({
 		<>
 			<div className='border-b border-gray-300 pb-6 mb-6'>
 				<h5 className='text-2xl font-semibold pb-2'>Unit Overview</h5>
-				<div className='bg-white shadow-md rounded-lg p-6'>
+				<div className='bg-white dark:bg-secondary shadow-md rounded-lg p-6'>
 					<div className='flex flex-col space-y-4'>
 						<div className='flex items-center justify-between'>
 							<div className='flex items-center'>
-								<Shield className='w-6 h-6 text-gray-700 mr-2' />
-								<h5 className='text-md font-semibold'>Privacy Type</h5>
+								<Shield className='w-6 h-6 text-gray-700 dark:text-neutral-300 mr-2' />
+								<h5 className='text-md font-semibold '>Privacy Type</h5>
 							</div>
-							<p className='text-gray-700'>{privacyType}</p>
+							<p className='text-gray-700 dark:text-neutral-300'>
+								{privacyType}
+							</p>
 						</div>
 						<div className='flex items-center justify-between'>
 							<div className='flex items-center'>
-								<Building className='w-6 h-6 text-gray-700 mr-2' />
+								<Building className='w-6 h-6 text-gray-700 dark:text-neutral-300 mr-2' />
 								<h5 className='text-md font-semibold'>Building Structure</h5>
 							</div>
-							<p className='text-gray-700'>{structure}</p>
+							<p className='text-gray-700 dark:text-neutral-300'>{structure}</p>
 						</div>
 						<div className='flex items-center justify-between'>
 							<div className='flex items-center'>
-								<Bed className='w-6 h-6 text-gray-700 mr-2' />
+								<Bed className='w-6 h-6 text-gray-700 dark:text-neutral-300 mr-2' />
 								<h5 className='text-md font-semibold'>Number of Bedrooms</h5>
 							</div>
-							<p className='text-gray-700'>{bedrooms}</p>
+							<p className='text-gray-700 dark:text-neutral-300'>{bedrooms}</p>
 						</div>
 						<div className='flex items-center justify-between'>
 							<div className='flex items-center'>
-								<Bed className='w-6 h-6 text-gray-700 mr-2' />
+								<Bed className='w-6 h-6 text-gray-700 dark:text-neutral-300 mr-2' />
 								<h5 className='text-md font-semibold'>Number of Beds</h5>
 							</div>
-							<p className='text-gray-700'>{beds}</p>
+							<p className='text-gray-700 dark:text-neutral-300'>{beds}</p>
 						</div>
 						<div className='flex items-center justify-between'>
 							<div className='flex items-center'>
-								<UserIcon className='w-6 h-6 text-gray-700 mr-2' />
+								<UserIcon className='w-6 h-6 text-gray-700 dark:text-neutral-300 mr-2' />
 								<h5 className='text-md font-semibold'>Current Occupants</h5>
 							</div>
-							<p className='text-gray-700'>{occupants}</p>
+							<p className='text-gray-700 dark:text-neutral-300'>{occupants}</p>
 						</div>
 					</div>
 				</div>

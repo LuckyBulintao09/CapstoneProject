@@ -1,22 +1,20 @@
+import pricing from '@/lib/constants/pricing';
+
 const Boost2 = () => {
-  return (
-    <section className=" ">
-      <div className="flex flex-col">
-        <div className="flex justify-center text-center">
-          <div className="text-4xl font-extrabold w-[80%]">
-            <h1 className="">How it Works?</h1>
-          </div>
-        </div>
-        <hr className="my-6 border-gray-300 md:hidden" />
-        <div className="md:mt-8">
-          <p className="text-lg text-center">
-            Effortlessly list your property, boost its visibility, and receive
-            bookings with ease. Our simple, transparent process helps you reach
-            more guests and earn more—only pay when you succeed!
-          </p>
-        </div>
-      </div>
-    </section>
-  );
+	return (
+		<section className=' '>
+			<div className='flex flex-col'>
+				<div className='flex justify-center text-center'>
+					<div className='text-2xl font-extrabold'>
+						<h1 className=''>{pricing.HOW_IT_WORKS}</h1>
+					</div>
+				</div>
+				<hr className='my-6 border-gray-300 md:hidden' />
+				<div className='my-4'>
+					<p className='text-md text-center'>{pricing.HOW_IT_WORKS_BODY}</p>
+				</div>
+			</div>
+		</section>
+	);
 };
 export default Boost2;

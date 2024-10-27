@@ -189,7 +189,7 @@ export default function Listings() {
 											maxCount={2}
 										/>
 									</div>
-									<div>
+									<div className='pt-2'>
 										<Label htmlFor='amenities' className='font-semibold'>
 											Privacy Type
 										</Label>
