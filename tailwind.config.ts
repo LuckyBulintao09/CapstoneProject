@@ -122,7 +122,13 @@ const config: Config = {
   			airBnbDesktop: '950px',
   			airBnbTablet: '742px',
   			airBnbMobile: '425px'
-  		}
+  		},
+		gridTemplateColumns: {
+			'16': 'repeat(16, minmax(0, 1fr))',
+		},
+		gridTemplateRows: {
+			'16': 'repeat(16, minmax(0, 1fr))',
+		}
   	}
   },
   plugins: [require("tailwindcss-animate"), nextui()],

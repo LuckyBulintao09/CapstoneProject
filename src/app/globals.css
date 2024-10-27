@@ -109,21 +109,64 @@ body {
   * {
     @apply border-border;
   }
+
+  body {
+    @apply bg-background text-foreground;
+  }
+
   .field-sizing {
     field-sizing: content;
   }
 }
 
-.uppy-Dashboard-inner {
-  width: auto !important;
-  height: 25rem !important;
+/* Wrapper styling for rich text content */
+.rich-text-content {
+  @apply space-y-4;
 }
 
-@layer base {
-  * {
-    @apply border-border;
-  }
-  body {
-    @apply bg-background text-foreground;
-  }
+/* Paragraphs */
+.rich-text-content p {
+  @apply text-base leading-relaxed mb-4;
+}
+
+/* Headings */
+.rich-text-content h1 {
+  @apply text-3xl font-bold mb-6;
+}
+
+.rich-text-content h2 {
+  @apply text-2xl font-semibold mb-5;
+}
+
+.rich-text-content h3 {
+  @apply text-xl font-medium mb-4;
+}
+
+/* Blockquotes */
+.rich-text-content blockquote {
+  @apply border-l-4 pl-4 italic text-lg my-4;
+}
+
+/* Bullet Lists */
+.rich-text-content ul {
+  @apply list-disc pl-6;
+}
+
+.rich-text-content ul li {
+  @apply mb-2;
+}
+
+/* Ordered Lists */
+.rich-text-content ol {
+  @apply list-decimal pl-6;
+}
+
+.rich-text-content ol li {
+  @apply mb-2;
+}
+
+
+.uppy-Dashboard-inner {
+  width: auto !important;
+  height: 22rem !important;
 }
