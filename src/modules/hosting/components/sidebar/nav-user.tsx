@@ -63,28 +63,21 @@ export function NavUser({
                         <DropdownMenuSeparator />
                         <DropdownMenuGroup>
                             <DropdownMenuItem>
-                                <Sparkles />
-                                Upgrade to Pro
-                            </DropdownMenuItem>
-                        </DropdownMenuGroup>
-                        <DropdownMenuSeparator />
-                        <DropdownMenuGroup>
-                            <DropdownMenuItem>
-                                <BadgeCheck />
+                                <BadgeCheck className="mr-2 h-5 w-5" />
                                 Account
                             </DropdownMenuItem>
                             <DropdownMenuItem>
-                                <CreditCard />
+                                <CreditCard className="mr-2 h-5 w-5" />
                                 Billing
                             </DropdownMenuItem>
                             <DropdownMenuItem>
-                                <Bell />
+                                <Bell className="mr-2 h-5 w-5" />
                                 Notifications
                             </DropdownMenuItem>
                         </DropdownMenuGroup>
                         <DropdownMenuSeparator />
-                        <DropdownMenuItem>
-                            <LogOut />
+                        <DropdownMenuItem onClick={() => {}}>
+                            <LogOut className="mr-2 h-5 w-5" />
                             Log out
                         </DropdownMenuItem>
                     </DropdownMenuContent>

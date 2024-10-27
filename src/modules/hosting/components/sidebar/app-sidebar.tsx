@@ -3,11 +3,15 @@
 import * as React from "react";
 import { AudioWaveform, BookOpen, Bot, Command, Frame, GalleryVerticalEnd, Map, PieChart, Settings2, SquareTerminal } from "lucide-react";
 
-import { NavMain } from "@/components/sidebar/nav-main";
-import { NavProjects } from "@/components/sidebar/nav-projects";
-import { NavUser } from "@/components/sidebar/nav-user";
-import { TeamSwitcher } from "@/components/sidebar/team-switcher";
+import { NavMain } from "@/modules/hosting/components/sidebar/nav-main";
+import { NavProjects } from "@/modules/hosting/components/sidebar/nav-projects";
+import { NavUser } from "@/modules/hosting/components/sidebar/nav-user";
+import { TeamSwitcher } from "@/modules/hosting/components/sidebar/team-switcher";
 import { Sidebar, SidebarContent, SidebarFooter, SidebarHeader, SidebarRail } from "@/components/ui/sidebar";
+import { Skeleton } from "@/components/ui/skeleton";
+
+import useGetUserId from "@/hooks/user/useGetUserId";
+import useGetUserCompaniesById from "@/hooks/company/useGetUserCompaniesById";
 
 // This is sample data.
 const data = {
@@ -140,10 +144,18 @@ const data = {
 };
 
 export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
+
+    const { data: user } = useGetUserId()
+    const user_companies = useGetUserCompaniesById(user?.id)
+
     return (
         <Sidebar collapsible="icon" {...props}>
             <SidebarHeader>
-                <TeamSwitcher teams={data.teams} />
+                {user_companies.isSuccess ? (
+                    <TeamSwitcher companies={user_companies.data} />
+                ) : (
+                    <Skeleton className="w-full overflow-hidden rounded-md p-2 outline-none h-12" />
+                )}
             </SidebarHeader>
             <SidebarContent>
                 <NavMain items={data.navMain} />

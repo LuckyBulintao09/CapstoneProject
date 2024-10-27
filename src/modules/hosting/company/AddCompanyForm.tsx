@@ -2,7 +2,7 @@
 
 import React from "react";
 
-import { redirect } from "next/navigation";
+import { redirect, useRouter } from "next/navigation";
 
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
@@ -16,13 +16,15 @@ import { toast } from "sonner";
 import { MinimalTiptapEditor } from "@/components/minimal-tiptap";
 
 import { addACompany } from "@/actions/company/addACompany";
-import useGetUser from "@/hooks/user/useGetUser";
-import { useMediaQuery } from "@/hooks/use-media-query";
+import useGetUserId from "@/hooks/user/useGetUserId";
+
 
 function AddCompanyForm() {
     const [loading, setLoading] = React.useState(false);
 
-    const { data: user } = useGetUser();
+    const { data: user } = useGetUserId();
+
+    const router = useRouter();
 
     // forms
     const createCompanyForm = useForm<CompanySchemaTypes>({
@@ -45,7 +47,6 @@ function AddCompanyForm() {
             success: () => {
                 setLoading(false);
                 createCompanyForm.reset();
-                createCompanyForm.setValue("about", "");
                 return "Company added successfully";
             },
 
@@ -54,6 +55,7 @@ function AddCompanyForm() {
                 return "Something went wrong. Failed to add company";
             },
         });
+        router.push('/hosting/company')
     }
 
     return (

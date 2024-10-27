@@ -5,7 +5,7 @@ import { redirect } from "next/navigation";
 
 import { useQuery } from "@tanstack/react-query";
 
-export default function useGetUser() {
+export default function useGetUserId() {
     return useQuery({
         queryKey: ["user"],
         queryFn: async () => {

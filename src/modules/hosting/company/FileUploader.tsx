@@ -2,20 +2,8 @@
 
 import * as React from "react";
 
-import { cn } from "@/lib/utils";
-import { useMediaQuery } from "@/hooks/use-media-query";
 import { Button } from "@/components/ui/button";
-import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
-import {
-    Drawer,
-    DrawerClose,
-    DrawerContent,
-    DrawerDescription,
-    DrawerFooter,
-    DrawerHeader,
-    DrawerTitle,
-    DrawerTrigger,
-} from "@/components/ui/drawer";
+import { Dialog, DialogClose, DialogContent, DialogDescription, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
 
 import Uppy from "@uppy/core";
 import { Dashboard } from "@uppy/react";
@@ -24,12 +12,15 @@ import Tus from "@uppy/tus";
 import "@uppy/core/dist/style.min.css";
 import "@uppy/dashboard/dist/style.min.css";
 import { createClient } from "@/utils/supabase/client";
-import useGetUser from "@/hooks/user/useGetUser";
+import useGetUser from "@/hooks/user/useGetUserId";
+import { addCompanyBusinessPermit } from "@/actions/company/addCompanyBusinessPermit";
+import { toast } from "sonner";
 
-export function FileUploader() {
+export function FileUploader({ companyId }: { companyId: string }) {
+
     const [open, setOpen] = React.useState(false);
-    const [isFileUploadEmpty, setIsFileUploadEmpty] = React.useState<boolean>(true)
-    const isDesktop = useMediaQuery("(min-width: 742px)");
+    const [isFileUploadEmpty, setIsFileUploadEmpty] = React.useState<boolean>(true);
+
     const { data: user } = useGetUser();
 
     const onBeforeRequest = async (req: any) => {
@@ -59,7 +50,7 @@ export function FileUploader() {
     );
 
     uppy.on("file-added", (file) => {
-        setIsFileUploadEmpty(false)
+        setIsFileUploadEmpty(false);
         file.meta = {
             ...file.meta,
             bucketName: "company-logo-test",
@@ -67,70 +58,73 @@ export function FileUploader() {
             cacheControl: 3600,
         };
     });
+    
 
-    uppy.on("file-removed", (file) => {
-        setIsFileUploadEmpty(true)
-    })
+    uppy.on("file-removed", () => {
+        setIsFileUploadEmpty(true);
+    });
 
-    const handleUpload = () => {
+
+    const handleUpload = async () => {
         if (uppy.getFiles().length > 0) {
+            const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL;
+            const bucketName = "company-logo-test";
+            const objectName = `${user?.id}/business-permit/${uppy.getFiles()[0].name}`;
+            const fileUrl = `${supabaseUrl}/storage/v1/object/public/${bucketName}/${objectName}`;
+            
             uppy.setFileMeta(uppy.getFiles()[0].id, {
                 objectName: `${user?.id}/business-permit/${uppy.getFiles()[0].name}`,
             });
+
             uppy.upload();
-            uppy.clear();
-            setIsFileUploadEmpty(true)
+
+            toast.promise(addCompanyBusinessPermit(fileUrl, user?.id, companyId), {
+                loading: "Adding business permit...",
+                success: () => {
+                    return "Company updated successfully";
+                },
+                error: () => {
+                    return "Something went wrong. Failed to update company";
+                },
+            });
+            setIsFileUploadEmpty(true);
         }
     };
 
-    if (isDesktop) {
-        return (
-            <Dialog open={open} onOpenChange={() => {
-                setOpen
-                setIsFileUploadEmpty
-            }}>
-                <DialogTrigger asChild>
-                    <Button variant="outline" className="w-fit">
-                        Upload business permit
-                    </Button>
-                </DialogTrigger>
-                <DialogContent className="">
-                    <DialogHeader>
-                        <DialogTitle>Upload your file here</DialogTitle>
-                    </DialogHeader>
-
-                    <div>
-                        <Dashboard uppy={uppy} hideUploadButton />
-                        <Button className="mt-3" onClick={handleUpload} disabled={isFileUploadEmpty}>Upload file</Button>
-                    </div>
-                </DialogContent>
-            </Dialog>
-        );
-    }
-
     return (
-        <Drawer open={open} onOpenChange={setOpen}>
-            <DrawerTrigger asChild>
-                <Button variant="outline">File upload</Button>
-            </DrawerTrigger>
-            <DrawerContent>
-                <DrawerHeader className="text-left">
-                    <DrawerTitle>Upload your file here</DrawerTitle>
-                </DrawerHeader>
+        <Dialog open={open} onOpenChange={setOpen} modal={true}>
+            <DialogTrigger asChild>
+                <Button
+                    variant="outline"
+                    className="w-fit"
+                    type="button"
+                    onClick={() => {
+                        setOpen(!open);
+                    }}
+                >
+                    Upload business permit
+                </Button>
+            </DialogTrigger>
+            <DialogContent
+                className=""
+                onInteractOutside={(e) => {
+                    e.preventDefault();
+                }}
+            >
+                <DialogHeader>
+                    <DialogTitle>Upload your file here</DialogTitle>
+                    <DialogDescription>
+                        Upload your business permit here.
+                    </DialogDescription>
+                </DialogHeader>
 
                 <div>
                     <Dashboard uppy={uppy} hideUploadButton />
-                </div>
-
-                <DrawerFooter className="pt-2">
-                    <Button className="mt-3 w-full" onClick={handleUpload} disabled={isFileUploadEmpty}>
+                    <Button className="mt-3" type="button" onClick={handleUpload} disabled={isFileUploadEmpty}>
                         Upload file
                     </Button>
-                    <DrawerClose asChild>
-                        <Button variant="outline" onClick={() => uppy.clear()}>Cancel</Button>
-                    </DrawerClose>
-                </DrawerFooter>
-            </DrawerContent>
-        </Drawer>
+                </div>
+            </DialogContent>
+        </Dialog>
     );
 }
