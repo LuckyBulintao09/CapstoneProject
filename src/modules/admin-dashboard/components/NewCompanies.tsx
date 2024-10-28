@@ -5,22 +5,26 @@ import {
 	CardHeader,
 	CardTitle,
 } from '@/components/ui/card';
-import React from 'react';
-import NewCompaniesDashboard from './newCompanies-components/page';
-import { new_companies } from '@/lib/constants/new_companies';
+import React, { useState } from 'react';
+import NewCompaniesDashboard from '../newCompanies-components/page';
 
 const NewCompanies = () => {
+	const [newCompaniesCount, setNewCompaniesCount] = useState(0);
+
+	const handleCountUpdate = (count: number) => {
+		setNewCompaniesCount(count);
+	};
 	return (
 		<Card className='h-full bg-white dark:bg-secondary'>
 			<CardHeader>
 				<CardTitle>New Companies</CardTitle>
 				<CardDescription>
-					Upcoming {new_companies.length} companies waiting for approval
+					Upcoming {newCompaniesCount} companies waiting for approval
 				</CardDescription>
 			</CardHeader>
 			<CardContent className='flex flex-col h-[500px]'>
 				<div className='overflow-y-auto'>
-					<NewCompaniesDashboard />
+					<NewCompaniesDashboard onCountUpdate={handleCountUpdate} />
 				</div>
 			</CardContent>
 		</Card>

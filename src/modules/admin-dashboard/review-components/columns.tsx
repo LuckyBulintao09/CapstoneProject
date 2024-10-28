@@ -7,22 +7,33 @@ import { DataTableColumnHeader } from '@/app/(auth)/(lessor-dashboard)/reservati
 import { useState } from 'react';
 import KeepConfirmationModal from '../components/KeepConfirmationModal';
 import RemoveConfirmationModal from '../components/RemoveConfirmationModal';
+import { updateReportedReviewStatus } from '@/actions/admin/updateReportedReviewStatus';
 
 export type ReportedReviews = {
 	id: number;
-	user: string;
-	userEmail: string;
-	reviewId: string;
-	reviewDate: string;
-	reportedComment: string;
-	reportedBy: string;
-	reasonForReport: string;
-	associatedProperty: string;
-	dateReported: string;
+	created_at: string;
+	user_id: string;
+	unit_id: string;
+	ratings: number;
+	comment: string;
+	isReported: boolean;
+	report_reason: string;
+	account: {
+		firstname: string;
+		lastname: string;
+	};
 };
-const ReportedReviewsActionsCell = ({ row }: { row: Row<ReportedReviews> }) => {
+
+const ReportedReviewsActionsCell = ({
+	row,
+	onReviewUpdate,
+}: {
+	row: Row<ReportedReviews>;
+	onReviewUpdate: (id: number) => void;
+}) => {
 	const [isKeepModalOpen, setIsKeepModalOpen] = useState(false);
 	const [isRemoveModalOpen, setIsRemoveModalOpen] = useState(false);
+	const reviewId = row.getValue('id');
 
 	const handleKeepClick = () => {
 		setIsKeepModalOpen(true);
@@ -32,11 +43,25 @@ const ReportedReviewsActionsCell = ({ row }: { row: Row<ReportedReviews> }) => {
 		setIsRemoveModalOpen(true);
 	};
 
-	const handleKeep = () => {
+	const handleKeep = async () => {
+		const result = await updateReportedReviewStatus(row.original.id, false);
+		if (result) {
+			alert('Review kept successfully!');
+			onReviewUpdate(row.original.id);
+		} else {
+			alert('Failed to keep the review. Please try again.');
+		}
 		setIsKeepModalOpen(false);
 	};
 
-	const handleRemove = () => {
+	const handleRemove = async () => {
+		const result = await updateReportedReviewStatus(row.original.id, false);
+		if (result) {
+			alert('Review removed successfully!');
+			onReviewUpdate(row.original.id);
+		} else {
+			alert('Failed to remove the review. Please try again.');
+		}
 		setIsRemoveModalOpen(false);
 	};
 	return (
@@ -74,7 +99,9 @@ const ReportedReviewsActionsCell = ({ row }: { row: Row<ReportedReviews> }) => {
 	);
 };
 
-export const columns: ColumnDef<ReportedReviews>[] = [
+export const columns = (
+	handleReviewUpdate: (id: number) => void
+): ColumnDef<ReportedReviews>[] => [
 	{
 		accessorKey: 'id',
 		header: ({ column }) => (
@@ -82,18 +109,18 @@ export const columns: ColumnDef<ReportedReviews>[] = [
 		),
 	},
 	{
-		accessorKey: 'user',
+		accessorKey: 'name',
 		header: ({ column }) => (
-			<DataTableColumnHeader column={column} title='User' />
+			<DataTableColumnHeader column={column} title='Name' />
 		),
 	},
 	{
-		accessorKey: 'reviewDate',
+		accessorKey: 'created_at',
 		header: ({ column }) => (
-			<DataTableColumnHeader column={column} title='Review Date' />
+			<DataTableColumnHeader column={column} title='Date' />
 		),
 		cell: ({ row }) => {
-			const date = row.getValue('reviewDate') as string | undefined;
+			const date = row.getValue('created_at') as string | undefined;
 			if (date) {
 				return (
 					<span className='truncate'>
@@ -104,49 +131,26 @@ export const columns: ColumnDef<ReportedReviews>[] = [
 				return <span className='truncate'>No date available</span>;
 			}
 		},
-		filterFn: (row, id, value) => {
-			const { from, to } = value;
-			const theDate = parseISO(row.getValue(id));
-
-			if ((from || to) && !theDate) {
-				return false;
-			} else if (from && !to) {
-				return theDate.getTime() >= from.getTime();
-			} else if (!from && to) {
-				return theDate.getTime() <= to.getTime();
-			} else if (from && to) {
-				return isWithinInterval(theDate, { start: from, end: to });
-			} else {
-				return true;
-			}
-		},
 	},
 	{
-		accessorKey: 'reportedComment',
+		accessorKey: 'comment',
 		header: ({ column }) => (
 			<DataTableColumnHeader column={column} title='Reported Comment' />
 		),
 	},
 	{
-		accessorKey: 'reportedBy',
-		header: ({ column }) => (
-			<DataTableColumnHeader column={column} title='Reported By' />
-		),
-	},
-	{
-		accessorKey: 'reasonForReport',
+		accessorKey: 'report_reason',
 		header: ({ column }) => (
 			<DataTableColumnHeader column={column} title='Reason for Report' />
 		),
 	},
 	{
-		accessorKey: 'associatedProperty',
-		header: ({ column }) => (
-			<DataTableColumnHeader column={column} title='Associated Property' />
-		),
-	},
-	{
 		id: 'actions',
-		cell: ReportedReviewsActionsCell,
+		cell: (info) => (
+			<ReportedReviewsActionsCell
+				row={info.row}
+				onReviewUpdate={handleReviewUpdate}
+			/>
+		),
 	},
 ];

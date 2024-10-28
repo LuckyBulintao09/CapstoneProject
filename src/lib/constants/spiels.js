@@ -3,8 +3,8 @@ import { Star, User, Users2, Warehouse } from 'lucide-react';
 /* eslint-disable sort-keys */
 const spiels = {
 	// Admin
-	ADMIN_CARD_HEADER: 'New Lessors',
-	ADMIN_MODAL_HEADER: 'New Lessor Approval',
+	ADMIN_CARD_HEADER: 'New Proprietors',
+	ADMIN_MODAL_HEADER: 'New Proprietors Approval',
 
 	// Home
 	CTA_LABEL: 'Call to Action',

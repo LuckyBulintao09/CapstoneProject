@@ -1,5 +1,4 @@
 import { useState } from 'react';
-import { NewLessors } from './types';
 import { Label } from '@/components/ui/label';
 import { Input } from '@/components/ui/input';
 import {
@@ -12,9 +11,10 @@ import {
 } from '@/components/ui/dialog';
 import { Button } from '@/components/ui/button';
 import spiels from '@/lib/constants/spiels';
+import { NewProprietors } from '../newProprietors-components/columns';
 
 interface ProfileAlertProps {
-	lessor: NewLessors;
+	lessor: NewProprietors;
 	isOpen: boolean;
 	onClose: () => void;
 }
@@ -64,7 +64,7 @@ export function ProfileAlert({ lessor, isOpen, onClose }: ProfileAlertProps) {
 									<Input
 										type='text'
 										id='number'
-										placeholder={lessor.contact}
+										placeholder={lessor.cp_number}
 										disabled
 									/>
 								</div>
