@@ -9,7 +9,7 @@ export function AdminDashboardScreen() {
 		<div className='dark:bg-secondary h-screen'>
 			<div className='mx-4 py-10 lg:pt-5'>
 				<Tabs defaultValue='newCompanies' className='w-full'>
-					<TabsList className='grid w-full lg:w-[30%] grid-cols-3'>
+					<TabsList className='grid w-full lg:w-[40%] grid-cols-3'>
 						<TabsTrigger value='newCompanies'>New Companies</TabsTrigger>
 						<TabsTrigger value='newProprietors'>New Proprietors</TabsTrigger>
 						<TabsTrigger value='reportedReviews'>Reported Reviews</TabsTrigger>
