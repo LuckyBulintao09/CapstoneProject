@@ -1,4 +1,4 @@
-import { NewLessors } from '@/modules/admin-dashboard/newLessors-components/columns';
+import { NewLessors } from '@/modules/admin-dashboard/newProprietors-components/columns';
 
 export const new_lessors: NewLessors[] = [
 	{

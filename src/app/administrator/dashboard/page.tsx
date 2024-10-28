@@ -1,31 +1,29 @@
-"use client"
-import { AdminDashboardScreen } from "@/modules/admin-dashboard/screen/AdminDashboardScreen";
-import { logout } from "@/app/auth/login/actions";
-import { Button } from "@/components/ui/button";
+'use client';
+import { AdminDashboardScreen } from '@/modules/admin-dashboard/screen/AdminDashboardScreen';
+import AdminNavbar from '@/components/navbar/AdminNavbar';
+
 const AdminDashboard = () => {
-  return (
-    <>
-    <div>
-				<Button 
-					onClick={async () => {
-						await logout();
-						window.location.href = '/' 
-					}}
-				>
-					Logout, redesign mo nalang pre nilagay ko lang HAHAHA -lucky
-				</Button>
-       {/* YUNG gussiongossen09@gmail.com gamitin mo na account sa admin */}
-       {/* test1234 password niya */}
+	return (
+		<>
+			<div>
+				<AdminNavbar />
 			</div>
-      <section
-        className="h-screen bg-cover bg-center"
-        style={{ backgroundImage: "url('/2.png')" }}
-      >
-        <AdminDashboardScreen />
-      </section>
-     
-    </>
-  );
+			<section
+				className='h-screen bg-cover bg-center relative overflow-hidden'
+				style={{ backgroundImage: "url('/2.png')" }}
+			>
+				<div className='absolute inset-0 flex flex-col justify-between'>
+					<div className='h-1/3 bg-gradient-to-b from-[#040e27]/60 to-[#040e27]/10'></div>
+
+					<div className='h-1/3 bg-gradient-to-t from-[#040e27]/60 o-[#040e27]/10'></div>
+				</div>
+
+				<div className='relative z-10'>
+					<AdminDashboardScreen />
+				</div>
+			</section>
+		</>
+	);
 };
 
 export default AdminDashboard;
