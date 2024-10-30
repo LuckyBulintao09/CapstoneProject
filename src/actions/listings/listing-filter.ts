@@ -42,6 +42,23 @@ export const get_nearbyListings = async (latitude: number, longitude: number) =>
     }
 }
 
+export const get_nearbyInfo = async (property_id: number[] | null) => {
+    try {
+        const { data, error } = await supabase
+            .rpc('get_nearbyinfo', {p_id: property_id})
+
+        if (error) {
+            console.error(error)
+            return error
+        }
+        return(data)
+
+    } catch (error: any) {
+        console.error(error)
+        return error
+    }
+}
+
 
 //For specific listing to show the specific location (lon and lat)
 //needs this to pass to advance marker
