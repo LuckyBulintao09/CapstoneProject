@@ -132,7 +132,9 @@ export default function Listings() {
 												<AdvancedMarker
 													key={index}
 													position={{ lat: location.latitude, lng: location.longitude }}
-												/>
+												>
+													<span style={{ fontSize: '.75rem' }}>🔵</span>
+												</AdvancedMarker>
 											))}
 											</Map>
 										</APIProvider>
