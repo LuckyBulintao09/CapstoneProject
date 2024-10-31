@@ -9,6 +9,7 @@ import {
 	APIProvider,
 	Map,
 	AdvancedMarker,
+	InfoWindow,
 } from '@vis.gl/react-google-maps';
 import {
 	get_nearbyInfo,
@@ -29,7 +30,7 @@ export default function Listings() {
 	const [householdAmenities, setHouseholdAmenities] = useState([]);
 	const [listings, setListings] = useState<any>([]);
 	const [loading, setLoading] = useState(true);
-	const [error, setError] = useState<string>(null);
+	const [error, setError] = useState<any>(null);
 	const [sortOrder, setSortOrder] = useState('asc');
 	const [deviceLocation, setDeviceLocation] = useContext(MapContext);
 	const [propertyLocation, setPropertyLocation] = useState([]);
@@ -38,6 +39,7 @@ export default function Listings() {
 	const [currentID, setCurrentID] = useState(null);
 	const [selectedFilter, setSelectedFilter] = useState([]);
 	const [selectedPrivacyType, setSelectedPrivacyType] = useState([]);
+	const [clickedMarker, setClickedMarker] = useState(null); // New state for clicked marker
 
 	const handleMapClick = async (event) => {
 		try {
@@ -50,8 +52,8 @@ export default function Listings() {
 		} catch (err) {
 			setError('Failed to fetch nearby listings.');
 		}
-		
 		setPosition(deviceLocation);
+		setClickedMarker(null); // Hide info window when clicking on the map
 	};
 
 	const handleDeviceLocation = async () => {
@@ -86,7 +88,7 @@ export default function Listings() {
 	useEffect(() => {
 		handleDeviceLocation();
 		fetchFilteredListings();
-	}, [currentID, selectedFilter, selectedPrivacyType]);
+	}, [currentID, deviceLocation, selectedFilter, selectedPrivacyType]);
 
 	const sortedListings = [...listings].sort((a, b) => {
 		return sortOrder === 'asc' ? a.price - b.price : b.price - a.price;
@@ -129,13 +131,22 @@ export default function Listings() {
 											<Map defaultZoom={15} defaultCenter={position} mapId={process.env.NEXT_PUBLIC_MAP_ID} onClick={handleMapClick}>
 												{selectedLocation && <AdvancedMarker position={selectedLocation} />}
 												{propertyLocation?.map((location, index) => (
-												<AdvancedMarker
-													key={index}
-													position={{ lat: location.latitude, lng: location.longitude }}
-												>
-													<span style={{ fontSize: '.75rem' }}>🔵</span>
-												</AdvancedMarker>
-											))}
+													<AdvancedMarker
+														key={index}
+														position={{ lat: location.latitude, lng: location.longitude }}
+														onClick={() => setClickedMarker(index)}
+													>
+														<span style={{ fontSize: '.75rem' }}>🔵</span>
+														{clickedMarker === index && (
+															<InfoWindow position={{ lat: location.latitude, lng: location.longitude }}>
+																<div>
+																	<strong>{location.title}</strong>
+																	<p>Available Accommodation</p>
+																</div>
+															</InfoWindow>
+														)}
+													</AdvancedMarker>
+												))}
 											</Map>
 										</APIProvider>
 									</div>
