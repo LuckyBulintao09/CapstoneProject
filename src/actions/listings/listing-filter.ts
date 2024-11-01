@@ -18,7 +18,7 @@ export const get_allListings = async () => {
         return error
     }
 
-    return data
+    console.log(data)
 
 }
 
@@ -52,7 +52,7 @@ export const get_nearbyInfo = async (property_id: number[] | null) => {
             return error
         }
         //add fetch unit for each property and display infowindow
-        console.log(propertyInfo)
+        // console.log(propertyInfo)
         return(propertyInfo)
 
     } catch (error: any) {
