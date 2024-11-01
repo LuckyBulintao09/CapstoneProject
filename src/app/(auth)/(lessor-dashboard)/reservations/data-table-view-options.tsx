@@ -96,6 +96,12 @@ export function DataTableViewOptions<TData>({
 							columnHeader = 'Business Permit';
 						} else if (column.id === 'additional_info') {
 							columnHeader = 'Additional Information';
+						} else if (column.id === 'client_name') {
+							columnHeader = 'Client Name';
+						} else if (column.id === 'unit_title') {
+							columnHeader = 'Unit Title';
+						} else if (column.id === 'isPaid') {
+							columnHeader = 'Payment Status';
 						}
 
 						return (

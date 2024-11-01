@@ -18,6 +18,7 @@ const TransactionDashboard = () => {
 				transactionHistory?.map((transaction) => ({
 					...transaction,
 					client_name: `${transaction.account.firstname} ${transaction.account.lastname}`,
+					unit_title: `${transaction.unit.title}`,
 				})) || [];
 
 			setData(mappedData);

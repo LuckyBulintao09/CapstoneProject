@@ -19,6 +19,7 @@ export type Transaction =
 				title: string;
 				unit_code: string;
 			}[];
+			unit_title: string;
 			account: {
 				firstname: string;
 				lastname: string;
@@ -39,9 +40,9 @@ export const columns = (): ColumnDef<Transaction>[] => [
 		),
 	},
 	{
-		accessorKey: 'unit.title',
+		accessorKey: 'unit_title',
 		header: ({ column }) => (
-			<DataTableColumnHeader column={column} title='Room Title' />
+			<DataTableColumnHeader column={column} title='Unit Title' />
 		),
 	},
 	{
