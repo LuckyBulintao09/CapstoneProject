@@ -20,7 +20,7 @@ import {
   createReservation,
   checkExistingReservation,
 } from "@/actions/listings/booking-process";
-import { Toaster, toast } from "sonner";
+import {  toast } from "sonner";
 import { format } from "date-fns";
 
 interface BookingCardProps {
@@ -112,7 +112,6 @@ export const BookingCard: React.FC<BookingCardProps> = ({ price, unitId }) => {
 
   return (
     <>
-      <Toaster position="top-center" className="mt-[3%]" />
       <Card className="w-[350px] bg-white dark:bg-secondary shadow-lg mt-4">
         <CardHeader>
           <CardTitle>

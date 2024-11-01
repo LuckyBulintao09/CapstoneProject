@@ -1,7 +1,6 @@
 
 import { AppSidebar } from "@/modules/hosting/components/sidebar/app-sidebar";
 import { SidebarProvider } from "@/components/ui/sidebar";
-import { Toaster } from "sonner";
 
 
 function LessorLayout({ children }: { children: React.ReactNode }) {
@@ -12,7 +11,6 @@ function LessorLayout({ children }: { children: React.ReactNode }) {
                 <section className="w-full">
                     {children}
                 </section>
-                <Toaster position="top-center" />
             </SidebarProvider>
         </div>
     );

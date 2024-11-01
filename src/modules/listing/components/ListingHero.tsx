@@ -5,7 +5,6 @@ import { SearchIcon } from 'lucide-react';
 import { MdOutlineMyLocation } from 'react-icons/md';
 import React, { useContext, useRef, useEffect } from 'react';
 import { MapContext } from './ListingsPage';
-import { set } from 'date-fns';
 import { toast } from 'sonner';
 
 interface HeroSectionProps {
