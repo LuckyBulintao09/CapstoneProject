@@ -1,173 +1,242 @@
-import React, { useContext, useEffect, useState } from 'react';
+import React, { useContext, useEffect, useState, useRef } from 'react';
 import BranchListings from '@/components/cardListings/BranchListings';
 import { Button } from '@/components/ui/button';
 import { ArrowDownUp } from 'lucide-react';
 import { Card, CardContent, CardHeader } from '@/components/ui/card';
 import { Label } from '@/components/ui/label';
 import { MultiSelect } from '@/components/multi-select';
-import {
-	APIProvider,
-	Map,
-	AdvancedMarker,
+import { 
+    Marker,
+    Circle,
+    GoogleMap,
 	InfoWindow,
-} from '@vis.gl/react-google-maps';
+} from '@react-google-maps/api';
 import {
-	get_nearbyInfo,
-	get_nearbyListings,
-	getFilteredListings,
+    get_allListings,
+    get_nearbyInfo,
+    get_nearbyListings,
+    getFilteredListings,
 } from '@/actions/listings/listing-filter';
 import { MapContext } from './ListingsPage';
 import { getAllAmenities } from '@/actions/listings/amenities';
 import LoadingPage from '@/components/LoadingPage';
+import { get_allUnits } from '@/actions/listings/filtering-complete';
+import { Slider } from "@/components/ui/slider";
 
 const householdPrivacyTypes = [
-	{ value: 'Shared Room', label: 'Shared Room' },
-	{ value: 'Whole Place', label: 'Whole Place' },
-	{ value: 'Private Room', label: 'Private Room' },
+    { value: 'Shared Room', label: 'Shared Room' },
+    { value: 'Whole Place', label: 'Whole Place' },
+    { value: 'Private Room', label: 'Private Room' },
 ];
 
 export default function Listings() {
-	const [householdAmenities, setHouseholdAmenities] = useState([]);
-	const [listings, setListings] = useState<any>([]);
-	const [loading, setLoading] = useState(true);
-	const [error, setError] = useState<any>(null);
-	const [sortOrder, setSortOrder] = useState('asc');
-	const [deviceLocation, setDeviceLocation] = useContext(MapContext);
-	const [propertyLocation, setPropertyLocation] = useState([]);
-	const [position, setPosition] = useState({ lat: 16.4200, lng: 120.5990 });
-	const [selectedLocation, setSelectedLocation] = useState(deviceLocation);
-	const [currentID, setCurrentID] = useState(null);
-	const [selectedFilter, setSelectedFilter] = useState([]);
-	const [selectedPrivacyType, setSelectedPrivacyType] = useState([]);
-	const [clickedMarker, setClickedMarker] = useState(null); // New state for clicked marker
+    const mapRef = useRef(null);
 
-	const handleMapClick = async (event) => {
-		try {
-			if (event.detail.latLng) {
-				setSelectedLocation(event.detail.latLng);
-				const nearbyID = await get_nearbyListings(event.detail.latLng.lat, event.detail.latLng.lng);
-				setCurrentID(nearbyID);
-				setPosition(event.detail.latLng);
-			}
-		} catch (err) {
-			setError('Failed to fetch nearby listings.');
-		}
-		setPosition(deviceLocation);
-		setClickedMarker(null); // Hide info window when clicking on the map
-	};
+    const [householdAmenities, setHouseholdAmenities] = useState([]);
+    const [listings, setListings] = useState([]);
+    const [loading, setLoading] = useState(true);
+    const [error, setError] = useState(null);
+    const [sortOrder, setSortOrder] = useState('asc');
+    const [deviceLocation, setDeviceLocation] = useContext(MapContext);
+    const [position, setPosition] = useState({ lat: 16.4200, lng: 120.5990 });
+    const [selectedLocation, setSelectedLocation] = useState(deviceLocation);
+    const [selectedFilter, setSelectedFilter] = useState([]);
+    const [selectedPrivacyType, setSelectedPrivacyType] = useState([]);
+    const [radius, setRadius] = useState([250]);
+	const [selectedListing, setSelectedListing] = useState(null);
+    const [mapKey, setMapKey] = useState(0);
 
-	const handleDeviceLocation = async () => {
-		if (deviceLocation) {
-			setSelectedLocation(deviceLocation);
-			try {
-				const nearbyID = await get_nearbyListings(deviceLocation.lat, deviceLocation.lng);
-				setCurrentID(nearbyID);
-				setPosition(deviceLocation);
-			} catch (err) {
-				setError('Failed to fetch device location listings.');
-			} finally {
-				setDeviceLocation(null);
-			}
-		}
-	};
+    const defaultOptions = {
+        strokeOpacity: 0.5,
+        strokeWeight: 1,
+        clickable: false,
+        draggable: false,
+        editable: false,
+        visible: true,
+    };
+    const closeOptions = {
+        ...defaultOptions,
+        zIndex: 3,
+        fillOpacity: 0.05,
+        strokeColor: "#4567b7",
+        fillColor: "#4567b7",
+    };
 
-	const fetchFilteredListings = async () => {
-		try {
-			const amenities = await getAllAmenities();
-			setHouseholdAmenities(amenities);
-			const filteredListings = await getFilteredListings(currentID, selectedFilter, selectedPrivacyType);
-			setListings(filteredListings || []);
-			const locationData = await get_nearbyInfo(filteredListings?.map((listing) => listing.property_id));
-			setPropertyLocation(locationData);
-		} catch (err) {
-			setError('Failed to fetch listings.');
-		}
-		setLoading(false);
-	};
+    const handleMapClick = async (event) => {
+        if (event.latLng) {
+            const { lat, lng } = event.latLng.toJSON();
+            setPosition({ lat, lng });
+            setSelectedLocation({ lat, lng });
+            setMapKey(prevKey => prevKey + 1);
+        }
+    };
 
-	useEffect(() => {
-		handleDeviceLocation();
-		fetchFilteredListings();
-	}, [currentID, deviceLocation, selectedFilter, selectedPrivacyType]);
+    const handleDeviceLocation = async () => {
+        if (deviceLocation) {
+            setSelectedLocation(deviceLocation);
+            setPosition(deviceLocation);
+            setMapKey(prevKey => prevKey + 1);
+        }
+    };
 
-	const sortedListings = [...listings].sort((a, b) => {
-		return sortOrder === 'asc' ? a.price - b.price : b.price - a.price;
-	});
+    const fetchFilteredListings = async () => {
+        try {
+            const amenities = await getAllAmenities();
+            setHouseholdAmenities(amenities);
+            const fetchedListings = await get_allUnits(selectedLocation ?? {}, selectedPrivacyType, selectedFilter, radius[0]);
+            setListings(fetchedListings);
+        } catch (err) {
+            setError('Failed to fetch listings.');
+        }
+        setLoading(false);
+    };
 
-	const toggleSortOrder = () => {
-		setSortOrder((prevOrder) => (prevOrder === 'asc' ? 'desc' : 'asc'));
-	};
+    useEffect(() => {
+        handleDeviceLocation();
+        fetchFilteredListings();
+		console.log(listings)
+    }, [selectedLocation, deviceLocation, selectedFilter, selectedPrivacyType]);
 
-	if (loading) return <LoadingPage />;
+    const handleRadiusCommit = (value) => {
+        setRadius(value);
+        fetchFilteredListings();
+		setMapKey(prevKey => prevKey + 1);
+    };
 
-	if (error) return <div className='text-red-500'>{error}</div>;
+	const handleMarkerClick = (listing) => {
+        setSelectedListing(listing);
+    };
 
-	return (
-		<div className='h-full'>
-			<div className='flex justify-between items-center mb-4'>
-				<h1 className='font-bold text-xl'>
-					{listings.length} properties found
-				</h1>
-				<Button variant={'outline'} className='mb-2' onClick={toggleSortOrder}>
-					<div className='flex items-center'>
-						<span>Sort by price: {sortOrder === 'asc' ? 'Low to High' : 'High to Low'}</span>
-						<ArrowDownUp className='w-4 h-auto ml-1' />
-					</div>
-				</Button>
-			</div>
-			<div className='grid grid-cols-1 gap-4 md:grid-cols-3 lg:grid-cols-5 sm:grid-cols-3 xs:grid-cols-2'>
-				<div className='col-span-3 grid grid-cols-2 lg:grid-cols-3 md:grid-cols-3 gap-4'>
-					{sortedListings.map((item) => (
-						<BranchListings key={item.id} {...item} />
-					))}
-				</div>
-				<div className='flex lg:justify-end lg:items-start lg:col-span-2 col-span-3'>
-					<div className='sticky top-20 w-full'>
-						<Card className='w-full bg-white dark:bg-secondary shadow-md lg:mt-0 md:mt-4 sm:mt-4 xs:mt-4'>
-							<CardHeader>
-								<Card className='h-[370px] border-none'>
-									<div className='rounded-md w-full h-full border-none'>
-										<APIProvider apiKey={process.env.NEXT_PUBLIC_GOOGLE_MAPS_API_KEY}>
-											<Map defaultZoom={15} defaultCenter={position} mapId={process.env.NEXT_PUBLIC_MAP_ID} onClick={handleMapClick}>
-												{selectedLocation && <AdvancedMarker position={selectedLocation} />}
-												{propertyLocation?.map((location, index) => (
-													<AdvancedMarker
-														key={index}
-														position={{ lat: location.latitude, lng: location.longitude }}
-														onClick={() => setClickedMarker(index)}
-													>
-														<span style={{ fontSize: '.75rem' }}>🔵</span>
-														{clickedMarker === index && (
-															<InfoWindow position={{ lat: location.latitude, lng: location.longitude }}>
-																<div>
-																	<strong>{location.title}</strong>
-																	<p>Available Accommodation</p>
-																</div>
-															</InfoWindow>
-														)}
-													</AdvancedMarker>
-												))}
-											</Map>
-										</APIProvider>
-									</div>
-								</Card>
-							</CardHeader>
-							<CardContent>
-								<form>
-									<div>
-										<Label htmlFor='amenities' className='font-semibold'>Filter Amenities</Label>
-										<MultiSelect options={householdAmenities} onValueChange={setSelectedFilter} defaultValue={selectedFilter} placeholder='Select amenities' variant='inverted' maxCount={2} />
-									</div>
-									<div className='pt-2'>
-										<Label htmlFor='privacy' className='font-semibold'>Privacy Type</Label>
-										<MultiSelect options={householdPrivacyTypes} onValueChange={setSelectedPrivacyType} defaultValue={selectedPrivacyType} placeholder='Select privacy type' variant='inverted' maxCount={2} />
-									</div>
-								</form>
-							</CardContent>
-						</Card>
-					</div>
-				</div>
-			</div>
-		</div>
-	);
+    const sortedListings = [...listings].sort((a, b) => {
+        if (a.ispropertyboosted && !b.ispropertyboosted) return -1;
+        if (!a.ispropertyboosted && b.ispropertyboosted) return 1;
+        return sortOrder === 'asc' ? a.price - b.price : b.price - a.price;
+    });
+
+    const toggleSortOrder = () => {
+        setSortOrder(prevOrder => (prevOrder === 'asc' ? 'desc' : 'asc'));
+    };
+
+    if (loading) return <LoadingPage />;
+
+    if (error) return <div className='text-red-500'>{error}</div>;
+
+    return (
+        <div className='h-full'>
+            <div className='flex justify-between items-center mb-4'>
+                <h1 className='font-bold text-xl'>
+                    {listings.length} properties found
+                </h1>
+                <Button variant={'outline'} className='mb-2' onClick={toggleSortOrder}>
+                    <div className='flex items-center'>
+                        <span>Sort by price: {sortOrder === 'asc' ? 'Low to High' : 'High to Low'}</span>
+                        <ArrowDownUp className='w-4 h-auto ml-1' />
+                    </div>
+                </Button>
+            </div>
+            <div className='grid grid-cols-1 gap-4 md:grid-cols-3 lg:grid-cols-5 sm:grid-cols-3 xs:grid-cols-2'>
+                <div className='col-span-3 grid grid-cols-2 lg:grid-cols-3 md:grid-cols-3 gap-4'>
+                    {sortedListings.map((item) => (
+                        <BranchListings key={item.id} {...item} />
+                    ))}
+                </div>
+                <div className='flex lg:justify-end lg:items-start lg:col-span-2 col-span-3'>
+                    <div className='sticky top-20 w-full'>
+                        <Card className='w-full bg-white dark:bg-secondary shadow-md lg:mt-0 md:mt-4 sm:mt-4 xs:mt-4'>
+                            <CardHeader>
+                                <Card className='h-[370px] border-none'>
+                                    <div className='rounded-md w-full h-full border-none'>
+									<GoogleMap
+                                            key={mapKey}
+                                            onClick={handleMapClick}
+                                            center={position}
+                                            zoom={15}
+                                            mapContainerClassName='w-full h-full'
+                                            options={{
+                                                disableDefaultUI: true,
+                                            }}
+                                        >
+                                            {selectedLocation && (
+                                                <>
+                                                    <Marker position={selectedLocation} />
+                                                    <Circle
+                                                        center={selectedLocation}
+                                                        radius={radius[0]}
+                                                        options={closeOptions}
+                                                    />
+                                                </>
+                                            )}
+                                            {sortedListings.map((listing) => (
+                                                <Marker
+                                                    key={listing.id}
+                                                    position={{
+                                                        lat: listing.latitude,
+                                                        lng: listing.longitude,
+                                                    }}
+                                                    onClick={() => handleMarkerClick(listing)}
+                                                />
+                                            ))}
+                                            {selectedListing && (
+                                                <InfoWindow
+                                                    position={{
+                                                        lat: selectedListing.latitude,
+                                                        lng: selectedListing.longitude,
+                                                    }}
+                                                    onCloseClick={() => setSelectedListing(null)}
+                                                >
+                                                    <div>
+                                                        <img className="w-full h-auto object-cover pb-4" src={selectedListing.thumbnail_url} alt={selectedListing.name} />
+                                                        <h3 className="font-semibold pb-4">{selectedListing.title}</h3>
+														<p><b>Price: ${selectedListing.price}</b></p>
+                                                        <p>{selectedListing.description}</p>
+                                                    </div>
+                                                </InfoWindow>
+                                            )}
+                                        </GoogleMap>
+                                    </div>
+                                </Card>
+                            </CardHeader>
+                            <CardContent>
+                                <form>
+                                    <div>
+                                        <Label htmlFor='radius' className='font-semibold'>Radius</Label>
+                                        <Slider
+                                            className='my-2'
+                                            defaultValue={radius}
+                                            max={750}
+                                            step={1}
+                                            onValueChange={setRadius}
+                                            onValueCommit={handleRadiusCommit} // Trigger fetch on slider commit
+                                        />
+                                    </div>
+                                    <div>
+                                        <Label htmlFor='amenities' className='font-semibold'>Filter Amenities</Label>
+                                        <MultiSelect
+                                            options={householdAmenities}
+                                            onValueChange={setSelectedFilter}
+                                            defaultValue={selectedFilter}
+                                            placeholder='Select amenities'
+                                            variant='inverted'
+                                            maxCount={2}
+                                        />
+                                    </div>
+                                    <div className='pt-2'>
+                                        <Label htmlFor='privacy' className='font-semibold'>Privacy Type</Label>
+                                        <MultiSelect
+                                            options={householdPrivacyTypes}
+                                            onValueChange={setSelectedPrivacyType}
+                                            defaultValue={selectedPrivacyType}
+                                            placeholder='Select privacy type'
+                                            variant='inverted'
+                                            maxCount={2}
+                                        />
+                                    </div>
+                                </form>
+                            </CardContent>
+                        </Card>
+                    </div>
+                </div>
+            </div>
+        </div>
+    );
 }
