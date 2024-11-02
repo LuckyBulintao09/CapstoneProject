@@ -153,7 +153,7 @@ const data = {
 		},
 		{
 			name: 'Transaction History',
-			url: '#',
+			url: '/hosting/transaction_history',
 			icon: BookOpen,
 		},
 	],
