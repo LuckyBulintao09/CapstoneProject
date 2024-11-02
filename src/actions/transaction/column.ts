@@ -1,4 +1,3 @@
-// transactionService.ts
 import { createClient } from "@/utils/supabase/client";
 
 const supabase = createClient();
@@ -48,7 +47,7 @@ export const cancelTransaction = async (transactionId: number) => {
   try {
     const { error } = await supabase
       .from("transaction")
-      .delete()
+      .update({ transaction_status: "cancelled" })
       .match({ id: transactionId });
 
     if (error) {

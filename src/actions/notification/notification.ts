@@ -13,14 +13,11 @@ export const fetchUser = async () => {
 
 export const checkReservationConflict = async (userId: string) => {
   try {
-    console.log(`Checking conflicts for user: ${userId}`);
-
     const { data: onSiteReservations, error: onSiteError } = await supabase
       .from("transaction")
       .select("id, created_at, unit_id")
       .eq("user_id", userId)
-      .eq("service_option", "On-Site Visit")
-      .eq("transaction_status", "pending");
+      .eq("service_option", "On-Site Visit");
 
     if (onSiteError) {
       console.error("Error fetching On-Site Visit transactions:", onSiteError);
@@ -35,7 +32,11 @@ export const checkReservationConflict = async (userId: string) => {
     const conflictMessages = [];
 
     for (const reservation of onSiteReservations) {
-      const { unit_id: unitId, created_at: createdAt } = reservation;
+      const {
+        id: onSiteId,
+        unit_id: unitId,
+        created_at: createdAt,
+      } = reservation;
 
       const { data: conflictingReservations, error: conflictError } =
         await supabase
@@ -73,14 +74,25 @@ export const checkReservationConflict = async (userId: string) => {
 
         const unitTitle = unitData?.title || "the unit";
 
+        const { error: updateError } = await supabase
+          .from("transaction")
+          .update({ transaction_status: "cancelled" })
+          .eq("id", onSiteId);
+
+        if (updateError) {
+          console.error(
+            `Error updating transaction status for On-Site Visit ${onSiteId}:`,
+            updateError
+          );
+          throw updateError;
+        }
+
         conflictMessages.push({
-          message: `The unit ${unitTitle} that you transacted at ${formattedDate} has now been reserved.`,
+          message: `We regret to inform you that your transaction for the unit ${unitTitle} on ${formattedDate} has been cancelled, as the unit has now been reserved by another user.`,
           unitId: unitId,
         });
       }
     }
-
-    console.log("Conflicting reservations found:", conflictMessages);
     return conflictMessages;
   } catch (error) {
     console.error("Error checking reservation conflict:", error);
