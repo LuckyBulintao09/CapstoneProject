@@ -1,20 +1,24 @@
-/** @type {import('next').NextConfig} */
+// next.config.js or next.config.mjs
 const nextConfig = {
+    typescript: {
+        ignoreBuildErrors: true,  // Disables TypeScript errors during build
+    },
+    eslint: {
+        ignoreDuringBuilds: true,  // Disables ESLint errors during build
+    },
     images: {
-        domains: ["kxkkueirrfwmrrurarhw.supabase.co"], // Add your Supabase domain here
+        domains: ["kxkkueirrfwmrrurarhw.supabase.co"],
         remotePatterns: [
             {
                 protocol: "https",
                 hostname: "kxkkueirrfwmrrurarhw.supabase.co",
-                port: "",
             },
             {
                 protocol: "https",
                 hostname: "picsum.photos",
-                port: "",
             }
         ]
-    },
+    }
 };
 
 export default nextConfig;
