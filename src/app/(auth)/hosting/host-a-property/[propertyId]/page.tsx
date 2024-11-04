@@ -1,12 +1,17 @@
-"use client"
-import { usePropertyAddFormContext } from "@/modules/hosting/add-listing/PropertyAddFormProvider";
+import HostingContentLayout from '@/modules/hosting/components/ContentLayout'
+import CustomBreadcrumbs from '@/modules/hosting/components/CustomBreadcrumbs'
 
-function Property() {
 
-    const { formData } = usePropertyAddFormContext();
-    return <div>
-        <pre><code>{JSON.stringify({ formData }, null, 2)}</code></pre>
-    </div>;
+function AddPropertyPage() {
+  return (
+      <div>
+          <HostingContentLayout title="Add property">
+              <CustomBreadcrumbs />
+
+              <div className="mx-auto max-w-5xl py-11">Step 1</div>
+          </HostingContentLayout>
+      </div>
+  );
 }
 
-export default Property;
+export default AddPropertyPage

@@ -1,7 +1,6 @@
-"use client"
+"use client";
 
-import React from "react";
-
+import React, { useEffect, useState } from "react";
 import { CreatePropertyType } from "@/lib/schemas/createPropertySchema";
 
 interface PropertyAddFormProviderProps {
@@ -26,10 +25,9 @@ export const defaultPropertyAddFormData: CreatePropertyType = {
     additional_amenities: [],
     title: "",
     description: "",
-    // price: 0,
 };
 
-const PropertyAddFormContext = React.createContext<PropertyAddFormProviderProps | undefined>(undefined);
+const PropertyAddFormContext = React.createContext<PropertyAddFormProviderProps & { progress: number } | undefined>(undefined);
 
 export const usePropertyAddFormContext = () => {
     const context = React.useContext(PropertyAddFormContext);
@@ -40,9 +38,24 @@ export const usePropertyAddFormContext = () => {
 }
 
 export const PropertyAddFormProvider = ({ children, formData, setFormData }: PropertyAddFormProviderProps & ChildrenProps) => {
-    const [propertyFormData, setPropertyFormData] = React.useState<CreatePropertyType>(formData);
+    const [propertyFormData, setPropertyFormData] = useState<CreatePropertyType>(formData);
+    const [progress, setProgress] = useState(0);
+
+    useEffect(() => {
+        const calculateProgress = () => {
+            const totalFields = Object.keys(defaultPropertyAddFormData).length;
+            const filledFields = Object.keys(propertyFormData).filter(key => {
+                const value = propertyFormData[key as keyof CreatePropertyType];
+                return Array.isArray(value) ? value.length > 0 : value !== "";
+            }).length;
+            setProgress((filledFields / totalFields) * 100);
+        };
+
+        calculateProgress();
+    }, [propertyFormData]);
+
     return (
-        <PropertyAddFormContext.Provider value={{ formData: propertyFormData, setFormData: setPropertyFormData }}>
+        <PropertyAddFormContext.Provider value={{ formData: propertyFormData, setFormData: setPropertyFormData, progress }}>
             {children}
         </PropertyAddFormContext.Provider>
     );

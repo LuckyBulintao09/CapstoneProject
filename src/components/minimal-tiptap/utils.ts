@@ -36,23 +36,28 @@ type FileInput = File | { src: string | File; alt?: string; title?: string }
 // Platform detection
 let isMac: boolean | undefined
 
-const getPlatform = (): string => {
-  const nav = navigator as Navigator
+const getPlatform = async (): Promise<string> => {
+  if (typeof window !== 'undefined' && typeof navigator !== 'undefined') {
+    const nav = navigator as Navigator;
 
-  if (nav.userAgentData?.platform) {
-    return nav.userAgentData.platform
+    if (nav.userAgentData?.platform) {
+      return nav.userAgentData.platform;
+    }
+
+    // Using `getHighEntropyValues` on the client only, with async handling
+    if (nav.userAgentData && nav.userAgentData.getHighEntropyValues) {
+      const highEntropyValues = await nav.userAgentData.getHighEntropyValues(['platform']);
+      return highEntropyValues.platform || '';
+    }
+
+    return nav.platform || '';
   }
 
-  if (nav.userAgentData) {
-    nav.userAgentData.getHighEntropyValues(['platform']).then(highEntropyValues => {
-      if (highEntropyValues.platform) {
-        return highEntropyValues.platform
-      }
-    })
-  }
+  // Return a default value on the server
+  return 'unknown';
+};
 
-  return nav.platform || ''
-}
+
 
 export const isMacOS = (): boolean => {
   if (isMac === undefined) {

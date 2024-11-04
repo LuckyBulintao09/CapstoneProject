@@ -1,60 +1,61 @@
-'use client';
+"use client";
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect } from "react";
 import {
-	Card,
-	CardContent,
-	CardDescription,
-	CardHeader,
-	CardTitle,
-} from '@/components/ui/card';
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from "@/components/ui/card";
 import {
-	Carousel,
-	CarouselContent,
-	CarouselItem,
-} from '@/components/ui/carousel';
-import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
-import SpecificBranchListings from '../../lessor-dashboard/components/SpecificBranchListings';
-import ReviewsUnderCompany from './ReviewsUnderCompany';
-import { getAllPropertyUnderSpecificCompany } from '@/actions/property/getAllPropertyUnderSpecificCompany';
-import { getAllUnitUnderProperty } from '@/actions/unit/getAllUnitUnderProperty';
-import { MapPin } from 'lucide-react';
-
+  Carousel,
+  CarouselContent,
+  CarouselItem,
+} from "@/components/ui/carousel";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import SpecificBranchListings from "../../lessor-dashboard/components/SpecificBranchListings";
+import ReviewsUnderCompany from "./ReviewsUnderCompany";
+import { getAllPropertyUnderSpecificCompany } from "@/actions/property/getAllPropertyUnderSpecificCompany";
+import { getAllUnitUnderProperty } from "@/actions/unit/getAllUnitUnderProperty";
+import { MapPin } from "lucide-react";
+import { ScrollArea } from "@/components/ui/scroll-area";
 interface Unit {
-	id: number;
-	title: string;
-	capacity: number;
-	price: number;
-	availability: boolean;
+  id: number;
+  title: string;
+  capacity: number;
+  price: number;
+  availability: boolean;
 }
 
 interface Property {
-	id: number;
-	title: string;
-	address: string;
+  id: number;
+  title: string;
+  address: string;
 }
 
 interface BusinessDetailsProps {
-	companyName: string;
-	about: string;
-	created_at: string;
-	companyId: number;
-	firstname: string;
-	lastname: string;
-	email: string;
-	cp_number: string;
+  companyName: string;
+  about: string;
+  created_at: string;
+  companyId: number;
+  firstname: string;
+  lastname: string;
+  email: string;
+  cp_number: string;
 }
 
 export function BusinessDetails({
-	companyName,
-	about,
-	created_at,
-	companyId,
-	firstname,
-	lastname,
-	email,
-	cp_number,
+  companyName,
+  about,
+  created_at,
+  companyId,
+  firstname,
+  lastname,
+  email,
+  cp_number,
 }: BusinessDetailsProps) {
+
 	const [properties, setProperties] = useState<Property[]>([]);
 	const [selectedProperty, setSelectedProperty] = useState<Property | null>(
 		null
@@ -63,34 +64,36 @@ export function BusinessDetails({
 	const [loading, setLoading] = useState<boolean>(true);
 	const [loadingUnits, setLoadingUnits] = useState<boolean>(false);
 
-	useEffect(() => {
-		const fetchProperties = async () => {
-			setLoading(true);
-			try {
-				const properties = await getAllPropertyUnderSpecificCompany(companyId);
-				setProperties(properties);
-			} catch (error) {
-				console.error('Error fetching properties:', error);
-			} finally {
-				setLoading(false);
-			}
-		};
 
-		fetchProperties();
-	}, [companyId]);
+  useEffect(() => {
+    const fetchProperties = async () => {
+      setLoading(true);
+      try {
+        const properties = await getAllPropertyUnderSpecificCompany(companyId);
+        setProperties(properties);
+      } catch (error) {
+        console.error("Error fetching properties:", error);
+      } finally {
+        setLoading(false);
+      }
+    };
 
-	const handlePropertyClick = async (property: Property) => {
-		setSelectedProperty(property);
-		setLoadingUnits(true);
-		try {
-			const units = await getAllUnitUnderProperty(property.id);
-			setUnits(units);
-		} catch (error) {
-			console.error('Error fetching units:', error);
-		} finally {
-			setLoadingUnits(false);
-		}
-	};
+    fetchProperties();
+  }, [companyId]);
+
+  const handlePropertyClick = async (property: Property) => {
+    setSelectedProperty(property);
+    setLoadingUnits(true);
+    try {
+      const units = await getAllUnitUnderProperty(property.id);
+      setUnits(units);
+    } catch (error) {
+      console.error("Error fetching units:", error);
+    } finally {
+      setLoadingUnits(false);
+    }
+  };
+
 
 	return (
 		<div className='xl:flex xl:justify-center '>
@@ -104,25 +107,27 @@ export function BusinessDetails({
 					<TabsTrigger value='reviews'>Reviews Under this Company</TabsTrigger>
 				</TabsList>
 
-				{/* ABOUT SECTION */}
-				<TabsContent value='about'>
-					<Card className='dark:bg-transparent dark:border-none'>
-						<CardHeader className='dark:border-t-2 dark:border-sky-900'>
-							<CardTitle>About {companyName}</CardTitle>
-							<CardDescription>
-								On UniHomes since{' '}
-								{new Date(created_at).toLocaleDateString('en-US', {
-									year: 'numeric',
-									month: 'long',
-									day: 'numeric',
-								})}
-							</CardDescription>
-						</CardHeader>
-						<CardContent className='space-y-2 dark:text-white'>
-							<div className='space-y-1'>{about}</div>
-						</CardContent>
-					</Card>
-				</TabsContent>
+
+        {/* ABOUT SECTION */}
+        <TabsContent value="about">
+          <Card className="dark:bg-transparent dark:border-none bg-transparent border-gray-200">
+            <CardHeader className="dark:border-t-2 dark:border-sky-900">
+              <CardTitle>About {companyName}</CardTitle>
+              <CardDescription>
+                On UniHomes since{" "}
+                {new Date(created_at).toLocaleDateString("en-US", {
+                  year: "numeric",
+                  month: "long",
+                  day: "numeric",
+                })}
+              </CardDescription>
+            </CardHeader>
+            <CardContent className="space-y-2 dark:text-white">
+              <div className="space-y-1">{about}</div>
+            </CardContent>
+          </Card>
+        </TabsContent>
+
 
 				{/* PROPERTIES SECTION */}
 				<TabsContent value='branchesAndRooms'>
@@ -166,39 +171,40 @@ export function BusinessDetails({
 								</Carousel>
 							)}
 
-							{/* Display available units for selected property */}
-							{loadingUnits ? (
-								<div>Loading units...</div>
-							) : selectedProperty ? (
-								units.length > 0 ? (
-									<div className='space-y-1 pt-1 pl-2'>
-										<SpecificBranchListings listings={units} />
-									</div>
-								) : (
-									<p>No units available under this property.</p>
-								)
-							) : (
-								<p>Please select a property to see available units.</p>
-							)}
-						</CardContent>
-					</Card>
-				</TabsContent>
 
-				{/* REVIEWS SECTION */}
-				<TabsContent value='reviews'>
-					<Card className='dark:bg-transparent dark:border-none'>
-						<CardHeader className='dark:border-t-2 dark:border-sky-900'>
-							<CardTitle>Customer Reviews</CardTitle>
-							<CardDescription>Read what people have to say</CardDescription>
-						</CardHeader>
-						<CardContent>
-							<div className='space-y-1'>
-								<ReviewsUnderCompany companyId={companyId} />
-							</div>
-						</CardContent>
-					</Card>
-				</TabsContent>
-			</Tabs>
-		</div>
-	);
+              {/* Display available units for selected property */}
+              {loadingUnits ? (
+                <div>Loading units...</div>
+              ) : selectedProperty ? (
+                units.length > 0 ? (
+                  <div className="space-y-1 pt-1 pl-2">
+                    <SpecificBranchListings listings={units} />
+                  </div>
+                ) : (
+                  <p>No units available under this property.</p>
+                )
+              ) : (
+                <p>Please select a property to see available units.</p>
+              )}
+            </CardContent>
+          </Card>
+        </TabsContent>
+
+        {/* REVIEWS SECTION */}
+        <TabsContent value="reviews">
+          <Card className="dark:bg-transparent dark:border-none bg-transparent border-gray-200">
+            <CardHeader className="dark:border-t-2 dark:border-sky-900">
+              <CardTitle>Customer Reviews</CardTitle>
+              <CardDescription>Read what people have to say</CardDescription>
+            </CardHeader>
+            <CardContent className="flex">
+              <ScrollArea className="h-[450px] w-full rounded-md p-4">
+                <ReviewsUnderCompany companyId={companyId} />
+              </ScrollArea>
+            </CardContent>
+          </Card>
+        </TabsContent>
+      </Tabs>
+    </div>
+  );
 }

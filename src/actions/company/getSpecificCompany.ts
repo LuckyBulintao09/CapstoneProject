@@ -17,7 +17,7 @@ export const getSpecificCompany = async (id: number) => {
     let { data: owner, error: ownerError } = await supabase
         .from("account")
         .select("firstname, lastname, email, cp_number, id,profile_url")
-        .eq("id", company.owner_id)
+        .eq("id", company?.owner_id)
         .single();
 
     if (ownerError) {
