@@ -51,28 +51,16 @@ export default function FavoriteListings() {
 			const fetchFavorites = async () => {
 				try {
 					const { data, error } = await supabase
-						.from('favorites')
-						.select(
-							`
-              Account_ID,
-              unit:unit_ID(
-                id,
-                title,
-                description,
-                price,
-                thumbnail_url
-              )
-            `
-						)
-						.eq('Account_ID', userId);
+						.rpc('get_user_favorites', { user_id: userId })
 
 					if (error) {
 						throw error;
 					}
 
-					console.log('Fetched Favorites Data:', data);
-					const favoriteProperties = data.map((fav) => fav.unit);
-					setFavorites(favoriteProperties || []);
+					// console.log('Fetched Favorites Data:', data);
+					// const favoriteProperties = data.map((fav) => fav.unit);
+					// setFavorites(favoriteProperties || []);
+					setFavorites(data || []);
 				} catch (error) {
 					console.error('Error fetching favorites:', error.message);
 					setError('Failed to fetch favorite properties');
@@ -103,9 +91,9 @@ export default function FavoriteListings() {
 
 	return (
 		<div className='grid grid-cols-1 gap-4 md:grid-cols-3 lg:grid-cols-2 sm:grid-cols-3 xs:grid-cols-2'>
-			{favorites.map((item) => (
+			{favorites.slice(0, 4).map((item) => (
 				<div key={item.id}>
-					<BranchListings {...item} />
+					<BranchListings key={item.id} {...item} />
 				</div>
 			))}
 		</div>
