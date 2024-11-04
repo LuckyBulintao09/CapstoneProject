@@ -7,7 +7,7 @@ const nextConfig = {
         ignoreDuringBuilds: true,  // Disables ESLint errors during build
     },
     images: {
-        domains: ["kxkkueirrfwmrrurarhw.supabase.co"],
+        // domains: ["kxkkueirrfwmrrurarhw.supabase.co"], // Add your Supabase domain here --> deprecated na to
         remotePatterns: [
             {
                 protocol: "https",

@@ -21,6 +21,8 @@ import { ScrollArea } from "@/components/ui/scroll-area";
 import { Button } from "@/components/ui/button";
 import { Tooltip, TooltipContent, TooltipTrigger } from "@/components/ui/tooltip";
 
+import { useRouter } from "next/navigation";
+
 export function TeamSwitcher({
     companies,
 }: {
@@ -34,6 +36,8 @@ export function TeamSwitcher({
 }) {
     const { isMobile } = useSidebar();
     const [activeCompany, setActiveCompany] = React.useState(companies[0]);
+
+    const router = useRouter();
 
     return (
         <SidebarMenu>
@@ -77,7 +81,7 @@ export function TeamSwitcher({
                             {companies?.map((company) => (
                                 <DropdownMenuItem
                                     key={company.id}
-                                    onClick={() => setActiveCompany(company)}
+                                    onClick={() => {setActiveCompany(company); router.push(`/hosting/company/${company.id}/properties`)}}
                                     className={cn("p-2 my-1", activeCompany.company_name === company.company_name && "bg-accent")}
                                 >
                                     <div className="flex flex-row justify-between items-center w-full">
