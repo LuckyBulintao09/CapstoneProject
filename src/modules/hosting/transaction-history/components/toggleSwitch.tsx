@@ -1,73 +1,93 @@
-import { useState } from 'react';
-import { CheckIcon, XMarkIcon, HomeIcon } from '@heroicons/react/24/solid';
+import { useState } from "react";
+import { CheckIcon, XMarkIcon, HomeIcon } from "@heroicons/react/24/solid";
+import { Button } from "@nextui-org/react";
 
 interface ToggleSwitchProps {
-	onStatusChange: (newStatus: string) => void;
+  transactionId: number;
+  unitId: number;
+  onStatusChange: (
+    id: number,
+    newStatus: string,
+    unitId: number
+  ) => Promise<void>;
 }
 
-const ToggleSwitch: React.FC<ToggleSwitchProps> = ({ onStatusChange }) => {
-	const [dragPosition, setDragPosition] = useState(50); // Start centered
-	const [isDragging, setIsDragging] = useState(false);
+const ToggleSwitch: React.FC<ToggleSwitchProps> = ({
+  transactionId,
+  unitId,
+  onStatusChange,
+}) => {
+  const [dragPosition, setDragPosition] = useState(50);
+  const [isDragging, setIsDragging] = useState(false);
+  const [showActionButtons, setShowActionButtons] = useState(false);
 
-	const handleMouseDown = () => {
-		setIsDragging(true);
-	};
+  const handleDrag = (e: React.MouseEvent) => {
+    if (!isDragging) return;
+    const slider = e.currentTarget.getBoundingClientRect();
+    const newPosition = Math.min(
+      100,
+      Math.max(0, ((e.clientX - slider.left) / slider.width) * 100)
+    );
+    setDragPosition(newPosition);
+  };
 
-	const handleMouseMove = (e: React.MouseEvent) => {
-		if (!isDragging) return;
+  const handleMouseRelease = async () => {
+    setIsDragging(false);
+    if (dragPosition < 25) {
+      setShowActionButtons(true);
+    } else if (dragPosition > 75) {
+      await onStatusChange(transactionId, "cancelled", unitId);
+    }
+    setDragPosition(50);
+  };
 
-		const slider = e.currentTarget.getBoundingClientRect();
-		let newPosition = ((e.clientX - slider.left) / slider.width) * 100;
-
-		// Clamp position to stay within bounds
-		if (newPosition < 0) newPosition = 0;
-		if (newPosition > 100) newPosition = 100;
-
-		setDragPosition(newPosition);
-	};
-
-	const handleMouseUp = () => {
-		setIsDragging(false);
-
-		// Determine the action based on final position
-		if (dragPosition < 25) {
-			onStatusChange('visited'); // Change status to "Visited" for left drag
-			setDragPosition(50); // Reset to center
-		} else if (dragPosition > 75) {
-			onStatusChange('cancelled'); // Change status to "Cancelled" for right drag
-			setDragPosition(50); // Reset to center
-		} else {
-			setDragPosition(50); // Center if not dragged far enough
-		}
-	};
-
-	return (
-		<div
-			className='relative flex items-center justify-between w-24 p-1 bg-gray-100 dark:bg-gray-900 rounded-full cursor-pointer'
-			onMouseMove={handleMouseMove}
-			onMouseUp={handleMouseUp}
-			onMouseLeave={() => isDragging && handleMouseUp()}
-		>
-			<div className='flex items-center justify-center w-6 h-6 text-green-500'>
-				<CheckIcon className='w-4 h-4' />
-			</div>
-
-			<div
-				className={`absolute z-10 flex items-center justify-center w-8 h-8 bg-black rounded-full text-white transition-transform duration-300 ease-out`}
-				style={{
-					left: `${dragPosition}%`,
-					transform: 'translateX(-50%)',
-				}}
-				onMouseDown={handleMouseDown}
-			>
-				<HomeIcon className='w-4 h-4' />
-			</div>
-
-			<div className='flex items-center justify-center w-6 h-6 text-red-500'>
-				<XMarkIcon className='w-4 h-4' />
-			</div>
-		</div>
-	);
+  return (
+    <>
+      {!showActionButtons ? (
+        <div
+          className="relative flex items-center justify-between w-36 p-2 bg-gray-100 dark:bg-gray-900 rounded-full cursor-pointer"
+          onMouseMove={handleDrag}
+          onMouseUp={handleMouseRelease}
+          onMouseLeave={() => isDragging && handleMouseRelease()}
+        >
+          <div className="flex items-center justify-center w-8 h-8 text-green-500">
+            <CheckIcon className="w-5 h-5" />
+          </div>
+          <div
+            className="absolute z-10 flex items-center justify-center w-10 h-10 bg-black rounded-full text-white transition-transform duration-300 ease-out"
+            style={{ left: `${dragPosition}%`, transform: "translateX(-50%)" }}
+            onMouseDown={() => setIsDragging(true)}
+          >
+            <HomeIcon className="w-5 h-5" />
+          </div>
+          <div className="flex items-center justify-center w-8 h-8 text-red-500">
+            <XMarkIcon className="w-5 h-5" />
+          </div>
+        </div>
+      ) : (
+        <div className="flex gap-4 items-center">
+          <Button
+            className="bg-blue-700 text-white"
+            onClick={async () => {
+              await onStatusChange(transactionId, "reserved", unitId);
+              setShowActionButtons(false);
+            }}
+          >
+            Reserved
+          </Button>
+          <Button
+            className="bg-green-700 text-white"
+            onClick={async () => {
+              await onStatusChange(transactionId, "visited", unitId);
+              setShowActionButtons(false);
+            }}
+          >
+            Visited
+          </Button>
+        </div>
+      )}
+    </>
+  );
 };
 
 export default ToggleSwitch;
