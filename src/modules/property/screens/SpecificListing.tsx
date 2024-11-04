@@ -217,22 +217,6 @@ export function SpecificListing({ id }: SpecificListingProps) {
 						</div>
 					</div>
 
-					{/* <div className='flex items-center border-y border-gray-300 py-4'>
-						<Avatar className='mr-4'>
-							<AvatarImage src={company?.owner_id?.profile_url} />
-							<AvatarFallback>
-								{company?.owner_id?.firstname[0]}
-								{company?.owner_id?.lastname[0]}
-							</AvatarFallback>
-						</Avatar>
-						<div className='flex flex-col'>
-							<h3 className='font-bold text-base'>
-								{company?.owner_id?.firstname} {company?.owner_id?.lastname}
-							</h3>
-							<p className='text-sm text-gray-700'>Property Owner</p>
-						</div>
-					</div> */}
-
 					<Banner
 						ownerName={company?.owner_id?.firstname}
 						ownerLastname={company?.owner_id?.lastname}
