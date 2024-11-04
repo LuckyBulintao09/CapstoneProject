@@ -3,7 +3,7 @@
 import FavoriteListings from '@/modules/favorites/components/FavoriteListings';
 import HeroSection from '../components/Hero';
 import tempValues from '@/lib/constants/tempValues';
-import { useState } from 'react';
+import React, { useState } from 'react';
 
 interface Amenity {
 	amenity_name: string;
@@ -21,6 +21,7 @@ interface Favorites {
 }
 
 export default function FavoritesScreen() {
+
 	const [favoriteLists] = useState<Favorites[]>(tempValues.LISTINGS);
 	const [searchTerm, setSearchTerm] = useState('');
 
@@ -35,7 +36,7 @@ export default function FavoritesScreen() {
 					<HeroSection searchTerm={searchTerm} setSearchTerm={setSearchTerm} />
 				</div>
 				<div className='p-8 '>
-					<FavoriteListings listings={filteredList} />
+					<FavoriteListings searchTerm={searchTerm} setSearchTerm={setSearchTerm} />
 				</div>
 			</div>
 		</div>
