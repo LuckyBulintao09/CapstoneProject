@@ -1,7 +1,7 @@
 "use client";
 
 import React, { useEffect, useState, useCallback } from "react";
-import { createClient } from "../../../../../supabase/client";
+import { createClient } from "@/utils/supabase/client";
 import Inbox from "./messages/page";
 import { Card } from "@/components/ui/card";
 

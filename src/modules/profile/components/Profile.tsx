@@ -15,6 +15,16 @@ import {
 import React, { useEffect, useRef, useState } from 'react';
 import { parseDate } from '@internationalized/date';
 import LoadingPage from '@/components/LoadingPage';
+import {
+	Dialog,
+	DialogContent,
+	DialogDescription,
+	DialogFooter,
+	DialogHeader,
+	DialogTitle,
+} from '@/components/ui/dialog';
+import { Label } from '@/components/ui/label';
+import { handleResetPassword } from '@/actions/user/updatePassword';
 
 interface ProfileData {
 	id: string;
@@ -31,11 +41,12 @@ const ProfileSection = () => {
 	const { isOpen, onOpen, onOpenChange } = useDisclosure();
 	const fileInputRef = useRef<HTMLInputElement | null>(null);
 	const [profileData, setProfileData] = useState<ProfileData | null>(null);
-	const [editProfileData, setEditProfileData] = useState<ProfileData | null>(
-		null
-	);
+	const [editProfileData, setEditProfileData] = useState<ProfileData | null>(null);
 	const [loading, setLoading] = useState<boolean>(true);
-
+	const [isResetPasswordOpen, setIsResetPasswordOpen] = useState(false);
+	const [isResetLoading, setIsResetLoading] = useState(false);
+	const [newPassword, setNewPassword] = useState('');
+	const [confirmPassword, setConfirmPassword] = useState('');
 	const supabase = createClient();
 
 	useEffect(() => {
@@ -158,117 +169,151 @@ const ProfileSection = () => {
 		);
 	}
 
+	const handleResetPasswordSubmit = async (e: React.FormEvent) => {
+		e.preventDefault();
+		setIsResetLoading(true);
+
+		const result = await handleResetPassword(newPassword, confirmPassword);
+
+		if (result.error) {
+			alert(result.error);
+		} else if (result.success) {
+			setNewPassword('');
+			setConfirmPassword('');
+			alert(result.success);
+			setNewPassword('');
+			setConfirmPassword('');
+			setIsResetPasswordOpen(false);
+		}
+		
+		setIsResetLoading(false);
+	};
+
 	return (
-		<section className='w-full p-2'>
-			<div className='flex p-2 gap-4 h-[20%]'>
-				<div className='relative'>
-					<Avatar className='w-32 h-32'>
-						<AvatarImage src={profileData?.profile_url} />
-						<AvatarFallback>
-							{profileData?.firstname.charAt(0)}
-							{profileData?.lastname.charAt(0)}
-						</AvatarFallback>
-					</Avatar>
-					<button
-						onClick={() => fileInputRef.current?.click()}
-						className='absolute bottom-0 right-0 bg-white p-1 rounded-full shadow-md hover:bg-gray-200 transition w-7'
-					>
-						<PencilSquareIcon className='w-5 h-5 text-gray-600' />
-					</button>
-					<input
-						type='file'
-						ref={fileInputRef}
-						className='hidden'
-						accept='image/*'
-						onChange={handleFileChange}
-					/>
-				</div>
-				<div className='flex items-center'>
-					<div className='flex flex-col'>
-						<h1 className='font-bold mb-1'>{`${profileData?.firstname} ${profileData?.lastname}`}</h1>
-						<p>{profileData?.address}</p>
+		<>
+			<section className='w-full p-2'>
+				<div className='flex p-2 gap-4 h-[20%]'>
+					<div className='relative'>
+						<Avatar className='w-32 h-32'>
+							<AvatarImage src={profileData?.profile_url} />
+							<AvatarFallback>
+								{profileData?.firstname.charAt(0)}
+								{profileData?.lastname.charAt(0)}
+							</AvatarFallback>
+						</Avatar>
+						<button
+							onClick={() => fileInputRef.current?.click()}
+							className='absolute bottom-0 right-0 bg-white p-1 rounded-full shadow-md hover:bg-gray-200 transition w-7'
+						>
+							<PencilSquareIcon className='w-5 h-5 text-gray-600' />
+						</button>
+						<input
+							type='file'
+							ref={fileInputRef}
+							className='hidden'
+							accept='image/*'
+							onChange={handleFileChange} />
+					</div>
+					<div className='flex items-center'>
+						<div className='flex flex-col'>
+							<h1 className='font-bold mb-1'>{`${profileData?.firstname} ${profileData?.lastname}`}</h1>
+							<p>{profileData?.address}</p>
+						</div>
 					</div>
 				</div>
-			</div>
 
-			<div className='flex flex-col gap-5 p-4 mt-10'>
-				<div className='flex justify-between items-center'>
-					<h1 className='text-xl font-bold'>Personal Details</h1>
-					<Button
-						onPress={onOpen}
-						className='text-blue-600 underline hover:text-blue-800 bg-transparent'
-					>
-						<PencilIcon className='w-4 h-4 mr-1' />
-						Edit
+				<div className='flex flex-col gap-5 p-4 mt-10'>
+					<div className='flex justify-between items-center'>
+						<h1 className='text-xl font-bold'>Personal Details</h1>
+						<Button
+							onPress={onOpen}
+							className='text-blue-600 underline hover:text-blue-800 bg-transparent'
+						>
+							<PencilIcon className='w-4 h-4 mr-1' />
+							Edit
+						</Button>
+					</div>
+
+					<div>
+						<p className='text-base font-medium text-default-400'>Full Name</p>
+						<h4 className='text-lg font-medium'>{`${profileData?.firstname} ${profileData?.lastname}`}</h4>
+					</div>
+					<div>
+						<p className='text-base font-medium text-default-400'>
+							Contact Number
+						</p>
+						<h4 className='text-lg font-medium'>
+							{profileData?.cp_number || '---'}
+						</h4>
+					</div>
+					<div>
+						<p className='text-base font-medium text-default-400'>Address</p>
+						<h4 className='text-lg font-medium'>
+							{profileData?.address || '---'}
+						</h4>
+					</div>
+					<div>
+						<p className='text-base font-medium text-default-400'>
+							Date of Birth
+						</p>
+						<h4 className='text-lg font-medium'>
+							{profileData?.dob
+								? new Date(profileData.dob).toLocaleDateString()
+								: '---'}
+						</h4>
+					</div>
+					<div>
+						<p className='text-base font-medium text-default-400'>Email</p>
+						<h4 className='text-lg font-medium'>{profileData?.email}</h4>
+					</div>
+				</div>
+
+				<div className='flex mt-4'>
+					<Button className='text-blue-600 underline hover:text-blue-800 bg-transparent' onClick={() => setIsResetPasswordOpen(true)}>
+						Reset Password
 					</Button>
 				</div>
+				<div className='flex mt-4'>
+					<Button className='text-red-600 underline hover:text-red-800 bg-transparent'>
+						Delete Account
+					</Button>
+				</div>
+			</section>
 
-				<div>
-					<p className='text-base font-medium text-default-400'>Full Name</p>
-					<h4 className='text-lg font-medium'>{`${profileData?.firstname} ${profileData?.lastname}`}</h4>
-				</div>
-				<div>
-					<p className='text-base font-medium text-default-400'>
-						Contact Number
-					</p>
-					<h4 className='text-lg font-medium'>
-						{profileData?.cp_number || '---'}
-					</h4>
-				</div>
-				<div>
-					<p className='text-base font-medium text-default-400'>Address</p>
-					<h4 className='text-lg font-medium'>
-						{profileData?.address || '---'}
-					</h4>
-				</div>
-				<div>
-					<p className='text-base font-medium text-default-400'>
-						Date of Birth
-					</p>
-					<h4 className='text-lg font-medium'>{profileData?.dob || '---'}</h4>
-				</div>
-				<div>
-					<p className='text-base font-medium text-default-400'>Email</p>
-					<h4 className='text-lg font-medium'>{profileData?.email || '---'}</h4>
-				</div>
-			</div>
-
-			<Modal isOpen={isOpen} placement='center' onOpenChange={onOpenChange}>
+			<Modal isOpen={isOpen} onOpenChange={onOpenChange}>
 				<ModalContent>
-					{() => (
-						<>
-							<ModalHeader>Edit Profile</ModalHeader>
-							<ModalBody>
-								<div className='flex flex-col gap-2'>
-									<Input
-										type='text'
-										label='First Name'
-										name='firstname'
-										value={editProfileData?.firstname || ''}
-										onChange={handleInputChange}
-									/>
-									<Input
-										type='text'
-										label='Last Name'
-										name='lastname'
-										value={editProfileData?.lastname || ''}
-										onChange={handleInputChange}
-									/>
-									<Input
-										type='number'
-										label='Contact Number'
-										name='cp_number'
-										value={editProfileData?.cp_number || ''}
-										onChange={handleInputChange}
-									/>
-									<Input
-										type='text'
-										label='Address'
-										name='address'
-										value={editProfileData?.address || ''}
-										onChange={handleInputChange}
-									/>
-									<DatePicker
+					<ModalHeader>Edit Profile</ModalHeader>
+					<ModalBody>
+						<Label htmlFor='firstname'>First Name</Label>
+						<Input
+							id='firstname'
+							name='firstname'
+							value={editProfileData?.firstname}
+							onChange={handleInputChange}
+						/>
+						<Label htmlFor='lastname'>Last Name</Label>
+						<Input
+							id='lastname'
+							name='lastname'
+							value={editProfileData?.lastname}
+							onChange={handleInputChange}
+						/>
+						<Label htmlFor='address'>Address</Label>
+						<Input
+							id='address'
+							name='address'
+							value={editProfileData?.address}
+							onChange={handleInputChange}
+						/>
+						<Label htmlFor='cp_number'>Contact Number</Label>
+						<Input
+							id='cp_number'
+							name='cp_number'
+							value={editProfileData?.cp_number}
+							onChange={handleInputChange}
+						/>
+						<Label htmlFor='dob'>Date of Birth</Label>
+						<DatePicker
 										label='Birth Date'
 										showMonthAndYearPickers
 										value={
@@ -284,34 +329,44 @@ const ProfileSection = () => {
 											)
 										}
 									/>
-									<Input
-										type='email'
-										label='Email'
-										placeholder={editProfileData?.email}
-										isDisabled
-									/>
-									<small className='text-red-500'>
-										*Email address cannot be changed
-									</small>
-								</div>
-							</ModalBody>
-							<ModalFooter>
-								<Button
-									color='danger'
-									variant='light'
-									onPress={() => onOpenChange(false)}
-								>
-									Close
-								</Button>
-								<Button color='primary' onPress={handleSaveProfile}>
-									Save
-								</Button>
-							</ModalFooter>
-						</>
-					)}
+					</ModalBody>
+					<ModalFooter>
+						<Button onClick={handleSaveProfile}>Save Changes</Button>
+					</ModalFooter>
 				</ModalContent>
 			</Modal>
-		</section>
+
+			{/* Reset Password Modal */}
+			<Dialog  open={isResetPasswordOpen} onOpenChange={setIsResetPasswordOpen}>
+			<DialogContent style={{ backgroundColor: '#309ec1' }}> 
+					<DialogHeader >
+						<DialogTitle>Reset Password</DialogTitle>
+						<small>Current password can't be used as new password</small>
+					</DialogHeader>
+					<Input
+						type='password'
+						placeholder='New Password'
+						value={newPassword}
+						onChange={(e) => setNewPassword(e.target.value)}
+					/>
+					<Input
+						type='password'
+						placeholder='Confirm Password'
+						value={confirmPassword}
+						onChange={(e) => setConfirmPassword(e.target.value)}
+					/>
+					<DialogFooter>
+					<Button
+						disabled={isResetLoading}
+						onClick={handleResetPasswordSubmit}
+					>
+						{isResetLoading ? 'Updating...' : 'Save Changes'}
+					</Button>
+				</DialogFooter>
+				</DialogContent>
+
+			</Dialog>
+		</>
 	);
 };
 

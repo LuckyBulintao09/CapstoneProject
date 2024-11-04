@@ -4,11 +4,11 @@ import { updateInbox } from "./updateInbox";
 const supabase = createClient();
 
 interface SendMessageParams {
-  userId: string; 
-  receiverId: string; 
-  conversationId: string; 
-  messageContent: string; 
-  setMessages: React.Dispatch<React.SetStateAction<any[]>>; 
+  userId: string;
+  receiverId: string;
+  conversationId: string;
+  messageContent: string;
+  setMessages: React.Dispatch<React.SetStateAction<any[]>>;
 }
 
 export const sendMessage = async ({
@@ -37,7 +37,7 @@ export const sendMessage = async ({
     read: false,
   }]);
 
-  await updateInbox(userId, receiverId,messageContent);
+  await updateInbox(userId, receiverId, messageContent);
 
   if (error) {
     console.error('Error sending message:', error);

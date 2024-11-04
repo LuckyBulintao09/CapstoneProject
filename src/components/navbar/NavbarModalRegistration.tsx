@@ -148,7 +148,6 @@ export function NavbarModalRegistration({ isOpen, onClose, openModal }) {
 							/>
 						</div>
 
-						{/* Display the error message */}
 						{errorMessage && (
 							<p className='mt-4 text-red-500 text-center'>{errorMessage}</p>
 						)}
