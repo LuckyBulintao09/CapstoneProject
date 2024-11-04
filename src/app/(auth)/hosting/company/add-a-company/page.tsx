@@ -1,4 +1,4 @@
-"use server";
+"use client";
 
 import AddCompanyForm from "@/modules/hosting/company/AddCompanyForm";
 import HostingContentLayout from "@/modules/hosting/components/ContentLayout";
