@@ -140,24 +140,29 @@ const spiels = {
 		{
 			label: 'Home',
 			href: '/',
+			sessionRequired: false,
 		},
 		{
 			label: 'Listings',
 			href: '/client/listings',
+			sessionRequired: false,
 		},
 		// For logged in users
 		{
 			label: 'Messages',
 			href: '/chat/inbox',
+			sessionRequired: true,
 		},
 		{
 			label: 'Favorites',
 			href: '/client/favorites',
+			sessionRequired: true,
 		},
 
 		{
 			label: 'Pricing',
 			href: '/pricing',
+			sessionRequired: false,
 		},
 	],
 	NAVBAR_MENU_LIST_WITH_DROPDOWN: [

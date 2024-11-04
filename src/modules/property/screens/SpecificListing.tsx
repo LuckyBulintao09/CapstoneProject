@@ -241,6 +241,7 @@ export function SpecificListing({ id }: SpecificListingProps) {
 						companyName={company?.company_name}
 						propertyId={property?.id}
 						profileUrl={company?.owner_id?.profile_url}
+						session={userId}
 					/>
 
 					<PropertyDetails
