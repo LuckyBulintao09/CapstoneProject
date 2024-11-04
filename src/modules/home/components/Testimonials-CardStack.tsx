@@ -1,7 +1,14 @@
 'use client';
+import { useContext } from 'react';
 import { CardStack } from '../../../components/ui/card-stack';
 import { cn } from '@/lib/utils';
+import { HomeContext } from '../screens/HomeScreen';
+
+
+
 export function TestimonialsCard() {
+	const testimonials = useContext(HomeContext);
+
 	return (
 		<div className='h-[15rem] flex items-center justify-center'>
 			<CardStack items={CARDS} />

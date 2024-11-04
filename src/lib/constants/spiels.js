@@ -41,7 +41,7 @@ const spiels = {
 	STATS_HEADER: 'Here are some stats to look at',
 	STATS_DATA: [
 		{
-			label: 'Clients',
+			label: 'Reservations',
 			stat: '21K',
 			description: '+21 since last hour',
 			avatar: User,
