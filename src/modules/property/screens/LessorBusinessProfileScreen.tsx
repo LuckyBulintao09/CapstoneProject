@@ -8,7 +8,11 @@ import tempValues from '@/lib/constants/tempValues';
 import ResponsiveLayout from '@/components/ResponsiveLayout';
 import { getSpecificCompany } from '@/actions/company/getSpecificCompany';
 
-const LessorBusinessProfileScreen = async ({ companyId }: { companyId: { params: { id: string }, searchParams: object } }) => {
+const LessorBusinessProfileScreen = async ({
+	companyId,
+}: {
+	companyId: { params: { id: string }; searchParams: object };
+}) => {
 	const { title, lessor_name } = tempValues.LISTINGS[0];
 	const data = await getSpecificCompany(companyId.params.id);
 	return (
@@ -36,12 +40,16 @@ const LessorBusinessProfileScreen = async ({ companyId }: { companyId: { params:
 											{data.company?.address}
 										</p>
 										<p className='flex items-center text-muted-foreground lg:text-md ml-4'>
-											  Joined UniHomes since {new Date(data.company?.created_at).toLocaleDateString('en-US', {
-												year: 'numeric',
-												month: 'long',
-												day: 'numeric'
-											})}
-											</p>
+											Joined UniHomes since{' '}
+											{new Date(data.company?.created_at).toLocaleDateString(
+												'en-US',
+												{
+													year: 'numeric',
+													month: 'long',
+													day: 'numeric',
+												}
+											)}
+										</p>
 									</div>
 									{/* <div className='flex items-center pt-6'>
 										<Button
@@ -64,10 +72,7 @@ const LessorBusinessProfileScreen = async ({ companyId }: { companyId: { params:
 							<div className='hidden md:flex flex-col items-center justify-start col-span-1 mx-auto py-10'>
 								<div className='flex flex-col items-center'>
 									<Avatar className='mb-1'>
-										<AvatarImage
-											src={data?.owner?.profile_url} 
-											alt='@shadcn'
-										/>
+										<AvatarImage src={data?.owner?.profile_url} alt='@shadcn' />
 										<AvatarFallback>CN</AvatarFallback>
 									</Avatar>
 									<h1 className='font-semibold xl:text-md text-center dark:text-primary-foreground'>
@@ -125,7 +130,7 @@ const LessorBusinessProfileScreen = async ({ companyId }: { companyId: { params:
 				lastname={data.owner?.lastname}
 				email={data.owner?.email}
 				cp_number={data.owner?.cp_number}
-				/>
+			/>
 		</ResponsiveLayout>
 	);
 };

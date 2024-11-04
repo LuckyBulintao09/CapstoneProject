@@ -1,7 +1,7 @@
 'use client';
 import React, { useState, useEffect } from 'react';
 import ResponsiveLayout from '@/components/ResponsiveLayout';
-import { MapPin } from 'lucide-react';
+import { ArrowUpRight, MapPin } from 'lucide-react';
 import BusinessReviews from '../components/BusinessReviews';
 import MainPreview from '../components/MainPreview';
 import PropertyDetails from '../components/PropertyDetails';
@@ -12,160 +12,166 @@ import { HeartIcon as HeartSolid } from '@heroicons/react/24/solid';
 import { Card } from '@/components/ui/card';
 import { NavbarModalLogin } from '@/components/navbar/NavbarModalLogin';
 import {
-    fetchUser,
-    fetchProperty,
-    toggleFavourite,
+	fetchUser,
+	fetchProperty,
+	toggleFavourite,
 } from '@/actions/listings/specific-listing';
 import ErrorPage from '@/components/ui/ErrorPage';
-import { 
-    Marker,
-    GoogleMap,
-    DirectionsService,
-    DirectionsRenderer,
+import {
+	Marker,
+	GoogleMap,
+	DirectionsService,
+	DirectionsRenderer,
 } from '@react-google-maps/api';
 import { getSpecificLocation } from '@/actions/listings/listing-filter';
 import { get_unitAmenities } from '@/actions/listings/amenities';
 import {
-    Tooltip,
-    TooltipContent,
-    TooltipProvider,
-    TooltipTrigger,
+	Tooltip,
+	TooltipContent,
+	TooltipProvider,
+	TooltipTrigger,
 } from '@/components/ui/tooltip';
 import LoadingPage from '@/components/LoadingPage';
-import {toast} from 'sonner';
+import { toast } from 'sonner';
+import { Button } from '@/components/ui/button';
 
 interface SpecificListingProps {
-    id: number;
+	id: number;
 }
 
 export function SpecificListing({ id }: SpecificListingProps) {
-    const [isFavourite, setIsFavourite] = useState(false);
-    const [property, setProperty] = useState<any | null>(null);
-    const [userId, setUserId] = useState<string | null>(null);
-    const [isLoginModalOpen, setIsLoginModalOpen] = useState(false);
-    const [loading, setLoading] = useState(true);
-    const [error, setError] = useState(false);
-    const [amenitiesList, setAmenitiesList] = useState<any[]>([]);
-    const [position, setPosition] = useState({
-        lat: 16.420039834357972,
-        lng: 120.59908426196893,
-    });
-    const [userPosition, setUserPosition] = useState<{ lat: number; lng: number } | null>(null);
-    const [directions, setDirections] = useState(null);
+	const [isFavourite, setIsFavourite] = useState(false);
+	const [property, setProperty] = useState<any | null>(null);
+	const [userId, setUserId] = useState<string | null>(null);
+	const [isLoginModalOpen, setIsLoginModalOpen] = useState(false);
+	const [loading, setLoading] = useState(true);
+	const [error, setError] = useState(false);
+	const [amenitiesList, setAmenitiesList] = useState<any[]>([]);
+	const [position, setPosition] = useState({
+		lat: 16.420039834357972,
+		lng: 120.59908426196893,
+	});
+	const [userPosition, setUserPosition] = useState<{
+		lat: number;
+		lng: number;
+	} | null>(null);
+	const [directions, setDirections] = useState(null);
 
-    useEffect(() => {
-        const loadUserAndProperty = async () => {
-            try {
-                const fetchedUserId = await fetchUser();
-                setUserId(fetchedUserId);
+	useEffect(() => {
+		const loadUserAndProperty = async () => {
+			try {
+				const fetchedUserId = await fetchUser();
+				setUserId(fetchedUserId);
 
-                const { unit, favorite } = await fetchProperty(id, fetchedUserId);
-                if (!unit) {
-                    setError(true); // error if property's not found
-                    setLoading(false);
-                    return;
-                }
+				const { unit, favorite } = await fetchProperty(id, fetchedUserId);
+				if (!unit) {
+					setError(true); // error if property's not found
+					setLoading(false);
+					return;
+				}
 
-                setProperty(unit);
-                setIsFavourite(favorite);
-                setAmenitiesList(await get_unitAmenities(unit?.id));
-                setPosition({
-                    lat: (await getSpecificLocation(unit?.id))?.lat,
-                    lng: (await getSpecificLocation(unit?.id))?.lng,
-                });
-                setLoading(false);
-            } catch (err) {
-                setError(true);
-                setLoading(false);
-            }
-        };
+				setProperty(unit);
+				setIsFavourite(favorite);
+				setAmenitiesList(await get_unitAmenities(unit?.id));
+				setPosition({
+					lat: (await getSpecificLocation(unit?.id))?.lat,
+					lng: (await getSpecificLocation(unit?.id))?.lng,
+				});
+				setLoading(false);
+			} catch (err) {
+				setError(true);
+				setLoading(false);
+			}
+		};
 
-        loadUserAndProperty();
-    }, [id]);
+		loadUserAndProperty();
+	}, [id]);
 
-    const handleToggleFavourite = async () => {
-        if (!userId) {
-            setIsLoginModalOpen(true);
-            return;
-        }
+	const handleToggleFavourite = async () => {
+		if (!userId) {
+			setIsLoginModalOpen(true);
+			return;
+		}
 
-        const success = await toggleFavourite(isFavourite, userId, property?.id);
-        if (success) {
-            setIsFavourite(!isFavourite);
-        }
-    };
+		const success = await toggleFavourite(isFavourite, userId, property?.id);
+		if (success) {
+			setIsFavourite(!isFavourite);
+		}
+	};
 
-    const handleLoginSuccess = async () => {
-        setIsLoginModalOpen(false);
-        const fetchedUserId = await fetchUser();
-        setUserId(fetchedUserId);
-    };
+	const handleLoginSuccess = async () => {
+		setIsLoginModalOpen(false);
+		const fetchedUserId = await fetchUser();
+		setUserId(fetchedUserId);
+	};
 
-    const handleAddUserLocation = () => {
-        navigator.geolocation.getCurrentPosition(
+	const handleAddUserLocation = () => {
+		navigator.geolocation.getCurrentPosition(
 			(position) => {
 				if (position.coords.accuracy > 100) {
-					toast.error("Location accuracy is too low. Manually search location or use a mobile device instead.");
-				}else{
+					toast.error(
+						'Location accuracy is too low. Manually search location or use a mobile device instead.'
+					);
+				} else {
 					setUserPosition({
 						lat: position.coords.latitude,
 						lng: position.coords.longitude,
 					});
 					fetchDirections();
 				}
-            },
-            (error) => {
-                console.error("Error fetching user location:", error);
-            }
-        );
-    };
+			},
+			(error) => {
+				console.error('Error fetching user location:', error);
+			}
+		);
+	};
 
-    const fetchDirections = () => {
-        if (!userPosition) return;
+	const fetchDirections = () => {
+		if (!userPosition) return;
 
-        const directionsService = new google.maps.DirectionsService();
-        directionsService.route(
-            {
-                origin: userPosition,
-                destination: position,
-                travelMode: google.maps.TravelMode.DRIVING,
-            },
-            (result, status) => {
-                if (status === google.maps.DirectionsStatus.OK) {
-                    setDirections(result);
-                } else {
-                    console.error("Directions request failed:", status);
-                }
-            }
-        );
-    };
+		const directionsService = new google.maps.DirectionsService();
+		directionsService.route(
+			{
+				origin: userPosition,
+				destination: position,
+				travelMode: google.maps.TravelMode.DRIVING,
+			},
+			(result, status) => {
+				if (status === google.maps.DirectionsStatus.OK) {
+					setDirections(result);
+				} else {
+					console.error('Directions request failed:', status);
+				}
+			}
+		);
+	};
 
-    if (loading)
-        return (
-            <div>
-                <LoadingPage />
-            </div>
-        );
-    if (error) {
-        return <ErrorPage />;
-    }
-    if (!property) return <div>No property found.</div>;
+	if (loading)
+		return (
+			<div>
+				<LoadingPage />
+			</div>
+		);
+	if (error) {
+		return <ErrorPage />;
+	}
+	if (!property) return <div>No property found.</div>;
 
-    const {
-        title,
-        price,
-        property: { address, company },
-        thumbnail_url,
-        profile_url,
-        privacy_type,
-        structure,
-        bedrooms,
-        beds,
-        occupants,
-        description,
-    } = property;
+	const {
+		title,
+		price,
+		property: { address, company },
+		thumbnail_url,
+		profile_url,
+		privacy_type,
+		structure,
+		bedrooms,
+		beds,
+		occupants,
+		description,
+	} = property;
 
-    return (
+	return (
 		<ResponsiveLayout>
 			<div className='grid grid-cols-5 gap-2 mt-4'>
 				<MainPreview propertyId={property.id} />
@@ -193,9 +199,9 @@ export function SpecificListing({ id }: SpecificListingProps) {
 											className='cursor-pointer'
 										>
 											{isFavourite ? (
-												<HeartSolid className='h-8 w-8 text-red-500' />
+												<HeartSolid className='h-8 w-8 text-red-500 ' />
 											) : (
-												<HeartOutline className='h-8 w-8 text-gray-500' />
+												<HeartOutline className='h-8 w-8 text-gray-500 dark:text-gray-300' />
 											)}
 										</div>
 									</TooltipTrigger>
@@ -263,25 +269,27 @@ export function SpecificListing({ id }: SpecificListingProps) {
 			</div>
 
 			<div className='flex flex-col border-t border-gray-300 py-8 mr-4'>
-				<h4 className='text-2xl font-semibold tracking-tight pb-4'>
-					Where you&apos;ll be
-				</h4>
-				<button 
-                    className='bg-blue-500 text-white py-2 px-4 rounded mb-4'
-                    onClick={handleAddUserLocation}
-                >
-                    Show Directions
-                </button>
+				<div className='flex items-center justify-between pb-4'>
+					<h4 className='text-2xl font-semibold tracking-tight'>
+						Where you&apos;ll be
+					</h4>
+					<Button
+						className='flex items-center w-40 border border-blue-500 text-blue-500 py-2 px-4 rounded hover:bg-blue-50 dark:hover:bg-blue-900 dark:text-white bg-foreground'
+						onClick={handleAddUserLocation}
+					>
+						<ArrowUpRight className='mr-2' /> Show Directions
+					</Button>
+				</div>
 				<Card className='lg:h-[550px] xs:h-[365px] border-none'>
 					<GoogleMap
-                        mapContainerClassName='w-full h-full'
-                        zoom={14}
-                        center={userPosition || position}
-                    >
-                        {userPosition && <Marker position={userPosition} />}
-                        <Marker position={position} />
-                        {directions && <DirectionsRenderer directions={directions} />}
-                    </GoogleMap>
+						mapContainerClassName='w-full h-full'
+						zoom={14}
+						center={userPosition || position}
+					>
+						{userPosition && <Marker position={userPosition} />}
+						<Marker position={position} />
+						{directions && <DirectionsRenderer directions={directions} />}
+					</GoogleMap>
 				</Card>
 			</div>
 

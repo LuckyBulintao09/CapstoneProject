@@ -56,7 +56,9 @@ export function BusinessDetails({
 	cp_number,
 }: BusinessDetailsProps) {
 	const [properties, setProperties] = useState<Property[]>([]);
-	const [selectedProperty, setSelectedProperty] = useState<Property | null>(null);
+	const [selectedProperty, setSelectedProperty] = useState<Property | null>(
+		null
+	);
 	const [units, setUnits] = useState<Unit[]>([]);
 	const [loading, setLoading] = useState<boolean>(true);
 	const [loadingUnits, setLoadingUnits] = useState<boolean>(false);
@@ -91,7 +93,7 @@ export function BusinessDetails({
 	};
 
 	return (
-		<div className='xl:flex xl:justify-center'>
+		<div className='xl:flex xl:justify-center '>
 			<Tabs
 				defaultValue='about'
 				className='w-[606px] sm:w-[750px] md:w-[1006px] lg:w-[1246px] xl:w-[1300px] px-8 py-4'
@@ -127,7 +129,9 @@ export function BusinessDetails({
 					<Card className='dark:bg-transparent dark:border-none'>
 						<CardHeader className='dark:border-t-2 dark:border-sky-900'>
 							<CardTitle>Properties</CardTitle>
-							<CardDescription>Explore our different properties</CardDescription>
+							<CardDescription>
+								Explore our different properties
+							</CardDescription>
 						</CardHeader>
 						<CardContent className='space-y-1'>
 							{loading ? (
