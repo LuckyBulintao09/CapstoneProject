@@ -8,7 +8,7 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
 import { z } from "zod";
 
-import { Button } from "@/components/ui/button";
+import { Button, buttonVariants } from "@/components/ui/button";
 import { Form, FormControl, FormDescription, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Input } from "@/components/ui/input";
@@ -17,14 +17,16 @@ import { toast } from "sonner";
 
 import { createPropertySchema, CreatePropertyTypes } from "@/lib/schemas/propertySchema";
 
-import ListingStepButton from "./ListingStepButton";
+import ListingStepButton from "../add-listing/ListingStepButton";
 
 import { Map, MapCameraChangedEvent, MapCameraProps, Marker, useMapsLibrary } from "@vis.gl/react-google-maps";
 
 import { showErrorToast } from "@/lib/handle-error";
 import { updateProperty } from "@/actions/property/update-property";
+import Link from "next/link";
+import { cn } from "@/lib/utils";
 
-type CompanyData = {
+export type CompanyData = {
     id: string;
     company_name: string;
 }[];
@@ -40,6 +42,7 @@ function PropertyDetails({ companies, propertyId }: { companies: CompanyData; pr
     const createPropertyForm = useForm<CreatePropertyTypes>({
         resolver: zodResolver(createPropertySchema),
         defaultValues: {
+            title: "",
             company_id: "",
             address: "",
             location: {
@@ -89,6 +92,7 @@ function PropertyDetails({ companies, propertyId }: { companies: CompanyData; pr
         toast.promise(updateProperty(propertyId, values), {
             loading: "Adding property...",
             success: () => {
+                router.push(`/hosting/property`)
                 return toast.success("Property added successfully!");
             },
             error: (error) => {
@@ -108,7 +112,7 @@ function PropertyDetails({ companies, propertyId }: { companies: CompanyData; pr
                         <FormItem>
                             <FormLabel htmlFor="title">Property name</FormLabel>
                             <FormControl>
-                                <Input {...field} placeholder="Property name"/>
+                                <Input {...field} placeholder="Property name" />
                             </FormControl>
                             <FormDescription>Enter your address here.</FormDescription>
                             <FormMessage />
@@ -180,8 +184,21 @@ function PropertyDetails({ companies, propertyId }: { companies: CompanyData; pr
                         </FormItem>
                     )}
                 />
-                <Button type="submit">Submit</Button>
-                {/* <ListingStepButton propertyId={propertyId} className="col-span-2" /> */}
+                <div className="flex justify-end gap-2">
+                    <Link href={`/hosting/property`} className={cn(buttonVariants({ variant: "outline" }))}>
+                        Cancel
+                    </Link>
+                    <Button
+                        type="submit"
+                        onKeyDown={(e) => {
+                            if (e.key === "Enter") {
+                                e.preventDefault();
+                            }
+                        }}
+                    >
+                        Submit
+                    </Button>
+                </div>
             </form>
         </Form>
     );
