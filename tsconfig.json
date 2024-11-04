@@ -29,7 +29,7 @@
 		"**/*.tsx",
 		".next/types/**/*.ts",
 		"src/modules/home/components/button.js",
-		"src/modules/home/screens/HomeScreen.js",
+		"src/modules/home/screens/HomeScreen.tsx",
 		"src/modules/home/components/Hero.js",
 		"src/modules/favorites/screens/FavoritesScreen.TSX"
 , "src/modules/subscriptions/screen/Pricing.js"	],

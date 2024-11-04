@@ -2,12 +2,29 @@
 
 import { motion } from 'framer-motion';
 import spiels from '@/lib/constants/spiels';
+import { useEffect, useState } from 'react';
+import { getTotalLessors, getTotalProperties, getTotalRatings, getTotalReservations } from '@/actions/landing/getDynamicData';
 
 const Stats = () => {
 	const itemVariants = {
 		hidden: { opacity: 0, x: 50 },
 		visible: { opacity: 1, x: 0 },
 	};
+
+	const [data, setData] = useState<any>({});
+
+	useEffect(() => {
+		const fetchData = async () => {
+			setData({
+				totalReservations: await getTotalReservations() || 0,
+				totalProperties: await getTotalProperties() || 0,
+				totalLessors: await getTotalLessors() || 0,
+				totalRatings: await getTotalRatings() || 0,
+			});
+		};
+
+		fetchData();
+	}, []);
 
 	return (
 		<section className='border-y border-blue-500 border-opacity-15 py-20'>
@@ -38,7 +55,10 @@ const Stats = () => {
 									{item.label}
 								</h3>
 								<p className='text-sm text-muted-foreground md:text-base'>
-									{item.description}
+									+{index === 0 && data.totalReservations} 
+									{index === 1 && data.totalProperties}
+									{index === 2 && data.totalLessors}
+									{index === 3 && data.totalRatings} since last hour
 								</p>
 							</div>
 						</motion.div>
