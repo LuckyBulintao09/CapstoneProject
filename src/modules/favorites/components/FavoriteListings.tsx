@@ -5,8 +5,15 @@ import { createClient } from '@/utils/supabase/client';
 import LoadingPage from '@/components/LoadingPage';
 
 const supabase = createClient();
+interface HeroSectionProps {
+	searchTerm: string;
+	setSearchTerm: (term: string) => void;
+}
 
-export default function FavoriteListings() {
+export default function FavoriteListings({
+	searchTerm,
+	setSearchTerm,
+}: HeroSectionProps) {
 	const [favorites, setFavorites] = useState([]);
 	const [userId, setUserId] = useState(null);
 	const [loading, setLoading] = useState(true);
@@ -73,6 +80,10 @@ export default function FavoriteListings() {
 		}
 	}, [userId]);
 
+	const filteredFavorites = favorites.filter((item) =>
+		item.title?.toLowerCase().includes(searchTerm.toLowerCase())
+	);
+
 	if (loading) {
 		return (
 			<div>
@@ -89,9 +100,13 @@ export default function FavoriteListings() {
 		return <div>No favorite properties found.</div>;
 	}
 
+	if (filteredFavorites.length === 0) {
+		return <div>No favorite properties found.</div>;
+	}
+
 	return (
 		<div className='grid grid-cols-1 gap-4 md:grid-cols-3 lg:grid-cols-2 sm:grid-cols-3 xs:grid-cols-2'>
-			{favorites.slice(0, 4).map((item) => (
+			{filteredFavorites.slice(0, 4).map((item) => (
 				<div key={item.id}>
 					<BranchListings key={item.id} {...item} />
 				</div>
