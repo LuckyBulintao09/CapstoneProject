@@ -7,6 +7,7 @@ import { NUIProvider } from "@/components/next-ui-provider";
 import { TooltipProvider } from "@/components/ui/tooltip";
 import GoogleMapsProvider from "@/components/GoogleMapsProvider";
 import QueryProvider from "@/components/TansTackQueryProvider";
+import { Toaster } from 'sonner';
 
 const geistSans = localFont({
 	src: './fonts/GeistVF.woff',
@@ -36,7 +37,8 @@ export default function RootLayout({
                     <NUIProvider>
                         <ThemeProvider attribute="class" defaultTheme="system" enableSystem disableTransitionOnChange>
                             <GoogleMapsProvider google_maps_api_key={process.env.NEXT_PUBLIC_GOOGLE_MAPS_API_KEY!}>
-                                <TooltipProvider>
+                                <TooltipProvider>            
+		                            <Toaster position='bottom-right'/>
                                     <div>{children}</div>
                                 </TooltipProvider>
                             </GoogleMapsProvider>

@@ -11,8 +11,10 @@ export default function BranchListings({
   price,
   address,
   created_at,
-  details,
+  ispropertyboosted,
   thumbnail_url,
+  ratings,
+  property_title,
 }: BranchlistingsProps) {
   const formattedPrice = new Intl.NumberFormat("en-PH", {
     style: "currency",
@@ -40,17 +42,22 @@ export default function BranchListings({
                 {title}
               </span>
               <div className="flex items-center">
-                <Star className="h-4 w-4 text-yellow-500" fill="#eab308" />
-                <span className="ml-1 text-sm xs:text-xs">4.5</span>
+                {ratings !== 0 && (
+                  <>
+                    <Star className="h-4 w-4 text-yellow-500" fill="#eab308" />
+                    <span className="ml-1 text-sm xs:text-xs">
+                    {ratings}</span>
+                  </>
+                )}
               </div>
             </div>
           }
           description={
             <div>
-              <p className="line-clamp-1">{description}</p>
-              <strong>
+              <p className="line-clamp-1">{property_title}</p>
+              {/* <strong>
                 <p className="line-clamp-1"> {details}</p>
-              </strong>
+              </strong> */}
               <p className="line-clamp-1"> {address}</p>
               <p className="line-clamp-1">Listed {timeAgo}</p>{" "}
               {/* Handle missing or invalid dates */}
@@ -72,7 +79,7 @@ export default function BranchListings({
                 ) : (
                   <p className="text-center text-gray-500">Image not found</p>
                 )}
-                {featured && (
+                {ispropertyboosted && (
                   <Badge
                     className="absolute right-2 top-2 bg-primary text-white"
                     variant="secondary"

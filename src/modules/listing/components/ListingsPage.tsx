@@ -6,6 +6,7 @@ import { useState, createContext } from 'react';
 import ListingHero from './ListingHero';
 import Listings from './Listings';
 import { map } from 'zod';
+import { useLoadScript } from '@react-google-maps/api';
 
 
 interface Amenity {
@@ -19,8 +20,11 @@ export const MapContext = createContext<any>(null);
 
 
 export default function ListingsPage() {
+
+
 	const [searchTerm, setSearchTerm] = useState('');
 	const [deviceLocation, setDeviceLocation] = useState<any>(null);
+
 
 	return (
 		<MapContext.Provider value={[deviceLocation,

@@ -11,7 +11,7 @@ import AddReviewModal from "./AddReviewModal";
 import {
   fetchReviewData,
   deleteReview,
-  cancelTransaction,
+  cancelTransaction
 } from "@/actions/transaction/column";
 
 interface Review {
@@ -39,6 +39,7 @@ const TransactionActionsCell = ({ row }: { row: Row<Transaction> }) => {
 
     getReviewData();
   }, [unitId, row.original.user_id]);
+
 
   const handleDeleteReview = async () => {
     if (!reviewData) return;
@@ -110,10 +111,17 @@ const TransactionActionsCell = ({ row }: { row: Row<Transaction> }) => {
           Cancel
         </Button>
       )}
+
+      {transactionStatus === "cancelled" && (
+        <div className=" flex justify-center items-center ">
+          <span className="text-red-700 font-semibold">Cancelled</span>
+        </div>
+      )}
     </div>
   );
 };
 
+// Columns Configuration
 export const columns: ColumnDef<Transaction>[] = [
   {
     accessorKey: "unit.unit_code",
@@ -178,21 +186,15 @@ export const columns: ColumnDef<Transaction>[] = [
         column={column}
         title="Transaction Status"
         className="flex justify-center items-center"
-        style={{
-          height: "100%",
-          display: "flex",
-          alignItems: "center",
-          justifyContent: "center",
-        }}
       />
     ),
     cell: ({ row }) => {
       const transactionStatus = row.getValue("transaction_status") as string;
       const badgeColor = {
-        Reserved: "bg-green-700 hover:bg-green-800",
-        Pending: "bg-amber-600 hover:bg-amber-700",
-        Cancelled: "bg-red-700 hover:bg-red-800",
-        Visited: "bg-blue-700 hover:bg-blue-800",
+        reserved: "bg-green-700 hover:bg-green-800",
+        pending: "bg-amber-600 hover:bg-amber-700",
+        cancelled: "bg-red-700 hover:bg-red-800",
+        visited: "bg-blue-700 hover:bg-blue-800",
       }[transactionStatus];
 
       return (
@@ -208,7 +210,8 @@ export const columns: ColumnDef<Transaction>[] = [
               padding: "0.5rem 1rem",
             }}
           >
-            {transactionStatus}
+            {transactionStatus.charAt(0).toUpperCase() +
+              transactionStatus.slice(1)}
           </Badge>
         </div>
       );

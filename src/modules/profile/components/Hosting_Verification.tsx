@@ -12,7 +12,7 @@ import { FileUpload } from "@/components/ui/file-upload";
 import { Button } from "@/components/ui/button";
 import spiels from "@/lib/constants/spiels";
 import { createClient } from "../../../utils/supabase/client";
-import { Toaster, toast } from "sonner";
+import { toast } from "sonner";
 
 const HostingVerification: React.FC = () => {
   const [files, setFiles] = useState<File[]>([]);
@@ -112,7 +112,6 @@ const HostingVerification: React.FC = () => {
 
   return (
     <section className="w-full p-4">
-      <Toaster position="top-right" richColors />
       <div className="flex flex-col gap-4">
         <h1 className="font-bold text-3xl">Hosting Verification</h1>
         <p>

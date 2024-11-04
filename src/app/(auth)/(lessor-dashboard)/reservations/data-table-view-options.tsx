@@ -48,8 +48,8 @@ export function DataTableViewOptions<TData>({
 							columnHeader = 'Service Options';
 						} else if (column.id === 'appointment_date') {
 							columnHeader = 'Date';
-						} else if (column.id === 'lessor_name') {
-							columnHeader = 'Lessor Name';
+						} else if (column.id === 'proprietor_name') {
+							columnHeader = 'Proprietor Name';
 						} else if (column.id === 'transaction_status') {
 							columnHeader = 'Transaction Status';
 						} else if (column.id === 'id') {
@@ -62,10 +62,10 @@ export function DataTableViewOptions<TData>({
 							columnHeader = 'Property Name';
 						} else if (column.id === 'email') {
 							columnHeader = 'Email';
-						} else if (column.id === 'birthdate') {
-							columnHeader = 'Birthdate';
-						} else if (column.id === 'contact') {
-							columnHeader = 'Contact';
+						} else if (column.id === 'dob') {
+							columnHeader = 'Date of Birth';
+						} else if (column.id === 'cp_number') {
+							columnHeader = 'Phone Number';
 						} else if (column.id === 'address') {
 							columnHeader = 'Address';
 						} else if (column.id === 'govIdUrl') {
@@ -80,13 +80,13 @@ export function DataTableViewOptions<TData>({
 							columnHeader = 'User Email';
 						} else if (column.id === 'reviewId') {
 							columnHeader = 'Review ID';
-						} else if (column.id === 'reviewDate') {
+						} else if (column.id === 'created_at') {
 							columnHeader = 'Review Date';
-						} else if (column.id === 'reportedComment') {
+						} else if (column.id === 'comment') {
 							columnHeader = 'Reported Comment';
 						} else if (column.id === 'reportedBy') {
 							columnHeader = 'Reported By';
-						} else if (column.id === 'reasonForReport') {
+						} else if (column.id === 'report_reason') {
 							columnHeader = 'Reason for Report';
 						} else if (column.id === 'associatedProperty') {
 							columnHeader = 'Associated Property';
@@ -96,6 +96,12 @@ export function DataTableViewOptions<TData>({
 							columnHeader = 'Business Permit';
 						} else if (column.id === 'additional_info') {
 							columnHeader = 'Additional Information';
+						} else if (column.id === 'client_name') {
+							columnHeader = 'Client Name';
+						} else if (column.id === 'unit_title') {
+							columnHeader = 'Unit Title';
+						} else if (column.id === 'isPaid') {
+							columnHeader = 'Payment Status';
 						}
 
 						return (

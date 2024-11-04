@@ -1,4 +1,4 @@
-import { NewCompanies } from '@/modules/admin-dashboard/components/newCompanies-components/columns';
+import { NewCompanies } from '@/modules/admin-dashboard/newCompanies-components/columns';
 
 export const new_companies: NewCompanies[] = [
 	{

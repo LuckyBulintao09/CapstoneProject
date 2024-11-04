@@ -18,11 +18,11 @@ export const get_allListings = async () => {
         return error
     }
 
-    return data
+    console.log(data)
 
 }
 
-//this returns company id that are within the 500 meters radius
+//this returns company id that are within the 250 meters radius
 //use the company id to fetch all listings from that property
 //add radius
 export const get_nearbyListings = async (latitude: number, longitude: number) => {
@@ -35,6 +35,25 @@ export const get_nearbyListings = async (latitude: number, longitude: number) =>
             return error
         }
         return(data?.map(data => data.id))
+
+    } catch (error: any) {
+        console.error(error)
+        return error
+    }
+}
+
+export const get_nearbyInfo = async (property_id: number[] | null) => {
+    try {
+        const { data : propertyInfo, error } = await supabase
+            .rpc('get_nearbyinfo', {p_id: property_id})
+
+        if (error) {
+            console.error(error)
+            return error
+        }
+        //add fetch unit for each property and display infowindow
+        // console.log(propertyInfo)
+        return(propertyInfo)
 
     } catch (error: any) {
         console.error(error)
