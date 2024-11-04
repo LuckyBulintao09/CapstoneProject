@@ -83,6 +83,7 @@ export async function signup(formData: FormData) {
                 data: {
                   firstname: firstName,
                   lastname: lastName,
+                  user_role: 'Client',
                 },
               }
             });
@@ -108,7 +109,7 @@ export async function signup(formData: FormData) {
               return;  
             }
             revalidatePath('/', 'layout');
-            redirect('/auth/verify');
+            redirect(`${location.origin}/auth/verify`);
             return { success: true };
           }
       }

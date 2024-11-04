@@ -1,6 +1,5 @@
 "use client"
 import { useEffect, useState, useRef } from 'react';
-import { createClient } from "@/utils/supabase/client";
 import { checkConversation } from '@/actions/chat/checkConversation'; 
 import { sendMessage } from '@/actions/chat/sendMessage'; 
 import { fetchReceiverName } from '@/actions/chat/fetchReceiverName'; 
