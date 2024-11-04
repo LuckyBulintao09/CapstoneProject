@@ -14,6 +14,6 @@ export async function createProperty() {
             console.error("Error inserting data:", error);
         }
         
-        redirect(`/hosting/property/host-a-property/${data.id}/company`);
+        redirect(`/hosting/property/host-a-property/${data.id}/details`);
     
 }

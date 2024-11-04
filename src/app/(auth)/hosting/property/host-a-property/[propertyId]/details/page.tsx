@@ -1,9 +1,7 @@
 "use server"
 
-import { getAllCompanies } from "@/actions/company/getAllCompanies";
 import { getUserCompaniesById } from "@/actions/company/getUserCompaniesById";
-import ResponsiveLayout from "@/components/ResponsiveLayout";
-import PropertyCompanyForm from "@/modules/hosting/add-listing/PropertyDetailsForm";
+import PropertyCompanyForm from "@/modules/hosting/property/PropertyDetailsForm";
 import { getAuthenticatedUser } from "@/utils/supabase/server";
 
 async function PropertyDetails({ params }: { params: { propertyId: string } }) {

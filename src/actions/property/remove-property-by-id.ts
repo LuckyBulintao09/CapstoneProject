@@ -9,8 +9,8 @@ export async function removePropertyById(id: string) {
     const { error } = await supabase.from("property").delete().eq("id", id);
 
     if (error?.code) {
-        console.error("Error inserting data:", error);
+        throw error;
     }
 
-    redirect("/hosting/host-a-property");
+    redirect("/hosting/property");
 }

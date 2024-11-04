@@ -95,17 +95,17 @@ function TopNavigation() {
                     <>
                         <ul className="flex flex-nowrap items-center justify-center gap-4">
                             <li>
-                                <Link href="/" className={cn(buttonVariants({ variant: "ghost" }), "rounded-full")}>
+                                <Link href="/hosting" className={cn(buttonVariants({ variant: "ghost" }), "rounded-full")}>
                                     Home
                                 </Link>
                             </li>
                             <li>
-                                <Link href="/" className={cn(buttonVariants({ variant: "ghost" }), "rounded-full")}>
+                                <Link href="/hosting/units" className={cn(buttonVariants({ variant: "ghost" }), "rounded-full")}>
                                     Listings
                                 </Link>
                             </li>
                             <li>
-                                <Link href="/" className={cn(buttonVariants({ variant: "ghost" }), "rounded-full")}>
+                                <Link href="/chat/inbox" className={cn(buttonVariants({ variant: "ghost" }), "rounded-full")}>
                                     Messages
                                 </Link>
                             </li>
@@ -125,7 +125,9 @@ function TopNavigation() {
                                     <DropdownMenuContent side="bottom" align="start">
                                         <DropdownMenuGroup>
                                             <DropdownMenuItem>Listings</DropdownMenuItem>
-                                            <DropdownMenuItem>Properties</DropdownMenuItem>
+                                            <DropdownMenuItem asChild>
+                                                <Link href={`/hosting/property`}>Properties</Link>
+                                            </DropdownMenuItem>
                                             <DropdownMenuItem>Reservations</DropdownMenuItem>
                                             <DropdownMenuItem>Insights</DropdownMenuItem>
                                         </DropdownMenuGroup>
@@ -164,7 +166,9 @@ function TopNavigation() {
                                     <DropdownMenuSeparator />
                                     <DropdownMenuGroup>
                                         <DropdownMenuItem>Profile</DropdownMenuItem>
-                                        <DropdownMenuItem>Company</DropdownMenuItem>
+                                        <DropdownMenuItem asChild>
+                                                <Link href={`/hosting/company`}>Company</Link>
+                                            </DropdownMenuItem>
                                         <DropdownMenuItem>Settings</DropdownMenuItem>
                                     </DropdownMenuGroup>
                                     <DropdownMenuSeparator />
@@ -199,7 +203,10 @@ function TopNavigation() {
                                             <li>
                                                 <Link
                                                     href={`/test`}
-                                                    className={cn(buttonVariants({ variant: "ghost" }), "w-full justify-start rounded-none px-0 gap-2")}
+                                                    className={cn(
+                                                        buttonVariants({ variant: "ghost" }),
+                                                        "w-full justify-start rounded-none px-0 gap-2"
+                                                    )}
                                                 >
                                                     <Home /> Home
                                                 </Link>
@@ -207,7 +214,10 @@ function TopNavigation() {
                                             <li>
                                                 <Link
                                                     href={`/test`}
-                                                    className={cn(buttonVariants({ variant: "ghost" }), "w-full justify-start rounded-none px-0 gap-2")}
+                                                    className={cn(
+                                                        buttonVariants({ variant: "ghost" }),
+                                                        "w-full justify-start rounded-none px-0 gap-2"
+                                                    )}
                                                 >
                                                     <Scroll />
                                                     Listings
@@ -216,7 +226,10 @@ function TopNavigation() {
                                             <li>
                                                 <Link
                                                     href={`/test`}
-                                                    className={cn(buttonVariants({ variant: "ghost" }), "w-full justify-start rounded-none px-0 gap-2")}
+                                                    className={cn(
+                                                        buttonVariants({ variant: "ghost" }),
+                                                        "w-full justify-start rounded-none px-0 gap-2"
+                                                    )}
                                                 >
                                                     <MessageCircleMore />
                                                     Messages
@@ -224,8 +237,11 @@ function TopNavigation() {
                                             </li>
                                             <li>
                                                 <Link
-                                                    href={`/test`}
-                                                    className={cn(buttonVariants({ variant: "ghost" }), "w-full justify-start rounded-none px-0 gap-2")}
+                                                    href={`/hosting/property`}
+                                                    className={cn(
+                                                        buttonVariants({ variant: "ghost" }),
+                                                        "w-full justify-start rounded-none px-0 gap-2"
+                                                    )}
                                                 >
                                                     <LibraryBig />
                                                     Properties
@@ -234,7 +250,10 @@ function TopNavigation() {
                                             <li>
                                                 <Link
                                                     href={`/test`}
-                                                    className={cn(buttonVariants({ variant: "ghost" }), "w-full justify-start rounded-none px-0 gap-2")}
+                                                    className={cn(
+                                                        buttonVariants({ variant: "ghost" }),
+                                                        "w-full justify-start rounded-none px-0 gap-2"
+                                                    )}
                                                 >
                                                     <Briefcase />
                                                     Reservations
@@ -243,7 +262,10 @@ function TopNavigation() {
                                             <li>
                                                 <Link
                                                     href={`/test`}
-                                                    className={cn(buttonVariants({ variant: "ghost" }), "w-full justify-start rounded-none px-0 gap-2")}
+                                                    className={cn(
+                                                        buttonVariants({ variant: "ghost" }),
+                                                        "w-full justify-start rounded-none px-0 gap-2"
+                                                    )}
                                                 >
                                                     <Lightbulb />
                                                     Insigts
@@ -257,7 +279,10 @@ function TopNavigation() {
                                             <li>
                                                 <Link
                                                     href={`/test`}
-                                                    className={cn(buttonVariants({ variant: "ghost" }), "w-full justify-start rounded-none px-0 gap-2")}
+                                                    className={cn(
+                                                        buttonVariants({ variant: "ghost" }),
+                                                        "w-full justify-start rounded-none px-0 gap-2"
+                                                    )}
                                                 >
                                                     <UserCircle2 /> Profile
                                                 </Link>
@@ -265,7 +290,10 @@ function TopNavigation() {
                                             <li>
                                                 <Link
                                                     href={`/hosting/company`}
-                                                    className={cn(buttonVariants({ variant: "ghost" }), "w-full justify-start rounded-none px-0 gap-2")}
+                                                    className={cn(
+                                                        buttonVariants({ variant: "ghost" }),
+                                                        "w-full justify-start rounded-none px-0 gap-2"
+                                                    )}
                                                 >
                                                     <Building2 />
                                                     Manage Companies
@@ -274,7 +302,10 @@ function TopNavigation() {
                                             <li>
                                                 <Link
                                                     href={`/test`}
-                                                    className={cn(buttonVariants({ variant: "ghost" }), "w-full justify-start rounded-none px-0 gap-2")}
+                                                    className={cn(
+                                                        buttonVariants({ variant: "ghost" }),
+                                                        "w-full justify-start rounded-none px-0 gap-2"
+                                                    )}
                                                 >
                                                     <Settings />
                                                     Settings
@@ -285,9 +316,9 @@ function TopNavigation() {
                                         {/* sign out */}
                                         <div className="flex flex-col gap-2 [&_svg]:size-6">
                                             <Button
-                                                // onClick={async () => {
-                                                //     SignOut();
-                                                // }}
+                                            // onClick={async () => {
+                                            //     SignOut();
+                                            // }}
                                             >
                                                 Sign out
                                             </Button>
