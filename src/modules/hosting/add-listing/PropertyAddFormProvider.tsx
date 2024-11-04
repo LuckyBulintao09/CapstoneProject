@@ -1,7 +1,7 @@
 "use client";
 
 import React, { useEffect, useState } from "react";
-import { CreatePropertyType } from "@/lib/schemas/createPropertySchema";
+import { CreatePropertyType } from "@/lib/schemas/propertySchema";
 
 interface PropertyAddFormProviderProps {
     formData: CreatePropertyType;

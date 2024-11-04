@@ -10,7 +10,7 @@ import { Form, FormField } from "@/components/ui/form";
 
 import { Button as ShadCnButton } from "@/components/ui/button";
 
-import { createPropertyDetailSchema } from "@/lib/schemas/createPropertySchema";
+import { createPropertyDetailSchema } from "@/lib/schemas/propertySchema";
 import { Minus, Plus } from "lucide-react";
 import ListingStepButton from "./ListingStepButton";
 

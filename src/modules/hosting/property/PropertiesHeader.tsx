@@ -2,7 +2,7 @@
 
 import React from "react";
 
-import { Button } from "@/components/ui/button";
+import { Button, buttonVariants } from "@/components/ui/button";
 import { useMediaQuery } from "@/hooks/use-media-query";
 
 import { Input } from "@nextui-org/input";
@@ -18,6 +18,7 @@ import { cn } from "@/lib/utils";
 import { PropertyViewModeContext } from "./PropertyViewModeProvider";
 
 import { Table } from "@tanstack/react-table";
+import Link from "next/link";
 
 interface HeaderToolbarData<TData> {
     table: Table<TData>;
@@ -112,13 +113,12 @@ function PropertiesHeader<TData>({ table }: HeaderToolbarData<TData>) {
                         <StretchHorizontal className="w-4 h-auto" />
                     )}
                 </Button>
-                <Button
-                    variant="outline"
-                    size="icon"
-                    className={cn("rounded-full")}
+                <Link
+                    href={"/hosting/property/host-a-property"}
+                    className={cn(buttonVariants({size: "icon", variant: "outline"}), "rounded-full",)}
                 >
                     <Plus className="w-5 h-auto" />
-                </Button>
+                </Link>
             </div>
         </div>
     );
