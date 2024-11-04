@@ -17,7 +17,7 @@ import ListingStepButton from "./ListingStepButton";
 import { Content } from '@tiptap/react'
 import { MinimalTiptapEditor } from '@/components/minimal-tiptap'
 
-import { createPropertyTitleSchema } from "@/lib/schemas/createPropertySchema";
+import { createPropertyTitleSchema } from "@/lib/schemas/propertySchema";
 
 import { useRouter } from "next/navigation";
 import { usePropertyAddFormContext } from "./PropertyAddFormProvider";

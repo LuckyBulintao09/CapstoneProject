@@ -6,7 +6,6 @@ function LessorLayout({ children }: { children: React.ReactNode }) {
         <div>
             <TopNavigation />
             <section className="w-full">{children}</section>
-            <Toaster position="top-center" />
         </div>
     );
 }

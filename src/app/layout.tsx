@@ -38,7 +38,7 @@ export default function RootLayout({
                         <ThemeProvider attribute="class" defaultTheme="system" enableSystem disableTransitionOnChange>
                             <GoogleMapsProvider google_maps_api_key={process.env.NEXT_PUBLIC_GOOGLE_MAPS_API_KEY!}>
                                 <TooltipProvider>            
-		                            <Toaster position='bottom-right'/>
+		                            <Toaster position='bottom-right' richColors/>
                                     <div>{children}</div>
                                 </TooltipProvider>
                             </GoogleMapsProvider>

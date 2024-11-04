@@ -23,14 +23,16 @@ import { MoveLeft, MoveRight, X } from 'lucide-react';
 import { removePropertyById } from '@/actions/property/remove-property-by-id';
 
 import { useRouter } from 'next/navigation';
+import { cn } from '@/lib/utils';
 
 
 type ListingButtonProps = {
   hrefFrom?: string
   propertyId: string
+  className?: string
 }
 
-function ListingStepButton({ hrefFrom, propertyId }: ListingButtonProps) {
+function ListingStepButton({ hrefFrom, propertyId, className }: ListingButtonProps) {
 
     const router = useRouter()
 
@@ -42,11 +44,11 @@ function ListingStepButton({ hrefFrom, propertyId }: ListingButtonProps) {
         if (id) {
             await removePropertyById(id)
         }
-        router.push("/hosting/host-a-property")
+        router.push("/hosting/property/host-a-property")
     }
 
     return (
-        <div className="absolute w-full h-[64px] bottom-0 left-0 px-3 py-2 flex flex-row items-center justify-between border-t">
+        <div className={cn(className, " w-full h-[64px] px-3 py-2 flex flex-row items-center justify-between ")}>
             {hrefFrom ? (
                 <ShadcnButton className="rounded-full" variant={"outline"} asChild>
                     <Link href={hrefFrom} className="flex flex-row items-center gap-2">
