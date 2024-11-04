@@ -21,6 +21,7 @@ function NavBar() {
 		lastname: '',
 		initials: '',
 	});
+	const navChoice = spiels.NAVBAR_OVERALL_LIST;
 	const supabase = createClient();
 	const toggleMenu = () => setMenu((prev) => !prev);
 	const openModal = (type: 'login' | 'register') => {
@@ -44,7 +45,6 @@ function NavBar() {
 				console.log('No session found.');
 			}
 		};
-
 		checkSession();
 	}, []);
 
@@ -71,7 +71,7 @@ function NavBar() {
 						height={80}
 						className='h-8 w-auto scale-[2]'
 					/>
-					<NavbarMenu />
+					<NavbarMenu session={loggedIn} />
 					<div className='flex items-center gap-[2px]'>
 						<NotificationPopover />
 						<div className='pr-2'>

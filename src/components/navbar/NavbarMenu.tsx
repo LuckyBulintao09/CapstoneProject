@@ -15,7 +15,7 @@ import {
 } from "@/components/ui/navigation-menu";
 import spiels from "@/lib/constants/spiels";
 
-export function NavbarMenu() {
+export function NavbarMenu({session}: {session:any}) {
   return (
     <NavigationMenu>
       <NavigationMenuList>
@@ -42,18 +42,21 @@ export function NavbarMenu() {
           </NavigationMenuItem>
         ))}
 
-        {spiels.NAVBAR_MENU_LIST_WITHOUT_DROPDOWN.map((item, index) => (
-          <NavigationMenuItem
-            key={index}
-            className="dark:text-secondary-foreground"
-          >
-            <Link href={item.href} legacyBehavior passHref>
-              <NavigationMenuLink className={navigationMenuTriggerStyle()}>
-                {item.label}
-              </NavigationMenuLink>
-            </Link>
-          </NavigationMenuItem>
-        ))}
+        {spiels.NAVBAR_MENU_LIST_WITHOUT_DROPDOWN.map((item, index) => {
+          if (!session && item.label === 'Messages' || !session && item.label === 'Favorites') return null;
+          return (
+            <NavigationMenuItem
+              key={index}
+              className="dark:text-secondary-foreground"
+            >
+              <Link href={item.href} legacyBehavior passHref>
+                <NavigationMenuLink className={navigationMenuTriggerStyle()}>
+                  {item.label}
+                </NavigationMenuLink>
+              </Link>
+            </NavigationMenuItem>
+          );
+        })}
       </NavigationMenuList>
     </NavigationMenu>
   );

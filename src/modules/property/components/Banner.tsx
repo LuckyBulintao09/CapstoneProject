@@ -4,6 +4,7 @@ import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { Button } from '@/components/ui/button';
 import spiels from '@/lib/constants/spiels';
 import { initializeSendMessage } from '@/actions/chat/initiateConversation';
+import {toast} from "sonner";
 
 interface BannerProps {
 	ownerName: string | undefined;
@@ -13,6 +14,7 @@ interface BannerProps {
 	companyName: string | undefined;
 	propertyId: number | undefined;
 	profileUrl: string | undefined;
+	session: string | undefined;
 }
 
 const Banner: React.FC<BannerProps> = ({
@@ -23,19 +25,20 @@ const Banner: React.FC<BannerProps> = ({
 	companyName,
 	propertyId,
 	profileUrl,
+	session
 }) => {
 	const [isLoading, setIsLoading] = useState(false);
 
 	const handleSendMessage = async () => {
+		if (!session) {
+			toast.error('You need to be logged in to send a message');
+			return;
+		}
 		if (!ownerId || !propertyId) return;
+
 		setIsLoading(true);
 		try {
-			await initializeSendMessage(
-				ownerId,
-				propertyId,
-				ownerName,
-				ownerLastname
-			);
+			await initializeSendMessage(ownerId, propertyId, ownerName, ownerLastname);
 		} catch (error) {
 			console.error('Error sending message:', error);
 		} finally {

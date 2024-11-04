@@ -47,14 +47,6 @@ export default function HeroSection({
 							/>
 						</div>
 					</form>
-					<div className='flex flex-row gap-2 mt-5'>
-						<Button variant='outline' className='text-white outline'>
-							{spiels.BUTTON_SHOW_LISTINGS}
-						</Button>
-						<Button className='bg-white text-black'>
-							{spiels.BUTTON_BACK_HOME}
-						</Button>
-					</div>
 				</div>
 			</div>
 		</div>
