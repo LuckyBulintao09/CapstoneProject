@@ -55,13 +55,15 @@ export function BusinessDetails({
   email,
   cp_number,
 }: BusinessDetailsProps) {
-  const [properties, setProperties] = useState<Property[]>([]);
-  const [selectedProperty, setSelectedProperty] = useState<Property | null>(
-    null
-  );
-  const [units, setUnits] = useState<Unit[]>([]);
-  const [loading, setLoading] = useState<boolean>(true);
-  const [loadingUnits, setLoadingUnits] = useState<boolean>(false);
+
+	const [properties, setProperties] = useState<Property[]>([]);
+	const [selectedProperty, setSelectedProperty] = useState<Property | null>(
+		null
+	);
+	const [units, setUnits] = useState<Unit[]>([]);
+	const [loading, setLoading] = useState<boolean>(true);
+	const [loadingUnits, setLoadingUnits] = useState<boolean>(false);
+
 
   useEffect(() => {
     const fetchProperties = async () => {
@@ -92,17 +94,19 @@ export function BusinessDetails({
     }
   };
 
-  return (
-    <div className="xl:flex xl:justify-center">
-      <Tabs
-        defaultValue="about"
-        className="w-[606px] sm:w-[750px] md:w-[1006px] lg:w-[1246px] xl:w-[1300px] px-8 py-4"
-      >
-        <TabsList className="grid grid-cols-3 dark:text-white dark:bg-opacity-15 dark:bg-transparent">
-          <TabsTrigger value="about">About</TabsTrigger>
-          <TabsTrigger value="branchesAndRooms">Properties</TabsTrigger>
-          <TabsTrigger value="reviews">Reviews Under this Company</TabsTrigger>
-        </TabsList>
+
+	return (
+		<div className='xl:flex xl:justify-center '>
+			<Tabs
+				defaultValue='about'
+				className='w-[606px] sm:w-[750px] md:w-[1006px] lg:w-[1246px] xl:w-[1300px] px-8 py-4'
+			>
+				<TabsList className='grid grid-cols-3 dark:text-white dark:bg-opacity-15 dark:bg-transparent'>
+					<TabsTrigger value='about'>About</TabsTrigger>
+					<TabsTrigger value='branchesAndRooms'>Properties</TabsTrigger>
+					<TabsTrigger value='reviews'>Reviews Under this Company</TabsTrigger>
+				</TabsList>
+
 
         {/* ABOUT SECTION */}
         <TabsContent value="about">
@@ -124,47 +128,49 @@ export function BusinessDetails({
           </Card>
         </TabsContent>
 
-        {/* PROPERTIES SECTION */}
-        <TabsContent value="branchesAndRooms">
-          <Card className="dark:bg-transparent dark:border-none bg-transparent border-gray-200">
-            <CardHeader className="dark:border-t-2 dark:border-sky-900">
-              <CardTitle>Properties</CardTitle>
-              <CardDescription>
-                Explore our different properties
-              </CardDescription>
-            </CardHeader>
-            <CardContent className="space-y-1">
-              {loading ? (
-                <div>Loading properties...</div>
-              ) : (
-                <Carousel>
-                  <CarouselContent>
-                    {properties?.map((property) => (
-                      <CarouselItem
-                        key={property.id}
-                        className="lg:basis-1/4 md:basis-1/3 sm:basis-1/2 xs:basis-1/2"
-                        onClick={() => handlePropertyClick(property)}
-                      >
-                        <Card
-                          className={`border-slate-400 ${
-                            selectedProperty?.id === property.id
-                              ? "bg-sky-800 text-white"
-                              : "bg-none"
-                          }`}
-                        >
-                          <CardContent className="flex flex-col h-16 items-center justify-center p-0">
-                            <div>{property.title}</div>
-                            <div className="flex items-center">
-                              <MapPin className="mr-1" height={18} width={18} />
-                              <small>{property.address}</small>
-                            </div>
-                          </CardContent>
-                        </Card>
-                      </CarouselItem>
-                    ))}
-                  </CarouselContent>
-                </Carousel>
-              )}
+
+				{/* PROPERTIES SECTION */}
+				<TabsContent value='branchesAndRooms'>
+					<Card className='dark:bg-transparent dark:border-none'>
+						<CardHeader className='dark:border-t-2 dark:border-sky-900'>
+							<CardTitle>Properties</CardTitle>
+							<CardDescription>
+								Explore our different properties
+							</CardDescription>
+						</CardHeader>
+						<CardContent className='space-y-1'>
+							{loading ? (
+								<div>Loading properties...</div>
+							) : (
+								<Carousel>
+									<CarouselContent>
+										{properties?.map((property) => (
+											<CarouselItem
+												key={property.id}
+												className='lg:basis-1/4 md:basis-1/3 sm:basis-1/2 xs:basis-1/2'
+												onClick={() => handlePropertyClick(property)}
+											>
+												<Card
+													className={`border-slate-400 ${
+														selectedProperty?.id === property.id
+															? 'bg-sky-800 text-white'
+															: 'bg-none'
+													}`}
+												>
+													<CardContent className='flex flex-col h-16 items-center justify-center p-0'>
+														<div>{property.title}</div>
+														<div className='flex items-center'>
+															<MapPin className='mr-1' height={18} width={18} />
+															<small>{property.address}</small>
+														</div>
+													</CardContent>
+												</Card>
+											</CarouselItem>
+										))}
+									</CarouselContent>
+								</Carousel>
+							)}
+
 
               {/* Display available units for selected property */}
               {loadingUnits ? (

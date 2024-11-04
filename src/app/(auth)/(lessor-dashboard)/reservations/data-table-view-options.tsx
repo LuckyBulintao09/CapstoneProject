@@ -102,6 +102,8 @@ export function DataTableViewOptions<TData>({
 							columnHeader = 'Unit Title';
 						} else if (column.id === 'isPaid') {
 							columnHeader = 'Payment Status';
+						} else if (column.id === 'action') {
+							columnHeader = 'Action';
 						}
 
 						return (

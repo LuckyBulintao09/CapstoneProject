@@ -71,7 +71,7 @@ const Banner: React.FC<BannerProps> = ({
 					<div className='flex flex-row gap-3'>
 						<Button
 							variant='outline'
-							className='border-white text-white hover:bg-white hover:text-black'
+							className='border-white text-white hover:bg-foreground hover:text-neutral-300 hover:border-neutral-300'
 							onClick={handleSendMessage}
 							disabled={isLoading}
 							aria-label='Message the owner'
@@ -84,7 +84,7 @@ const Banner: React.FC<BannerProps> = ({
 
 						<Button
 							variant='secondary'
-							className='bg-white text-black border border-white hover:bg-secondary dark:hover:bg-popover-foreground rounded-lg px-4 py-2 transition duration-200 ease-in-out'
+							className='bg-white text-black hover:bg-neutral-100 dark:hover:bg-popover-foreground rounded-lg px-4 py-2 transition duration-200 ease-in-out'
 							onClick={() => {
 								window.location.href = `/property/company/${companyId}`;
 							}}

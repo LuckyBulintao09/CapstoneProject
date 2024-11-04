@@ -12,7 +12,7 @@ const spiels = {
 		'Stay in the loop with UniHomes! Sign up with your email to receive the latest updates.',
 		'Don’t miss out — join our community today!',
 	],
-	FOOTER: '© 2024 UniHomes. All rights reserved.',
+	FOOTER: '© 2024 UniHomes',
 	HERO_BADGE: 'New Release',
 	HERO_DESCRIPTION:
 		'Find your perfect rental with ease. Search verified dorms, condos, and apartments, explore listings, and connect with homeowners—all in one simple platform.',
