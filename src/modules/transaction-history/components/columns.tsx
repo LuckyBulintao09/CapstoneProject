@@ -11,7 +11,7 @@ import AddReviewModal from "./AddReviewModal";
 import {
   fetchReviewData,
   deleteReview,
-  cancelTransaction
+  cancelTransaction,
 } from "@/actions/transaction/column";
 
 interface Review {
@@ -39,7 +39,6 @@ const TransactionActionsCell = ({ row }: { row: Row<Transaction> }) => {
 
     getReviewData();
   }, [unitId, row.original.user_id]);
-
 
   const handleDeleteReview = async () => {
     if (!reviewData) return;
@@ -110,12 +109,6 @@ const TransactionActionsCell = ({ row }: { row: Row<Transaction> }) => {
           <XCircle className="h-4 w-4 mr-2" />
           Cancel
         </Button>
-      )}
-
-      {transactionStatus === "cancelled" && (
-        <div className=" flex justify-center items-center ">
-          <span className="text-red-700 font-semibold">Cancelled</span>
-        </div>
       )}
     </div>
   );
