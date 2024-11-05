@@ -14,8 +14,8 @@ interface ChildrenProps {
 
 export const defaultUnitAddFormData: CreateUnitType = {
     property_id: "",
-    structure: "dormitory",
-    privacy_type: "room",
+    unit_structure: "dormitory",
+    unit_type: "room",
     unit_occupants: 1,
     unit_bedrooms: 1,
     unit_beds: 1,
