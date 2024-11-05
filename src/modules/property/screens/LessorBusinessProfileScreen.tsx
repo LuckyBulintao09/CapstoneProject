@@ -72,8 +72,11 @@ const LessorBusinessProfileScreen = async ({
 							<div className='hidden md:flex flex-col items-center justify-start col-span-1 mx-auto py-10'>
 								<div className='flex flex-col items-center'>
 									<Avatar className='mb-1'>
-										<AvatarImage src={data?.owner?.profile_url} alt='@shadcn' />
-										<AvatarFallback>CN</AvatarFallback>
+										<AvatarImage src={data?.owner?.profile_url} />
+										<AvatarFallback>
+											{data?.owner?.firstname.charAt(0)}
+											{data?.owner?.lastname.charAt(0)}
+										</AvatarFallback>
 									</Avatar>
 									<h1 className='font-semibold xl:text-md text-center dark:text-primary-foreground'>
 										{data?.owner?.firstname} {data?.owner?.lastname}
@@ -97,18 +100,18 @@ const LessorBusinessProfileScreen = async ({
 						<div className='flex items-center p-2 border-y py-4 justify-between'>
 							<div className='flex items-center'>
 								<Avatar className='mb-1'>
-									<AvatarImage
-										src='https://github.com/shadcn.png'
-										alt='@shadcn'
-									/>
-									<AvatarFallback>CN</AvatarFallback>
+									<AvatarImage src={data?.owner?.profile_url} />
+									<AvatarFallback>
+										{data?.owner?.firstname.charAt(0)}
+										{data?.owner?.lastname.charAt(0)}
+									</AvatarFallback>
 								</Avatar>
 								<div className='flex flex-col ml-4'>
 									<p className='text-sm text-gray-700'>
 										Contact business owner
 									</p>
 									<h1 className='font-semibold xl:text-md dark:text-primary-foreground'>
-										{lessor_name}
+										{data?.owner?.firstname} {data?.owner?.lastname}
 									</h1>
 								</div>
 							</div>
