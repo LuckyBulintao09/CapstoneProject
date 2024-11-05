@@ -53,7 +53,7 @@ const spiels = {
 			avatar: Warehouse,
 		},
 		{
-			label: 'Lessors',
+			label: 'Proprietors',
 			stat: '100',
 			description: '+21 since last hour',
 			avatar: Users2,
