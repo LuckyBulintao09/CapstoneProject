@@ -24,7 +24,7 @@ function EditCompanyAlert({ companyId }: { companyId: string }) {
         <Dialog open={open} onOpenChange={setOpen}>
             <DialogTrigger asChild>
                 <Button variant="destructive" className="w-fit">
-                    Delete compnay
+                    Delete company
                 </Button>
             </DialogTrigger>
             <DialogContent>

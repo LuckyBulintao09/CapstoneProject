@@ -11,7 +11,7 @@ async function Company() {
         <div>
             <HostingContentLayout title="Company">
                 <CustomBreadcrumbs />
-
+                
                 <div className="mx-auto max-w-5xl py-11">
                     <CompanyCard />
                 </div>

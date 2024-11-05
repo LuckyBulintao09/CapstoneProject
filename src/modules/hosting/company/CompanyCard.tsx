@@ -21,6 +21,7 @@ function CompanyCard() {
     const companies = useGetUserCompaniesById(user?.id);
     return (
         <div className="grid grid-cols-16 grid-rows-16 gap-4">
+            <Link href="/hosting/company/add-a-company" className={cn(buttonVariants({ variant: "default", size: "sm" }), "col-span-full w-fit")}>Add a company</Link>
             {companies.isSuccess ? (
                 companies.data.map((company: any) => (
                     <Card className="col-span-4 row-span-4 relative h-max border-none shadow-md">
