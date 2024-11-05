@@ -5,6 +5,9 @@ import { Star } from 'lucide-react';
 import { Loader } from 'lucide-react';
 import Link from 'next/link';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
+import ReportModal from './ReportReview';
+import { reportReview } from '@/actions/reviews/reportReview';
+import { toast } from 'sonner';
 
 interface Review {
 	id: number;
@@ -57,7 +60,7 @@ const ReviewsUnderCompany: React.FC<ReviewsUnderCompanyProps> = ({
 							className='relative shadow-lg rounded-lg border-gray-200 bg-white dark:bg-gray-800 dark:border-gray-700'
 						>
 							<div className='absolute top-4 right-4'>
-								<Dropdown unitId={review.unit_id} />
+								<Dropdown unitId={review.unit_id} reviewId={review.id} />
 							</div>
 							<CardHeader className='flex items-start border-b border-gray-200 dark:border-gray-700'>
 								<div className='flex items-center space-x-3'>
@@ -110,8 +113,26 @@ const ReviewsUnderCompany: React.FC<ReviewsUnderCompanyProps> = ({
 	);
 };
 
-const Dropdown: React.FC<{ unitId: number }> = ({ unitId }) => {
+const Dropdown: React.FC<{ unitId: number, reviewId: number }> = ({ unitId, reviewId }) => {
 	const [isOpen, setIsOpen] = useState<boolean>(false);
+	const [isModalOpen, setIsModalOpen] = useState(false);
+	const handleOpenModal = () => setIsModalOpen(true);
+	const handleCloseModal = () => setIsModalOpen(false);
+
+	const handleReportSubmit = async (reportData: { reason: string }) => {
+		let reportStatus = false
+		await reportReview(reviewId, reportData.reason).then((result) => {
+			reportStatus = result;
+		});
+
+		if (reportStatus) {
+			setIsOpen(false);
+			setIsModalOpen(false);
+			toast.success('Review reported successfully!');
+		}else{
+			toast.error('Failed to report review. Please try again.');
+		}
+	};
 
 	return (
 		<div className='relative inline-block text-left'>
@@ -128,7 +149,7 @@ const Dropdown: React.FC<{ unitId: number }> = ({ unitId }) => {
 				<div className='absolute right-0 z-10 mt-2 w-48 bg-white border border-gray-200 rounded-md shadow-lg'>
 					<div className='py-1'>
 						<a
-							href='#'
+							onClick={handleOpenModal}
 							className='block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100'
 						>
 							Report Review
@@ -140,6 +161,8 @@ const Dropdown: React.FC<{ unitId: number }> = ({ unitId }) => {
 							View Unit
 						</Link>
 					</div>
+					
+					<ReportModal isOpen={isModalOpen} onClose={handleCloseModal} onSubmit={handleReportSubmit} />
 				</div>
 			)}
 		</div>
