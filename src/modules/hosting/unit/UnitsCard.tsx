@@ -15,22 +15,21 @@ import {
 } from "@tanstack/react-table";
 import { useMediaQuery } from "@/hooks/use-media-query";
 
-import { fuzzyFilter } from "./PropertiesTable/fuzzy-filters";
+import { fuzzyFilter } from "./UnitTable/fuzzy-filters";
+import UnitsHeader from "./UnitsHeader";
 
 interface DataTableProps<TData, TValue> {
     columns: ColumnDef<TData, TValue>[];
     data: TData[];
 }
 
-import PropertiesHeader from "./PropertiesHeader";
-
-function PropertiesCard<TData, TValue>({ columns, data }: DataTableProps<TData, TValue>) {
+function UnitsCard<TData, TValue>({ columns, data }: DataTableProps<TData, TValue>) {
     const [sorting, setSorting] = React.useState<SortingState>([]);
 
     const [columnFilters, setColumnFilters] = React.useState<ColumnFiltersState>([]);
     const [globalFilters, setGlobalFilters] = React.useState("");
 
-    const propertiesCardTable = useReactTable({
+    const unitsCardTable = useReactTable({
         data,
         columns,
         getCoreRowModel: getCoreRowModel(),
@@ -54,10 +53,10 @@ function PropertiesCard<TData, TValue>({ columns, data }: DataTableProps<TData, 
     const isDesktop = useMediaQuery("(min-width: 740px)");
     return (
         <div>
-            <PropertiesHeader table={propertiesCardTable} />
+            <UnitsHeader table={unitsCardTable} />
             <div className="grid grid-cols-12 gap-7">
-                {propertiesCardTable.getRowModel().rows?.length ? (
-                    propertiesCardTable.getRowModel().rows.map((row) => (
+                {unitsCardTable.getRowModel().rows?.length ? (
+                    unitsCardTable.getRowModel().rows.map((row) => (
                         <div key={row.id} className="col-span-12 tablet:col-span-6 desktop:col-span-4">
                             {row.getVisibleCells().map((cell) => {
                                 if (!isDesktop && (cell.column.columnDef.header === "Address" || cell.column.columnDef.header === "Verified")) {
@@ -81,4 +80,4 @@ function PropertiesCard<TData, TValue>({ columns, data }: DataTableProps<TData, 
     );
 }
 
-export default PropertiesCard;
+export default UnitsCard;

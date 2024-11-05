@@ -6,55 +6,62 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
 import { z } from "zod";
 
-import { Form, FormControl, FormDescription, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form";
-import { Button as ShadCnButton } from "@/components/ui/button";
-
-import { Button as NextUiButton } from "@nextui-org/button";
+import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form";
+import { buttonVariants, Button as ShadCnButton } from "@/components/ui/button";
 import { Input as NextUiInput } from "@nextui-org/input";
 
-import ListingStepButton from "./ListingStepButton";
-
-import { Content } from '@tiptap/react'
+import { useRouter } from "next/navigation";
 import { MinimalTiptapEditor } from '@/components/minimal-tiptap'
 
-import { createPropertyTitleSchema } from "@/lib/schemas/propertySchema";
+import { useUnitAddFormContext } from "./UnitAddFormProvider";
+import { createUnitTitleSchema } from "@/lib/schemas/propertySchema";
+import Link from "next/link";
+import { cn } from "@/lib/utils";
+import { updateUnit } from "@/actions/unit/update-unit";
+import { toast } from "sonner";
+import { showErrorToast } from "@/lib/handle-error";
 
-import { useRouter } from "next/navigation";
-import { usePropertyAddFormContext } from "../unit/UnitAddFormProvider";
-
-type PropertyTitleData = z.infer<typeof createPropertyTitleSchema>;
-
-function PropertyTitleForm({ propertyId }: { propertyId: string }) {
-
+function AddUnitFinalForm({ unitId }: { unitId: string }) {
     const router = useRouter();
-    const {formData, setFormData} = usePropertyAddFormContext();
+    const { formData, setFormData } = useUnitAddFormContext();
 
-    const propertyTitleForm = useForm<PropertyTitleData>({
-        resolver: zodResolver(createPropertyTitleSchema),
+    const unitFinalForm = useForm<z.infer<typeof createUnitTitleSchema>>({
+        resolver: zodResolver(createUnitTitleSchema),
         defaultValues: {
-            title: "",
-            description: "",
+            unit_title: "",
+            unit_description: "",
         },
     });
 
-    const onSubmit = (values: PropertyTitleData) => {
-        router.push(`/hosting/host-a-property/${propertyId}`);
-        if (setFormData) {
-            setFormData((prev) => ({
-                ...prev,
-                title: values.title,
-                description: values.description,
-            }));
-        console.log(formData, "formdata")
-        }
-    };
+    async function onSubmit(values: z.infer<typeof createUnitTitleSchema>) {
+        setFormData((prev) => ({
+            unit_title: values.unit_title,
+            unit_description: values.unit_description,
+            ...prev,
+        }));
+
+        console.log(formData, "formdata");
+        console.log(values);
+        router.push(`/hosting/unit`);
+        
+        toast.promise(updateUnit(unitId, formData), {
+            loading: "Adding unit...",
+            success: () => {
+                router.push(`/hosting/unit`)
+                return toast.success("Unit added successfully!");
+            },
+            error: (error) => {
+                return showErrorToast(error)
+            },
+        })
+    }
     return (
-        <div className="w-full">
-            <Form {...propertyTitleForm}>
-                <form onSubmit={propertyTitleForm.handleSubmit(onSubmit)} className="space-y-8 max-w-5xl mx-auto">
+        <div>
+            <Form {...unitFinalForm}>
+                <form onSubmit={unitFinalForm.handleSubmit(onSubmit)} className="space-y-8 max-w-5xl mx-auto">
                     <FormField
-                        control={propertyTitleForm.control}
-                        name="title"
+                        control={unitFinalForm.control}
+                        name="unit_title"
                         render={({ field, fieldState }) => (
                             <NextUiInput
                                 label="Title"
@@ -76,11 +83,11 @@ function PropertyTitleForm({ propertyId }: { propertyId: string }) {
                     />
 
                     <FormField
-                        control={propertyTitleForm.control}
-                        name="description"
+                        control={unitFinalForm.control}
+                        name="unit_description"
                         render={({ field }) => (
                             <FormItem>
-                                <FormLabel>Description</FormLabel>
+                                <FormLabel htmlFor="unit_description">Description</FormLabel>
                                 <FormControl>
                                     <MinimalTiptapEditor
                                         value={field.value}
@@ -100,16 +107,14 @@ function PropertyTitleForm({ propertyId }: { propertyId: string }) {
                         )}
                     />
 
-                    <ShadCnButton type="submit">Submit</ShadCnButton>
-
-                    <ListingStepButton
-                        hrefFrom={`/hosting/host-a-property/${propertyId}/amenities`}
-                        propertyId={propertyId}
-                    />
+                    <div className="flex justify-end gap-3">
+                        <Link href={`/hosting/unit/add-a-unit/${unitId}/amenities`} className={cn(buttonVariants({ variant: "outline" }))}>Back</Link>
+                        <ShadCnButton type="submit">Submit</ShadCnButton>
+                    </div>
                 </form>
             </Form>
         </div>
     );
 }
 
-export default PropertyTitleForm;
+export default AddUnitFinalForm;

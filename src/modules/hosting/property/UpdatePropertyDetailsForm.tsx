@@ -34,8 +34,6 @@ function UpdatePropertyDetailsForm({ companies, propertyId, property }: { compan
     const autocompleteRef = React.useRef<HTMLInputElement>(null);
     const places = useMapsLibrary('places');
 
-    console.log(property);
-
     const createPropertyForm = useForm<CreatePropertyTypes>({
         resolver: zodResolver(createPropertySchema),
         defaultValues: {

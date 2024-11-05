@@ -100,7 +100,7 @@ function TopNavigation() {
                                 </Link>
                             </li>
                             <li>
-                                <Link href="/hosting/units" className={cn(buttonVariants({ variant: "ghost" }), "rounded-full")}>
+                                <Link href="/hosting/unit" className={cn(buttonVariants({ variant: "ghost" }), "rounded-full")}>
                                     Listings
                                 </Link>
                             </li>
@@ -124,22 +124,15 @@ function TopNavigation() {
                                     </DropdownMenuTrigger>
                                     <DropdownMenuContent side="bottom" align="start">
                                         <DropdownMenuGroup>
-                                            <DropdownMenuItem>Listings</DropdownMenuItem>
+                                        <DropdownMenuItem asChild>
+                                                <Link href={`/hosting/unit`}>Listings</Link>
+                                            </DropdownMenuItem>
                                             <DropdownMenuItem asChild>
                                                 <Link href={`/hosting/property`}>Properties</Link>
                                             </DropdownMenuItem>
                                             <DropdownMenuItem>Reservations</DropdownMenuItem>
                                             <DropdownMenuItem>Insights</DropdownMenuItem>
                                         </DropdownMenuGroup>
-                                        <DropdownMenuSeparator />
-                                        <DropdownMenuItem>
-                                            <div className="inline-flex items-center gap-2">
-                                                <span>
-                                                    <PlusSquare className="h-5 w-5" strokeWidth={1} />
-                                                </span>
-                                                <span>Create new listing</span>
-                                            </div>
-                                        </DropdownMenuItem>
                                     </DropdownMenuContent>
                                 </DropdownMenu>
                             </li>

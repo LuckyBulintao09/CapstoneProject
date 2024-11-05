@@ -8,86 +8,55 @@ import { Button as NextUiButton } from "@nextui-org/button";
 import { Input as NextUiInput } from "@nextui-org/input";
 import { Form, FormField } from "@/components/ui/form";
 
-import { Button as ShadCnButton } from "@/components/ui/button";
+import { buttonVariants, Button as ShadCnButton } from "@/components/ui/button";
 
-import { createPropertyDetailSchema } from "@/lib/schemas/propertySchema";
 import { Minus, Plus } from "lucide-react";
-import ListingStepButton from "./ListingStepButton";
-
 import { useRouter } from "next/navigation";
-import { usePropertyAddFormContext } from "../unit/UnitAddFormProvider";
+import { useUnitAddFormContext } from "./UnitAddFormProvider";
+import { createUnitDetailSchema } from "@/lib/schemas/propertySchema";
+import { cn } from "@/lib/utils";
+import Link from "next/link";
 
-type PropertyDetailData = z.infer<typeof createPropertyDetailSchema>;
-
-function PropertyDetailForm({ propertyId }: { propertyId: string }) {
-
+function AddUnitDetailsForm({ unitId }: { unitId: string }) {
     const router = useRouter();
-    const {formData, setFormData} = usePropertyAddFormContext();
+    const { formData, setFormData } = useUnitAddFormContext();
 
-    const propertyDetailForm = useForm<PropertyDetailData>({
-        resolver: zodResolver(createPropertyDetailSchema),
+    const unitDetailForm = useForm<z.infer<typeof createUnitDetailSchema>>({
+        resolver: zodResolver(createUnitDetailSchema),
         defaultValues: {
-            occupants: 1,
-            bedrooms: 1,
-            beds: 1,
-            bathrooms: 1,
-            unit_number: "",
+            unit_occupants: 1,
+            unit_bedrooms: 1,
+            unit_beds: 1,
         },
     });
 
-    const onSubmit = (values: PropertyDetailData) => {
-        router.push(`/hosting/host-a-property/${propertyId}/amenities`);
-        if (setFormData) {
-            setFormData((prev) => ({
-                ...prev,
-                occupants: values.occupants,
-                bedrooms: values.bedrooms,
-                beds: values.beds,
-                bathrooms: values.bathrooms,
-                unit_number: values.unit_number,
-            }));
-            console.log(formData, "formdata")
-        }
-    };
+    function onSubmit(values: z.infer<typeof createUnitDetailSchema>) {
+        setFormData((prev) => ({
+            ...prev,
+            unit_occupants: values.unit_occupants,
+            unit_bedrooms: values.unit_bedrooms,
+            unit_beds: values.unit_beds,
+        }));
 
+        console.log(formData, "formdata");
+        console.log(values);
+        router.push(`/hosting/unit/add-a-unit/${unitId}/amenities`);
+    }
     return (
         <div className="w-full max-w-2xl">
-            <Form {...propertyDetailForm}>
-                <form onSubmit={propertyDetailForm.handleSubmit(onSubmit)} className="space-y-7">
-                    <FormField
-                        control={propertyDetailForm.control}
-                        name="unit_number"
-                        render={({ field, fieldState }) => (
-                            <NextUiInput
-                                label="Unit number"
-                                isInvalid={!!fieldState?.error?.message}
-                                isRequired
-                                variant="bordered"
-                                classNames={{
-                                    inputWrapper: "hover:bg-none dark:hover:bg-none",
-                                    errorMessage: "text-destructive",
-                                    input: "text-xl"
-                                }}
-                                radius="sm"
-                                size="lg"
-                                autoComplete="on"
-                                defaultValue={field.value}
-                                // onChange={field.onChange}
-                                {...field}
-                            />
-                        )}
-                    />
+            <Form {...unitDetailForm}>
+                <form onSubmit={unitDetailForm.handleSubmit(onSubmit)} className="space-y-7">
 
                     <FormField
-                        control={propertyDetailForm.control}
-                        name="occupants"
+                        control={unitDetailForm.control}
+                        name="unit_occupants"
                         render={({ field, fieldState }) => (
                             <NextUiInput
                                 type={field.value >= 10 ? "text" : "number"}
                                 {...field}
                                 value={field.value >= 10 ? "10+" : `${field.value}`}
                                 onChange={(e) => {
-                                    propertyDetailForm.setValue("occupants", parseInt(e.target.value) || 1);
+                                    unitDetailForm.setValue("unit_occupants", parseInt(e.target.value) || 1);
                                 }}
                                 classNames={{
                                     input: "field-sizing max-w-[128px] text-xl [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none",
@@ -108,9 +77,9 @@ function PropertyDetailForm({ propertyId }: { propertyId: string }) {
                                         aria-label="Decrease Occupants"
                                         className="rounded-full border"
                                         onClick={() => {
-                                            propertyDetailForm.setValue("occupants", Math.max(propertyDetailForm.getValues("occupants") - 1, 1));
+                                            unitDetailForm.setValue("unit_occupants", Math.max(unitDetailForm.getValues("unit_occupants") - 1, 1));
                                         }}
-                                        isDisabled={propertyDetailForm.getValues("occupants") <= 1}
+                                        isDisabled={unitDetailForm.getValues("unit_occupants") <= 1}
                                     >
                                         <Minus className="h-5 w-5" />
                                     </NextUiButton>
@@ -124,9 +93,9 @@ function PropertyDetailForm({ propertyId }: { propertyId: string }) {
                                         size="lg"
                                         className="rounded-full border"
                                         onClick={() => {
-                                            propertyDetailForm.setValue("occupants", propertyDetailForm.getValues("occupants") + 1);
+                                            unitDetailForm.setValue("unit_occupants", unitDetailForm.getValues("unit_occupants") + 1);
                                         }}
-                                        isDisabled={propertyDetailForm.getValues("occupants") >= 10}
+                                        isDisabled={unitDetailForm.getValues("unit_occupants") >= 10}
                                     >
                                         <Plus className="h-5 w-5" />
                                     </NextUiButton>
@@ -139,15 +108,15 @@ function PropertyDetailForm({ propertyId }: { propertyId: string }) {
                     />
 
                     <FormField
-                        control={propertyDetailForm.control}
-                        name="bedrooms"
+                        control={unitDetailForm.control}
+                        name="unit_bedrooms"
                         render={({ field, fieldState }) => (
                             <NextUiInput
                                 type={field.value >= 10 ? "text" : "number"}
                                 {...field}
                                 value={field.value >= 10 ? "10+" : `${field.value}`}
                                 onChange={(e) => {
-                                    propertyDetailForm.setValue("bedrooms", parseInt(e.target.value) || 1);
+                                    unitDetailForm.setValue("unit_bedrooms", parseInt(e.target.value) || 1);
                                 }}
                                 classNames={{
                                     input: "field-sizing max-w-[128px] text-xl [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none",
@@ -168,9 +137,9 @@ function PropertyDetailForm({ propertyId }: { propertyId: string }) {
                                         aria-label="Decrease Bedrooms"
                                         className="rounded-full border"
                                         onClick={() => {
-                                            propertyDetailForm.setValue("bedrooms", Math.max(propertyDetailForm.getValues("bedrooms") - 1, 1));
+                                            unitDetailForm.setValue("unit_bedrooms", Math.max(unitDetailForm.getValues("unit_bedrooms") - 1, 1));
                                         }}
-                                        isDisabled={propertyDetailForm.getValues("bedrooms") <= 1}
+                                        isDisabled={unitDetailForm.getValues("unit_bedrooms") <= 1}
                                     >
                                         <Minus className="h-5 w-5" />
                                     </NextUiButton>
@@ -184,9 +153,9 @@ function PropertyDetailForm({ propertyId }: { propertyId: string }) {
                                         size="lg"
                                         className="rounded-full border"
                                         onClick={() => {
-                                            propertyDetailForm.setValue("bedrooms", propertyDetailForm.getValues("bedrooms") + 1);
+                                            unitDetailForm.setValue("unit_bedrooms", unitDetailForm.getValues("unit_bedrooms") + 1);
                                         }}
-                                        isDisabled={propertyDetailForm.getValues("bedrooms") >= 10}
+                                        isDisabled={unitDetailForm.getValues("unit_bedrooms") >= 10}
                                     >
                                         <Plus className="h-5 w-5" />
                                     </NextUiButton>
@@ -199,15 +168,15 @@ function PropertyDetailForm({ propertyId }: { propertyId: string }) {
                     />
 
                     <FormField
-                        control={propertyDetailForm.control}
-                        name="beds"
+                        control={unitDetailForm.control}
+                        name="unit_beds"
                         render={({ field, fieldState }) => (
                             <NextUiInput
                                 type={field.value >= 10 ? "text" : "number"}
                                 {...field}
                                 value={field.value >= 10 ? "10+" : `${field.value}`}
                                 onChange={(e) => {
-                                    propertyDetailForm.setValue("beds", parseInt(e.target.value) || 1);
+                                    unitDetailForm.setValue("unit_beds", parseInt(e.target.value) || 1);
                                 }}
                                 classNames={{
                                     input: "field-sizing max-w-[128px] text-xl [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none",
@@ -228,9 +197,9 @@ function PropertyDetailForm({ propertyId }: { propertyId: string }) {
                                         aria-label="Decrease beds"
                                         className="rounded-full border"
                                         onClick={() => {
-                                            propertyDetailForm.setValue("beds", Math.max(propertyDetailForm.getValues("beds") - 1, 1));
+                                            unitDetailForm.setValue("unit_beds", Math.max(unitDetailForm.getValues("unit_beds") - 1, 1));
                                         }}
-                                        isDisabled={propertyDetailForm.getValues("beds") <= 1}
+                                        isDisabled={unitDetailForm.getValues("unit_beds") <= 1}
                                     >
                                         <Minus className="h-5 w-5" />
                                     </NextUiButton>
@@ -244,9 +213,9 @@ function PropertyDetailForm({ propertyId }: { propertyId: string }) {
                                         size="lg"
                                         className="rounded-full border"
                                         onClick={() => {
-                                            propertyDetailForm.setValue("beds", propertyDetailForm.getValues("beds") + 1);
+                                            unitDetailForm.setValue("unit_beds", unitDetailForm.getValues("unit_beds") + 1);
                                         }}
-                                        isDisabled={propertyDetailForm.getValues("beds") >= 10}
+                                        isDisabled={unitDetailForm.getValues("unit_beds") >= 10}
                                     >
                                         <Plus className="h-5 w-5" />
                                     </NextUiButton>
@@ -257,76 +226,14 @@ function PropertyDetailForm({ propertyId }: { propertyId: string }) {
                             />
                         )}
                     />
-
-                    <FormField
-                        control={propertyDetailForm.control}
-                        name="bathrooms"
-                        render={({ field, fieldState }) => (
-                            <NextUiInput
-                                type={field.value >= 10 ? "text" : "number"}
-                                {...field}
-                                value={field.value >= 10 ? "10+" : `${field.value}`}
-                                onChange={(e) => {
-                                    propertyDetailForm.setValue("bathrooms", parseInt(e.target.value) || 1);
-                                }}
-                                classNames={{
-                                    input: "field-sizing max-w-[128px] text-xl [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none",
-                                    inputWrapper: "hover:bg-none dark:hover:bg-none border-none px-0",
-                                    innerWrapper: "flex items-center justify-between w-max min-w-max gap-3",
-                                    base: "flex flex-row items-center justify-between w-full",
-                                    label: "ps-0 pe-0",
-                                }}
-                                variant="bordered"
-                                label={<span className="text-xl">Bathrooms</span>}
-                                labelPlacement="outside-left"
-                                startContent={
-                                    <NextUiButton
-                                        type="button"
-                                        isIconOnly
-                                        variant="bordered"
-                                        size="lg"
-                                        aria-label="Decrease Bathrooms"
-                                        className="rounded-full border"
-                                        onClick={() => {
-                                            propertyDetailForm.setValue("bathrooms", Math.max(propertyDetailForm.getValues("bathrooms") - 1, 1));
-                                        }}
-                                        isDisabled={propertyDetailForm.getValues("bathrooms") <= 1}
-                                    >
-                                        <Minus className="h-5 w-5" />
-                                    </NextUiButton>
-                                }
-                                endContent={
-                                    <NextUiButton
-                                        type="button"
-                                        isIconOnly
-                                        aria-label="Increase Bathrooms"
-                                        variant="bordered"
-                                        size="lg"
-                                        className="rounded-full border"
-                                        onClick={() => {
-                                            propertyDetailForm.setValue("bathrooms", propertyDetailForm.getValues("bathrooms") + 1);
-                                        }}
-                                        isDisabled={propertyDetailForm.getValues("bathrooms") >= 10}
-                                    >
-                                        <Plus className="h-5 w-5" />
-                                    </NextUiButton>
-                                }
-                                isReadOnly
-                                isInvalid={!!fieldState?.error?.message}
-                                errorMessage={fieldState?.error?.message}
-                            />
-                        )}
-                    />
-
-                    <ShadCnButton type="submit">Submit</ShadCnButton>
-                    <ListingStepButton
-                        hrefFrom={`/hosting/host-a-property/${propertyId}/property-type`}
-                        propertyId={propertyId}
-                    />
+                    <div className="flex justify-end gap-3">
+                    <Link href={`/hosting/unit/add-a-unit/${unitId}/unit-type`} className={cn(buttonVariants({ variant: "outline" }))}>Back</Link>
+                    <ShadCnButton type="submit">Next</ShadCnButton>
+                    </div>
                 </form>
             </Form>
         </div>
     );
 }
 
-export default PropertyDetailForm;
+export default AddUnitDetailsForm;

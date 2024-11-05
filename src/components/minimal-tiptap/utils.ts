@@ -59,11 +59,12 @@ const getPlatform = async (): Promise<string> => {
 
 
 
-export const isMacOS = (): boolean => {
+export const isMacOS = async (): Promise<boolean> => {
   if (isMac === undefined) {
-    isMac = getPlatform().toLowerCase().includes('mac')
+    const platform = await getPlatform();
+    isMac = platform.toLowerCase().includes('mac');
   }
-  return isMac
+  return isMac;
 }
 
 // Shortcut key helpers
