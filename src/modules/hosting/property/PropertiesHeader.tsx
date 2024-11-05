@@ -49,7 +49,7 @@ function PropertiesHeader<TData>({ table }: HeaderToolbarData<TData>) {
                             : "font-light text-4xl text-wrap"
                     )}
                 >
-                    Your listings
+                    Your properties
                 </h1>
             </div>
 
