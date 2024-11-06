@@ -114,7 +114,7 @@ const spiels = {
 	BUTTON_BACK_HOME: 'Back to Home',
 	BUTTON_SEARCH: 'Search',
 	BUTTON_VISIT_COMPANY: 'Visit Company Page',
-	BUTTON_MESSAGE: 'Message',
+	BUTTON_MESSAGE: 'Send',
 	BUTTON_RESERVE: 'Reserve',
 	BUTTON_UPDATE_PROFILE: 'Update Profile',
 	BUTTON_DELETE_ACCOUNT: 'Delete Account',

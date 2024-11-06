@@ -1,4 +1,3 @@
-// initializeSendMessage.ts
 "use server";
 import { createClient } from '@/utils/supabase/server';
 import { checkConversation } from './checkConversation';
@@ -6,15 +5,14 @@ import { sendMessage } from './sendMessage';
 
 const supabase = createClient();
 
-export const initializeSendMessage = async (ownerId: string, propertyId: string, ownerName: string, ownerLastname: string) => {
+export const initializeSendMessage = async (ownerId: string, propertyId: string, ownerName: string, ownerLastname: string, inputValue?: string) => {
   const currentUser = await supabase.auth.getUser();
-  const conversationUrl = await generateMessage(currentUser.data.user.id, ownerId, propertyId, ownerName, ownerLastname);
+  const conversationUrl = await generateMessage(currentUser.data.user.id, ownerId, propertyId, ownerName, ownerLastname, inputValue);
 
-  // Return the conversation URL
   return conversationUrl;
 };
 
-const generateMessage = async (currentUserId, currentReceiverId, propertyId, ownerName, ownerLastname) => {
+const generateMessage = async (currentUserId, currentReceiverId, propertyId, ownerName, ownerLastname, inputValue: string) => {
   const unitDetails = await supabase
     .from('unit')
     .select('*')
@@ -23,7 +21,8 @@ const generateMessage = async (currentUserId, currentReceiverId, propertyId, own
 
   const unitName = unitDetails.data.title;
   const unitPrice = unitDetails.data.price;
-  const messageTemplate = `Hi ${ownerName}, I am interested in ${unitName} at ${unitPrice} dollars.`;
+  // const messageTemplate = `Hi ${ownerName}, I am interested in ${unitName} at ${unitPrice} dollars.`;
+  const messageTemplate = ` ${inputValue} on ${unitName}.`;
 
   const conversationId = await checkConversation(currentUserId, currentReceiverId, ownerName, ownerLastname);
 
