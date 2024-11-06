@@ -50,6 +50,11 @@ const Banner: React.FC<BannerProps> = ({
     }
     if (!ownerId || !propertyId) return;
 
+    if (!inputValue.trim()) {
+      toast.error('Message cannot be empty');
+      return;
+    }
+
     setIsLoading(true);
     try {
       const conversationUrl = await initializeSendMessage(ownerId, propertyId, ownerName, ownerLastname, inputValue);
@@ -95,6 +100,7 @@ const Banner: React.FC<BannerProps> = ({
             <div className="relative flex flex-row gap-1 outline outline-1 outline-white rounded-lg px-1 py-1">
               <Input
                 value={inputValue}
+                required
                 onFocus={() => setIsFocused(true)}
                 onBlur={() => setTimeout(() => setIsFocused(false), 150)}
                 onChange={(e) => setInputValue(e.target.value)}
