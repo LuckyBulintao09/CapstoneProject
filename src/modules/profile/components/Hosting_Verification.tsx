@@ -1,5 +1,3 @@
-"use client";
-
 import { useState, useEffect } from "react";
 import {
   Card,
@@ -8,105 +6,63 @@ import {
   CardTitle,
 } from "@/components/ui/card";
 import { Label } from "@/components/ui/label";
-import { FileUpload } from "@/components/ui/file-upload";
-import { Button } from "@/components/ui/button";
+import { Button } from "@nextui-org/react";
+import { UserIcon } from "@heroicons/react/24/solid";
 import spiels from "@/lib/constants/spiels";
-import { createClient } from "../../../utils/supabase/client";
-import { toast } from "sonner";
+import {
+  getUserSession,
+  fetchGovId,
+  uploadGovernmentId,
+  cancelVerification,
+} from "@/actions/hosting/hosting";
 
 const HostingVerification: React.FC = () => {
-  const [files, setFiles] = useState<File[]>([]);
+  const [file, setFile] = useState<File | null>(null);
   const [govIdUrl, setGovIdUrl] = useState<string | null>(null);
   const [userId, setUserId] = useState<string | null>(null);
   const [isApproved, setIsApproved] = useState<boolean>(false);
-  const supabase = createClient();
+  const [fileWarning, setFileWarning] = useState<string | null>(null);
 
   useEffect(() => {
-    const getUserSession = async () => {
-      const { data, error } = await supabase.auth.getSession();
-      if (error) {
-        toast.error("Error fetching session: " + error.message);
-        return;
-      }
-      const user = data?.session?.user;
+    const initializeUserSession = async () => {
+      const user = await getUserSession();
       if (user) {
         setUserId(user.id);
-        await fetchGovId(user.id);
-      } else {
-        toast.error("No user session found. Please log in.");
+        const govIdData = await fetchGovId(user.id);
+        if (govIdData) {
+          setGovIdUrl(govIdData.governmentIdUrl);
+          setIsApproved(govIdData.isApproved);
+        }
       }
     };
+    initializeUserSession();
+  }, []);
 
-    const fetchGovId = async (userId: string) => {
-      const { data, error } = await supabase
-        .from("account")
-        .select("government_ID_url, approved_government")
-        .eq("id", userId)
-        .single();
-
-      if (error) {
-        toast.error("Error fetching government ID: " + error.message);
-        return;
-      }
-
-      if (data?.government_ID_url) setGovIdUrl(data.government_ID_url);
-      if (data?.approved_government) setIsApproved(data.approved_government);
-    };
-
-    getUserSession();
-  }, [supabase]);
-
-  const handleFileChange = (newFiles: File[]) => {
-    setFiles(newFiles);
+  const handleFileChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+    const newFile = event.target.files ? event.target.files[0] : null;
+    setFile(newFile);
+    setFileWarning(newFile ? null : "Please upload a file to proceed.");
   };
 
   const handleSubmit = async () => {
-    const file = files[0];
     if (!file || !userId) {
-      toast.error("No file selected or user ID not available.");
+      setFileWarning("Please upload a file to proceed.");
       return;
     }
 
-    try {
-      const fileExt = file.name.split(".").pop();
-      const fileName = `government-id-${Date.now()}.${fileExt}`;
-      const filePath = `government ID/${fileName}`;
-
-      const { error: uploadError } = await supabase.storage
-        .from("unihomes image storage")
-        .upload(filePath, file);
-
-      if (uploadError) {
-        toast.error(`Failed to upload government ID: ${uploadError.message}`);
-        return;
-      }
-
-      const { data: publicUrlData } = supabase.storage
-        .from("unihomes image storage")
-        .getPublicUrl(filePath);
-
-      if (!publicUrlData?.publicUrl) {
-        toast.error("Failed to retrieve public URL for the uploaded file.");
-        return;
-      }
-
-      const publicUrl = publicUrlData.publicUrl;
+    const publicUrl = await uploadGovernmentId(file, userId);
+    if (publicUrl) {
       setGovIdUrl(publicUrl);
+    }
+  };
 
-      const { error: updateError } = await supabase
-        .from("account")
-        .update({ government_ID_url: publicUrl })
-        .eq("id", userId);
+  const handleCancelVerification = async () => {
+    if (!userId) return;
 
-      if (updateError) {
-        toast.error(
-          `Failed to update government ID URL: ${updateError.message}`
-        );
-      } else {
-        toast.success("Government ID uploaded");
-      }
-    } catch {
-      toast.error("An unexpected error occurred during file upload.");
+    const success = await cancelVerification(userId, govIdUrl);
+    if (success) {
+      setGovIdUrl(null);
+      setIsApproved(false);
     }
   };
 
@@ -117,7 +73,10 @@ const HostingVerification: React.FC = () => {
         <p>
           Please upload necessary documents to verify yourself as a host. Ensure
           your photos aren’t blurry and the front of your driver’s license
-          clearly shows your face.
+          clearly shows your face.{" "}
+          <strong>
+            Only one upload is allowed, so please upload the front of your ID.
+          </strong>
         </p>
         <div className="flex flex-col md:flex-row-reverse gap-2">
           <Card className="lg:w-1/4 border-none">
@@ -132,7 +91,7 @@ const HostingVerification: React.FC = () => {
           <div className="flex flex-col lg:w-3/4 mt-5 gap-5">
             <div>
               <Label className="font-bold text-lg">Government ID</Label>
-              <div className="mt-2">
+              <div className="mt-4">
                 {isApproved ? (
                   <div className="text-green-700 p-4 rounded-md">
                     <p className="font-bold">Success</p>
@@ -148,20 +107,40 @@ const HostingVerification: React.FC = () => {
                       Your document has been uploaded. We are verifying your
                       identity.
                     </p>
+                    <Button
+                      color="danger"
+                      variant="bordered"
+                      startContent={<UserIcon />}
+                      onClick={handleCancelVerification}
+                      className="mt-4"
+                    >
+                      Cancel Verification
+                    </Button>
                   </div>
                 ) : (
-                  "You’ll need to upload an official government ID. You can provide a driver’s license, passport, or national identity card, depending on your country. This is required to publish your listing(s)."
+                  <p>
+                    You’ll need to upload an official government ID. This is
+                    required to publish your listing(s).
+                  </p>
                 )}
               </div>
               {!govIdUrl && (
-                <div className="flex justify-center md:w-1/2 lg:w-[205px]">
-                  <FileUpload onChange={handleFileChange} />
+                <div className="flex flex-col justify-center md:w-1/2 lg:w-[205px] mt-6">
+                  <input
+                    type="file"
+                    accept="image/*"
+                    onChange={handleFileChange}
+                    className="file-input-class"
+                  />
+                  {fileWarning && (
+                    <p className="text-red-600 mt-2 text-sm">{fileWarning}</p>
+                  )}
                 </div>
               )}
             </div>
             {!govIdUrl && (
               <Button
-                className="w-full md:w-[48%] lg:w-[30%] xl:w-[25%] bg-black text-white hover:bg-gray-800"
+                className="w-full md:w-[48%] lg:w-[30%] xl:w-[25%] bg-black text-white hover:bg-gray-800 mt-2"
                 onClick={handleSubmit}
               >
                 {spiels.BUTTON_SEND_REQUEST}
