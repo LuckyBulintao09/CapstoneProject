@@ -4,7 +4,7 @@ import { toast } from "sonner";
 
 const supabase = createClient();
 
-interface SendMessageParams {
+interface SendImageAsMessageParams {
   userId: string;
   receiverId: string;
   conversationId: string;
@@ -12,13 +12,13 @@ interface SendMessageParams {
   setMessages: React.Dispatch<React.SetStateAction<any[]>>;
 }
 
-export const sendMessage = async ({
+export const sendImageAsMessage = async ({
   userId,
   receiverId,
   conversationId,
   messageContent,
   setMessages,
-}: SendMessageParams) => {
+}: SendImageAsMessageParams) => {
   if (!conversationId) {
     console.error('Conversation ID is not set.');
     return;
@@ -37,7 +37,8 @@ export const sendMessage = async ({
     created_at: new Date(),
   }]);
 
-  await updateInbox(userId, receiverId, messageContent);
+  const messageContentUpdate = "Sent an image."
+  await updateInbox(userId, receiverId, messageContentUpdate);
 
   if (error) {
     console.error('Error sending message:', error);
