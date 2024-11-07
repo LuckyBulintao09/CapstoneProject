@@ -5,6 +5,7 @@ import { fetchReceiverName } from "@/actions/chat/fetchReceiverName";
 import { Card } from "@/components/ui/card";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { createClient } from "@/utils/supabase/client";
+import { BadgeCheck } from "lucide-react";
 import {
   Dialog,
   DialogContent,
@@ -30,8 +31,8 @@ const Inbox = ({ receiver_id }) => {
   const [conversationId, setConversationId] = useState(null);
   const [receiverName, setReceiverName] = useState(null);
   const [selectedFile, setSelectedFile] = useState(null);
-  const [loading, setLoading] = useState(false); 
-  const [modalOpen, setModalOpen] = useState(false); 
+  const [loading, setLoading] = useState(false);
+  const [modalOpen, setModalOpen] = useState(false);
   const messagesEndRef = useRef(null);
 
   const fetchMessages = async (currentUserId, currentReceiverId) => {
@@ -41,7 +42,9 @@ const Inbox = ({ receiver_id }) => {
       .from("messages")
       .select("*")
       .or(`sender_id.eq.${currentUserId},receiver_id.eq.${currentUserId}`)
-      .or(`sender_id.eq.${currentReceiverId},receiver_id.eq.${currentReceiverId}`)
+      .or(
+        `sender_id.eq.${currentReceiverId},receiver_id.eq.${currentReceiverId}`
+      )
       .order("created_at", { ascending: true });
 
     if (error) {
@@ -61,9 +64,15 @@ const Inbox = ({ receiver_id }) => {
       }
       setUser(session.data.session.user);
       if (receiver_id) {
-        const convId = await checkConversation(session.data.session.user.id, receiver_id);
+        const convId = await checkConversation(
+          session.data.session.user.id,
+          receiver_id
+        );
         setConversationId(convId);
-        const messagesData = await fetchMessages(session.data.session.user.id, receiver_id);
+        const messagesData = await fetchMessages(
+          session.data.session.user.id,
+          receiver_id
+        );
         setMessages(messagesData);
         const nameData = await fetchReceiverName(receiver_id);
         setReceiverName(nameData);
@@ -75,11 +84,18 @@ const Inbox = ({ receiver_id }) => {
     const channel = supabase.channel("messages");
 
     channel
-      .on("postgres_changes", { event: "INSERT", schema: "public", table: "messages" }, (payload) => {
-        if (payload.new.sender_id === receiver_id || payload.new.receiver_id === receiver_id) {
-          setMessages((prevMessages) => [...prevMessages, payload.new]);
+      .on(
+        "postgres_changes",
+        { event: "INSERT", schema: "public", table: "messages" },
+        (payload) => {
+          if (
+            payload.new.sender_id === receiver_id ||
+            payload.new.receiver_id === receiver_id
+          ) {
+            setMessages((prevMessages) => [...prevMessages, payload.new]);
+          }
         }
-      })
+      )
       .subscribe();
 
     return () => {
@@ -113,7 +129,9 @@ const Inbox = ({ receiver_id }) => {
     }
     const allowedTypes = ["image/jpeg", "image/png", "image/gif", "image/webp"];
     if (!allowedTypes.includes(file.type)) {
-      toast.error("Please upload a valid image file (JPEG, PNG, GIF, or WEBP).");
+      toast.error(
+        "Please upload a valid image file (JPEG, PNG, GIF, or WEBP)."
+      );
       event.target.value = "";
       return;
     }
@@ -125,19 +143,14 @@ const Inbox = ({ receiver_id }) => {
     if (selectedFile && user) {
       setLoading(true);
       try {
-        await sendImage(
-          user.id,
-          receiver_id,
-          conversationId,
-          selectedFile,
-        );
+        await sendImage(user.id, receiver_id, conversationId, selectedFile);
         toast.success("Image sent successfully!");
-        setModalOpen(false); 
+        setModalOpen(false);
       } catch (error) {
         toast.error("Error sending image.");
       } finally {
-        setLoading(false); 
-        setSelectedFile(null); 
+        setLoading(false);
+        setSelectedFile(null);
       }
     }
   };
@@ -148,20 +161,31 @@ const Inbox = ({ receiver_id }) => {
         {receiver_id && receiverName && (
           <Card className="flex items-center p-2 shadow-sm mb-4 bg-transparent">
             <div className="flex items-center justify-center w-10 h-10 bg-secondary rounded-full mr-3">
-              {`${receiverName.firstname.charAt(0)}${receiverName.lastname.charAt(0)}`}
+              {`${receiverName.firstname.charAt(
+                0
+              )}${receiverName.lastname.charAt(0)}`}
             </div>
             <div>
               <h1 className="text-md font-semibold">
                 {receiverName.firstname} {receiverName.lastname}
               </h1>
-              <p className="text-xs text-green-500">Active now</p>
+              <div className="flex items-center gap-1">
+                {receiverName.company_name && (
+                  <BadgeCheck className="w-5 h-5 text-white bg-blue-500 rounded-full" />
+                )}
+                <p className="text-xs text-blue-500">
+                  {receiverName.company_name}
+                </p>
+              </div>
             </div>
           </Card>
         )}
 
         <ScrollArea className="flex-1 p-4 rounded-lg mb-4 bg-transparent">
           {messages.length === 0 ? (
-            <p className="text-center text-muted-foreground">No conversation selected.</p>
+            <p className="text-center text-muted-foreground">
+              No conversation selected.
+            </p>
           ) : (
             messages.map((msg) => (
               <div
@@ -173,7 +197,11 @@ const Inbox = ({ receiver_id }) => {
                 }`}
               >
                 {msg.content.startsWith("http") ? (
-                  <img src={msg.content} alt="sent image" className="rounded-md" />
+                  <img
+                    src={msg.content}
+                    alt="sent image"
+                    className="rounded-md"
+                  />
                 ) : (
                   <p>{msg.content}</p>
                 )}
@@ -216,7 +244,7 @@ const Inbox = ({ receiver_id }) => {
                   onClick={submitImageHandler}
                   disabled={loading}
                 >
-                  {loading ? "Sending..." : "Send"} 
+                  {loading ? "Sending..." : "Send"}
                 </Button>
               </DialogFooter>
             </DialogContent>

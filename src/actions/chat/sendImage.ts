@@ -44,7 +44,5 @@ export default async function sendImage(userId: string, receiverId: string, conv
         messageContent: messageContent, 
         setMessages: setMessages 
     });
-
-    console.log("Message with image sent:", messageData);
     toast.success("Image sent successfully");
 }
