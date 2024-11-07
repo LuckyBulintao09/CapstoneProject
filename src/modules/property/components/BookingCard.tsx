@@ -20,7 +20,7 @@ import {
   createReservation,
   checkExistingReservation,
 } from "@/actions/listings/booking-process";
-import {  toast } from "sonner";
+import { toast } from "sonner";
 import { format } from "date-fns";
 
 interface BookingCardProps {
@@ -59,6 +59,11 @@ export const BookingCard: React.FC<BookingCardProps> = ({ price, unitId }) => {
     }
 
     fetchData();
+    const intervalId = setInterval(async () => {
+      const reservedStatus = await checkUnitReservationStatus(unitId);
+      setIsUnitReserved(reservedStatus);
+    }, 2000);
+    return () => clearInterval(intervalId);
   }, [unitId]);
 
   const handleReserve = async () => {
@@ -144,10 +149,18 @@ export const BookingCard: React.FC<BookingCardProps> = ({ price, unitId }) => {
             {/* Appointment Date Section */}
             <div className="relative">
               <Label htmlFor="date" className="font-semibold">
-                Appointment Date
+                {selectedService === "On-Site Visit"
+                  ? "Visit Date"
+                  : selectedService === "Room Reservation"
+                  ? "Date of Move"
+                  : "Appointment Date"}
               </Label>
               <p className="text-sm mb-1 italic">
-                Select the date for your visit.
+                {selectedService === "On-Site Visit"
+                  ? "Select the date for your visit."
+                  : selectedService === "Room Reservation"
+                  ? "Select your move-in date."
+                  : "Select the date for your appointment."}
               </p>
               <div className="flex items-center border-b pb-5">
                 <Input
@@ -202,7 +215,11 @@ export const BookingCard: React.FC<BookingCardProps> = ({ price, unitId }) => {
               Already Reserved
             </Button>
           ) : (
-            <Button onClick={handleReserve} className="w-full">
+            <Button
+              onClick={handleReserve}
+              className="w-full"
+              disabled={!date || !selectedService}
+            >
               Reserve
             </Button>
           )}
