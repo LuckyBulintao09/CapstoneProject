@@ -34,6 +34,7 @@ import {
 import LoadingPage from '@/components/LoadingPage';
 import { toast } from 'sonner';
 import { Button } from '@/components/ui/button';
+import { BreadcrumbSection } from '@/components/breadcrumb/BreadrumbSection';
 
 interface SpecificListingProps {
 	id: number;
@@ -173,6 +174,7 @@ export function SpecificListing({ id }: SpecificListingProps) {
 
 	return (
 		<ResponsiveLayout>
+			<BreadcrumbSection />
 			<div className='grid grid-cols-5 gap-2 mt-4'>
 				<MainPreview propertyId={property.id} />
 			</div>
