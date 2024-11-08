@@ -14,16 +14,5 @@ export const fetchReceiverName = async (receiverId: string) => {
     return null; 
   }
 
-  const { data: companyData, error: companyError } = await supabase
-    .from('company')
-    .select('company_name')
-    .eq('owner_id', receiverId)
-    .single();
-  console.log('companyData', companyData);
-  if (companyError) {
-    console.error('Error fetching company name:', companyError);
-    return { ...accountData, company_name: null }; 
-  }
-
-  return { ...accountData, company_name: companyData?.company_name || null };
+  return accountData;
 };
