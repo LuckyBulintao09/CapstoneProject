@@ -56,8 +56,9 @@ function TopNavigation() {
     React.useEffect(() => {
         const { auth } = createClient();
 
-        auth.getUser().then(({ data: { user } }) => {
-            setUser(user);
+        auth.getSession().then(({ data }) => {
+            console.log(data);
+            setUser(data.session?.user);
         });
 
         const { data: authListener } = auth.onAuthStateChange((event, session) => {
@@ -84,6 +85,8 @@ function TopNavigation() {
             document.body.classList.remove("overflow-hidden");
         };
     }, [open]);
+
+    
 
     return (
         <nav className="py-5 sticky z-[99] airBnbDesktop:z-10 top-0 w-full bg-background/95 shadow backdrop-blur supports-[backdrop-filter]:bg-background/60 dark:shadow-secondary">
@@ -124,7 +127,7 @@ function TopNavigation() {
                                     </DropdownMenuTrigger>
                                     <DropdownMenuContent side="bottom" align="start">
                                         <DropdownMenuGroup>
-                                        <DropdownMenuItem asChild>
+                                            <DropdownMenuItem asChild>
                                                 <Link href={`/hosting/unit`}>Listings</Link>
                                             </DropdownMenuItem>
                                             <DropdownMenuItem asChild>
@@ -140,34 +143,41 @@ function TopNavigation() {
 
                         <div className="flex flex-nowrap items-center justify-end gap-11">
                             {/* Notification here */}
-                            <DropdownMenu>
-                                <DropdownMenuTrigger className="rounded-full">
-                                    <Avatar className="w-11 h-11 select-none">
-                                        <AvatarImage src="https://github.com/shadcn.png" />
-                                        <AvatarFallback className="text-xl font-bold bg-primary text-white dark:text-foreground">
-                                            {user?.email?.charAt(0).toUpperCase()}
-                                        </AvatarFallback>
-                                    </Avatar>
-                                </DropdownMenuTrigger>
-                                <DropdownMenuContent side="bottom" align="end" className="w-fit" forceMount>
-                                    <DropdownMenuLabel className="font-normal">
-                                        <div className="flex flex-col space-y-1">
-                                            <p className="text-sm font-medium leading-none truncate">{user?.email}</p>
-                                            <p className="text-xs leading-none text-muted-foreground truncate">{user?.email}</p>
-                                        </div>
-                                    </DropdownMenuLabel>
-                                    <DropdownMenuSeparator />
-                                    <DropdownMenuGroup>
-                                        <DropdownMenuItem>Profile</DropdownMenuItem>
-                                        <DropdownMenuItem asChild>
+                            {user ? (
+                                <DropdownMenu>
+                                    <DropdownMenuTrigger className="rounded-full">
+                                        <Avatar className="w-11 h-11 select-none">
+                                            <AvatarImage src="" />
+                                            <AvatarFallback className="text-base leading-none font-normal bg-primary text-white dark:text-foreground">
+                                                {user?.user_metadata.firstname.charAt(0).toUpperCase()}{user?.user_metadata.lastname.charAt(0).toUpperCase()}
+                                            </AvatarFallback>
+                                        </Avatar>
+                                    </DropdownMenuTrigger>
+                                    <DropdownMenuContent side="bottom" align="end" className="w-full max-w-sm" forceMount>
+                                        <DropdownMenuLabel className="font-normal">
+                                            <div className="flex flex-col space-y-1">
+                                                <p className="text-sm font-medium leading-none truncate">{user?.user_metadata.firstname}{" "}{user?.user_metadata.lastname}</p>
+                                                <p className="text-xs leading-none text-muted-foreground truncate">{user?.user_metadata.email}</p>
+                                            </div>
+                                        </DropdownMenuLabel>
+                                        <DropdownMenuSeparator />
+                                        <DropdownMenuGroup>
+                                            <DropdownMenuItem><Link href={`/hosting/profile`}>Profile</Link></DropdownMenuItem>
+                                            <DropdownMenuItem asChild>
                                                 <Link href={`/hosting/company`}>Company</Link>
                                             </DropdownMenuItem>
-                                        <DropdownMenuItem>Settings</DropdownMenuItem>
-                                    </DropdownMenuGroup>
-                                    <DropdownMenuSeparator />
-                                    <DropdownMenuItem>Sign out</DropdownMenuItem>
-                                </DropdownMenuContent>
-                            </DropdownMenu>
+                                            <DropdownMenuItem>Settings</DropdownMenuItem>
+                                        </DropdownMenuGroup>
+                                        <DropdownMenuSeparator />
+                                        <DropdownMenuItem>Sign out</DropdownMenuItem>
+                                    </DropdownMenuContent>
+                                </DropdownMenu>
+                            ) : (
+                                <div className="flex flex-nowrap items-center justify-end gap-4">
+                                    <Link href="/register" className={cn(buttonVariants({ variant: "default" }), "rounded-full")}>Sign up</Link>
+                                    <Link href="/login" className={cn(buttonVariants({ variant: "outline" }), "rounded-full")}>Login</Link>
+                                </div>
+                            )}
                         </div>
                     </>
                 ) : (
