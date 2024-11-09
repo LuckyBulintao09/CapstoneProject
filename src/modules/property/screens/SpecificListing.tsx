@@ -6,7 +6,6 @@ import BusinessReviews from '../components/BusinessReviews';
 import MainPreview from '../components/MainPreview';
 import PropertyDetails from '../components/PropertyDetails';
 import Banner from '../components/Banner';
-import { BookingCard } from '../components/BookingCard';
 import { HeartIcon as HeartOutline } from '@heroicons/react/24/outline';
 import { HeartIcon as HeartSolid } from '@heroicons/react/24/solid';
 import { Card } from '@/components/ui/card';
@@ -35,6 +34,10 @@ import LoadingPage from '@/components/LoadingPage';
 import { toast } from 'sonner';
 import { Button } from '@/components/ui/button';
 import { BreadcrumbSection } from '@/components/breadcrumb/BreadrumbSection';
+import SpecificListingTabs from '../components/SpecificListingTabs';
+import RightReviews from '../components/SideReviews';
+import SideReviews from '../components/SideReviews';
+import SideMap from '../components/SideMap';
 
 interface SpecificListingProps {
 	id: number;
@@ -175,50 +178,62 @@ export function SpecificListing({ id }: SpecificListingProps) {
 	return (
 		<ResponsiveLayout>
 			<BreadcrumbSection />
+			<div className='flex justify-between items-center mt-4'>
+				<div>
+					<h1 className='font-semibold text-3xl dark:text-white'>{title}</h1>
+					<p className='flex items-center text-muted-foreground'>
+						<MapPin className='mr-1' height={18} width={18} />
+						{address}
+					</p>
+				</div>
+				<div className='relative flex items-center'>
+					<TooltipProvider>
+						<Tooltip>
+							<TooltipTrigger>
+								<Button
+									onClick={handleToggleFavourite}
+									className='cursor-pointer flex items-center space-x-1 bg-transparent hover:bg-gray-200'
+									size='sm'
+								>
+									{isFavourite ? (
+										<HeartSolid className='h-6 w-6 text-red-500 ' />
+									) : (
+										<HeartOutline className='h-6 w-6 text-gray-500 dark:text-gray-300' />
+									)}
+									<span className='text-gray-500 dark:text-gray-300 underline'>
+										{isFavourite ? 'Saved' : 'Save'}
+									</span>
+								</Button>
+							</TooltipTrigger>
+							<TooltipContent>
+								<p>
+									{isFavourite ? 'Remove from favorites' : 'Save to favorites'}
+								</p>
+							</TooltipContent>
+						</Tooltip>
+					</TooltipProvider>
+				</div>
+			</div>
+
 			<div className='grid grid-cols-5 gap-2 mt-4'>
 				<MainPreview propertyId={property.id} />
 			</div>
 
-			<div className='grid lg:grid-cols-3 grid-cols-1 gap-4 my-6'>
+			<div className='sticky top-[80px] z-10 shadow-lg rounded-lg'>
+				<SpecificListingTabs />
+			</div>
+
+			<div className='grid lg:grid-cols-3 grid-cols-1 lg:gap-4 md:gap-0'>
 				<div className='col-span-2 space-y-5'>
-					<div className='flex justify-between items-center'>
-						<div>
-							<h1 className='font-semibold text-3xl dark:text-white'>
-								{title}
-							</h1>
-
-							<p className='flex items-center text-muted-foreground'>
-								<MapPin className='mr-1' height={18} width={18} />
-								{address}
-							</p>
-						</div>
-						<div className='relative flex items-center mr-3'>
-							<TooltipProvider>
-								<Tooltip>
-									<TooltipTrigger>
-										<div
-											onClick={handleToggleFavourite}
-											className='cursor-pointer'
-										>
-											{isFavourite ? (
-												<HeartSolid className='h-8 w-8 text-red-500 ' />
-											) : (
-												<HeartOutline className='h-8 w-8 text-gray-500 dark:text-gray-300' />
-											)}
-										</div>
-									</TooltipTrigger>
-									<TooltipContent>
-										<p>
-											{isFavourite
-												? 'Remove from favorites'
-												: 'Add to favorites'}
-										</p>
-									</TooltipContent>
-								</Tooltip>
-							</TooltipProvider>
-						</div>
-					</div>
-
+					<PropertyDetails
+						privacyType={privacy_type}
+						structure={structure}
+						bedrooms={bedrooms}
+						beds={beds}
+						occupants={occupants}
+						description={description}
+						amenitiesList={amenitiesList}
+					/>
 					<Banner
 						ownerName={company?.owner_id?.firstname}
 						ownerLastname={company?.owner_id?.lastname}
@@ -229,21 +244,15 @@ export function SpecificListing({ id }: SpecificListingProps) {
 						profileUrl={company?.owner_id?.profile_url}
 						session={userId}
 					/>
-
-					<PropertyDetails
-						privacyType={privacy_type}
-						structure={structure}
-						bedrooms={bedrooms}
-						beds={beds}
-						occupants={occupants}
-						description={description}
-						amenitiesList={amenitiesList}
-					/>
 				</div>
 
-				<div className='flex lg:justify-end lg:items-start col-span-full lg:col-span-1'>
-					<div className='w-max h-max sticky top-20'>
-						<BookingCard price={price} unitId={property?.id} />
+				<div className='col-span-1 lg:mt-0 md:mt-4'>
+					<div className=''>
+						{/* <BookingCard price={price} unitId={property?.id} /> */}
+						<SideReviews propertyId={property.id} />
+					</div>
+					<div className='mt-4'>
+						<SideMap propertyId={property.id} />
 					</div>
 				</div>
 			</div>
