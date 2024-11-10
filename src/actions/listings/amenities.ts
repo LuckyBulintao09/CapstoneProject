@@ -23,6 +23,7 @@ export const getAllAmenities = async () => {
             label: amenity.amenity_name,
         }));
 
+        // console.log(householdAmenities);
         return householdAmenities;
     } catch (error: any) {
         console.error(error);
