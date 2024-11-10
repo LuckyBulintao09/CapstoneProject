@@ -1,14 +1,26 @@
 'use client';
 import React, { useState, useEffect } from 'react';
 import ResponsiveLayout from '@/components/ResponsiveLayout';
-import { ArrowUpRight, MapPin } from 'lucide-react';
+import {
+	ArrowUpRight,
+	Axis3D,
+	Bed,
+	Check,
+	Glasses,
+	MapPin,
+} from 'lucide-react';
 import BusinessReviews from '../components/BusinessReviews';
 import MainPreview from '../components/MainPreview';
 import PropertyDetails from '../components/PropertyDetails';
 import Banner from '../components/Banner';
 import { HeartIcon as HeartOutline } from '@heroicons/react/24/outline';
 import { HeartIcon as HeartSolid } from '@heroicons/react/24/solid';
-import { Card } from '@/components/ui/card';
+import {
+	Card,
+	CardDescription,
+	CardHeader,
+	CardTitle,
+} from '@/components/ui/card';
 import { NavbarModalLogin } from '@/components/navbar/NavbarModalLogin';
 import {
 	fetchUser,
@@ -223,6 +235,7 @@ export function SpecificListing({ id }: SpecificListingProps) {
 				<SpecificListingTabs />
 			</div>
 
+			{/* OVERVIEW */}
 			<div className='grid lg:grid-cols-3 grid-cols-1 lg:gap-4 md:gap-0'>
 				<div className='col-span-2 space-y-5'>
 					<PropertyDetails
@@ -246,15 +259,92 @@ export function SpecificListing({ id }: SpecificListingProps) {
 					/>
 				</div>
 
-				<div className='col-span-1 lg:mt-0 md:mt-4'>
-					<div className=''>
-						{/* <BookingCard price={price} unitId={property?.id} /> */}
+				<div className='col-span-1 lg:mt-0 md:mt-4 sticky top-20 h-[calc(100vh-80px)] overflow-y-auto'>
+					<div>
 						<SideReviews propertyId={property.id} />
 					</div>
 					<div className='mt-4'>
 						<SideMap propertyId={property.id} />
 					</div>
 				</div>
+			</div>
+
+			<div className='flex flex-col border-t border-gray-300 py-8'>
+				<h4 className='text-2xl font-semibold tracking-tight pb-4'>
+					Available Rooms
+				</h4>
+				<Card className='bg-white border border-gray-300'>
+					<CardHeader>
+						<CardTitle className='text-lg'>
+							{/* Magreredirect dapat to sa modal ng 'View all photos -> rooms tab -> specific room target highlight or outline */}
+							<Button
+								onClick={() => window.open(thumbnail_url, '_blank')}
+								className='text-primary hover:underline'
+							>
+								{title}
+							</Button>
+						</CardTitle>
+						<CardDescription className=''>
+							<table className='w-full table-auto'>
+								<thead>
+									<tr className='border-b'>
+										<th className='px-4 py-2 text-center'>Details</th>
+										<th className='px-4 py-2 text-center'>
+											Current number of Occupants
+										</th>
+										<th className='px-4 py-2 text-center'>Price</th>
+										<th className='px-4 py-2 text-center'>Action</th>
+									</tr>
+								</thead>
+								<tbody>
+									<tr className='border-b'>
+										<td className='pl-4 py-2 border-r border-gray-300 w-[480px]'>
+											<div className='flex items-center'>
+												<Bed className='mr-2' size={16} />
+												<span>1 queen bed</span>
+											</div>
+											<div className='flex items-center'>
+												<Axis3D className='mr-2' size={16} />
+												<span>Room size: 18 m²/194 ft²</span>
+											</div>
+											<div className='flex items-center'>
+												<Glasses className='mr-2' size={16} />
+												<span>Outdoor View</span>
+											</div>
+											<div className='border-t border-gray-300 my-3' />
+											<div className='grid lg:grid-cols-2 sm:grid-cols-1'>
+												{[
+													'Amenity 1',
+													'Amenity 2',
+													'Amenity 3',
+													'Amenity 4',
+													'Amenity 5',
+												].map((item, index) => (
+													<div key={index} className='flex items-center'>
+														<Check className='mr-2 text-green-600' size={12} />
+														<span>{item}</span>
+													</div>
+												))}
+											</div>
+										</td>
+										<td className='pl-4 py-2 border-r border-gray-300 max-w-[10px] text-center truncate'>
+											2
+										</td>
+
+										<td className='pl-4 py-2 border-r border-gray-300 text-center'>
+											P10,500/month
+										</td>
+										<td className='py-2 flex justify-center items-center mt-12'>
+											<Button className='text-white px-4 py-2 rounded'>
+												Book Now
+											</Button>
+										</td>
+									</tr>
+								</tbody>
+							</table>
+						</CardDescription>
+					</CardHeader>
+				</Card>
 			</div>
 
 			<div className='flex flex-col border-t border-gray-300 py-8 mr-4'>

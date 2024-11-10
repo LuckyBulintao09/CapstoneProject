@@ -218,11 +218,6 @@ const spiels = {
 			value: 'overview',
 		},
 		{
-			label: 'Amenities',
-			href: '/amenities',
-			value: 'amenities',
-		},
-		{
 			label: 'Rooms',
 			href: '/rooms',
 			value: 'rooms',

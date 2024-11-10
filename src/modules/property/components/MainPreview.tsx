@@ -29,6 +29,7 @@ const MainPreview: React.FC<MainPreviewProps> = ({ propertyId }) => {
 	const [valueForMoneyPercentage, setValueForMoneyPercentage] =
 		useState<number>(0);
 
+	// CHANGE TO PROPERTY
 	useEffect(() => {
 		const supabase = createClient();
 

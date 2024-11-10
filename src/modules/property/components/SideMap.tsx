@@ -32,8 +32,11 @@ const SideMap: React.FC<SideReviewsProps> = ({ propertyId }) => {
 		{ name: 'Burnham Park', distance: 1.2 },
 		{ name: 'Session Road', distance: 1.5 },
 		{ name: 'Mines View Park', distance: 2.3 },
+		{ name: 'Botanical Garden', distance: 1.8 },
+		{ name: 'Wright Park', distance: 2.0 },
+		{ name: 'The Mansion', distance: 2.1 },
+		{ name: 'Our Lady of Lourdes Grotto', distance: 3.0 },
 	];
-
 	useEffect(() => {
 		const fetchReviews = async () => {
 			const { data, error } = await supabase
@@ -122,7 +125,7 @@ const SideMap: React.FC<SideReviewsProps> = ({ propertyId }) => {
 				<CardHeader>
 					<CardDescription>
 						<GoogleMap
-							mapContainerClassName='w-full h-36 rounded-sm'
+							mapContainerClassName='w-full h-44 rounded-sm'
 							zoom={14}
 							center={userPosition || position}
 							options={{
@@ -145,7 +148,7 @@ const SideMap: React.FC<SideReviewsProps> = ({ propertyId }) => {
 						<div className='border-t border-gray-300 my-2' />
 						<div>
 							<p className='text-sm font-semibold'>Nearby landmarks</p>
-							{landmarks.slice(0, 2).map((landmark, index) => (
+							{landmarks.slice(0, 4).map((landmark, index) => (
 								<div
 									key={index}
 									className='flex justify-between items-center mt-1'
@@ -154,7 +157,7 @@ const SideMap: React.FC<SideReviewsProps> = ({ propertyId }) => {
 									<p className='text-xs text-right'>{landmark.distance} km</p>
 								</div>
 							))}
-							{landmarks.length > 2 && (
+							{landmarks.length > 4 && (
 								<Popover>
 									<PopoverTrigger asChild>
 										<button className='text-xs text-blue-500 mt-2'>

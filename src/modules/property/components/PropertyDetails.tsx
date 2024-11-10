@@ -1,5 +1,4 @@
-import tempValues from '@/lib/constants/tempValues';
-import { Image } from 'lucide-react';
+import { Check } from 'lucide-react';
 import React, { useEffect, useRef, useState } from 'react';
 import { Shield, Building, Bed, UserIcon } from 'lucide-react';
 import {
@@ -40,7 +39,6 @@ const PropertyDetails: React.FC<PropertyDetailsProps> = ({
 	};
 
 	useEffect(() => {
-		// Check if the description should show the "See more" button
 		const checkDescriptionHeight = () => {
 			if (descriptionRef.current) {
 				const descriptionHeight = descriptionRef.current.scrollHeight;
@@ -58,11 +56,9 @@ const PropertyDetails: React.FC<PropertyDetailsProps> = ({
 			}
 		};
 
-		// Call the function on mount and window resize
 		checkDescriptionHeight();
 		window.addEventListener('resize', checkDescriptionHeight);
 
-		// Clean up event listener
 		return () => {
 			window.removeEventListener('resize', checkDescriptionHeight);
 		};
@@ -79,13 +75,13 @@ const PropertyDetails: React.FC<PropertyDetailsProps> = ({
 				<CardContent className='text-sm font-normal'>
 					<div
 						className={`${
-							isExpanded ? '' : 'line-clamp-4'
+							isExpanded ? '' : 'line-clamp-3'
 						} overflow-hidden transition-all`}
 						ref={descriptionRef}
 					>
 						{description}
 					</div>
-					{/* Show "See more" or "See less" button only if necessary */}
+
 					{shouldShowToggle && (
 						<button
 							onClick={handleToggle}
@@ -136,31 +132,27 @@ const PropertyDetails: React.FC<PropertyDetailsProps> = ({
 				</CardContent>
 			</Card>
 
-			<div>
-				{/* general */}
-				{amenitiesList && amenitiesList.length > 0 && (
-					<div className='border-t border-gray-300 flex flex-col py-6 mr-4'>
-						<h4 className='scroll-m-20 text-2xl font-semibold tracking-tight'>
-							General
-						</h4>
-						<div className='grid grid-cols-2 lg:grid-cols-2 md:grid-cols-1 gap-2'>
-							{amenitiesList.map((amenity) => (
-								<div
-									className='flex flex-row items-center gap-3 my-2'
-									key={amenity.id}
-								>
-									<span className='inline-block w-2 h-2 bg-gray-700 rounded-full mr-2' />
-									<div>
-										<h5 className='scroll-m-20 text-lg font-semibold tracking-tight'>
-											{amenity.amenity_name}
-										</h5>
-									</div>
-								</div>
-							))}
-						</div>
+			<Card className='bg-white border border-gray-300'>
+				<CardHeader>
+					<CardTitle>Facilities</CardTitle>
+				</CardHeader>
+				<CardContent className='text-sm font-normal'>
+					<div className='grid grid-cols-4 gap-1'>
+						{[
+							'Facility 1',
+							'Facility 2',
+							'Facility 3',
+							'Facility 4',
+							'Facility 5',
+						].map((item, index) => (
+							<div key={index} className='flex items-center'>
+								<Check className='mr-2 text-green-600' size={16} />
+								<span>{item}</span>
+							</div>
+						))}
 					</div>
-				)}
-			</div>
+				</CardContent>
+			</Card>
 		</>
 	);
 };
