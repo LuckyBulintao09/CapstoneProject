@@ -7,21 +7,29 @@ export default function BranchListings({
 	id,
 	title,
 	description,
-	featured,
-	price,
+	minimum_price,
+	maximum_price,
 	address,
 	created_at,
 	ispropertyboosted,
 	thumbnail_url,
-	ratings,
+	average_ratings,
 	property_title,
+	company_name,
 }: BranchlistingsProps) {
-	const formattedPrice = new Intl.NumberFormat('en-PH', {
+	const min_formattedPrice = new Intl.NumberFormat('en-PH', {
 		style: 'currency',
 		currency: 'PHP',
 		minimumFractionDigits: 0,
 		maximumFractionDigits: 0,
-	}).format(price);
+	}).format(minimum_price);
+
+	const max_formattedPrice = new Intl.NumberFormat('en-PH', {
+		style: 'currency',
+		currency: 'PHP',
+		minimumFractionDigits: 0,
+		maximumFractionDigits: 0,
+	}).format(maximum_price);
 
 	const timeAgo = created_at
 		? formatDistanceToNow(new Date(created_at), { addSuffix: true })
@@ -42,11 +50,11 @@ export default function BranchListings({
 								{title}
 							</span>
 							<div className='flex items-center'>
-								{ratings ? (
+								{average_ratings ? (
 									<>
 										<Star className='h-4 w-4 text-yellow-500' fill='#eab308' />
 										<span className='ml-1 text-sm xs:text-xs'>
-											{ratings.toFixed(1)}
+											{average_ratings.toFixed(1)}
 										</span>
 									</>
 								) : // nilagay ko lang para sa mga hindi na-review na listing
@@ -57,6 +65,7 @@ export default function BranchListings({
 					description={
 						<div>
 							<p className='line-clamp-1'>{property_title}</p>
+							<p className='line-clamp-1'>{company_name}</p>
 							{/* <strong>
                 <p className="line-clamp-1"> {details}</p>
               </strong> */}
@@ -64,7 +73,14 @@ export default function BranchListings({
 							<p className='line-clamp-1'>Listed {timeAgo}</p>{' '}
 							{/* Handle missing or invalid dates */}
 							<div className='flex flex-row mt-2'>
-								<span className='font-bold mr-1'>{formattedPrice}</span> month
+								From
+								<span className='font-bold mx-2'>{min_formattedPrice}</span> 
+								to
+								<span className='font-bold mx-2'>{max_formattedPrice}</span> 
+							</div>
+							
+							<div className='flex flex-row mt-2'>
+								DISTANCE SAMPLE
 							</div>
 						</div>
 					}
