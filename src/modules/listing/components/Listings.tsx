@@ -12,6 +12,30 @@ import { get_allProperties } from '@/actions/listings/filtering-complete';
 import { Slider } from '@/components/ui/slider';
 import FilterModal from './FilterModal';
 
+// Helper function to calculate Haversine distance in km
+const haversineDistance = (location1, location2) => {
+    const toRadians = (degrees) => degrees * (Math.PI / 180);
+    const R = 6371;
+    const dLat = toRadians(location2.lat - location1.lat);
+    const dLng = toRadians(location2.lng - location1.lng);
+    const lat1 = toRadians(location1.lat);
+    const lat2 = toRadians(location2.lat);
+
+    const a =
+        Math.sin(dLat / 2) * Math.sin(dLat / 2) +
+        Math.sin(dLng / 2) * Math.sin(dLng / 2) * Math.cos(lat1) * Math.cos(lat2);
+    const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
+    return Math.round((R * c + Number.EPSILON) * 100) / 100;
+};
+
+// Function to estimate travel time based on average speed (e.g., 40 km/h)
+// Function to estimate travel time in minutes based on average speed (e.g., 4 km/h)
+const estimateTravelTime = (distance, averageSpeed = 4) => {
+    const timeInSeconds = (distance / averageSpeed) * 60 * 60; // time in seconds
+    const minutes = Math.floor(timeInSeconds / 60);
+    const seconds = Math.floor(timeInSeconds % 60);
+    return { minutes, seconds };
+};
 
 export default function Listings() {
     const [listings, setListings] = useState([]);
@@ -87,13 +111,30 @@ export default function Listings() {
                 rooms,
                 selectedStructure
             );
-            setListings(fetchedListings);
+    
+            let updatedListings;
+            if (selectedLocation) {
+                updatedListings = fetchedListings.map((listing) => {
+                    const distance = haversineDistance(selectedLocation, {
+                        lat: listing.latitude,
+                        lng: listing.longitude,
+                    });
+                    const travelTime = estimateTravelTime(distance);
+                    return { ...listing, distance, travelTime };
+                });
+            } else {
+                updatedListings = fetchedListings;
+            }
+    
+            setListings(updatedListings);
+            console.log(listings)
         } catch (err) {
             setError('Failed to fetch listings.');
         }
         setLoading(false);
         setIsApplyFilter(false);
     };
+    
 
     useEffect(() => {
         handleDeviceLocation();
