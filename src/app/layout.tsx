@@ -34,7 +34,7 @@ export default function RootLayout({
         <html lang="en">
             <body className={`${geistSans.variable} ${geistMono.variable} antialiased`}>
                 <QueryProvider>
-                    <NUIProvider>
+                    {/* <NUIProvider> */}
                         <ThemeProvider attribute="class" defaultTheme="system" enableSystem disableTransitionOnChange>
                             <GoogleMapsProvider google_maps_api_key={process.env.NEXT_PUBLIC_GOOGLE_MAPS_API_KEY!}>
                                 <TooltipProvider>            
@@ -43,7 +43,7 @@ export default function RootLayout({
                                 </TooltipProvider>
                             </GoogleMapsProvider>
                         </ThemeProvider>
-                    </NUIProvider>
+                    {/* </NUIProvider> */}
                 </QueryProvider>
             </body>
         </html>
