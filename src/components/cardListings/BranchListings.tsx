@@ -38,7 +38,7 @@ export default function BranchListings({
 		: 'N/A';
 
 	const handleClick = () => {
-		window.location.href = `/property/room/${id}`;
+		window.location.href = `/property/${id}`;
 	};
 
 	return (
