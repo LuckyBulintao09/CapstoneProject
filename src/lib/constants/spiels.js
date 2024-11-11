@@ -211,6 +211,28 @@ const spiels = {
 		},
 	],
 
+	SPECIFIC_LISTING_TABS: [
+		{
+			label: 'Overview',
+			href: '/overview',
+			value: 'overview',
+		},
+		{
+			label: 'Rooms',
+			href: '/rooms',
+			value: 'rooms',
+		},
+		{
+			label: 'Reviews',
+			href: '/reviews',
+			value: 'reviews',
+		},
+		{
+			label: 'Location',
+			href: '/location',
+			value: 'location',
+		},
+	],
 	//MODALS
 	MODAL_APPROVE: 'Confirm Approval',
 	MODAL_APPROVE_HEADER: 'Are you sure you want to approve this lessor?',

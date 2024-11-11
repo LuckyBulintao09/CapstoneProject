@@ -1,15 +1,31 @@
 'use client';
 import React, { useState, useEffect } from 'react';
 import ResponsiveLayout from '@/components/ResponsiveLayout';
-import { ArrowUpRight, MapPin } from 'lucide-react';
+import {
+	ArrowUpRight,
+	Axis3D,
+	Bed,
+	Check,
+	Glasses,
+	MapPin,
+	User,
+	User2,
+	UserCheck,
+	UserCheck2,
+	Users2,
+} from 'lucide-react';
 import BusinessReviews from '../components/BusinessReviews';
 import MainPreview from '../components/MainPreview';
 import PropertyDetails from '../components/PropertyDetails';
 import Banner from '../components/Banner';
-import { BookingCard } from '../components/BookingCard';
 import { HeartIcon as HeartOutline } from '@heroicons/react/24/outline';
 import { HeartIcon as HeartSolid } from '@heroicons/react/24/solid';
-import { Card } from '@/components/ui/card';
+import {
+	Card,
+	CardDescription,
+	CardHeader,
+	CardTitle,
+} from '@/components/ui/card';
 import { NavbarModalLogin } from '@/components/navbar/NavbarModalLogin';
 import {
 	fetchUser,
@@ -34,6 +50,11 @@ import {
 import LoadingPage from '@/components/LoadingPage';
 import { toast } from 'sonner';
 import { Button } from '@/components/ui/button';
+import { BreadcrumbSection } from '@/components/breadcrumb/BreadrumbSection';
+import SpecificListingTabs from '../components/SpecificListingTabs';
+import RightReviews from '../components/SideReviews';
+import SideReviews from '../components/SideReviews';
+import SideMap from '../components/SideMap';
 
 interface SpecificListingProps {
 	id: number;
@@ -173,50 +194,68 @@ export function SpecificListing({ id }: SpecificListingProps) {
 
 	return (
 		<ResponsiveLayout>
+			{/* paki fix breadcrumbs */}
+			<BreadcrumbSection />
+			<div className='flex justify-between items-center mt-4'>
+				<div>
+					<h1 className='font-semibold text-3xl dark:text-white'>{title}</h1>
+					<p className='flex items-center text-muted-foreground'>
+						<MapPin className='mr-1' height={18} width={18} />
+						{address}
+					</p>
+				</div>
+				<div className='relative flex items-center'>
+					<TooltipProvider>
+						<Tooltip>
+							<TooltipTrigger>
+								<Button
+									onClick={handleToggleFavourite}
+									className='cursor-pointer flex items-center space-x-1 bg-transparent hover:bg-gray-200'
+									size='sm'
+								>
+									{isFavourite ? (
+										<HeartSolid className='h-6 w-6 text-red-500 ' />
+									) : (
+										<HeartOutline className='h-6 w-6 text-gray-500 dark:text-gray-300' />
+									)}
+									<span className='text-gray-500 dark:text-gray-300 underline'>
+										{isFavourite ? 'Saved' : 'Save'}
+									</span>
+								</Button>
+							</TooltipTrigger>
+							<TooltipContent>
+								<p>
+									{isFavourite ? 'Remove from favorites' : 'Save to favorites'}
+								</p>
+							</TooltipContent>
+						</Tooltip>
+					</TooltipProvider>
+				</div>
+			</div>
+
 			<div className='grid grid-cols-5 gap-2 mt-4'>
 				<MainPreview propertyId={property.id} />
 			</div>
 
-			<div className='grid lg:grid-cols-3 grid-cols-1 gap-4 my-6'>
+			<div className='sticky top-[80px] z-10 shadow-lg rounded-lg'>
+				<SpecificListingTabs />
+			</div>
+
+			{/* OVERVIEW */}
+			<div
+				className='grid lg:grid-cols-3 grid-cols-1 lg:gap-4 md:gap-0'
+				id='overview'
+			>
 				<div className='col-span-2 space-y-5'>
-					<div className='flex justify-between items-center'>
-						<div>
-							<h1 className='font-semibold text-3xl dark:text-white'>
-								{title}
-							</h1>
-
-							<p className='flex items-center text-muted-foreground'>
-								<MapPin className='mr-1' height={18} width={18} />
-								{address}
-							</p>
-						</div>
-						<div className='relative flex items-center mr-3'>
-							<TooltipProvider>
-								<Tooltip>
-									<TooltipTrigger>
-										<div
-											onClick={handleToggleFavourite}
-											className='cursor-pointer'
-										>
-											{isFavourite ? (
-												<HeartSolid className='h-8 w-8 text-red-500 ' />
-											) : (
-												<HeartOutline className='h-8 w-8 text-gray-500 dark:text-gray-300' />
-											)}
-										</div>
-									</TooltipTrigger>
-									<TooltipContent>
-										<p>
-											{isFavourite
-												? 'Remove from favorites'
-												: 'Add to favorites'}
-										</p>
-									</TooltipContent>
-								</Tooltip>
-							</TooltipProvider>
-						</div>
-					</div>
-
+					<PropertyDetails
+						privacyType={privacy_type}
+						structure={structure}
+						bedrooms={bedrooms}
+						beds={beds}
+						occupants={occupants}
+						description={description}
+						amenitiesList={amenitiesList}
+					/>
 					<Banner
 						ownerName={company?.owner_id?.firstname}
 						ownerLastname={company?.owner_id?.lastname}
@@ -227,37 +266,141 @@ export function SpecificListing({ id }: SpecificListingProps) {
 						profileUrl={company?.owner_id?.profile_url}
 						session={userId}
 					/>
-
-					<PropertyDetails
-						privacyType={privacy_type}
-						structure={structure}
-						bedrooms={bedrooms}
-						beds={beds}
-						occupants={occupants}
-						description={description}
-						amenitiesList={amenitiesList}
-					/>
 				</div>
 
-				<div className='flex lg:justify-end lg:items-start col-span-full lg:col-span-1'>
-					<div className='w-max h-max sticky top-20'>
-						<BookingCard price={price} unitId={property?.id} />
+				<div className='col-span-1 lg:mt-0 md:mt-4 sticky top-20 h-[calc(100vh-80px)] overflow-y-auto'>
+					<div>
+						<SideReviews propertyId={property.id} />
+					</div>
+					<div className='mt-4'>
+						<SideMap propertyId={property.id} />
 					</div>
 				</div>
 			</div>
 
-			<div className='flex flex-col border-t border-gray-300 py-8 mr-4'>
+			{/* ROOMS */}
+			<div className='flex flex-col border-t border-gray-300 py-8' id='rooms'>
+				<h4 className='text-2xl font-semibold tracking-tight pb-4'>
+					Available Rooms
+				</h4>
+				<Card className='bg-white border border-gray-300'>
+					<CardHeader>
+						<CardTitle className='text-lg'>
+							{/* Magreredirect dapat to sa modal ng 'View all photos -> rooms tab -> specific room target highlight or outline */}
+							<Button
+								onClick={() => window.open(thumbnail_url, '_blank')}
+								className='text-primary hover:underline text-md font-semibold pl-0'
+								variant='link'
+							>
+								{title}
+							</Button>
+						</CardTitle>
+						<CardDescription className=''>
+							<table className='w-full table-auto'>
+								<thead>
+									<tr className='border-b'>
+										<th className='px-4 py-2 text-center'>Details</th>
+										<th className='px-4 py-2 text-center'>
+											Current Number of Occupants
+										</th>
+										<th className='px-4 py-2 text-center'>Price</th>
+										<th className='px-4 py-2 text-center'>Action</th>
+									</tr>
+								</thead>
+								<tbody>
+									<tr className='border-b'>
+										<td className='pl-4 py-2 border-r border-gray-300 w-[480px]'>
+											<div className='flex items-center'>
+												<Bed className='mr-2' size={16} />
+												<span>4 beds</span>
+											</div>
+											<div className='flex items-center'>
+												<Users2 className='mr-2' size={16} />
+												<span>For: 4 guests</span>
+											</div>
+											<div className='flex items-center'>
+												<Axis3D className='mr-2' size={16} />
+												<span>Room size: 18 m²/194 ft²</span>
+											</div>
+											<div className='flex items-center'>
+												<Glasses className='mr-2' size={16} />
+												<span>With Outdoor View</span>
+											</div>
+											<div className='border-t border-gray-300 my-3' />
+											<div className='grid lg:grid-cols-2 sm:grid-cols-1'>
+												{[
+													'Amenity 1',
+													'Amenity 2',
+													'Amenity 3',
+													'Amenity 4',
+													'Amenity 5',
+												].map((item, index) => (
+													<div key={index} className='flex items-center'>
+														<Check className='mr-2 text-green-600' size={12} />
+														<span>{item}</span>
+													</div>
+												))}
+											</div>
+										</td>
+
+										<td className='pl-4 py-2 border-r border-gray-300 max-w-[10px] text-center'>
+											<TooltipProvider>
+												<Tooltip>
+													<TooltipTrigger asChild>
+														<div className='flex justify-center items-center space-x-1 cursor-pointer'>
+															{Array.from({ length: 4 }, (_, i) =>
+																i < 2 ? (
+																	<UserCheck2
+																		key={i}
+																		className='text-primary'
+																	/>
+																) : (
+																	<User2 key={i} className='text-gray-500' />
+																)
+															)}
+														</div>
+													</TooltipTrigger>
+													<TooltipContent>
+														<p>2 occupants — 2 spots available</p>
+													</TooltipContent>
+												</Tooltip>
+											</TooltipProvider>
+										</td>
+
+										<td className='pl-4 py-2 border-r border-gray-300 text-center'>
+											P10,500/month
+										</td>
+										<td className='py-2 flex justify-center items-center mt-12'>
+											<Button className='text-white px-4 py-2 rounded'>
+												Book Now
+											</Button>
+										</td>
+									</tr>
+								</tbody>
+							</table>
+						</CardDescription>
+					</CardHeader>
+				</Card>
+			</div>
+
+			{/* REVIEWS */}
+			<div
+				className='flex flex-col border-t border-gray-300 py-8 mr-4'
+				id='reviews'
+			>
 				<h4 className='text-2xl font-semibold tracking-tight pb-4'>
 					Customer Reviews
 				</h4>
 				<BusinessReviews unitId={property?.id} />
 			</div>
 
-			<div className='flex flex-col border-t border-gray-300 py-8 mr-4'>
+			{/* LOCATION */}
+			<div
+				className='flex flex-col border-t border-gray-300 py-8 mr-4'
+				id='location'
+			>
 				<div className='flex items-center justify-between pb-4'>
-					<h4 className='text-2xl font-semibold tracking-tight'>
-						Where you&apos;ll be
-					</h4>
+					<h4 className='text-2xl font-semibold tracking-tight'>Location</h4>
 					<Button
 						className='flex items-center w-40 border border-blue-500 text-blue-500 py-2 px-4 rounded hover:bg-blue-50 dark:hover:bg-blue-900 dark:text-white bg-foreground'
 						onClick={handleAddUserLocation}
