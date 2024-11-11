@@ -324,7 +324,7 @@ export function SpecificListing({ id }: SpecificListingProps) {
 											</div>
 											<div className='flex items-center'>
 												<Glasses className='mr-2' size={16} />
-												<span>Outdoor View</span>
+												<span>With Outdoor View</span>
 											</div>
 											<div className='border-t border-gray-300 my-3' />
 											<div className='grid lg:grid-cols-2 sm:grid-cols-1'>
@@ -344,15 +344,27 @@ export function SpecificListing({ id }: SpecificListingProps) {
 										</td>
 
 										<td className='pl-4 py-2 border-r border-gray-300 max-w-[10px] text-center'>
-											<div className='flex justify-center items-center space-x-1'>
-												{Array.from({ length: 4 }, (_, i) =>
-													i < 2 ? (
-														<UserCheck2 key={i} className='text-primary' />
-													) : (
-														<User2 key={i} className='text-gray-500' />
-													)
-												)}
-											</div>
+											<TooltipProvider>
+												<Tooltip>
+													<TooltipTrigger asChild>
+														<div className='flex justify-center items-center space-x-1 cursor-pointer'>
+															{Array.from({ length: 4 }, (_, i) =>
+																i < 2 ? (
+																	<UserCheck2
+																		key={i}
+																		className='text-primary'
+																	/>
+																) : (
+																	<User2 key={i} className='text-gray-500' />
+																)
+															)}
+														</div>
+													</TooltipTrigger>
+													<TooltipContent>
+														<p>2 occupants — 2 spots available</p>
+													</TooltipContent>
+												</Tooltip>
+											</TooltipProvider>
 										</td>
 
 										<td className='pl-4 py-2 border-r border-gray-300 text-center'>
