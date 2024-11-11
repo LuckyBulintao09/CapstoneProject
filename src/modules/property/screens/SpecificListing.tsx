@@ -8,6 +8,11 @@ import {
 	Check,
 	Glasses,
 	MapPin,
+	User,
+	User2,
+	UserCheck,
+	UserCheck2,
+	Users2,
 } from 'lucide-react';
 import BusinessReviews from '../components/BusinessReviews';
 import MainPreview from '../components/MainPreview';
@@ -296,7 +301,7 @@ export function SpecificListing({ id }: SpecificListingProps) {
 									<tr className='border-b'>
 										<th className='px-4 py-2 text-center'>Details</th>
 										<th className='px-4 py-2 text-center'>
-											Current number of Occupants
+											Current Number of Occupants
 										</th>
 										<th className='px-4 py-2 text-center'>Price</th>
 										<th className='px-4 py-2 text-center'>Action</th>
@@ -307,7 +312,11 @@ export function SpecificListing({ id }: SpecificListingProps) {
 										<td className='pl-4 py-2 border-r border-gray-300 w-[480px]'>
 											<div className='flex items-center'>
 												<Bed className='mr-2' size={16} />
-												<span>1 queen bed</span>
+												<span>4 beds</span>
+											</div>
+											<div className='flex items-center'>
+												<Users2 className='mr-2' size={16} />
+												<span>For: 4 guests</span>
 											</div>
 											<div className='flex items-center'>
 												<Axis3D className='mr-2' size={16} />
@@ -333,8 +342,17 @@ export function SpecificListing({ id }: SpecificListingProps) {
 												))}
 											</div>
 										</td>
-										<td className='pl-4 py-2 border-r border-gray-300 max-w-[10px] text-center truncate'>
-											2
+
+										<td className='pl-4 py-2 border-r border-gray-300 max-w-[10px] text-center'>
+											<div className='flex justify-center items-center space-x-1'>
+												{Array.from({ length: 4 }, (_, i) =>
+													i < 2 ? (
+														<UserCheck2 key={i} className='text-primary' />
+													) : (
+														<User2 key={i} className='text-gray-500' />
+													)
+												)}
+											</div>
 										</td>
 
 										<td className='pl-4 py-2 border-r border-gray-300 text-center'>
