@@ -16,6 +16,8 @@ export default function BranchListings({
 	average_ratings,
 	property_title,
 	company_name,
+	distance,
+	travelTime
 }: BranchlistingsProps) {
 	const min_formattedPrice = new Intl.NumberFormat('en-PH', {
 		style: 'currency',
@@ -67,21 +69,30 @@ export default function BranchListings({
 							<p className='line-clamp-1'>{property_title}</p>
 							<p className='line-clamp-1'>{company_name}</p>
 							{/* <strong>
-                <p className="line-clamp-1"> {details}</p>
-              </strong> */}
+								<p className="line-clamp-1"> {details}</p>
+							</strong> */}
 							<p className='line-clamp-1'> {address}</p>
 							<p className='line-clamp-1'>Listed {timeAgo}</p>{' '}
+
 							{/* Handle missing or invalid dates */}
 							<div className='flex flex-row mt-2'>
-								From
+								Starting at 
 								<span className='font-bold mx-2'>{min_formattedPrice}</span> 
-								to
-								<span className='font-bold mx-2'>{max_formattedPrice}</span> 
 							</div>
+
+							{/* Travel Time Display */}
+							{/* PAAYOS UNG DESIGN AHHAHA */}
+							{distance && travelTime && (
+								<div className="relative left-3/4 transform -translate-x-1/2 bg-white p-2 rounded-full shadow-md w-1/3">
+									<span className="text-sm font-semibold text-gray-700">
+										<span className="text-primary">
+											{travelTime.minutes}:{travelTime.seconds}
+										</span> mins walk
+									</span>
+								</div>
+							)}
+
 							
-							<div className='flex flex-row mt-2'>
-								DISTANCE SAMPLE
-							</div>
 						</div>
 					}
 					header={

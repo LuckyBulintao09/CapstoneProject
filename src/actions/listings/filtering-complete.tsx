@@ -57,4 +57,3 @@ export const get_allProperties = async (
     return data;
 }
 
-
