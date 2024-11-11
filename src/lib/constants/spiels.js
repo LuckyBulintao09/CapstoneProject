@@ -232,11 +232,6 @@ const spiels = {
 			href: '/location',
 			value: 'location',
 		},
-		{
-			label: 'Policies',
-			href: '/policies',
-			value: 'policies',
-		},
 	],
 	//MODALS
 	MODAL_APPROVE: 'Confirm Approval',

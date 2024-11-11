@@ -189,6 +189,7 @@ export function SpecificListing({ id }: SpecificListingProps) {
 
 	return (
 		<ResponsiveLayout>
+			{/* paki fix breadcrumbs */}
 			<BreadcrumbSection />
 			<div className='flex justify-between items-center mt-4'>
 				<div>
@@ -236,7 +237,10 @@ export function SpecificListing({ id }: SpecificListingProps) {
 			</div>
 
 			{/* OVERVIEW */}
-			<div className='grid lg:grid-cols-3 grid-cols-1 lg:gap-4 md:gap-0'>
+			<div
+				className='grid lg:grid-cols-3 grid-cols-1 lg:gap-4 md:gap-0'
+				id='overview'
+			>
 				<div className='col-span-2 space-y-5'>
 					<PropertyDetails
 						privacyType={privacy_type}
@@ -269,7 +273,8 @@ export function SpecificListing({ id }: SpecificListingProps) {
 				</div>
 			</div>
 
-			<div className='flex flex-col border-t border-gray-300 py-8'>
+			{/* ROOMS */}
+			<div className='flex flex-col border-t border-gray-300 py-8' id='rooms'>
 				<h4 className='text-2xl font-semibold tracking-tight pb-4'>
 					Available Rooms
 				</h4>
@@ -279,7 +284,8 @@ export function SpecificListing({ id }: SpecificListingProps) {
 							{/* Magreredirect dapat to sa modal ng 'View all photos -> rooms tab -> specific room target highlight or outline */}
 							<Button
 								onClick={() => window.open(thumbnail_url, '_blank')}
-								className='text-primary hover:underline'
+								className='text-primary hover:underline text-md font-semibold pl-0'
+								variant='link'
 							>
 								{title}
 							</Button>
@@ -347,18 +353,24 @@ export function SpecificListing({ id }: SpecificListingProps) {
 				</Card>
 			</div>
 
-			<div className='flex flex-col border-t border-gray-300 py-8 mr-4'>
+			{/* REVIEWS */}
+			<div
+				className='flex flex-col border-t border-gray-300 py-8 mr-4'
+				id='reviews'
+			>
 				<h4 className='text-2xl font-semibold tracking-tight pb-4'>
 					Customer Reviews
 				</h4>
 				<BusinessReviews unitId={property?.id} />
 			</div>
 
-			<div className='flex flex-col border-t border-gray-300 py-8 mr-4'>
+			{/* LOCATION */}
+			<div
+				className='flex flex-col border-t border-gray-300 py-8 mr-4'
+				id='location'
+			>
 				<div className='flex items-center justify-between pb-4'>
-					<h4 className='text-2xl font-semibold tracking-tight'>
-						Where you&apos;ll be
-					</h4>
+					<h4 className='text-2xl font-semibold tracking-tight'>Location</h4>
 					<Button
 						className='flex items-center w-40 border border-blue-500 text-blue-500 py-2 px-4 rounded hover:bg-blue-50 dark:hover:bg-blue-900 dark:text-white bg-foreground'
 						onClick={handleAddUserLocation}

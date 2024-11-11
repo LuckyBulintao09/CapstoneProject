@@ -3,6 +3,13 @@ import { Tabs, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import spiels from '@/lib/constants/spiels';
 import React from 'react';
 
+const scrollToSection = (sectionId) => {
+	const section = document.getElementById(sectionId);
+	if (section) {
+		section.scrollIntoView({ behavior: 'smooth', block: 'start' });
+	}
+};
+
 const SpecificListingTabs = () => {
 	return (
 		<Card className='my-4 bg-white border border-gray-300 p-4 pt-2 pb-0 shadow-sm'>
@@ -10,9 +17,10 @@ const SpecificListingTabs = () => {
 				<TabsList className='gap-5 bg-foreground'>
 					{spiels.SPECIFIC_LISTING_TABS.map((item) => (
 						<TabsTrigger
-							value={item.value}
-							className='hover:text-primary data-[state=active]:bg-white data-[state=active]:border-b-4 border-primary data-[state=active]:text-primary data-[state=active]:text-sm text-sm rounded-none pb-3 transition-all duration-300 ease-in-out'
 							key={item.value}
+							value={item.value}
+							onClick={() => scrollToSection(item.value)}
+							className='hover:text-primary data-[state=active]:bg-white data-[state=active]:border-b-4 border-primary data-[state=active]:text-primary data-[state=active]:text-sm text-sm rounded-none pb-3 transition-all duration-300 ease-in-out'
 						>
 							{item.label}
 						</TabsTrigger>
