@@ -8,14 +8,13 @@ const GalleryModalReviewSection = ({
 	valueForMoneyPercentage,
 }) => {
 	return (
-		<Card className='bg-white border-none shadow-none'>
+		<Card className='bg-white dark:bg-secondary border-none shadow-none'>
 			<CardHeader className='pr-2'>
-				<CardDescription className='text-gray-800 font-semibold mb-3'>
+				<CardDescription className='text-gray-800 dark:text-gray-100 font-semibold mb-3'>
 					Categories:
 					<div className='flex justify-between items-center my-2'>
 						<span className='font-normal text-sm'>Location</span>
-
-						<span className='text-sm font-semibold text-gray-700'>
+						<span className='text-sm font-semibold text-gray-700 dark:text-gray-300'>
 							{locationPercentage.toFixed(1)}
 						</span>
 					</div>
@@ -23,15 +22,15 @@ const GalleryModalReviewSection = ({
 					<div className='flex justify-between items-center my-2'>
 						<span className='font-normal text-sm'>Cleanliness</span>
 
-						<span className='text-sm font-semibold text-gray-700'>
+						<span className='text-sm font-semibold text-gray-700 dark:text-gray-300'>
 							{cleanlinessPercentage.toFixed(1)}
 						</span>
 					</div>
 					<Progress value={cleanlinessPercentage * 10} className='h-2' />
-					<div className='flex justify-between items-center my-2'>
+					<div className='flex justify-between items-center my-2 '>
 						<span className='font-normal text-sm'>Value for Money</span>
 
-						<span className='text-sm font-semibold text-gray-700'>
+						<span className='text-sm font-semibold text-gray-700 dark:text-gray-300'>
 							{valueForMoneyPercentage.toFixed(1)}
 						</span>
 					</div>
