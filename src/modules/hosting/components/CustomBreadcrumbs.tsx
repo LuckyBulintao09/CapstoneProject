@@ -1,6 +1,8 @@
 "use client";
 
 import { Breadcrumb, BreadcrumbItem, BreadcrumbLink, BreadcrumbList, BreadcrumbPage, BreadcrumbSeparator } from "@/components/ui/breadcrumb";
+import { buttonVariants } from "@/components/ui/button";
+import { cn } from "@/lib/utils";
 import Link from "next/link";
 
 import { usePathname } from "next/navigation";
@@ -11,7 +13,7 @@ function CustomBreadcrumbs() {
     const segments = pathname.split('/').filter(Boolean);
     return (
         <Breadcrumb>
-            <BreadcrumbList className="py-5 px-3 border-b">
+            <BreadcrumbList className="text-sm font-[500]">
                 <GenerateBreadcrumbs segments={segments} />
             </BreadcrumbList>
         </Breadcrumb>
@@ -27,7 +29,7 @@ function GenerateBreadcrumbs({segments}: {segments: string[]}) {
     
     return (
         <>
-            {breadCrumbs.map(
+            {breadCrumbs.length > 1 && breadCrumbs.map(
                 (crumb: { label: string; href: string }, index: number): React.ReactElement => (
                     <React.Fragment key={index}>
                         {index > 0 && <BreadcrumbSeparator />}
@@ -36,7 +38,7 @@ function GenerateBreadcrumbs({segments}: {segments: string[]}) {
                         ) : (
                             <BreadcrumbItem>
                                 <BreadcrumbLink asChild>
-                                    <Link href={crumb.href}>{crumb.label}</Link>
+                                    <Link href={crumb.href} className={cn(buttonVariants({ variant: "link" }), "px-0 py-0")}>{crumb.label}</Link>
                                 </BreadcrumbLink>
                             </BreadcrumbItem>
                         )}

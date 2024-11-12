@@ -44,3 +44,8 @@ export function composeEventHandlers<E>(
     }
   }
 }
+
+// helper function to create variable rows for number of units
+export function createVariableRows(numberOfRows: number) {
+  return Array.from({ length: numberOfRows }, () => ({}));
+}

@@ -7,7 +7,7 @@ const HowItWorks = () => {
 		<section>
 			<div className='container'>
 				<div className='flex flex-col items-center text-center'>
-					<h1 className='font-semibold xs:text-xl sm:text-2xl md:text-3xl lg:text-3xl xl:text-4xl dark:text-primary-foreground'>
+					<h1 className='font-semibold xs:text-xl sm:text-2xl md:text-3xl lg:text-3xl xl:text-4xl dark:text-foreground'>
 						{spiels.HOW_IT_WORKS}
 					</h1>
 					<p className='max-w-2xl mt-2 text-muted-foreground lg:text-lg'>
@@ -24,10 +24,10 @@ const HowItWorks = () => {
 							key={index}
 						>
 							<div className='max-w-2xl'>
-								<h3 className='text-left text-balance text-base md:text-xl lg:text-xl font-semibold tracking-[-0.015em] text-primary-foreground dark:text-secondary'>
+								<h3 className='text-left text-balance text-base md:text-xl lg:text-xl font-semibold tracking-[-0.015em] text-primary-foreground dark:text-primary'>
 									{item.label}
 								</h3>
-								<p className='mt-4 text-left text-md sm:text-sm lg:text-md 2xl:text-md xs:text-sm text-neutral-200 dark:text-muted-foreground'>
+								<p className='mt-4 text-left text-md sm:text-sm lg:text-md 2xl:text-md xs:text-sm text-neutral-200 dark:text-accent'>
 									{item.description}
 								</p>
 							</div>

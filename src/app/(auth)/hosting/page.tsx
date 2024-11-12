@@ -39,10 +39,10 @@ function LessorPage() {
                                                     href="/hosting"
                                                     className={cn(
                                                         buttonVariants({ variant: "link", size: "sm" }),
-                                                        " px-0 py-0 h-fit w-fit block mt-2"
+                                                        " px-0 py-0 h-fit w-fit block mt-2 underline"
                                                     )}
                                                 >
-                                                    Go to property {`>>`}
+                                                    Go to property
                                                 </Link>
                                             </div>
                                             <CircleAlert className="size-8 text-destructive" />
@@ -63,9 +63,9 @@ function LessorPage() {
                                 <span>Lucky homes</span>
                                 <Link
                                     href="/hosting"
-                                    className={cn(buttonVariants({ variant: "link", size: "sm" }), " px-0 py-0 h-fit w-fit block mt-2")}
+                                    className={cn(buttonVariants({ variant: "link", size: "sm" }), " px-0 py-0 h-fit w-fit block mt-2 underline")}
                                 >
-                                    Go to property {`>>`}{" "}
+                                    Go to property
                                 </Link>
                             </div>
                             <CircleAlert className="size-8 text-destructive" />
@@ -113,22 +113,22 @@ function LessorPage() {
                     </Dialog>
                 </div>
                 <Tabs defaultValue="1" className="w-full mt-8">
-                    <TabsList className="flex flex-row items-center justify-start gap-5 rounded-full bg-transparent dark:bg-transparent">
+                    <TabsList className="items-center justify-start gap-4 rounded-full bg-transparent dark:bg-transparent w-full p-0">
                         <TabsTrigger
                             value="1"
-                            className="px-3 py-2 rounded-full data-[state=active]:bg-primary data-[state=active]:text-primary-foreground dark:data-[state=active]:bg-primary dark:[data-state=active]:text-primary-foreground data-[state=active]:font-normal dark:data-[state=active]:font-normal data-[state=active]:text-base dark:data-[state=active]:text-base"
+                            className="font-normal rounded-full px-3 py-2 text-sm data-[state=active]:bg-primary data-[state=active]:text-primary-foreground dark:data-[state=active]:bg-primary dark:[data-state=active]:text-primary-foreground data-[state=active]:font-normal dark:data-[state=active]:font-normal data-[state=active]:text-sm dark:data-[state=active]:text-sm"
                         >
                             Currently hosting (0)
                         </TabsTrigger>
                         <TabsTrigger
                             value="2"
-                            className="px-3 py-2 rounded-full data-[state=active]:bg-primary data-[state=active]:text-primary-foreground dark:data-[state=active]:bg-primary dark:[data-state=active]:text-primary-foreground data-[state=active]:font-normal dark:data-[state=active]:font-normal data-[state=active]:text-base dark:data-[state=active]:text-base"
+                            className="font-normal rounded-full px-3 py-2 text-sm data-[state=active]:bg-primary data-[state=active]:text-primary-foreground dark:data-[state=active]:bg-primary dark:[data-state=active]:text-primary-foreground data-[state=active]:font-normal dark:data-[state=active]:font-normal data-[state=active]:text-sm dark:data-[state=active]:text-sm"
                         >
                             Arriving soon (0)
                         </TabsTrigger>
                         <TabsTrigger
                             value="3"
-                            className="px-3 py-2 rounded-full data-[state=active]:bg-primary data-[state=active]:text-primary-foreground dark:data-[state=active]:bg-primary dark:[data-state=active]:text-primary-foreground data-[state=active]:font-normal dark:data-[state=active]:font-normal data-[state=active]:text-base dark:data-[state=active]:text-base"
+                            className="font-normal rounded-full px-3 py-2 text-sm data-[state=active]:bg-primary data-[state=active]:text-primary-foreground dark:data-[state=active]:bg-primary dark:[data-state=active]:text-primary-foreground data-[state=active]:font-normal dark:data-[state=active]:font-normal data-[state=active]:text-sm dark:data-[state=active]:text-sm"
                         >
                             Pending review (0)
                         </TabsTrigger>

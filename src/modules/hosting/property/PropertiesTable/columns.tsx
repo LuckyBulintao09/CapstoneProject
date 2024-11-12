@@ -10,9 +10,9 @@ import { useMediaQuery } from "@/hooks/use-media-query";
 
 import { PropertyViewModeContext } from "@/modules/hosting/property/PropertyViewModeProvider";
 
-import { MoreHorizontal } from "lucide-react";
+import { ChevronRight, MoreHorizontal } from "lucide-react";
 
-import { Button } from "@/components/ui/button";
+import { Button, buttonVariants } from "@/components/ui/button";
 import {
     DropdownMenu,
     DropdownMenuContent,
@@ -39,14 +39,101 @@ import Link from "next/link";
 
 import { removePropertyById } from "@/actions/property/remove-property-by-id";
 
+import Image from "next/image";
+import { cn } from "@/lib/utils";
+
 export const columns: ColumnDef<any>[] = [
     {
-        accessorKey: "title",
-        header: "Property",
+        accessorKey: "property",
+        accessorFn: (row) => `${row.title}`,
+        header: () => {
+            return <span className="">Property</span>;
+        },
+        cell: ({ row }) => {
+            const property_name = row.original.title;
+            const thumbnail = row.original.thumbnail_url;
+            const address = row.getValue<string>("address");
+            const propertyId = row.getValue<string>("id")
+            const unitId = "123";
+
+            const { viewMode } = React.useContext(PropertyViewModeContext);
+
+            if (viewMode === "table") {
+                return (
+                    <div className="flex flex-row items-center">
+                        <div className="flex relative">
+                            {thumbnail ? (
+                                <Image
+                                src={thumbnail}
+                                alt="property image"
+                                width={64}
+                                height={64}
+                                className="rounded-xl h-[64px] w-[64px] min-h-[64px] min-w-[64px] object-cover overflow-clip"
+                            />
+                            ) : (
+                                <Image
+                                src={`/placeholderImage.webp`}
+                                alt="property image"
+                                width={64}
+                                height={64}
+                                className="rounded-xl h-[64px] w-[64px] min-h-[64px] min-w-[64px] object-cover overflow-clip"
+                            />
+                            )}
+                        </div>
+                        <span className="ml-7">{property_name}</span>
+                    </div>
+                );
+            }
+            return (
+                <div className="flex flex-col">
+                    <div className="relative">
+                        <Image
+                            src={thumbnail}
+                            alt={property_name}
+                            width={1524}
+                            height={2032}
+                            className="rounded-xl object-cover overflow-clip aspect-[20/19] mb-3 select-none"
+                        />
+                        <div className="absolute top-0 right-0 mt-3 mr-3">
+                            <Link
+                                href={`/hosting/property/${propertyId}/unit/${unitId}`}
+                                className={cn(
+                                    buttonVariants({ variant: "default", size: "sm" }),
+                                    "flex items-center justify-center gap-2 rounded-full text-primary-foreground"
+                                )}
+                            >
+                                Go to property
+                                <ChevronRight className="size-4" />
+                            </Link>
+                        </div>
+                    </div>
+                    <div className="flex flex-col text-left ">
+                        <span className="text-clip break-all">{property_name}</span>
+                        <span className="text-muted-foreground text-nowrap text-ellipsis overflow-hidden">{address}</span>
+                    </div>
+                </div>
+            );
+        }
     },
     {
         accessorKey: "address",
         header: "Address",
+        cell: ({ row }) => {
+            const address = row.getValue<string>("address");
+
+            const { viewMode } = React.useContext(PropertyViewModeContext);
+
+            if (viewMode === "table") {
+                return (
+                    <span>{address}</span>
+                );
+            }
+            return null
+        },
+    },
+    {
+        accessorKey: "",
+        header: "Rooms",
     },
     {
         accessorKey: "id",
@@ -55,26 +142,40 @@ export const columns: ColumnDef<any>[] = [
         },
         cell: ({ row }) => {
             const propertyId = row.getValue<string>("id");
-            return (
-                <DropdownMenu>
-                    <DropdownMenuTrigger asChild>
-                        <Button variant="ghost" className="h-8 w-8 p-0">
-                            <span className="sr-only">Open menu</span>
-                            <MoreHorizontal className="h-4 w-4" />
-                        </Button>
-                    </DropdownMenuTrigger>
-                    <DropdownMenuContent align="end">
-                        <DropdownMenuLabel>Actions</DropdownMenuLabel>
-                        <DropdownMenuSeparator />
+            const { viewMode } = React.useContext(PropertyViewModeContext);
+            const unitId = "123";
 
-                        <DropdownMenuItem asChild>
-                            <Link href={`/hosting/property/edit-property/${propertyId}`}>Edit</Link>
-                        </DropdownMenuItem>
-                        <DropdownMenuItem asChild>
-                            <DeletePropertyAlert trigger={<Button variant="ghost" className="w-full justify-start h-auto relative flex cursor-default select-none items-center rounded-sm px-2 py-1.5 text-sm outline-none transition-colors focus:bg-accent focus:text-accent-foreground data-[disabled]:pointer-events-none data-[disabled]:opacity-50" >Delete</Button>} propertyId={propertyId} />
-                        </DropdownMenuItem>
-                    </DropdownMenuContent>
-                </DropdownMenu>
+            if (viewMode === "grid") {
+                return <span className="sr-only">Actions</span>;
+            }
+
+            return (
+                // <DropdownMenu>
+                //     <DropdownMenuTrigger asChild>
+                //         <Button variant="ghost" className="h-8 w-8 p-0">
+                //             <span className="sr-only">Open menu</span>
+                //             <MoreHorizontal className="h-4 w-4" />
+                //         </Button>
+                //     </DropdownMenuTrigger>
+                //     <DropdownMenuContent align="end">
+                //         <DropdownMenuLabel>Actions</DropdownMenuLabel>
+                //         <DropdownMenuSeparator />
+
+                //         <DropdownMenuItem asChild>
+                //             <Link href={`/hosting/property/edit-property/${propertyId}`}>Edit</Link>
+                //         </DropdownMenuItem>
+                //         <DropdownMenuItem asChild>
+                //             <DeletePropertyAlert trigger={<Button variant="ghost" className="w-full justify-start h-auto relative flex cursor-default select-none items-center rounded-sm px-2 py-1.5 text-sm outline-none transition-colors focus:bg-accent focus:text-accent-foreground data-[disabled]:pointer-events-none data-[disabled]:opacity-50" >Delete</Button>} propertyId={propertyId} />
+                //         </DropdownMenuItem>
+                //     </DropdownMenuContent>
+                // </DropdownMenu>
+                <Link 
+                    href={`/hosting/property/${propertyId}/unit/${unitId}`}
+                    className={cn(buttonVariants({ variant: "ghost", size: "sm" }), "flex items-center justify-center gap-2 px-1 rounded-full")}
+                >
+                    Go to property
+                    <ChevronRight className="size-4" />
+                </Link>
             );
         },
     },

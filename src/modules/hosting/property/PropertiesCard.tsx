@@ -52,20 +52,30 @@ function PropertiesCard<TData, TValue>({ columns, data }: DataTableProps<TData, 
     });
 
     const isDesktop = useMediaQuery("(min-width: 740px)");
+    
     return (
         <div>
             <PropertiesHeader table={propertiesCardTable} />
             <div className="grid grid-cols-12 gap-7">
                 {propertiesCardTable.getRowModel().rows?.length ? (
                     propertiesCardTable.getRowModel().rows.map((row) => (
-                        <div key={row.id} className="col-span-12 tablet:col-span-6 desktop:col-span-4">
+                        <div key={row.id} className="col-span-12 airBnbTablet:col-span-6 airBnbDesktop:col-span-4">
                             {row.getVisibleCells().map((cell) => {
-                                if (!isDesktop && (cell.column.columnDef.header === "Address" || cell.column.columnDef.header === "Verified")) {
+                                if (
+                                    !isDesktop &&
+                                    (cell.column.columnDef.header ===
+                                        "Address" ||
+                                        cell.column.columnDef.header ===
+                                            "Verified")
+                                ) {
                                     return null;
                                 }
                                 return (
                                     <div key={cell.id} className="bg-transparent cursor-pointer relative">
-                                        {flexRender(cell.column.columnDef.cell, cell.getContext())}
+                                        {flexRender(
+                                            cell.column.columnDef.cell,
+                                            cell.getContext()
+                                        )}
                                     </div>
                                 );
                             })}
