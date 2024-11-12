@@ -2,42 +2,17 @@ import { useEffect, useState } from "react";
 import { BentoGrid, BentoGridItem } from "@/components/ui/bento-grid";
 import { Star } from "lucide-react";
 
-import { createClient } from "../../../utils/supabase/client";
-
 interface BusinessReviewsProps {
   unitId: number | undefined;
+  propertyReviews: any;
 }
 
-const supabase = createClient();
-
-const BusinessReviews: React.FC<BusinessReviewsProps> = ({ unitId }) => {
+const BusinessReviews: React.FC<BusinessReviewsProps> = ({ unitId, propertyReviews }) => {
   const [reviews, setReviews] = useState<any[]>([]);
 
   useEffect(() => {
-    const fetchReviews = async () => {
-      if (!unitId) return;
-
-      const { data, error } = await supabase
-        .from("ratings_review")
-        .select(
-          `
-          user_id, 
-          ratings, 
-          comment, 
-          account (firstname, lastname)
-        `
-        )
-        .eq("unit_id", unitId);
-
-      if (error) {
-        console.error("Error fetching reviews:", error);
-      } else {
-        setReviews(data);
-      }
-    };
-
-    fetchReviews();
-  }, [unitId]);
+    setReviews(propertyReviews);
+  }, []);
 
   return (
     <div className="grid md:grid-cols-2 xl:grid-cols-3 gap-4 justify-items-center">

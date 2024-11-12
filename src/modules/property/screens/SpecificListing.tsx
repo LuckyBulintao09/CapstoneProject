@@ -410,7 +410,10 @@ export function SpecificListing({ id }: SpecificListingProps) {
 				<h4 className='text-2xl font-semibold tracking-tight pb-4'>
 					Customer Reviews
 				</h4>
-				<BusinessReviews unitId={property?.id} />
+				<BusinessReviews 
+					unitId={property?.id} 
+					propertyReviews={propertyReviews}
+				/>
 			</div>
 
 			{/* LOCATION */}

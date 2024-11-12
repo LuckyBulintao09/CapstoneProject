@@ -11,68 +11,42 @@ import {
 	CarouselContent,
 	CarouselItem,
 } from '@/components/ui/carousel';
-import { createClient } from '@/utils/supabase/client';
 import Autoplay from 'embla-carousel-autoplay';
 import React, { useState, useEffect } from 'react';
+import { Star } from 'lucide-react';
 
 interface SideReviewsProps {
 	propertyId: number;
 	propertyReviews: any;
 }
 
-const SideReviews: React.FC<SideReviewsProps> = ({ propertyId }) => {
-	const [reviews, setReviews] = useState<any[]>([]);
+const SideReviews: React.FC<SideReviewsProps> = ({ propertyId, propertyReviews }) => {
 	const [locationPercentage, setLocationPercentage] = useState<number>(0);
 	const [cleanlinessPercentage, setCleanlinessPercentage] = useState<number>(0);
 	const [valueForMoneyPercentage, setValueForMoneyPercentage] =
 		useState<number>(0);
 
 	useEffect(() => {
-		const supabase = createClient();
+		if (propertyReviews.length > 0) {
+			const averageLocation = propertyReviews.reduce(
+				(sum, review) => sum + review.location,
+				0
+			)
+			setLocationPercentage(averageLocation / propertyReviews.length)
 
-		const fetchReviews = async () => {
-			const { data, error } = await supabase
-				.from('ratings_review')
-				.select(
-					`
-                    user_id, 
-                    ratings, 
-                    comment, 
-                    location,
-                    cleanliness,
-                    value_for_money
-                `
-				)
-				.eq('unit_id', propertyId);
+			const averageCleanliness = propertyReviews.reduce(
+				(sum, review) => sum + review.cleanliness,
+				0
+			)
+			setCleanlinessPercentage(averageCleanliness / propertyReviews.length)
 
-			if (error) {
-				console.error('Error fetching reviews:', error);
-			} else {
-				setReviews(data);
-				const totalReviews = data.length;
-				if (totalReviews > 0) {
-					const locationSum = data.reduce(
-						(sum, review) => sum + review.location,
-						0
-					);
-					const cleanlinessSum = data.reduce(
-						(sum, review) => sum + review.cleanliness,
-						0
-					);
-					const valueForMoneySum = data.reduce(
-						(sum, review) => sum + review.value_for_money,
-						0
-					);
-
-					setLocationPercentage(locationSum / totalReviews);
-					setCleanlinessPercentage(cleanlinessSum / totalReviews);
-					setValueForMoneyPercentage(valueForMoneySum / totalReviews);
-				}
-			}
-		};
-
-		fetchReviews();
-	}, [propertyId]);
+			const averageValueForMoney = propertyReviews.reduce(
+				(sum, review) => sum + review.value_for_money,
+				0
+			)
+			setValueForMoneyPercentage(averageValueForMoney / propertyReviews.length)
+		}
+	}, []);
 
 	// Map the average rating to a descriptive scale
 	const mapScoreToRating = (averageScore: number): string => {
@@ -93,7 +67,7 @@ const SideReviews: React.FC<SideReviewsProps> = ({ propertyId }) => {
 		(locationPercentage + cleanlinessPercentage + valueForMoneyPercentage) / 3;
 	const ratingDescription = mapScoreToRating(overallRating);
 
-	const totalReviews = reviews.length;
+	const totalReviews = propertyReviews.length;
 
 	return (
 		<div>
@@ -131,12 +105,20 @@ const SideReviews: React.FC<SideReviewsProps> = ({ propertyId }) => {
 						]}
 					>
 						<CarouselContent>
-							{reviews?.map((review) => (
+							{propertyReviews?.map((review) => (
 								<CarouselItem key={review.user_id} className='pl-1'>
 									<Card className='bg-white mt-3 border-gray-300'>
 										<CardHeader className='p-4 py-2'>
 											<CardDescription className='line-clamp-3'>
-												"{review.comment || 'No comment'}"
+												<div className='flex items-center justify-between'>
+													<span>"{review.comment || 'No comment'}"</span>
+													<div className='flex items-center'>
+														<Star className='h-4 w-4 text-yellow-500' fill='#eab308' />
+														<span className='ml-1 text-xs sm:text-sm'>
+															{review.ratings.toFixed(1)}
+														</span>
+													</div>
+												</div>
 											</CardDescription>
 										</CardHeader>
 									</Card>

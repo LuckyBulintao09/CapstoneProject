@@ -37,26 +37,32 @@ export const fetchProperty = async (
 };
 
 export const fetchPropertyReviews = async (propertyId: number) => {
-  const { data, error } = await supabase
-  .from('ratings_review')
-  .select(`
-    ratings,
-    comment,
-    cleanliness,
-    location,
-    unit:unit_id (
-      property:property_id (
-        id
-      )
-    )
-  `)
-  .eq('unit.property.id', propertyId);
+      const { data, error } = await supabase
+      .from('ratings_review')
+      .select(`
+        ratings,
+        comment,
+        cleanliness,
+        location,
+        value_for_money,
+        account:user_id (
+          firstname,
+          lastname
+        ),
+        unit:unit_id (
+          property:property_id (
+            id
+          )
+        )
+      `)
+      .eq('unit.property.id', propertyId);
 
-  if (error) {
-    console.error('Error fetching property reviews:', error);
-    return null;
-  }
-  return data;
+    if (error) {
+      console.error('Error fetching ratings with user details:', error);
+      return null;
+    }
+
+    return data;
 }
 
 export const fetchFavorite = async (userId: string | null, propertyId: number) => {
