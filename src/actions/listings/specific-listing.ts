@@ -1,3 +1,4 @@
+"use server"
 import { createClient } from "@/utils/supabase/client";
 
 const supabase = createClient();
@@ -15,27 +16,16 @@ export const fetchProperty = async (
   propertyId: number,
   userId: string | null
 ) => {
-  const { data: unit, error } = await supabase
-    .from("unit")
-    .select(
-      `
+  const { data: property, error } = await supabase
+    .from('property')
+    .select(`
       *,
-      property (
-        address,
-        company (
-          owner_id (
-            firstname,
-            lastname,
-            id,
-            profile_url
-          ),
-          company_name,
-          id
-        )
+      company:company_id (
+        *,
+        account:owner_id (*)
       )
-    `
-    )
-    .eq("id", propertyId)
+    `)
+    .eq('id', propertyId)
     .single();
 
   if (error) {
@@ -43,20 +33,63 @@ export const fetchProperty = async (
     return null;
   }
 
-  let favorite = false;
-  if (userId) {
-    const { data: favoriteData } = await supabase
-      .from("favorites")
-      .select("id")
-      .eq("Account_ID", userId)
-      .eq("unit_ID", propertyId)
-      .single();
+  return { property };
+};
 
-    favorite = !!favoriteData;
+export const fetchPropertyReviews = async (propertyId: number) => {
+  const { data, error } = await supabase
+  .from('ratings_review')
+  .select(`
+    ratings,
+    comment,
+    cleanliness,
+    location,
+    unit:unit_id (
+      property:property_id (
+        id
+      )
+    )
+  `)
+  .eq('unit.property.id', propertyId);
+
+  if (error) {
+    console.error('Error fetching property reviews:', error);
+    return null;
+  }
+  return data;
+}
+
+export const fetchFavorite = async (userId: string | null, propertyId: number) => {
+  let favorite = false
+  const { data, error } = await supabase
+    .from("favorites")
+    .select("*")
+    .eq("Account_ID", userId)
+    .eq("property_ID", propertyId)
+    .single();
+
+    favorite = !!data
+
+  if (error) {
+    console.error("Error fetching favorites:", error);
+    return null;
   }
 
-  return { unit, favorite };
-};
+  return favorite;
+}
+
+export const fetchPropertyLocation = async (propertyId: number) => {
+  const { data, error } = await supabase
+    .rpc('get_property_location' , { p_id: propertyId })
+
+  if (error) {
+    console.error("Error fetching property location:", error);
+    return null;
+  }
+  return data
+}
+
+
 
 export const toggleFavourite = async (
   isFavourite: boolean,

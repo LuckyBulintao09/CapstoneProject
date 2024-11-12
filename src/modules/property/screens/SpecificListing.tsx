@@ -31,6 +31,9 @@ import {
 	fetchUser,
 	fetchProperty,
 	toggleFavourite,
+	fetchFavorite,
+	fetchPropertyLocation,
+	fetchPropertyReviews,
 } from '@/actions/listings/specific-listing';
 import ErrorPage from '@/components/ui/ErrorPage';
 import {
@@ -39,7 +42,6 @@ import {
 	DirectionsService,
 	DirectionsRenderer,
 } from '@react-google-maps/api';
-import { getSpecificLocation } from '@/actions/listings/listing-filter';
 import { get_unitAmenities } from '@/actions/listings/amenities';
 import {
 	Tooltip,
@@ -63,6 +65,7 @@ interface SpecificListingProps {
 export function SpecificListing({ id }: SpecificListingProps) {
 	const [isFavourite, setIsFavourite] = useState(false);
 	const [property, setProperty] = useState<any | null>(null);
+	const [propertyReviews, setPropertyReviews] = useState<any>(null);
 	const [userId, setUserId] = useState<string | null>(null);
 	const [isLoginModalOpen, setIsLoginModalOpen] = useState(false);
 	const [loading, setLoading] = useState(true);
@@ -84,19 +87,21 @@ export function SpecificListing({ id }: SpecificListingProps) {
 				const fetchedUserId = await fetchUser();
 				setUserId(fetchedUserId);
 
-				const { unit, favorite } = await fetchProperty(id, fetchedUserId);
-				if (!unit) {
+				const { property } = await fetchProperty(id, fetchedUserId);
+				if (!property) {
 					setError(true); // error if property's not found
 					setLoading(false);
 					return;
 				}
-
-				setProperty(unit);
-				setIsFavourite(favorite);
-				setAmenitiesList(await get_unitAmenities(unit?.id));
+				
+				
+				setProperty(property);
+				setPropertyReviews(await fetchPropertyReviews(id));
+				setIsFavourite(await fetchFavorite(userId, id));
+				setAmenitiesList(await get_unitAmenities(property?.id));
 				setPosition({
-					lat: (await getSpecificLocation(unit?.id))?.lat,
-					lng: (await getSpecificLocation(unit?.id))?.lng,
+					lat: ((await fetchPropertyLocation(id))[0].latitude),
+					lng: ((await fetchPropertyLocation(id))[0].longitude),
 				});
 				setLoading(false);
 			} catch (err) {
@@ -104,7 +109,6 @@ export function SpecificListing({ id }: SpecificListingProps) {
 				setLoading(false);
 			}
 		};
-
 		loadUserAndProperty();
 	}, [id]);
 
@@ -180,17 +184,25 @@ export function SpecificListing({ id }: SpecificListingProps) {
 
 	const {
 		title,
-		price,
-		property: { address, company },
+		address,
 		thumbnail_url,
-		profile_url,
 		privacy_type,
 		structure,
-		bedrooms,
-		beds,
-		occupants,
 		description,
+		company_id,
+		company: {
+			logo,
+			about,
+			owner_id,
+			company_name,
+			account: {
+				firstname,
+				lastname,
+				profile_url,
+			}
+		}
 	} = property;
+
 
 	return (
 		<ResponsiveLayout>
@@ -250,30 +262,37 @@ export function SpecificListing({ id }: SpecificListingProps) {
 					<PropertyDetails
 						privacyType={privacy_type}
 						structure={structure}
-						bedrooms={bedrooms}
-						beds={beds}
-						occupants={occupants}
+						bedrooms={1}
+						beds={1}
+						occupants={5}
 						description={description}
 						amenitiesList={amenitiesList}
 					/>
 					<Banner
-						ownerName={company?.owner_id?.firstname}
-						ownerLastname={company?.owner_id?.lastname}
-						ownerId={company?.owner_id?.id}
-						companyId={company.id}
-						companyName={company?.company_name}
-						propertyId={property?.id}
-						profileUrl={company?.owner_id?.profile_url}
+						ownerName={property.company.account.firstname}
+						ownerLastname={property.company.account.lastname}
+						ownerId={property.company.owner_id}
+						companyId={property.company_id}
+						companyName={property.company.company_name}
+						propertyId={id}
+						profileUrl={property.company.account.profile_url}
 						session={userId}
 					/>
 				</div>
 
 				<div className='col-span-1 lg:mt-0 md:mt-4 sticky top-20 h-[calc(100vh-80px)] overflow-y-auto'>
 					<div>
-						<SideReviews propertyId={property.id} />
+						<SideReviews 
+							propertyId={property.id}
+							propertyReviews={propertyReviews}
+						/>
 					</div>
 					<div className='mt-4'>
-						<SideMap propertyId={property.id} />
+						<SideMap 
+							propertyId={property.id}
+							propertyLoc={position}
+							propertyReviews={propertyReviews}
+						 />
 					</div>
 				</div>
 			</div>

@@ -17,6 +17,7 @@ import React, { useState, useEffect } from 'react';
 
 interface SideReviewsProps {
 	propertyId: number;
+	propertyReviews: any;
 }
 
 const SideReviews: React.FC<SideReviewsProps> = ({ propertyId }) => {

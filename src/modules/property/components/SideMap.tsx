@@ -1,5 +1,4 @@
 import { Card, CardDescription, CardHeader } from '@/components/ui/card';
-import { createClient } from '@/utils/supabase/client';
 import { DirectionsRenderer, GoogleMap, Marker } from '@react-google-maps/api';
 import React, { useEffect, useState } from 'react';
 import {
@@ -10,22 +9,22 @@ import {
 
 interface SideReviewsProps {
 	propertyId: number;
+	propertyLoc: any,
+	propertyReviews: any
 }
 
-const SideMap: React.FC<SideReviewsProps> = ({ propertyId }) => {
-	const [reviews, setReviews] = useState<any[]>([]);
+const SideMap: React.FC<SideReviewsProps> = ({ 
+	propertyId,
+	propertyLoc,
+	propertyReviews
+ }) => {
 	const [locationAverage, setLocationAverage] = useState<number>(0);
 	const [directions, setDirections] = useState<any>(null);
-	const supabase = createClient();
-
 	const [userPosition, setUserPosition] = useState<{
 		lat: number;
 		lng: number;
 	} | null>(null);
-	const [position, setPosition] = useState({
-		lat: 16.420039834357972,
-		lng: 120.59908426196893,
-	});
+	const [position, setPosition] = useState(propertyLoc);
 
 	const landmarks = [
 		{ name: 'SM Baguio City', distance: 1.0 },
@@ -38,32 +37,14 @@ const SideMap: React.FC<SideReviewsProps> = ({ propertyId }) => {
 		{ name: 'Our Lady of Lourdes Grotto', distance: 3.0 },
 	];
 	useEffect(() => {
-		const fetchReviews = async () => {
-			const { data, error } = await supabase
-				.from('ratings_review')
-				.select(
-					'user_id, ratings, comment, location, cleanliness, value_for_money'
-				)
-				.eq('unit_id', propertyId);
-
-			if (error) {
-				console.error('Error fetching reviews:', error);
-			} else if (data) {
-				setReviews(data);
-				const totalReviews = data.length;
-
-				if (totalReviews > 0) {
-					const locationSum = data.reduce(
-						(sum, review) => sum + review.location,
-						0
-					);
-					setLocationAverage(locationSum / totalReviews);
-				}
-			}
-		};
-
-		fetchReviews();
-	}, [propertyId, supabase]);
+		if (propertyReviews.length > 0) {
+			const averageLocation = propertyReviews.reduce(
+				(sum, review) => sum + review.location,
+				0
+			)
+			setLocationAverage(averageLocation / propertyReviews.length)
+		}
+	}, [propertyId]);
 
 	const handleAddUserLocation = () => {
 		navigator.geolocation.getCurrentPosition(
@@ -83,6 +64,9 @@ const SideMap: React.FC<SideReviewsProps> = ({ propertyId }) => {
 			}
 		);
 	};
+
+	// ADD DISTANCE MATRIX
+	// NEARBY LANDMARKS
 
 	const fetchDirections = () => {
 		if (!userPosition) return;
@@ -131,6 +115,7 @@ const SideMap: React.FC<SideReviewsProps> = ({ propertyId }) => {
 							options={{
 								fullscreenControl: false,
 							}}
+							onClick={handleAddUserLocation}
 						>
 							{userPosition && <Marker position={userPosition} />}
 							<Marker position={position} />
