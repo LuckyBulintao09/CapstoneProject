@@ -69,22 +69,22 @@ const GalleryModal: React.FC<GalleryModalProps> = ({
 
 	return (
 		<Dialog open={isOpen} onOpenChange={onClose}>
-			<DialogContent className='p-6 max-w-7xl bg-white mx-2'>
+			<DialogContent className='p-6 max-w-7xl bg-white mx-2 dark:bg-secondary'>
 				<DialogHeader>
 					<DialogTitle>All Photos</DialogTitle>
 				</DialogHeader>
 
 				<Tabs defaultValue='property_view'>
-					<TabsList className='mb-2 gap-2 bg-white'>
+					<TabsList className='mb-2 gap-2 bg-white dark:bg-secondary'>
 						<TabsTrigger
 							value='property_view'
-							className='hover:text-primary data-[state=active]:bg-white data-[state=active]:border-b border-primary data-[state=active]:text-primary rounded-none'
+							className='hover:text-primary data-[state=active]:bg-white data-[state=active]:border-b border-primary dark:data-[state=active]:border-blue-300 data-[state=active]:text-primary rounded-none'
 						>
 							Property View
 						</TabsTrigger>
 						<TabsTrigger
 							value='rooms'
-							className='hover:text-primary data-[state=active]:bg-white data-[state=active]:border-b border-primary data-[state=active]:text-primary rounded-none'
+							className='hover:text-primary data-[state=active]:bg-white data-[state=active]:border-b dark:data-[state=active]:border-blue-300 border-primary data-[state=active]:text-primary rounded-none'
 						>
 							Rooms
 						</TabsTrigger>
@@ -114,7 +114,7 @@ const GalleryModal: React.FC<GalleryModalProps> = ({
 
 							<div className='grid-rows-2 col-span-1'>
 								<div>
-									<Card className='bg-white border-none shadow-none'>
+									<Card className='bg-white dark:bg-secondary border-none shadow-none'>
 										<CardHeader className='p-3 my-2'>
 											<div className='grid grid-cols-5 items-center'>
 												<div className='flex justify-center items-center'>
@@ -128,10 +128,10 @@ const GalleryModal: React.FC<GalleryModalProps> = ({
 
 												<div className='col-span-4'>
 													<CardDescription className='ml-2'>
-														<p className='font-bold text-lg'>
+														<p className='font-bold text-lg dark:text-gray-200'>
 															{ratingDescription}
 														</p>
-														<p className='font-medium'>
+														<p className='font-medium dark:text-gray-300'>
 															{reviews.length}{' '}
 															{reviews.length === 1 ? 'review' : 'reviews'}
 														</p>
@@ -149,10 +149,10 @@ const GalleryModal: React.FC<GalleryModalProps> = ({
 											reviews.map((review, index) => (
 												<Card
 													key={index}
-													className='bg-white border-none shadow-none'
+													className='bg-white dark:bg-secondary border-none shadow-none'
 												>
-													<CardHeader className='border-b border-gray-300 p-5'>
-														<CardDescription className='text-gray-700 italic mb-3'>
+													<CardHeader className='border-b border-gray-300 p-5 '>
+														<CardDescription className='text-gray-700 italic mb-3 dark:bg-secondary'>
 															{`"${review.comment}"`}
 														</CardDescription>
 
@@ -175,7 +175,9 @@ const GalleryModal: React.FC<GalleryModalProps> = ({
 												</Card>
 											))
 										) : (
-											<p>No reviews available for this property.</p>
+											<p className='pl-6 pt-6 text-sm'>
+												No reviews available for this property.
+											</p>
 										)}
 									</div>
 									<div>
@@ -210,7 +212,7 @@ const GalleryModal: React.FC<GalleryModalProps> = ({
 
 							<div className='grid-rows-2 col-span-1'>
 								<div>
-									<Card className='bg-white border-none shadow-none'>
+									<Card className='bg-white dark:bg-secondary border-none shadow-none'>
 										<CardHeader className='p-3 my-2'>
 											<div className='grid grid-cols-5 items-center'>
 												<div className='flex justify-center items-center'>
@@ -224,10 +226,10 @@ const GalleryModal: React.FC<GalleryModalProps> = ({
 
 												<div className='col-span-4'>
 													<CardDescription className='ml-2'>
-														<p className='font-bold text-lg'>
+														<p className='font-bold text-lg dark:text-gray-200'>
 															{ratingDescription}
 														</p>
-														<p className='font-medium'>
+														<p className='font-medium dark:text-gray-300'>
 															{reviews.length}{' '}
 															{reviews.length === 1 ? 'review' : 'reviews'}
 														</p>
@@ -271,7 +273,9 @@ const GalleryModal: React.FC<GalleryModalProps> = ({
 												</Card>
 											))
 										) : (
-											<p>No reviews available for this property.</p>
+											<p className='pl-6 pt-6 text-sm'>
+												No reviews available for this property.
+											</p>
 										)}
 									</div>
 									<div>

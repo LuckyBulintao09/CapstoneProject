@@ -57,6 +57,9 @@ import SpecificListingTabs from '../components/SpecificListingTabs';
 import RightReviews from '../components/SideReviews';
 import SideReviews from '../components/SideReviews';
 import SideMap from '../components/SideMap';
+import UnitGalleryModal from '../components/UnitGalleryModal';
+import { Dialog, DialogContent } from '@/components/ui/dialog';
+import { BookingCardModal } from '../components/BookingCardModal';
 
 interface SpecificListingProps {
 	id: number;
@@ -80,6 +83,9 @@ export function SpecificListing({ id }: SpecificListingProps) {
 		lng: number;
 	} | null>(null);
 	const [directions, setDirections] = useState(null);
+	const [isUnitGalleryModalOpen, setIsUnitGalleryModalOpen] = useState(false);
+	const [selectedImage, setSelectedImage] = useState<string | null>(null);
+	const [isBookingModalOpen, setIsBookingModalOpen] = useState(false);
 
 	useEffect(() => {
 		const loadUserAndProperty = async () => {
@@ -93,15 +99,14 @@ export function SpecificListing({ id }: SpecificListingProps) {
 					setLoading(false);
 					return;
 				}
-				
-				
+
 				setProperty(property);
 				setPropertyReviews(await fetchPropertyReviews(id));
 				setIsFavourite(await fetchFavorite(userId, id));
 				setAmenitiesList(await get_unitAmenities(property?.id));
 				setPosition({
-					lat: ((await fetchPropertyLocation(id))[0].latitude),
-					lng: ((await fetchPropertyLocation(id))[0].longitude),
+					lat: (await fetchPropertyLocation(id))[0].latitude,
+					lng: (await fetchPropertyLocation(id))[0].longitude,
 				});
 				setLoading(false);
 			} catch (err) {
@@ -171,6 +176,14 @@ export function SpecificListing({ id }: SpecificListingProps) {
 		);
 	};
 
+	const handleOpenBookingModal = () => {
+		setIsBookingModalOpen(true);
+	};
+
+	const handleCloseBookingModal = () => {
+		setIsBookingModalOpen(false);
+	};
+
 	if (loading)
 		return (
 			<div>
@@ -184,6 +197,7 @@ export function SpecificListing({ id }: SpecificListingProps) {
 
 	const {
 		title,
+		price,
 		address,
 		thumbnail_url,
 		privacy_type,
@@ -195,14 +209,9 @@ export function SpecificListing({ id }: SpecificListingProps) {
 			about,
 			owner_id,
 			company_name,
-			account: {
-				firstname,
-				lastname,
-				profile_url,
-			}
-		}
+			account: { firstname, lastname, profile_url },
+		},
 	} = property;
-
 
 	return (
 		<ResponsiveLayout>
@@ -282,17 +291,17 @@ export function SpecificListing({ id }: SpecificListingProps) {
 
 				<div className='col-span-1 lg:mt-0 md:mt-4 sticky top-20 h-[calc(100vh-80px)] overflow-y-auto'>
 					<div>
-						<SideReviews 
+						<SideReviews
 							propertyId={property.id}
 							propertyReviews={propertyReviews}
 						/>
 					</div>
 					<div className='mt-4'>
-						<SideMap 
+						<SideMap
 							propertyId={property.id}
 							propertyLoc={position}
 							propertyReviews={propertyReviews}
-						 />
+						/>
 					</div>
 				</div>
 			</div>
@@ -302,22 +311,23 @@ export function SpecificListing({ id }: SpecificListingProps) {
 				<h4 className='text-2xl font-semibold tracking-tight pb-4'>
 					Available Rooms
 				</h4>
-				<Card className='bg-white border border-gray-300'>
+				<Card className='bg-white dark:bg-secondary border border-gray-300'>
 					<CardHeader>
 						<CardTitle className='text-lg'>
 							{/* Magreredirect dapat to sa modal ng 'View all photos -> rooms tab -> specific room target highlight or outline */}
 							<Button
-								onClick={() => window.open(thumbnail_url, '_blank')}
-								className='text-primary hover:underline text-md font-semibold pl-0'
+								onClick={() => setIsUnitGalleryModalOpen(true)}
+								className='text-primary dark:text-blue-300 underline text-md font-semibold pl-0'
 								variant='link'
 							>
 								{title}
 							</Button>
 						</CardTitle>
+
 						<CardDescription className=''>
 							<table className='w-full table-auto'>
 								<thead>
-									<tr className='border-b'>
+									<tr className='border-b dark:text-gray-100'>
 										<th className='px-4 py-2 text-center'>Details</th>
 										<th className='px-4 py-2 text-center'>
 											Current Number of Occupants
@@ -328,7 +338,7 @@ export function SpecificListing({ id }: SpecificListingProps) {
 								</thead>
 								<tbody>
 									<tr className='border-b'>
-										<td className='pl-4 py-2 border-r border-gray-300 w-[480px]'>
+										<td className='pl-4 py-2 border-r border-gray-300 w-[480px] dark:text-gray-200'>
 											<div className='flex items-center'>
 												<Bed className='mr-2' size={16} />
 												<span>4 beds</span>
@@ -371,10 +381,13 @@ export function SpecificListing({ id }: SpecificListingProps) {
 																i < 2 ? (
 																	<UserCheck2
 																		key={i}
-																		className='text-primary'
+																		className='text-primary dark:text-blue-300'
 																	/>
 																) : (
-																	<User2 key={i} className='text-gray-500' />
+																	<User2
+																		key={i}
+																		className='text-gray-500 dark:text-gray-200'
+																	/>
 																)
 															)}
 														</div>
@@ -386,11 +399,14 @@ export function SpecificListing({ id }: SpecificListingProps) {
 											</TooltipProvider>
 										</td>
 
-										<td className='pl-4 py-2 border-r border-gray-300 text-center'>
+										<td className='pl-4 py-2 border-r border-gray-300 text-center dark:text-gray-200'>
 											P10,500/month
 										</td>
-										<td className='py-2 flex justify-center items-center mt-12'>
-											<Button className='text-white px-4 py-2 rounded'>
+										<td className='py-2 flex justify-center items-center my-16'>
+											<Button
+												className='text-white px-4 py-2 rounded'
+												onClick={handleOpenBookingModal}
+											>
 												Book Now
 											</Button>
 										</td>
@@ -402,6 +418,22 @@ export function SpecificListing({ id }: SpecificListingProps) {
 				</Card>
 			</div>
 
+			<UnitGalleryModal
+				isOpen={isUnitGalleryModalOpen}
+				onClose={() => setIsUnitGalleryModalOpen(false)}
+				images={property.images || []}
+				reviews={propertyReviews || []}
+				locationPercentage={85}
+				cleanlinessPercentage={90}
+				valueForMoneyPercentage={80}
+				setSelectedImage={(url) => console.log('Image selected:', url)}
+			/>
+
+			<BookingCardModal
+				isOpen={isBookingModalOpen}
+				onClose={handleCloseBookingModal}
+			/>
+
 			{/* REVIEWS */}
 			<div
 				className='flex flex-col border-t border-gray-300 py-8 mr-4'
@@ -410,8 +442,8 @@ export function SpecificListing({ id }: SpecificListingProps) {
 				<h4 className='text-2xl font-semibold tracking-tight pb-4'>
 					Customer Reviews
 				</h4>
-				<BusinessReviews 
-					unitId={property?.id} 
+				<BusinessReviews
+					unitId={property?.id}
 					propertyReviews={propertyReviews}
 				/>
 			</div>
@@ -450,6 +482,21 @@ export function SpecificListing({ id }: SpecificListingProps) {
 					openModal={() => setIsLoginModalOpen(true)}
 					onLoginSuccess={handleLoginSuccess}
 				/>
+			)}
+
+			{selectedImage && (
+				<Dialog
+					open={Boolean(selectedImage)}
+					onOpenChange={() => setSelectedImage(null)}
+				>
+					<DialogContent className='p-0 max-w-6xl'>
+						<img
+							src={selectedImage}
+							alt='Selected property'
+							className='w-full h-auto'
+						/>
+					</DialogContent>
+				</Dialog>
 			)}
 		</ResponsiveLayout>
 	);

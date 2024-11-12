@@ -9,15 +9,15 @@ import {
 
 interface SideReviewsProps {
 	propertyId: number;
-	propertyLoc: any,
-	propertyReviews: any
+	propertyLoc: any;
+	propertyReviews: any;
 }
 
-const SideMap: React.FC<SideReviewsProps> = ({ 
+const SideMap: React.FC<SideReviewsProps> = ({
 	propertyId,
 	propertyLoc,
-	propertyReviews
- }) => {
+	propertyReviews,
+}) => {
 	const [locationAverage, setLocationAverage] = useState<number>(0);
 	const [directions, setDirections] = useState<any>(null);
 	const [userPosition, setUserPosition] = useState<{
@@ -41,8 +41,8 @@ const SideMap: React.FC<SideReviewsProps> = ({
 			const averageLocation = propertyReviews.reduce(
 				(sum, review) => sum + review.location,
 				0
-			)
-			setLocationAverage(averageLocation / propertyReviews.length)
+			);
+			setLocationAverage(averageLocation / propertyReviews.length);
 		}
 	}, [propertyId]);
 
@@ -105,7 +105,7 @@ const SideMap: React.FC<SideReviewsProps> = ({
 
 	return (
 		<div>
-			<Card className='bg-white border border-gray-300'>
+			<Card className='bg-white dark:bg-secondary border border-gray-300'>
 				<CardHeader>
 					<CardDescription>
 						<GoogleMap
@@ -122,21 +122,25 @@ const SideMap: React.FC<SideReviewsProps> = ({
 							{directions && <DirectionsRenderer directions={directions} />}
 						</GoogleMap>
 
-						<p className='text-lg mb-0 pb-0 font-bold mt-2'>
+						<p className='text-lg mb-0 pb-0 font-bold mt-2 dark:text-gray-100'>
 							{locationAverage.toFixed(1)} {ratingDescription}
 						</p>
-						<p className='text-sm pt-0 mt-0'>Location Rating Score</p>
-						<span className='text-sm pt-0 mt-0'>
+						<p className='text-sm pt-0 mt-0 dark:text-gray-300'>
+							Location Rating Score
+						</p>
+						<span className='text-sm pt-0 mt-0 dark:text-gray-300'>
 							1.2 kilometers from the center
 						</span>
 
 						<div className='border-t border-gray-300 my-2' />
 						<div>
-							<p className='text-sm font-semibold'>Nearby landmarks</p>
+							<p className='text-sm font-semibold dark:text-gray-100'>
+								Nearby landmarks
+							</p>
 							{landmarks.slice(0, 4).map((landmark, index) => (
 								<div
 									key={index}
-									className='flex justify-between items-center mt-1'
+									className='flex justify-between items-center mt-1 dark:text-gray-300'
 								>
 									<p className='text-xs'>{landmark.name}</p>
 									<p className='text-xs text-right'>{landmark.distance} km</p>
@@ -145,7 +149,7 @@ const SideMap: React.FC<SideReviewsProps> = ({
 							{landmarks.length > 4 && (
 								<Popover>
 									<PopoverTrigger asChild>
-										<button className='text-xs text-blue-500 mt-2'>
+										<button className='text-xs text-blue-500 mt-2 dark:text-blue-300'>
 											See more
 										</button>
 									</PopoverTrigger>
@@ -154,11 +158,13 @@ const SideMap: React.FC<SideReviewsProps> = ({
 										side='top'
 										className='p-4 bg-white shadow-xl border-gray-200'
 									>
-										<p className='text-sm font-semibold'>Nearby landmarks</p>
+										<p className='text-sm font-semibold dark:text-neutral-800'>
+											Nearby landmarks
+										</p>
 										{landmarks.map((landmark, index) => (
 											<div
 												key={index}
-												className='flex justify-between items-center'
+												className='flex justify-between items-center dark:text-neutral-700'
 											>
 												<p className='text-xs'>{landmark.name}</p>
 												<p className='text-xs text-right'>

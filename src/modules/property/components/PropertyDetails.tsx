@@ -65,7 +65,7 @@ const PropertyDetails: React.FC<PropertyDetailsProps> = ({
 	}, [description]);
 	return (
 		<>
-			<Card className='bg-white border border-gray-300'>
+			<Card className='bg-white dark:bg-secondary border border-gray-300'>
 				<CardHeader>
 					<CardTitle>Property Overview</CardTitle>
 					<CardDescription className='border-b border-gray-300 pb-3'>
@@ -75,7 +75,7 @@ const PropertyDetails: React.FC<PropertyDetailsProps> = ({
 				<CardContent className='text-sm font-normal'>
 					<div
 						className={`${
-							isExpanded ? '' : 'line-clamp-3'
+							isExpanded ? '' : 'line-clamp-4'
 						} overflow-hidden transition-all`}
 						ref={descriptionRef}
 					>
@@ -85,7 +85,7 @@ const PropertyDetails: React.FC<PropertyDetailsProps> = ({
 					{shouldShowToggle && (
 						<button
 							onClick={handleToggle}
-							className='text-blue-500 text-sm mt-2 '
+							className='text-blue-500 dark:text-blue-300 text-sm mt-2 '
 						>
 							{isExpanded ? 'See less' : 'See more'}
 						</button>
@@ -132,7 +132,7 @@ const PropertyDetails: React.FC<PropertyDetailsProps> = ({
 				</CardContent>
 			</Card>
 
-			<Card className='bg-white border border-gray-300'>
+			<Card className='bg-white dark:bg-secondary border border-gray-300'>
 				<CardHeader>
 					<CardTitle>Facilities</CardTitle>
 				</CardHeader>
