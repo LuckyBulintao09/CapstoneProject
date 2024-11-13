@@ -96,7 +96,8 @@ function TopNavigation() {
         <nav className="py-3 sticky z-[99] airBnbDesktop:z-10 top-0 w-full bg-background/95 shadow backdrop-blur supports-[backdrop-filter]:bg-background/60 dark:shadow-secondary">
             <div className="w-full grid grid-flow-col px-5">
                 <div className="flex flex-nowrap items-center justify-start h-11">
-                    <Image src="/Logo.png" alt="UniHomes logo" width={120} height={120} priority className="w-11 h-11 object-contain aspect-square" />
+                    <Image src="/Logo.png" alt="UniHomes logo" width={120} height={120} priority className="w-14 h-14 object-contain aspect-square" />
+                    <span className="text-xl font-bold">UniHomes</span>
                 </div>
                 {isDesktop ? (
                     <>
@@ -144,7 +145,7 @@ function TopNavigation() {
                                 </Link>
                             </li>
                             <li>
-                                <DropdownMenu>
+                                <DropdownMenu modal={false}>
                                     <DropdownMenuTrigger asChild>
                                         <Button
                                             variant="ghost"
@@ -175,7 +176,7 @@ function TopNavigation() {
                         <div className="flex flex-nowrap items-center justify-end gap-11">
                             {/* Notification here */}
                             {user ? (
-                                <DropdownMenu>
+                                <DropdownMenu modal={false}>
                                     <DropdownMenuTrigger className="rounded-full">
                                         <Avatar className="w-11 h-11 select-none">
                                             <AvatarImage src="" />

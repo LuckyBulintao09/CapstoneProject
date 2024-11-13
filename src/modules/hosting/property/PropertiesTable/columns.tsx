@@ -46,15 +46,12 @@ export const columns: ColumnDef<any>[] = [
     {
         accessorKey: "property",
         accessorFn: (row) => `${row.title}`,
-        header: () => {
-            return <span className="">Property</span>;
-        },
+        header: "Property",
         cell: ({ row }) => {
             const property_name = row.original.title;
             const thumbnail = row.original.thumbnail_url;
             const address = row.getValue<string>("address");
             const propertyId = row.getValue<string>("id")
-            const unitId = "123";
 
             const { viewMode } = React.useContext(PropertyViewModeContext);
 
@@ -87,16 +84,26 @@ export const columns: ColumnDef<any>[] = [
             return (
                 <div className="flex flex-col">
                     <div className="relative">
-                        <Image
-                            src={thumbnail}
-                            alt={property_name}
-                            width={1524}
-                            height={2032}
-                            className="rounded-xl object-cover overflow-clip aspect-[20/19] mb-3 select-none"
-                        />
+                        {thumbnail ? (
+                            <Image
+                                src={thumbnail}
+                                alt={property_name}
+                                width={1524}
+                                height={2032}
+                                className="rounded-xl object-cover overflow-clip aspect-[20/19] mb-3 select-none"
+                            />
+                        ) : (
+                            <Image
+                                src={`/placeholderImage.webp`}
+                                alt={`property image`}
+                                width={1524}
+                                height={2032}
+                                className="rounded-xl object-cover overflow-clip aspect-[20/19] mb-3 select-none"
+                            />
+                        )}
                         <div className="absolute top-0 right-0 mt-3 mr-3">
                             <Link
-                                href={`/hosting/property/${propertyId}/unit/${unitId}`}
+                                href={`/hosting/properties/${propertyId}`}
                                 className={cn(
                                     buttonVariants({ variant: "default", size: "sm" }),
                                     "flex items-center justify-center gap-2 rounded-full text-primary-foreground"
@@ -133,11 +140,11 @@ export const columns: ColumnDef<any>[] = [
     },
     {
         accessorKey: "",
-        header: "Rooms",
+        header: "Units",
     },
     {
         accessorKey: "id",
-        header: ({ column }) => {
+        header: () => {
             return <span className="sr-only">Actions</span>;
         },
         cell: ({ row }) => {
@@ -170,7 +177,7 @@ export const columns: ColumnDef<any>[] = [
                 //     </DropdownMenuContent>
                 // </DropdownMenu>
                 <Link 
-                    href={`/hosting/property/${propertyId}/unit/${unitId}`}
+                    href={`/hosting/properties/${propertyId}`}
                     className={cn(buttonVariants({ variant: "ghost", size: "sm" }), "flex items-center justify-center gap-2 px-1 rounded-full")}
                 >
                     Go to property

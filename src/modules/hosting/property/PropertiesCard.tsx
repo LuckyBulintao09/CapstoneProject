@@ -64,9 +64,7 @@ function PropertiesCard<TData, TValue>({ columns, data }: DataTableProps<TData, 
                                 if (
                                     !isDesktop &&
                                     (cell.column.columnDef.header ===
-                                        "Address" ||
-                                        cell.column.columnDef.header ===
-                                            "Verified")
+                                        "Address")
                                 ) {
                                     return null;
                                 }
