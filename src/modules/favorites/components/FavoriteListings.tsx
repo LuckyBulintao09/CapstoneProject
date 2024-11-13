@@ -58,7 +58,7 @@ export default function FavoriteListings({
 			const fetchFavorites = async () => {
 				try {
 					const { data, error } = await supabase
-						.rpc('get_user_favorites', { user_id: userId })
+						.rpc('get_all_fav', { user_id: userId })
 
 					if (error) {
 						throw error;

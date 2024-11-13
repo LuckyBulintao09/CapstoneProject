@@ -11,9 +11,9 @@ import {
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import SpecificBranchListings from "../../lessor-dashboard/components/SpecificBranchListings";
 import ReviewsUnderCompany from "./ReviewsUnderCompany";
-import { getAllPropertyUnderSpecificCompany } from "@/actions/property/getAllPropertyUnderSpecificCompany";
-import { getAllUnitUnderProperty } from "@/actions/unit/getAllUnitUnderProperty";
 import { ScrollArea } from "@/components/ui/scroll-area";
+import { getAllPropertyUnderSpecificCompanyRPC } from "@/actions/property/getAllPropertyUnderSpecificCompany";
+import BranchListings from "@/components/cardListings/BranchListings";
 
 interface Unit {
   id: number;
@@ -50,26 +50,21 @@ export function BusinessDetails({
   email,
   cp_number,
 }: BusinessDetailsProps) {
-  const [units, setUnits] = useState<Unit[]>([]);
   const [loading, setLoading] = useState<boolean>(true);
+  const [properties, setProperties] = useState<any>(null);
 
   useEffect(() => {
-    const fetchUnitsForAllProperties = async () => {
-      setLoading(true);
+    const fetchPropertys = async () => {
       try {
-        const properties = await getAllPropertyUnderSpecificCompany(companyId);
-        const allUnits = await Promise.all(
-          properties.map((property) => getAllUnitUnderProperty(property.id))
-        );
-        setUnits(allUnits.flat());
+        setProperties(await getAllPropertyUnderSpecificCompanyRPC(companyId));
       } catch (error) {
-        console.error("Error fetching units:", error);
-      } finally {
-        setLoading(false);
+        console.error("Error fetching propertys:", error);
       }
-    };
 
-    fetchUnitsForAllProperties();
+      setLoading(false);
+    }
+
+    fetchPropertys();
   }, [companyId]);
 
   return (
@@ -115,7 +110,7 @@ export function BusinessDetails({
             </CardHeader>
             <CardContent className="space-y-1">
               <ScrollArea className="h-[300px] w-full rounded-md">
-                {loading ? (
+                {/* {loading ? (
                   <div>Loading units...</div>
                 ) : units.length > 0 ? (
                   <div className="space-y-1 pt-1 pl-2 pb-3">
@@ -123,6 +118,17 @@ export function BusinessDetails({
                   </div>
                 ) : (
                   <p>No units available.</p>
+                )} */}
+                {loading ? (
+                  <div className="text-center">Loading properties...</div>
+                ) : (
+                  <div className="grid grid-cols-1 gap-4 m-2 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 sm:grid-cols-1 xs:grid-cols-1">
+                    {properties.slice(0, 4).map((item) => (
+                      <div key={item.id}>
+                        <BranchListings key={item.id} {...item} />
+                      </div>
+                    ))}
+                  </div>
                 )}
               </ScrollArea>
             </CardContent>

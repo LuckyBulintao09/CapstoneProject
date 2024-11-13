@@ -42,7 +42,7 @@ const MainPreview: React.FC<MainPreviewProps> = ({ propertyId, propertyReviews }
 			if (error) {
 				console.error('Error fetching property images:', error);
 			} else if (data && data.length > 0) {
-				setPropertyImages(data[0].property_image);
+				setPropertyImages(data[0].property_image || []);
 			}
 		
 			setLoading(false);
