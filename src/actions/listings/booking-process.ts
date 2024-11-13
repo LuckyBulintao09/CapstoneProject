@@ -8,23 +8,14 @@ export const fetchUserData = async () => {
     data: { session },
     error,
   } = await supabase.auth.getSession();
-
   if (error) {
     console.error("Error retrieving session:", error.message);
     return null;
   }
-
-  if (session?.user) {
-    return session.user.id;
-  }
-
-  return null;
+  return session?.user?.id || null;
 };
 
-export const checkExistingReservation = async (
-  userId: string,
-  unitId: number
-) => {
+export const checkExistingReservation = async (userId, unitId) => {
   const { data, error } = await supabase
     .from("transaction")
     .select("*")
@@ -40,7 +31,7 @@ export const checkExistingReservation = async (
   return data.length > 0;
 };
 
-export const checkUnitReservationStatus = async (unitId: number) => {
+export const checkUnitReservationStatus = async (unitId) => {
   const { data, error } = await supabase
     .from("unit")
     .select("isReserved")
@@ -56,13 +47,14 @@ export const checkUnitReservationStatus = async (unitId: number) => {
 };
 
 export const createReservation = async (
-  userId: string,
-  unitId: number,
-  selectedService: string,
-  date: Date
+  userId,
+  unitId,
+  selectedService,
+  date,
+  guestNumber,
+  paymentOption
 ) => {
   const formattedDate = format(date, "yyyy-MM-dd");
-
   const transactionStatus =
     selectedService === "Room Reservation" ? "reserved" : "pending";
 
@@ -76,6 +68,8 @@ export const createReservation = async (
         transaction_status: transactionStatus,
         isPaid: false,
         unit_id: unitId,
+        guest_number: guestNumber,
+        payment_option: paymentOption,
       },
     ]);
 
