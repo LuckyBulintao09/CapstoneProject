@@ -15,6 +15,7 @@ import {
 	Users2,
 	House,
 	Shield,
+	Pin,
 } from 'lucide-react';
 import BusinessReviews from '../components/BusinessReviews';
 import MainPreview from '../components/MainPreview';
@@ -483,10 +484,12 @@ export function SpecificListing({ id }: SpecificListingProps) {
 				<div className='flex items-center justify-between pb-4'>
 					<h4 className='text-2xl font-semibold tracking-tight'>Location</h4>
 					<Button
-						className='flex items-center w-40 border border-blue-500 text-blue-500 py-2 px-4 rounded hover:bg-blue-50 dark:hover:bg-blue-900 dark:text-white bg-foreground'
+						className='text-primary dark:text-foreground dark:bg-primary border-primary gap-2 items-center justify-center'
+						variant="outline"
 						onClick={handleAddUserLocation}
 					>
-						<ArrowUpRight className='mr-2' /> Show Directions
+						<MapPin className='h-5 w-5' />
+						Show Directions
 					</Button>
 				</div>
 				<Card className='lg:h-[550px] xs:h-[365px] border-none'>
