@@ -49,7 +49,7 @@ const SideReviews: React.FC<SideReviewsProps> = ({
 			);
 			setValueForMoneyPercentage(averageValueForMoney / propertyReviews.length);
 		}
-	}, []);
+	}, [propertyId]);
 
 	// Map the average rating to a descriptive scale
 	const mapScoreToRating = (averageScore: number): string => {

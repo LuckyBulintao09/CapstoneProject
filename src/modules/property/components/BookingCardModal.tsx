@@ -24,8 +24,8 @@ import {
 interface BookingCardProps {}
 
 export const BookingCardModal: React.FC<
-	BookingCardProps & { isOpen: boolean; onClose: () => void }
-> = ({ isOpen, onClose }) => {
+	BookingCardProps & { isOpen: boolean; onClose: () => void; unitID: number }
+> = ({ isOpen, onClose, unitID }) => {
 	const [date, setDate] = useState<Date | undefined>();
 	const [isCalendarOpen, setIsCalendarOpen] = useState(false);
 	const [selectedService, setSelectedService] = useState<string>('');

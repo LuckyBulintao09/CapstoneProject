@@ -38,24 +38,7 @@ export const fetchProperty = async (
 
 export const fetchPropertyReviews = async (propertyId: number) => {
       const { data, error } = await supabase
-      .from('ratings_review')
-      .select(`
-        ratings,
-        comment,
-        cleanliness,
-        location,
-        value_for_money,
-        account:user_id (
-          firstname,
-          lastname
-        ),
-        unit:unit_id (
-          property:property_id (
-            id
-          )
-        )
-      `)
-      .eq('unit.property.id', propertyId);
+      .rpc('get_all_reviews_under_property', { p_id: propertyId })
 
     if (error) {
       console.error('Error fetching ratings with user details:', error);
@@ -63,6 +46,30 @@ export const fetchPropertyReviews = async (propertyId: number) => {
     }
 
     return data;
+}
+
+export const fetchPropertyFacilities = async (propertyId: number) => {
+  const { data, error } = await supabase
+  .rpc('get_property_common_amenities', { p_id: propertyId })
+
+  if (error) {
+    console.error("Error fetching property facilities:", error);
+    return null;
+  }
+  console.log(data)
+  return data.map(item => item.amenity_name)
+}
+
+export const fetchPropertyUnits = async (propertyId: number) => {
+  const { data: units, error: unitError } = await supabase
+    .rpc('get_unit_under_property', { p_id: propertyId });
+
+  if (unitError) {
+    console.error("Error fetching property units:", unitError);
+    return null;
+  }
+  return units
+  //KULANG PA COLUMNS NA NIRERETURN
 }
 
 export const fetchFavorite = async (userId: string | null, propertyId: number) => {

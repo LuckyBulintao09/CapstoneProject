@@ -3,16 +3,16 @@ import { BentoGrid, BentoGridItem } from "@/components/ui/bento-grid";
 import { Star } from "lucide-react";
 
 interface BusinessReviewsProps {
-  unitId: number | undefined;
+  propertyId: number | undefined;
   propertyReviews: any;
 }
 
-const BusinessReviews: React.FC<BusinessReviewsProps> = ({ unitId, propertyReviews }) => {
+const BusinessReviews: React.FC<BusinessReviewsProps> = ({ propertyId, propertyReviews }) => {
   const [reviews, setReviews] = useState<any[]>([]);
 
   useEffect(() => {
     setReviews(propertyReviews);
-  }, []);
+  }, [propertyId]);
 
   return (
     <div className="grid md:grid-cols-2 xl:grid-cols-3 gap-4 justify-items-center">
@@ -23,7 +23,7 @@ const BusinessReviews: React.FC<BusinessReviewsProps> = ({ unitId, propertyRevie
               title={
                 <div className="flex items-center justify-between">
                   <span className="text-sm line-clamp-1">
-                    {review.account.firstname} {review.account.lastname}
+                    {review.firstname} {review.lastname}
                   </span>
                   <div className="flex items-center">
                     <Star className="h-4 w-4 text-yellow-500" fill="#eab308" />

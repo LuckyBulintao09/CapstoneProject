@@ -1,7 +1,5 @@
 /* eslint-disable @next/next/no-img-element */
 /* eslint-disable @typescript-eslint/no-explicit-any */
-import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
-import { Card, CardDescription, CardHeader } from '@/components/ui/card';
 import {
 	Dialog,
 	DialogContent,
@@ -10,63 +8,36 @@ import {
 } from '@/components/ui/dialog';
 import { ScrollArea } from '@/components/ui/scroll-area';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
-import React from 'react';
-import GalleryModalReviewSection from './GalleryModalReviewSection';
+import React, { use } from 'react';
+import { createClient } from "@/utils/supabase/client";
 
 interface UnitGalleryModalProps {
 	isOpen: boolean;
 	onClose: () => void;
-	images: string[];
-	reviews: any[];
-	locationPercentage: number;
-	cleanlinessPercentage: number;
-	valueForMoneyPercentage: number;
-	setSelectedImage: (url: string) => void;
+	unitID: number;
 }
 
 const UnitGalleryModal: React.FC<UnitGalleryModalProps> = ({
 	isOpen,
 	onClose,
-	images,
-	reviews,
-	locationPercentage,
-	cleanlinessPercentage,
-	valueForMoneyPercentage,
-	setSelectedImage,
+	unitID,
 }) => {
-	// rating scale - based sa booking.com
-	const mapScoreToRating = (averageScore: number): string => {
-		if (averageScore >= 9) return 'Exceptional';
-		if (averageScore >= 8) return 'Wonderful';
-		if (averageScore >= 7) return 'Excellent';
-		if (averageScore >= 6) return 'Good';
-		if (averageScore >= 5) return 'Pleasant';
-		if (averageScore >= 4) return 'Fair';
-		if (averageScore >= 3) return 'Disappointing';
-		if (averageScore >= 2) return 'Poor';
-		if (averageScore >= 1) return 'Very Poor';
-		return 'Bad';
-	};
+	const supabase = createClient();
+	const [images, setImages] = React.useState<string[]>([]);
 
-	const getReviewAverage = (review: any) => {
-		return (review.location + review.cleanliness + review.value_for_money) / 3;
-	};
+	React.useEffect(() => {
+		const fetchImages = async () => {
+			const { data, error } = await supabase
+				.from('unit')
+				.select('unit_image')
+				.eq('id', unitID);
 
-	const getOverallRating = () => {
-		const totalReviews = reviews.length;
-		if (totalReviews === 0) return 0;
+				// setImages(data[0].unit_image);
+		}
 
-		const totalScore = reviews.reduce(
-			(sum, review) => sum + getReviewAverage(review),
-			0
-		);
-		const averageScore = totalScore / totalReviews;
-		return averageScore;
-	};
-
-	const overallRating = getOverallRating();
-	const ratingDescription = mapScoreToRating(overallRating);
-
+		fetchImages();
+	}, []);
+	
 	return (
 		<Dialog open={isOpen} onOpenChange={onClose}>
 			<DialogContent className='p-6 max-w-7xl bg-white mx-2 dark:bg-secondary'>
@@ -80,7 +51,7 @@ const UnitGalleryModal: React.FC<UnitGalleryModalProps> = ({
 					<hr className='border-t border-gray-300' />
 
 					{/* ROOM VIEW */}
-					<TabsContent value='rooms' className='h-[450px] mt-0'>
+					{/* <TabsContent value='rooms' className='h-[450px] mt-0'>
 						<div>
 							<ScrollArea className='h-[430px] overflow-y-auto pr-4 my-4'>
 								<div className='grid grid-cols-3 gap-4'>
@@ -95,7 +66,7 @@ const UnitGalleryModal: React.FC<UnitGalleryModalProps> = ({
 								</div>
 							</ScrollArea>
 						</div>
-					</TabsContent>
+					</TabsContent> */}
 				</Tabs>
 			</DialogContent>
 		</Dialog>

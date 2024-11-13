@@ -45,9 +45,9 @@ export default function BranchListings({
 
   return (
     <div>
-      <BentoGrid className="max-w-screen mx-auto">
+      <BentoGrid className="max-w-screen mx-auto cursor-pointer" 
+          onClick={handleClick}>
         <BentoGridItem
-          onClick={handleClick}
           title={
             <div className="flex items-center justify-between">
               <span className="sm:text-sm xs:text-xs line-clamp-1">

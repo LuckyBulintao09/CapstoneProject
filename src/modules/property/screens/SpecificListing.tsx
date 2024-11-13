@@ -13,6 +13,8 @@ import {
 	UserCheck,
 	UserCheck2,
 	Users2,
+	House,
+	Shield,
 } from 'lucide-react';
 import BusinessReviews from '../components/BusinessReviews';
 import MainPreview from '../components/MainPreview';
@@ -34,6 +36,8 @@ import {
 	fetchFavorite,
 	fetchPropertyLocation,
 	fetchPropertyReviews,
+	fetchPropertyFacilities,
+	fetchPropertyUnits,
 } from '@/actions/listings/specific-listing';
 import ErrorPage from '@/components/ui/ErrorPage';
 import {
@@ -60,6 +64,7 @@ import SideMap from '../components/SideMap';
 import UnitGalleryModal from '../components/UnitGalleryModal';
 import { Dialog, DialogContent } from '@/components/ui/dialog';
 import { BookingCardModal } from '../components/BookingCardModal';
+import { set } from 'date-fns';
 
 interface SpecificListingProps {
 	id: number;
@@ -69,11 +74,12 @@ export function SpecificListing({ id }: SpecificListingProps) {
 	const [isFavourite, setIsFavourite] = useState(false);
 	const [property, setProperty] = useState<any | null>(null);
 	const [propertyReviews, setPropertyReviews] = useState<any>(null);
+	const [units, setUnits] = useState<any>(null);
+	const [commonFacilities, setCommonFacilities] = useState<any>(null);
 	const [userId, setUserId] = useState<string | null>(null);
 	const [isLoginModalOpen, setIsLoginModalOpen] = useState(false);
 	const [loading, setLoading] = useState(true);
 	const [error, setError] = useState(false);
-	const [amenitiesList, setAmenitiesList] = useState<any[]>([]);
 	const [position, setPosition] = useState({
 		lat: 16.420039834357972,
 		lng: 120.59908426196893,
@@ -86,6 +92,7 @@ export function SpecificListing({ id }: SpecificListingProps) {
 	const [isUnitGalleryModalOpen, setIsUnitGalleryModalOpen] = useState(false);
 	const [selectedImage, setSelectedImage] = useState<string | null>(null);
 	const [isBookingModalOpen, setIsBookingModalOpen] = useState(false);
+	const [selectedUnit, setSelectedUnit] = useState<any>(null);
 
 	useEffect(() => {
 		const loadUserAndProperty = async () => {
@@ -102,12 +109,13 @@ export function SpecificListing({ id }: SpecificListingProps) {
 
 				setProperty(property);
 				setPropertyReviews(await fetchPropertyReviews(id));
+				setCommonFacilities(await fetchPropertyFacilities(id));
 				setIsFavourite(await fetchFavorite(userId, id));
-				setAmenitiesList(await get_unitAmenities(property?.id));
 				setPosition({
 					lat: (await fetchPropertyLocation(id))[0].latitude,
 					lng: (await fetchPropertyLocation(id))[0].longitude,
 				});
+				setUnits(await fetchPropertyUnits(id));
 				setLoading(false);
 			} catch (err) {
 				setError(true);
@@ -116,6 +124,7 @@ export function SpecificListing({ id }: SpecificListingProps) {
 		};
 		loadUserAndProperty();
 	}, [id]);
+
 
 	const handleToggleFavourite = async () => {
 		if (!userId) {
@@ -176,13 +185,25 @@ export function SpecificListing({ id }: SpecificListingProps) {
 		);
 	};
 
-	const handleOpenBookingModal = () => {
+	const handleOpenBookingModal = (unit_id: number) => {
 		setIsBookingModalOpen(true);
+		setSelectedUnit(unit_id);
 	};
 
 	const handleCloseBookingModal = () => {
 		setIsBookingModalOpen(false);
+		setSelectedUnit(null);
 	};
+
+	const handleOpenUnitGallery = (unit_id: number) => {
+		setIsUnitGalleryModalOpen(true);
+		setSelectedUnit(unit_id);
+	}
+
+	const handleCloseUnitGallery = () => {
+		setIsUnitGalleryModalOpen(false);
+		setSelectedUnit(null);
+	}
 
 	if (loading)
 		return (
@@ -255,7 +276,10 @@ export function SpecificListing({ id }: SpecificListingProps) {
 			</div>
 
 			<div className='grid grid-cols-5 gap-2 mt-4'>
-				<MainPreview propertyId={property.id} />
+				<MainPreview 
+					propertyId={property.id} 
+					propertyReviews={propertyReviews}
+				/>
 			</div>
 
 			<div className='sticky top-[80px] z-10 shadow-lg rounded-lg'>
@@ -269,13 +293,11 @@ export function SpecificListing({ id }: SpecificListingProps) {
 			>
 				<div className='col-span-2 space-y-5'>
 					<PropertyDetails
-						privacyType={privacy_type}
 						structure={structure}
-						bedrooms={1}
-						beds={1}
 						occupants={5}
 						description={description}
-						amenitiesList={amenitiesList}
+						facilities={commonFacilities}
+						address={address}
 					/>
 					<Banner
 						ownerName={property.company.account.firstname}
@@ -311,127 +333,131 @@ export function SpecificListing({ id }: SpecificListingProps) {
 				<h4 className='text-2xl font-semibold tracking-tight pb-4'>
 					Available Rooms
 				</h4>
-				<Card className='bg-white dark:bg-secondary border border-gray-300'>
+
+				
+				{/* MAP UNITS HERE */}
+				{units.map((unit) => (
+				<Card key={unit.id} className='bg-white dark:bg-secondary border border-gray-300'>
 					<CardHeader>
-						<CardTitle className='text-lg'>
-							{/* Magreredirect dapat to sa modal ng 'View all photos -> rooms tab -> specific room target highlight or outline */}
-							<Button
-								onClick={() => setIsUnitGalleryModalOpen(true)}
-								className='text-primary dark:text-blue-300 underline text-md font-semibold pl-0'
-								variant='link'
-							>
-								{title}
-							</Button>
-						</CardTitle>
+					<CardTitle className='text-lg'>
+						{/* Redirect to the modal for this specific unit */}
+						<Button
+						onClick={() => handleOpenUnitGallery(unit.id)}
+						className='text-primary dark:text-blue-300 underline text-md font-semibold pl-0'
+						variant='link'
+						>
+						{unit.title}
+						</Button>
+					</CardTitle>
 
-						<CardDescription className=''>
-							<table className='w-full table-auto'>
-								<thead>
-									<tr className='border-b dark:text-gray-100'>
-										<th className='px-4 py-2 text-center'>Details</th>
-										<th className='px-4 py-2 text-center'>
-											Current Number of Occupants
-										</th>
-										<th className='px-4 py-2 text-center'>Price</th>
-										<th className='px-4 py-2 text-center'>Action</th>
-									</tr>
-								</thead>
-								<tbody>
-									<tr className='border-b'>
-										<td className='pl-4 py-2 border-r border-gray-300 w-[480px] dark:text-gray-200'>
-											<div className='flex items-center'>
-												<Bed className='mr-2' size={16} />
-												<span>4 beds</span>
-											</div>
-											<div className='flex items-center'>
-												<Users2 className='mr-2' size={16} />
-												<span>For: 4 guests</span>
-											</div>
-											<div className='flex items-center'>
-												<Axis3D className='mr-2' size={16} />
-												<span>Room size: 18 m²/194 ft²</span>
-											</div>
-											<div className='flex items-center'>
-												<Glasses className='mr-2' size={16} />
-												<span>With Outdoor View</span>
-											</div>
-											<div className='border-t border-gray-300 my-3' />
-											<div className='grid lg:grid-cols-2 sm:grid-cols-1'>
-												{[
-													'Amenity 1',
-													'Amenity 2',
-													'Amenity 3',
-													'Amenity 4',
-													'Amenity 5',
-												].map((item, index) => (
-													<div key={index} className='flex items-center'>
-														<Check className='mr-2 text-green-600' size={12} />
-														<span>{item}</span>
-													</div>
-												))}
-											</div>
-										</td>
+					<CardDescription className=''>
+						<table className='w-full table-auto'>
+						<thead>
+							<tr className='border-b dark:text-gray-100'>
+							<th className='px-4 py-2 text-center'>Details</th>
+							<th className='px-4 py-2 text-center'>Current Number of Occupants</th>
+							<th className='px-4 py-2 text-center'>Price</th>
+							<th className='px-4 py-2 text-center'>Action</th>
+							</tr>
+						</thead>
+						<tbody>
+							<tr className='border-b'>
+							<td className='pl-4 py-2 border-r border-gray-300 w-[480px] dark:text-gray-200'>
+								<div className='flex items-center'>
+								<Shield className='mr-2' size={16} />
+								<span>Privacy Type: {unit.privacy_type}</span>
+								</div>
+								<div className='flex items-center'>
+								<House className='mr-2' size={16} />
+								<span>{unit.bedrooms} rooms</span>
+								</div>
+								<div className='flex items-center'>
+								<Bed className='mr-2' size={16} />
+								<span>{unit.beds} beds</span>
+								</div>
+								<div className='flex items-center'>
+								<Users2 className='mr-2' size={16} />
+								<span>For: {unit.occupants} guests</span>
+								</div>
+								<div className='flex items-center'>
+								<Axis3D className='mr-2' size={16} />
+								<span>Room size: {unit.room_size > 0 ? `${unit.room_size} m²` : 'N/A'}</span>
+								</div>
+								<div className='flex items-center'>
+								<Glasses className='mr-2' size={16} />
+								<span>{unit.outside_view ? 'With Outdoor View' : 'No Outdoor View'}</span>
+								</div>
+								<div className='border-t border-gray-300 my-3' />
+								<div className='grid lg:grid-cols-2 sm:grid-cols-1'>
+								{unit.amenities && unit.amenities.length > 0 && (
+								<div className='grid lg:grid-cols-2 sm:grid-cols-1'>
+									{unit.amenities.map((amenity, index) => (
+									<div key={index} className='flex items-center'>
+										<Check className='mr-2 text-green-600' size={12} />
+										<span>{amenity}</span>
+									</div>
+									))}
+								</div>
+								)}
+								</div>
+							</td>
 
-										<td className='pl-4 py-2 border-r border-gray-300 max-w-[10px] text-center'>
-											<TooltipProvider>
-												<Tooltip>
-													<TooltipTrigger asChild>
-														<div className='flex justify-center items-center space-x-1 cursor-pointer'>
-															{Array.from({ length: 4 }, (_, i) =>
-																i < 2 ? (
-																	<UserCheck2
-																		key={i}
-																		className='text-primary dark:text-blue-300'
-																	/>
-																) : (
-																	<User2
-																		key={i}
-																		className='text-gray-500 dark:text-gray-200'
-																	/>
-																)
-															)}
-														</div>
-													</TooltipTrigger>
-													<TooltipContent>
-														<p>2 occupants — 2 spots available</p>
-													</TooltipContent>
-												</Tooltip>
-											</TooltipProvider>
-										</td>
+							<td className='pl-4 py-2 border-r border-gray-300 max-w-[10px] text-center'>
+								<TooltipProvider>
+								<Tooltip>
+									<TooltipTrigger asChild>
+									<div className='flex justify-center items-center space-x-1 cursor-pointer'>
+										{Array.from({ length: unit.occupants }, (_, i) =>
+										i < unit.current_occupants ? (
+											<UserCheck2 key={i} className='text-primary dark:text-blue-300' />
+										) : (
+											<User2 key={i} className='text-gray-500 dark:text-gray-200' />
+										)
+										)}
+									</div>
+									</TooltipTrigger>
+									<TooltipContent>
+									<p>
+										{unit.current_occupants} occupants —{' '}
+										{unit.occupants - unit.current_occupants} spots available
+									</p>
+									</TooltipContent>
+								</Tooltip>
+								</TooltipProvider>
+							</td>
 
-										<td className='pl-4 py-2 border-r border-gray-300 text-center dark:text-gray-200'>
-											P10,500/month
-										</td>
-										<td className='py-2 flex justify-center items-center my-16'>
-											<Button
-												className='text-white px-4 py-2 rounded'
-												onClick={handleOpenBookingModal}
-											>
-												Book Now
-											</Button>
-										</td>
-									</tr>
-								</tbody>
-							</table>
-						</CardDescription>
+							<td className='pl-4 py-2 border-r border-gray-300 text-center dark:text-gray-200'>
+								P{unit.price}/month
+							</td>
+
+							<td className='py-2 flex justify-center items-center my-16'>
+								<Button
+								className='text-white px-4 py-2 rounded'
+								onClick={() => handleOpenBookingModal(unit.id)}
+								>
+								Book Now
+								</Button>
+							</td>
+							</tr>
+						</tbody>
+						</table>
+					</CardDescription>
 					</CardHeader>
 				</Card>
+				))}
+
 			</div>
 
 			<UnitGalleryModal
 				isOpen={isUnitGalleryModalOpen}
-				onClose={() => setIsUnitGalleryModalOpen(false)}
-				images={property.images || []}
-				reviews={propertyReviews || []}
-				locationPercentage={85}
-				cleanlinessPercentage={90}
-				valueForMoneyPercentage={80}
-				setSelectedImage={(url) => console.log('Image selected:', url)}
+				onClose={() => handleCloseUnitGallery()}
+				unitID={selectedUnit}
 			/>
 
 			<BookingCardModal
 				isOpen={isBookingModalOpen}
 				onClose={handleCloseBookingModal}
+				unitID={selectedUnit}
 			/>
 
 			{/* REVIEWS */}
@@ -442,8 +468,8 @@ export function SpecificListing({ id }: SpecificListingProps) {
 				<h4 className='text-2xl font-semibold tracking-tight pb-4'>
 					Customer Reviews
 				</h4>
-				<BusinessReviews
-					unitId={property?.id}
+				<BusinessReviews 
+					propertyId={id} 
 					propertyReviews={propertyReviews}
 				/>
 			</div>
