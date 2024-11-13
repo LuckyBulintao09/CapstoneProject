@@ -13,7 +13,7 @@ const Testimonials = () => {
 						<p className='mb-2 text-xs text-muted-foreground text-left lg:text-right'>
 							{spiels.TESTIMONIALS_LABEL}
 						</p>
-						<h1 className='font-semibold xs:text-xl sm:text-2xl md:text-3xl lg:text-3xl xl:text-4xl my-3 text-left lg:text-right dark:text-primary-foreground'>
+						<h1 className='font-semibold xs:text-xl sm:text-2xl md:text-3xl lg:text-3xl xl:text-4xl my-3 text-left lg:text-right dark:text-foreground'>
 							{spiels.TESTIMONIALS_HEADER}
 						</h1>
 						<p className='mt-1 text-muted-foreground md:mt-3 text-left lg:text-right lg:text-lg'>

@@ -9,7 +9,7 @@ const CTA = () => {
 			<Separator className='w-full h-px bg-blue-500 opacity-30 mb-20' />
 			<div className='container mx-auto'>
 				<div className='flex flex-col items-center text-center'>
-					<h1 className='font-semibold xs:text-xl sm:text-2xl md:text-3xl lg:text-3xl xl:text-4xl my-3 text-left lg:text-right dark:text-primary-foreground'>
+					<h1 className='font-semibold xs:text-xl sm:text-2xl md:text-3xl lg:text-3xl xl:text-4xl my-3 text-left lg:text-right dark:text-foreground'>
 						{spiels.CTA_LABEL}
 					</h1>
 					<p className='mb-8 max-w-3xl text-muted-foreground lg:text-lg'>

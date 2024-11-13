@@ -37,7 +37,7 @@ async function PropertyPage() {
 
     return (
         <PropertyViewModeProvider>
-            <div className="container mx-auto">
+            <div className="container mx-auto pb-16">
                 <Properties data={properties} />
             </div>
         </PropertyViewModeProvider>

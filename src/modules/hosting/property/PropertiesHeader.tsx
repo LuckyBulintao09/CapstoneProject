@@ -19,6 +19,7 @@ import { PropertyViewModeContext } from "./PropertyViewModeProvider";
 
 import { Table } from "@tanstack/react-table";
 import Link from "next/link";
+import CustomBreadcrumbs from "../components/CustomBreadcrumbs";
 
 interface HeaderToolbarData<TData> {
     table: Table<TData>;
@@ -33,92 +34,70 @@ function PropertiesHeader<TData>({ table }: HeaderToolbarData<TData>) {
     const isSmallDesktop = useMediaQuery("(min-width: 950px)");
 
     return (
-        <div className="flex flex-row items-center gap-5 my-5 py-3">
-            <div
-                className={cn(
-                    (!isDesktop && openSearch) ||
-                        (!isSmallDesktop && openSearch)
-                        ? "hidden"
-                        : "md:mr-14"
-                )}
-            >
-                <h1
-                    className={cn(
-                        !isMobile
-                            ? "text-nowrap font-light text-4xl"
-                            : "font-light text-4xl text-wrap"
-                    )}
-                >
-                    Your properties
-                </h1>
-            </div>
+        <div className="flex flex-col justify-start my-5 py-3">
+            <CustomBreadcrumbs />
+            <div className="flex flex-row items-center gap-5 ">
+                <div className={cn((!isDesktop && openSearch) || (!isSmallDesktop && openSearch) ? "hidden" : "md:mr-14")}>
+                    <h1 className={cn(!isMobile ? "text-nowrap font-light text-4xl" : "font-light text-4xl text-wrap")}>Your properties</h1>
+                </div>
 
-            <div className="relative w-full flex justify-end">
-                {openSearch ? (
-                    <Input
-                        type="text"
-                        startContent={<Search className="w-4 h-auto" />}
-                        endContent={
-                            <Button
-                                variant="ghost"
-                                size="icon"
-                                onClick={() => {
-                                    setOpenSearch(false);
-                                    table.resetGlobalFilter();
-                                }}
-                                className="rounded-full h-5 w-5 hover:bg-slate-400 bg-slate-300 dark:bg-slate-500 hover:dark:bg-slate-400"
-                            >
-                                <X className="w-3 h-3" />
-                            </Button>
-                        }
-                        radius="full"
-                        variant="bordered"
-                        placeholder="Search listings by name or location"
-                        className="w-full"
-                        value={table.getState().globalFilter}
-                        onChange={(event) =>
-                            table.setGlobalFilter(event.target.value)
-                        }
-                    />
-                ) : (
+                <div className="relative w-full flex justify-end">
+                    {openSearch ? (
+                        <Input
+                            type="text"
+                            startContent={<Search className="w-4 h-auto" />}
+                            endContent={
+                                <Button
+                                    variant="ghost"
+                                    size="icon"
+                                    onClick={() => {
+                                        setOpenSearch(false);
+                                        table.resetGlobalFilter();
+                                    }}
+                                    className="rounded-full h-5 w-5 hover:bg-slate-400 bg-slate-300 dark:bg-slate-500 hover:dark:bg-slate-400"
+                                >
+                                    <X className="w-3 h-3" />
+                                </Button>
+                            }
+                            radius="full"
+                            variant="bordered"
+                            placeholder="Search listings by name or location"
+                            className="w-full"
+                            value={table.getState().globalFilter}
+                            onChange={(event) => table.setGlobalFilter(event.target.value)}
+                        />
+                    ) : (
+                        <Button
+                            variant="outline"
+                            size="icon"
+                            className="rounded-full"
+                            onClick={() => {
+                                setOpenSearch(true);
+                            }}
+                        >
+                            <Search className="w-4 h-auto" />
+                        </Button>
+                    )}
+                </div>
+
+                <div className={cn(!isDesktop && openSearch ? "hidden" : "flex flex-row gap-5")}>
                     <Button
                         variant="outline"
                         size="icon"
                         className="rounded-full"
                         onClick={() => {
-                            setOpenSearch(true);
+                            setViewMode(viewMode === "table" ? "grid" : "table");
                         }}
                     >
-                        <Search className="w-4 h-auto" />
+                        {viewMode === "table" ? <LayoutGrid className="w-4 h-auto" /> : <StretchHorizontal className="w-4 h-auto" />}
                     </Button>
-                )}
-            </div>
-
-            <div
-                className={cn(
-                    !isDesktop && openSearch ? "hidden" : "flex flex-row gap-5"
-                )}
-            >
-                <Button
-                    variant="outline"
-                    size="icon"
-                    className="rounded-full"
-                    onClick={() => {
-                        setViewMode(viewMode === "table" ? "grid" : "table");
-                    }}
-                >
-                    {viewMode === "table" ? (
-                        <LayoutGrid className="w-4 h-auto" />
-                    ) : (
-                        <StretchHorizontal className="w-4 h-auto" />
-                    )}
-                </Button>
-                <Link
-                    href={"/hosting/property/host-a-property"}
-                    className={cn(buttonVariants({size: "icon", variant: "outline"}), "rounded-full",)}
-                >
-                    <Plus className="w-5 h-auto" />
-                </Link>
+                    <Link
+                        href={"/hosting/properties/host-a-property"}
+                        className={cn(buttonVariants({ size: "icon", variant: "outline" }), "rounded-full")}
+                    >
+                        <Plus className="w-5 h-auto" />
+                    </Link>
+                </div>
             </div>
         </div>
     );

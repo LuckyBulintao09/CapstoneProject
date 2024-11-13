@@ -29,7 +29,7 @@ const HomeScreen = () => {
 
 	return (
 		<HomeContext.Provider value={{testimonials}}>
-			<section className='dark:bg-secondary pb-10'>
+			<section className='dark:bg-background pb-10'>
 				{/* <section className='relative before:absolute before:inset-0 before:bg-primary/10 before:[mask-image:url(https://www.shadcnblocks.com/images/block/waves.svg)] before:[mask-repeat:repeat] before:[mask-size:_64px_32px]'> */}
 				<TracingBeam>
 					<section id='introduction' className='py-16'>

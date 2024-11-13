@@ -472,7 +472,7 @@ export function Globe() {
 	];
 
 	return (
-		<div className='items-center justify-center h-full md:h-auto bg-white relative w-full dark:bg-secondary'>
+		<div className='flex items-center justify-center h-full md:h-auto relative w-full dark:bg-transparent'>
 			<div className='max-w-auto mx-auto w-full relative overflow-hidden h-full xl:h-[40rem] xlg:h-[32rem] lg:h-[45rem] xl:pl-10 md:h-[35rem] sm:h-[15rem] xs:h-[12rem]'>
 				<motion.div
 					initial={{
@@ -488,7 +488,7 @@ export function Globe() {
 					}}
 					className='div'
 				></motion.div>
-				<div className='absolute w-full bottom-0 inset-x-0 h-40 bg-gradient-to-b pointer-events-none select-none from-transparent dark:to-secondary	 to-white z-40' />
+				<div className='absolute w-full bottom-0 inset-x-0 h-40 bg-gradient-to-b pointer-events-none select-none' />
 				<div className='absolute w-full -bottom-15 h-72 md:h-full z-10'>
 					<World
 						data={[...sampleArcs, ...houseMarkers]}
