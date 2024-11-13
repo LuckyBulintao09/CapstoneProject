@@ -1,6 +1,6 @@
 "use client";
 import { ColumnDef } from "@tanstack/react-table";
-import { DataTableColumnHeader } from "@/app/(auth)/(lessor-dashboard)/reservations/data-column-header";
+import { DataTableColumnHeader } from "@/components/table/data-column-header";
 import { format, parseISO } from "date-fns";
 import { Badge } from "@/components/ui/badge";
 import ToggleSwitch from "./toggleSwitch";

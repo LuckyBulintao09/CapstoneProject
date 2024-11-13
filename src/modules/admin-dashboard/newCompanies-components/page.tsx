@@ -1,6 +1,6 @@
 'use client';
 import React, { useEffect, useState } from 'react';
-import { DataTable } from '@/app/(auth)/(lessor-dashboard)/reservations/data-table';
+import { DataTable } from '@/components/table/data-table';
 import { columns, NewCompanies } from './columns';
 import { getPendingCompanies } from '@/actions/admin/getPendingCompanies';
 

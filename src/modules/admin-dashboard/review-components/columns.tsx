@@ -3,7 +3,7 @@
 import { format, isWithinInterval, parseISO } from 'date-fns';
 import { ColumnDef, Row } from '@tanstack/react-table';
 import { Button } from '@/components/ui/button';
-import { DataTableColumnHeader } from '@/app/(auth)/(lessor-dashboard)/reservations/data-column-header';
+import { DataTableColumnHeader } from '@/components/table/data-column-header';
 import { useState } from 'react';
 import KeepConfirmationModal from '../components/KeepConfirmationModal';
 import RemoveConfirmationModal from '../components/RemoveConfirmationModal';
