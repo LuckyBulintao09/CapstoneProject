@@ -11,9 +11,8 @@ import { getSpecificCompany } from '@/actions/company/getSpecificCompany';
 const LessorBusinessProfileScreen = async ({
 	companyId,
 }: {
-	companyId: { params: { id: string }; searchParams: object };
+	companyId: { params: { id: number }; searchParams: object };
 }) => {
-	const { title, lessor_name } = tempValues.LISTINGS[0];
 	const data = await getSpecificCompany(companyId.params.id);
 	return (
 		<ResponsiveLayout className='h-screen'>

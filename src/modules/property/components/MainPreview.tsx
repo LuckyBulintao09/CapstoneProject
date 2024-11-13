@@ -14,16 +14,15 @@ import { Button } from '@/components/ui/button';
 import GalleryModal from './GalleryModal';
 
 interface MainPreviewProps {
-	openModal: () => void;
 	propertyId: number;
+	propertyReviews: any;
 }
 
-const MainPreview: React.FC<MainPreviewProps> = ({ propertyId }) => {
+const MainPreview: React.FC<MainPreviewProps> = ({ propertyId, propertyReviews }) => {
 	const [propertyImages, setPropertyImages] = useState<string[]>([]);
 	const [loading, setLoading] = useState<boolean>(true);
 	const [selectedImage, setSelectedImage] = useState<string | null>(null);
 	const [isGalleryModalOpen, setIsGalleryModalOpen] = useState(false);
-	const [reviews, setReviews] = useState<any[]>([]);
 	const [locationPercentage, setLocationPercentage] = useState<number>(0);
 	const [cleanlinessPercentage, setCleanlinessPercentage] = useState<number>(0);
 	const [valueForMoneyPercentage, setValueForMoneyPercentage] =
@@ -36,69 +35,41 @@ const MainPreview: React.FC<MainPreviewProps> = ({ propertyId }) => {
 		const fetchPropertyImages = async () => {
 			setLoading(true);
 			const { data, error } = await supabase
-				.from('unit_images')
-				.select('*')
-				.eq('unit_id', propertyId);
-
+				.from('property')
+				.select('property_image')
+				.eq('id', propertyId);
+		
 			if (error) {
 				console.error('Error fetching property images:', error);
 			} else if (data && data.length > 0) {
-				const images = [
-					data[0].image1_url,
-					data[0].image2_url,
-					data[0].image3_url,
-					data[0].image4_url,
-					data[0].image5_url,
-				].filter((url) => url);
-				setPropertyImages(images);
+				setPropertyImages(data[0].property_image || []);
 			}
+		
 			setLoading(false);
 		};
 
-		const fetchReviews = async () => {
-			const { data, error } = await supabase
-				.from('ratings_review')
-				.select(
-					`
-					user_id, 
-					ratings, 
-					comment, 
-					location,
-					cleanliness,
-					value_for_money,
-					account (firstname, lastname, profile_url)
-				`
-				)
-				.eq('unit_id', propertyId);
-
-			if (error) {
-				console.error('Error fetching reviews:', error);
-			} else {
-				setReviews(data);
-				const totalReviews = data.length;
-				if (totalReviews > 0) {
-					const locationSum = data.reduce(
-						(sum, review) => sum + review.location,
-						0
-					);
-					const cleanlinessSum = data.reduce(
-						(sum, review) => sum + review.cleanliness,
-						0
-					);
-					const valueForMoneySum = data.reduce(
-						(sum, review) => sum + review.value_for_money,
-						0
-					);
-
-					setLocationPercentage(locationSum / totalReviews);
-					setCleanlinessPercentage(cleanlinessSum / totalReviews);
-					setValueForMoneyPercentage(valueForMoneySum / totalReviews);
-				}
+		if (propertyReviews) {
+			const totalReviews = propertyReviews.length;
+			if (totalReviews > 0) {
+				const locationSum = propertyReviews.reduce(
+					(sum, review) => sum + review.location,
+					0
+				);
+				const cleanlinessSum = propertyReviews.reduce(
+					(sum, review) => sum + review.cleanliness,
+					0
+				);
+				const valueForMoneySum = propertyReviews.reduce(
+					(sum, review) => sum + review.value_for_money,
+					0
+				);
+				setLocationPercentage((locationSum / totalReviews));
+				setCleanlinessPercentage((cleanlinessSum / totalReviews));
+				setValueForMoneyPercentage((valueForMoneySum / totalReviews));
 			}
-		};
+		}
 
 		fetchPropertyImages();
-		fetchReviews();
 	}, [propertyId]);
 	return (
 		<>
@@ -148,11 +119,11 @@ const MainPreview: React.FC<MainPreviewProps> = ({ propertyId }) => {
 				isOpen={isGalleryModalOpen}
 				onClose={() => setIsGalleryModalOpen(false)}
 				images={propertyImages}
-				reviews={reviews}
 				locationPercentage={locationPercentage}
 				cleanlinessPercentage={cleanlinessPercentage}
 				valueForMoneyPercentage={valueForMoneyPercentage}
 				setSelectedImage={setSelectedImage}
+				reviews={propertyReviews}
 			/>
 			<div>
 				<Carousel

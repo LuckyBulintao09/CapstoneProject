@@ -9,26 +9,19 @@ import {
 	CardTitle,
 } from '@/components/ui/card';
 interface PropertyDetailsProps {
-	details: string;
-	privacyType: string;
 	structure: string;
-	bedrooms: number;
-	beds: number;
 	occupants: number;
 	description: string;
-	amenitiesList: any[];
 	address: string;
+	facilities: any;
 }
 
 const PropertyDetails: React.FC<PropertyDetailsProps> = ({
-	privacyType,
 	structure,
-	bedrooms,
-	beds,
 	occupants,
 	description,
-	amenitiesList,
 	address,
+	facilities
 }) => {
 	const [isExpanded, setIsExpanded] = useState(false);
 	const [shouldShowToggle, setShouldShowToggle] = useState(false);
@@ -91,7 +84,7 @@ const PropertyDetails: React.FC<PropertyDetailsProps> = ({
 						</button>
 					)}
 					<div className='flex flex-col space-y-4 border-t border-gray-300 mt-4 pt-4'>
-						<div className='flex items-center justify-between'>
+						{/* <div className='flex items-center justify-between'>
 							<div className='flex items-center'>
 								<Shield className='w-6 h-6 text-gray-700 dark:text-neutral-300 mr-2' />
 								<h5 className='text-md font-semibold '>Privacy Type</h5>
@@ -99,7 +92,7 @@ const PropertyDetails: React.FC<PropertyDetailsProps> = ({
 							<p className='text-gray-700 dark:text-neutral-300'>
 								{privacyType}
 							</p>
-						</div>
+						</div> */}
 						<div className='flex items-center justify-between'>
 							<div className='flex items-center'>
 								<Building className='w-6 h-6 text-gray-700 dark:text-neutral-300 mr-2' />
@@ -107,20 +100,20 @@ const PropertyDetails: React.FC<PropertyDetailsProps> = ({
 							</div>
 							<p className='text-gray-700 dark:text-neutral-300'>{structure}</p>
 						</div>
-						<div className='flex items-center justify-between'>
+						{/* <div className='flex items-center justify-between'>
 							<div className='flex items-center'>
 								<Bed className='w-6 h-6 text-gray-700 dark:text-neutral-300 mr-2' />
 								<h5 className='text-md font-semibold'>Number of Bedrooms</h5>
 							</div>
 							<p className='text-gray-700 dark:text-neutral-300'>{bedrooms}</p>
-						</div>
-						<div className='flex items-center justify-between'>
+						</div> */}
+						{/* <div className='flex items-center justify-between'>
 							<div className='flex items-center'>
 								<Bed className='w-6 h-6 text-gray-700 dark:text-neutral-300 mr-2' />
 								<h5 className='text-md font-semibold'>Number of Beds</h5>
 							</div>
 							<p className='text-gray-700 dark:text-neutral-300'>{beds}</p>
-						</div>
+						</div> */}
 						<div className='flex items-center justify-between'>
 							<div className='flex items-center'>
 								<UserIcon className='w-6 h-6 text-gray-700 dark:text-neutral-300 mr-2' />
@@ -132,27 +125,23 @@ const PropertyDetails: React.FC<PropertyDetailsProps> = ({
 				</CardContent>
 			</Card>
 
-			<Card className='bg-white dark:bg-secondary border border-gray-300'>
-				<CardHeader>
-					<CardTitle>Facilities</CardTitle>
-				</CardHeader>
-				<CardContent className='text-sm font-normal'>
-					<div className='grid grid-cols-4 gap-1'>
-						{[
-							'Facility 1',
-							'Facility 2',
-							'Facility 3',
-							'Facility 4',
-							'Facility 5',
-						].map((item, index) => (
-							<div key={index} className='flex items-center'>
-								<Check className='mr-2 text-green-600' size={16} />
-								<span>{item}</span>
-							</div>
-						))}
-					</div>
-				</CardContent>
-			</Card>
+			{facilities.length > 0 && (
+				<Card className='bg-white dark:bg-secondary border border-gray-300'>
+					<CardHeader>
+						<CardTitle>Facilities</CardTitle>
+					</CardHeader>
+					<CardContent className='text-sm font-normal'>
+						<div className='grid grid-cols-4 gap-1'>
+							{facilities.map((item, index) => (
+								<div key={index} className='flex items-center'>
+									<Check className='mr-2 text-green-600' size={16} />
+									<span>{item}</span>
+								</div>
+							))}
+						</div>
+					</CardContent>
+				</Card>
+			)}
 		</>
 	);
 };

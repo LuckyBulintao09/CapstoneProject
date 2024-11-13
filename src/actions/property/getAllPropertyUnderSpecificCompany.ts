@@ -12,3 +12,13 @@ export const getAllPropertyUnderSpecificCompany = async (id: number) => {
     }
     return data
     }
+
+export const getAllPropertyUnderSpecificCompanyRPC = async (id: number) => {
+    const { data, error } = await supabase
+        .rpc('get_all_properties_under_company', {c_id: id})
+    if (error) {
+        console.error(error)
+        return error
+    }
+    return data
+}
