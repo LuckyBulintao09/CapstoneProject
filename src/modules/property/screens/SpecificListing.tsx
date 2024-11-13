@@ -93,6 +93,7 @@ export function SpecificListing({ id }: SpecificListingProps) {
 	const [selectedImage, setSelectedImage] = useState<string | null>(null);
 	const [isBookingModalOpen, setIsBookingModalOpen] = useState(false);
 	const [selectedUnit, setSelectedUnit] = useState<any>(null);
+	const [unitImage, setUnitImage] = useState<any>(null);
 
 	useEffect(() => {
 		const loadUserAndProperty = async () => {
@@ -195,14 +196,14 @@ export function SpecificListing({ id }: SpecificListingProps) {
 		setSelectedUnit(null);
 	};
 
-	const handleOpenUnitGallery = (unit_id: number) => {
+	const handleOpenUnitGallery = (unit_image: any) => {
+		setUnitImage(unit_image);
 		setIsUnitGalleryModalOpen(true);
-		setSelectedUnit(unit_id);
 	}
 
 	const handleCloseUnitGallery = () => {
+		setUnitImage(null);
 		setIsUnitGalleryModalOpen(false);
-		setSelectedUnit(null);
 	}
 
 	if (loading)
@@ -342,7 +343,7 @@ export function SpecificListing({ id }: SpecificListingProps) {
 					<CardTitle className='text-lg'>
 						{/* Redirect to the modal for this specific unit */}
 						<Button
-						onClick={() => handleOpenUnitGallery(unit.id)}
+						onClick={() => handleOpenUnitGallery(unit.unit_image)}
 						className='text-primary dark:text-blue-300 underline text-md font-semibold pl-0'
 						variant='link'
 						>
@@ -451,7 +452,7 @@ export function SpecificListing({ id }: SpecificListingProps) {
 			<UnitGalleryModal
 				isOpen={isUnitGalleryModalOpen}
 				onClose={() => handleCloseUnitGallery()}
-				unitID={selectedUnit}
+				images={unitImage}
 			/>
 
 			<BookingCardModal

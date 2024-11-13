@@ -48,7 +48,6 @@ const MainPreview: React.FC<MainPreviewProps> = ({ propertyId, propertyReviews }
 			setLoading(false);
 		};
 
-		console.log(propertyReviews);
 		if (propertyReviews) {
 			const totalReviews = propertyReviews.length;
 			if (totalReviews > 0) {
