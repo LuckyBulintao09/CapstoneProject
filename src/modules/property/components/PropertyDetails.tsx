@@ -1,6 +1,6 @@
 import { Check } from 'lucide-react';
 import React, { useEffect, useRef, useState } from 'react';
-import { Shield, Building, Bed, UserIcon } from 'lucide-react';
+import { Shield, Building, Bed, UserIcon, House } from 'lucide-react';
 import {
 	Card,
 	CardContent,
@@ -14,6 +14,7 @@ interface PropertyDetailsProps {
 	description: string;
 	address: string;
 	facilities: any;
+	unitCount: number;
 }
 
 const PropertyDetails: React.FC<PropertyDetailsProps> = ({
@@ -21,7 +22,8 @@ const PropertyDetails: React.FC<PropertyDetailsProps> = ({
 	occupants,
 	description,
 	address,
-	facilities
+	facilities,
+	unitCount,
 }) => {
 	const [isExpanded, setIsExpanded] = useState(false);
 	const [shouldShowToggle, setShouldShowToggle] = useState(false);
@@ -116,6 +118,13 @@ const PropertyDetails: React.FC<PropertyDetailsProps> = ({
 						</div> */}
 						<div className='flex items-center justify-between'>
 							<div className='flex items-center'>
+								<House className='w-6 h-6 text-gray-700 dark:text-neutral-300 mr-2' />
+								<h5 className='text-md font-semibold'>Current Units</h5>
+							</div>
+							<p className='text-gray-700 dark:text-neutral-300'>{unitCount}</p>
+						</div>
+						<div className='flex items-center justify-between'>
+							<div className='flex items-center'>
 								<UserIcon className='w-6 h-6 text-gray-700 dark:text-neutral-300 mr-2' />
 								<h5 className='text-md font-semibold'>Current Occupants</h5>
 							</div>
@@ -128,7 +137,7 @@ const PropertyDetails: React.FC<PropertyDetailsProps> = ({
 			{facilities.length > 0 && (
 				<Card className='bg-white dark:bg-secondary border border-gray-300'>
 					<CardHeader>
-						<CardTitle>Facilities</CardTitle>
+						<CardTitle>Facilities & Amenities</CardTitle>
 					</CardHeader>
 					<CardContent className='text-sm font-normal'>
 						<div className='grid grid-cols-4 gap-1'>

@@ -64,7 +64,9 @@ import SideMap from '../components/SideMap';
 import UnitGalleryModal from '../components/UnitGalleryModal';
 import { Dialog, DialogContent } from '@/components/ui/dialog';
 import { BookingCardModal } from '../components/BookingCardModal';
+import Distance from '@/components/google/distance';
 import { set } from 'date-fns';
+import { fetchLandmarks } from '@/actions/landmarks/landmark';
 
 interface SpecificListingProps {
 	id: number;
@@ -94,20 +96,24 @@ export function SpecificListing({ id }: SpecificListingProps) {
 	const [isBookingModalOpen, setIsBookingModalOpen] = useState(false);
 	const [selectedUnit, setSelectedUnit] = useState<any>(null);
 	const [unitImage, setUnitImage] = useState<any>(null);
+	const [unitCount, setUnitCount] = useState(0);
+	const [totalOccupants, setTotalOccupants] = useState(0);
 
+	
 	useEffect(() => {
 		const loadUserAndProperty = async () => {
 			try {
 				const fetchedUserId = await fetchUser();
 				setUserId(fetchedUserId);
 
+
 				const { property } = await fetchProperty(id, fetchedUserId);
 				if (!property) {
-					setError(true); // error if property's not found
+					setError(true);
 					setLoading(false);
 					return;
 				}
-
+				
 				setProperty(property);
 				setPropertyReviews(await fetchPropertyReviews(id));
 				setCommonFacilities(await fetchPropertyFacilities(id));
@@ -116,15 +122,25 @@ export function SpecificListing({ id }: SpecificListingProps) {
 					lat: (await fetchPropertyLocation(id))[0].latitude,
 					lng: (await fetchPropertyLocation(id))[0].longitude,
 				});
-				setUnits(await fetchPropertyUnits(id));
+				const fetchedUnits = await fetchPropertyUnits(id);
+				setUnits(fetchedUnits);
+				setUnitCount(fetchedUnits.length || 0); 
+
+				const occupantsCount = fetchedUnits.reduce(
+					(total, unit) => total + unit.current_occupants,
+					0
+				)
+				setTotalOccupants(occupantsCount);
+
 				setLoading(false);
 			} catch (err) {
 				setError(true);
-				setLoading(false);
 			}
 		};
 		loadUserAndProperty();
+		
 	}, [id]);
+
 
 
 	const handleToggleFavourite = async () => {
@@ -145,6 +161,12 @@ export function SpecificListing({ id }: SpecificListingProps) {
 		setUserId(fetchedUserId);
 	};
 
+	useEffect(() => {
+		if (userPosition) {
+			fetchDirections();
+		}
+	}, [userPosition]);
+
 	const handleAddUserLocation = () => {
 		navigator.geolocation.getCurrentPosition(
 			(position) => {
@@ -157,7 +179,6 @@ export function SpecificListing({ id }: SpecificListingProps) {
 						lat: position.coords.latitude,
 						lng: position.coords.longitude,
 					});
-					fetchDirections();
 				}
 			},
 			(error) => {
@@ -168,7 +189,7 @@ export function SpecificListing({ id }: SpecificListingProps) {
 
 	const fetchDirections = () => {
 		if (!userPosition) return;
-
+	
 		const directionsService = new google.maps.DirectionsService();
 		directionsService.route(
 			{
@@ -177,7 +198,7 @@ export function SpecificListing({ id }: SpecificListingProps) {
 				travelMode: google.maps.TravelMode.DRIVING,
 			},
 			(result, status) => {
-				if (status === google.maps.DirectionsStatus.OK) {
+				if (status === google.maps.DirectionsStatus.OK && result?.routes[0]?.legs[0]) {
 					setDirections(result);
 				} else {
 					console.error('Directions request failed:', status);
@@ -295,10 +316,11 @@ export function SpecificListing({ id }: SpecificListingProps) {
 				<div className='col-span-2 space-y-5'>
 					<PropertyDetails
 						structure={structure}
-						occupants={5}
+						occupants={totalOccupants}
 						description={description}
 						facilities={commonFacilities}
 						address={address}
+						unitCount={unitCount}
 					/>
 					<Banner
 						ownerName={property.company.account.firstname}

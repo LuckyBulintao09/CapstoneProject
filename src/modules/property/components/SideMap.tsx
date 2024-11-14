@@ -6,17 +6,18 @@ import {
 	PopoverTrigger,
 	PopoverContent,
 } from '@/components/ui/popover';
+import Distance from '@/components/google/distance';
 
 interface SideReviewsProps {
 	propertyId: number;
 	propertyLoc: any;
-	propertyReviews: any;
+	propertyReviews: any
 }
 
 const SideMap: React.FC<SideReviewsProps> = ({
 	propertyId,
 	propertyLoc,
-	propertyReviews,
+	propertyReviews
 }) => {
 	const [locationAverage, setLocationAverage] = useState<number>(0);
 	const [directions, setDirections] = useState<any>(null);
@@ -36,6 +37,8 @@ const SideMap: React.FC<SideReviewsProps> = ({
 		{ name: 'The Mansion', distance: 2.1 },
 		{ name: 'Our Lady of Lourdes Grotto', distance: 3.0 },
 	];
+
+
 	useEffect(() => {
 		if (propertyReviews.length > 0) {
 			const averageLocation = propertyReviews.reduce(
@@ -44,7 +47,17 @@ const SideMap: React.FC<SideReviewsProps> = ({
 			);
 			setLocationAverage(averageLocation / propertyReviews.length);
 		}
-	}, [propertyId]);
+	}, [propertyId, propertyReviews]);
+
+	useEffect(() => {
+		handleAddUserLocation();
+	}, []);
+
+	useEffect(() => {
+		if (userPosition) {
+			fetchDirections();
+		}
+	}, [userPosition]);
 
 	const handleAddUserLocation = () => {
 		navigator.geolocation.getCurrentPosition(
@@ -56,7 +69,6 @@ const SideMap: React.FC<SideReviewsProps> = ({
 						lat: position.coords.latitude,
 						lng: position.coords.longitude,
 					});
-					fetchDirections();
 				}
 			},
 			(error) => {
@@ -64,9 +76,6 @@ const SideMap: React.FC<SideReviewsProps> = ({
 			}
 		);
 	};
-
-	// ADD DISTANCE MATRIX
-	// NEARBY LANDMARKS
 
 	const fetchDirections = () => {
 		if (!userPosition) return;
@@ -79,7 +88,7 @@ const SideMap: React.FC<SideReviewsProps> = ({
 				travelMode: google.maps.TravelMode.DRIVING,
 			},
 			(result, status) => {
-				if (status === google.maps.DirectionsStatus.OK) {
+				if (status === google.maps.DirectionsStatus.OK && result?.routes[0]?.legs[0]) {
 					setDirections(result);
 				} else {
 					console.error('Directions request failed:', status);
@@ -87,6 +96,7 @@ const SideMap: React.FC<SideReviewsProps> = ({
 			}
 		);
 	};
+
 
 	const mapScoreToRating = (averageScore: number): string => {
 		if (averageScore >= 9) return 'Exceptional';
@@ -98,7 +108,8 @@ const SideMap: React.FC<SideReviewsProps> = ({
 		if (averageScore >= 3) return 'Disappointing';
 		if (averageScore >= 2) return 'Poor';
 		if (averageScore >= 1) return 'Very Poor';
-		return 'Bad';
+		if (averageScore > 0) return 'Bad';
+		return 'No Reviews';
 	};
 
 	const ratingDescription = mapScoreToRating(locationAverage);
@@ -115,7 +126,6 @@ const SideMap: React.FC<SideReviewsProps> = ({
 							options={{
 								fullscreenControl: false,
 							}}
-							onClick={handleAddUserLocation}
 						>
 							{userPosition && <Marker position={userPosition} />}
 							<Marker position={position} />
@@ -129,8 +139,10 @@ const SideMap: React.FC<SideReviewsProps> = ({
 							Location Rating Score
 						</p>
 						<span className='text-sm pt-0 mt-0 dark:text-gray-300'>
-							1.2 kilometers from the center
+						Distance from the center:            
+						{directions?.routes[0]?.legs[0] ? <Distance leg={directions.routes[0].legs[0]} /> : 'N/A'}
 						</span>
+						
 
 						<div className='border-t border-gray-300 my-2' />
 						<div>

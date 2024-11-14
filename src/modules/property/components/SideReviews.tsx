@@ -61,8 +61,8 @@ const SideReviews: React.FC<SideReviewsProps> = ({
 		if (averageScore >= 4) return 'Fair';
 		if (averageScore >= 3) return 'Disappointing';
 		if (averageScore >= 2) return 'Poor';
-		if (averageScore >= 1) return 'Very Poor';
-		return 'Bad';
+		if (averageScore > 0) return 'Very Poor';
+		return 'No Reviews';
 	};
 
 	// Calculate the overall average rating

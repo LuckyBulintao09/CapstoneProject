@@ -33,7 +33,7 @@ export default function ListingHero({
                 new google.maps.LatLng(126.537423944, 18.5052273625),
             ),
             fields: ["geometry", "name", "formatted_address"],
-            componentRestrictions: { country: "ph" },
+            componentRestrictions: { country: "ph", locality: "Baguio" },
         };
         const autocomplete = new places.Autocomplete(inputRef.current, options);
         setPlacesAutocomplete(autocomplete);
