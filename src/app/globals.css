@@ -22,7 +22,7 @@ body {
 
 @layer base {
   :root {
-    --background: 216 100% 95%;
+    --background: 0 0% 98%;
     --foreground: 216 5% 0%;
     --card: 216 50% 90%;
     --card-foreground: 216 5% 10%;
@@ -157,4 +157,3 @@ body {
   width: auto !important;
   height: 22rem !important;
 }
-

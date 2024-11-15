@@ -16,13 +16,22 @@ import {
 	House,
 	Shield,
 	Pin,
+	ArrowUp,
+	ArrowUpToLine,
+	ChevronUpCircle,
 } from 'lucide-react';
 import BusinessReviews from '../components/BusinessReviews';
 import MainPreview from '../components/MainPreview';
 import PropertyDetails from '../components/PropertyDetails';
 import Banner from '../components/Banner';
-import { HeartIcon as HeartOutline } from '@heroicons/react/24/outline';
-import { HeartIcon as HeartSolid } from '@heroicons/react/24/solid';
+import {
+	ChevronDoubleUpIcon,
+	HeartIcon as HeartOutline,
+} from '@heroicons/react/24/outline';
+import {
+	ChevronDoubleRightIcon,
+	HeartIcon as HeartSolid,
+} from '@heroicons/react/24/solid';
 import {
 	Card,
 	CardDescription,
@@ -127,7 +136,6 @@ export function SpecificListing({ id }: SpecificListingProps) {
 		loadUserAndProperty();
 	}, [id]);
 
-
 	const handleToggleFavourite = async () => {
 		if (!userId) {
 			setIsLoginModalOpen(true);
@@ -200,12 +208,33 @@ export function SpecificListing({ id }: SpecificListingProps) {
 	const handleOpenUnitGallery = (unit_image: any) => {
 		setUnitImage(unit_image);
 		setIsUnitGalleryModalOpen(true);
-	}
+	};
 
 	const handleCloseUnitGallery = () => {
 		setUnitImage(null);
 		setIsUnitGalleryModalOpen(false);
-	}
+	};
+	const [showBackToTop, setShowBackToTop] = useState(false);
+
+	// For back to top
+	useEffect(() => {
+		const handleScroll = () => {
+			if (window.scrollY > 100) {
+				setShowBackToTop(true);
+			} else {
+				setShowBackToTop(false);
+			}
+		};
+
+		window.addEventListener('scroll', handleScroll);
+		return () => {
+			window.removeEventListener('scroll', handleScroll);
+		};
+	}, []);
+
+	const scrollToTop = () => {
+		window.scrollTo({ top: 0, behavior: 'smooth' });
+	};
 
 	if (loading)
 		return (
@@ -278,13 +307,13 @@ export function SpecificListing({ id }: SpecificListingProps) {
 			</div>
 
 			<div className='grid grid-cols-5 gap-2 mt-4'>
-				<MainPreview 
-					propertyId={property.id} 
+				<MainPreview
+					propertyId={property.id}
 					propertyReviews={propertyReviews}
 				/>
 			</div>
 
-			<div className='sticky top-[80px] z-10 shadow-lg rounded-lg'>
+			<div className='shadow-lg rounded-lg'>
 				<SpecificListingTabs />
 			</div>
 
@@ -313,7 +342,7 @@ export function SpecificListing({ id }: SpecificListingProps) {
 					/>
 				</div>
 
-				<div className='col-span-1 lg:mt-0 md:mt-4 sticky top-20 h-[calc(100vh-80px)] overflow-y-auto'>
+				<div className='col-span-1 lg:mt-0 md:mt-4 sticky top-20 h-[calc(100vh-90px)] overflow-y-auto'>
 					<div>
 						<SideReviews
 							propertyId={property.id}
@@ -336,118 +365,147 @@ export function SpecificListing({ id }: SpecificListingProps) {
 					Available Rooms
 				</h4>
 
-				
-				{/* MAP UNITS HERE */}
-				{units.map((unit) => (
-				<Card key={unit.id} className='bg-white dark:bg-secondary border border-gray-300'>
-					<CardHeader>
-					<CardTitle className='text-lg'>
-						{/* Redirect to the modal for this specific unit */}
-						<Button
-						onClick={() => handleOpenUnitGallery(unit.unit_image)}
-						className='text-primary dark:text-blue-300 underline text-md font-semibold pl-0'
-						variant='link'
+				<div className='flex flex-col gap-4'>
+					{/* MAP UNITS HERE */}
+					{units.map((unit) => (
+						<Card
+							key={unit.id}
+							className='bg-white dark:bg-secondary border border-gray-300 shadow-md'
 						>
-						{unit.title}
-						</Button>
-					</CardTitle>
+							<CardHeader>
+								<CardTitle className='text-lg'>
+									{/* Redirect to the modal for this specific unit */}
+									<Button
+										onClick={() => handleOpenUnitGallery(unit.unit_image)}
+										className='text-primary dark:text-blue-300 underline text-md font-semibold pl-0'
+										variant='link'
+									>
+										{unit.title}
+									</Button>
+								</CardTitle>
 
-					<CardDescription className=''>
-						<table className='w-full table-auto'>
-						<thead>
-							<tr className='border-b dark:text-gray-100'>
-							<th className='px-4 py-2 text-center'>Details</th>
-							<th className='px-4 py-2 text-center'>Current Number of Occupants</th>
-							<th className='px-4 py-2 text-center'>Price</th>
-							<th className='px-4 py-2 text-center'>Action</th>
-							</tr>
-						</thead>
-						<tbody>
-							<tr className='border-b'>
-							<td className='pl-4 py-2 border-r border-gray-300 w-[480px] dark:text-gray-200'>
-								<div className='flex items-center'>
-								<Shield className='mr-2' size={16} />
-								<span>Privacy Type: {unit.privacy_type}</span>
-								</div>
-								<div className='flex items-center'>
-								<House className='mr-2' size={16} />
-								<span>{unit.bedrooms} rooms</span>
-								</div>
-								<div className='flex items-center'>
-								<Bed className='mr-2' size={16} />
-								<span>{unit.beds} beds</span>
-								</div>
-								<div className='flex items-center'>
-								<Users2 className='mr-2' size={16} />
-								<span>For: {unit.occupants} guests</span>
-								</div>
-								<div className='flex items-center'>
-								<Axis3D className='mr-2' size={16} />
-								<span>Room size: {unit.room_size > 0 ? `${unit.room_size} m²` : 'N/A'}</span>
-								</div>
-								<div className='flex items-center'>
-								<Glasses className='mr-2' size={16} />
-								<span>{unit.outside_view ? 'With Outdoor View' : 'No Outdoor View'}</span>
-								</div>
-								<div className='border-t border-gray-300 my-3' />
-								<div className='grid lg:grid-cols-2 sm:grid-cols-1'>
-								{unit.amenities && unit.amenities.length > 0 && (
-								<div className='grid lg:grid-cols-2 sm:grid-cols-1'>
-									{unit.amenities.map((amenity, index) => (
-									<div key={index} className='flex items-center'>
-										<Check className='mr-2 text-green-600' size={12} />
-										<span>{amenity}</span>
-									</div>
-									))}
-								</div>
-								)}
-								</div>
-							</td>
+								<CardDescription className=''>
+									<table className='w-full table-auto'>
+										<thead>
+											<tr className='border-b dark:text-gray-100'>
+												<th className='px-4 py-2 text-center'>Details</th>
+												<th className='px-4 py-2 text-center'>
+													Current Number of Occupants
+												</th>
+												<th className='px-4 py-2 text-center'>Price</th>
+												<th className='px-4 py-2 text-center'>Action</th>
+											</tr>
+										</thead>
+										<tbody>
+											<tr className='border-b'>
+												<td className='pl-4 py-2 border-r border-gray-300 w-[480px] dark:text-gray-200'>
+													<div className='flex items-center'>
+														<Shield className='mr-2' size={16} />
+														<span>Privacy Type: {unit.privacy_type}</span>
+													</div>
+													<div className='flex items-center'>
+														<House className='mr-2' size={16} />
+														<span>{unit.bedrooms} rooms</span>
+													</div>
+													<div className='flex items-center'>
+														<Bed className='mr-2' size={16} />
+														<span>{unit.beds} beds</span>
+													</div>
+													<div className='flex items-center'>
+														<Users2 className='mr-2' size={16} />
+														<span>For: {unit.occupants} guests</span>
+													</div>
+													<div className='flex items-center'>
+														<Axis3D className='mr-2' size={16} />
+														<span>
+															Room size:{' '}
+															{unit.room_size > 0
+																? `${unit.room_size} m²`
+																: 'N/A'}
+														</span>
+													</div>
+													<div className='flex items-center'>
+														<Glasses className='mr-2' size={16} />
+														<span>
+															{unit.outside_view
+																? 'With Outdoor View'
+																: 'No Outdoor View'}
+														</span>
+													</div>
+													<div className='border-t border-gray-300 my-3' />
+													<div className='grid lg:grid-cols-2 sm:grid-cols-1'>
+														{unit.amenities && unit.amenities.length > 0 && (
+															<div className='grid lg:grid-cols-2 sm:grid-cols-1'>
+																{unit.amenities.map((amenity, index) => (
+																	<div
+																		key={index}
+																		className='flex items-center'
+																	>
+																		<Check
+																			className='mr-2 text-green-600'
+																			size={12}
+																		/>
+																		<span>{amenity}</span>
+																	</div>
+																))}
+															</div>
+														)}
+													</div>
+												</td>
 
-							<td className='pl-4 py-2 border-r border-gray-300 max-w-[10px] text-center'>
-								<TooltipProvider>
-								<Tooltip>
-									<TooltipTrigger asChild>
-									<div className='flex justify-center items-center space-x-1 cursor-pointer'>
-										{Array.from({ length: unit.occupants }, (_, i) =>
-										i < unit.current_occupants ? (
-											<UserCheck2 key={i} className='text-primary dark:text-blue-300' />
-										) : (
-											<User2 key={i} className='text-gray-500 dark:text-gray-200' />
-										)
-										)}
-									</div>
-									</TooltipTrigger>
-									<TooltipContent>
-									<p>
-										{unit.current_occupants} occupants —{' '}
-										{unit.occupants - unit.current_occupants} spots available
-									</p>
-									</TooltipContent>
-								</Tooltip>
-								</TooltipProvider>
-							</td>
+												<td className='pl-4 py-2 border-r border-gray-300 max-w-[10px] text-center'>
+													<TooltipProvider>
+														<Tooltip>
+															<TooltipTrigger asChild>
+																<div className='flex justify-center items-center space-x-1 cursor-pointer'>
+																	{Array.from(
+																		{ length: unit.occupants },
+																		(_, i) =>
+																			i < unit.current_occupants ? (
+																				<UserCheck2
+																					key={i}
+																					className='text-primary dark:text-blue-300'
+																				/>
+																			) : (
+																				<User2
+																					key={i}
+																					className='text-gray-500 dark:text-gray-200'
+																				/>
+																			)
+																	)}
+																</div>
+															</TooltipTrigger>
+															<TooltipContent>
+																<p>
+																	{unit.current_occupants} occupants —{' '}
+																	{unit.occupants - unit.current_occupants}{' '}
+																	spots available
+																</p>
+															</TooltipContent>
+														</Tooltip>
+													</TooltipProvider>
+												</td>
 
-							<td className='pl-4 py-2 border-r border-gray-300 text-center dark:text-gray-200'>
-								P{unit.price}/month
-							</td>
+												<td className='pl-4 py-2 border-r border-gray-300 text-center dark:text-gray-200'>
+													P{unit.price}/month
+												</td>
 
-							<td className='py-2 flex justify-center items-center my-16'>
-								<Button
-								className='text-white px-4 py-2 rounded'
-								onClick={() => handleOpenBookingModal(unit.id)}
-								>
-								Book Now
-								</Button>
-							</td>
-							</tr>
-						</tbody>
-						</table>
-					</CardDescription>
-					</CardHeader>
-				</Card>
-				))}
-
+												<td className='py-2 flex justify-center items-center my-16'>
+													<Button
+														className='text-white px-4 py-2 rounded'
+														onClick={() => handleOpenBookingModal(unit.id)}
+													>
+														Book Now
+													</Button>
+												</td>
+											</tr>
+										</tbody>
+									</table>
+								</CardDescription>
+							</CardHeader>
+						</Card>
+					))}
+				</div>
 			</div>
 
 			<UnitGalleryModal
@@ -470,10 +528,7 @@ export function SpecificListing({ id }: SpecificListingProps) {
 				<h4 className='text-2xl font-semibold tracking-tight pb-4'>
 					Customer Reviews
 				</h4>
-				<BusinessReviews 
-					propertyId={id} 
-					propertyReviews={propertyReviews}
-				/>
+				<BusinessReviews propertyId={id} propertyReviews={propertyReviews} />
 			</div>
 
 			{/* LOCATION */}
@@ -485,7 +540,7 @@ export function SpecificListing({ id }: SpecificListingProps) {
 					<h4 className='text-2xl font-semibold tracking-tight'>Location</h4>
 					<Button
 						className='text-primary dark:text-foreground dark:bg-primary border-primary gap-2 items-center justify-center'
-						variant="outline"
+						variant='outline'
 						onClick={handleAddUserLocation}
 					>
 						<MapPin className='h-5 w-5' />
@@ -494,7 +549,7 @@ export function SpecificListing({ id }: SpecificListingProps) {
 				</div>
 				<Card className='lg:h-[550px] xs:h-[365px] border-none'>
 					<GoogleMap
-						mapContainerClassName='w-full h-full'
+						mapContainerClassName='w-full h-full rounded-md'
 						zoom={14}
 						center={userPosition || position}
 					>
@@ -527,6 +582,23 @@ export function SpecificListing({ id }: SpecificListingProps) {
 						/>
 					</DialogContent>
 				</Dialog>
+			)}
+			{showBackToTop && (
+				<TooltipProvider>
+					<Tooltip>
+						<TooltipTrigger asChild>
+							<button
+								onClick={scrollToTop}
+								className='fixed bottom-16 right-14 bg-primary text-white p-2 mb-10 rounded-full shadow-lg'
+							>
+								<ChevronDoubleUpIcon className='h-8 w-8' />
+							</button>
+						</TooltipTrigger>
+						<TooltipContent>
+							<p>Back to Top</p>
+						</TooltipContent>
+					</Tooltip>
+				</TooltipProvider>
 			)}
 		</ResponsiveLayout>
 	);

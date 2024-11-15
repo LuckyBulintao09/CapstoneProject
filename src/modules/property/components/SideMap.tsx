@@ -122,7 +122,7 @@ const SideMap: React.FC<SideReviewsProps> = ({
 							{directions && <DirectionsRenderer directions={directions} />}
 						</GoogleMap>
 
-						<p className='text-lg mb-0 pb-0 font-bold mt-2 dark:text-gray-100'>
+						<p className='text-lg mb-0 pb-0 font-bold mt-2 text-primary dark:text-blue-300'>
 							{locationAverage.toFixed(1)} {ratingDescription}
 						</p>
 						<p className='text-sm pt-0 mt-0 dark:text-gray-300'>

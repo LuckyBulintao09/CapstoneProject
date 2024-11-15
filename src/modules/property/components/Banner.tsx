@@ -5,6 +5,7 @@ import spiels from '@/lib/constants/spiels';
 import { initializeSendMessage } from '@/actions/chat/initiateConversation';
 import { toast } from 'sonner';
 import { Input } from '@/components/ui/input';
+import { Send } from 'lucide-react';
 
 const suggestedMessages = [
 	'Is this available?',
@@ -106,7 +107,7 @@ const Banner: React.FC<BannerProps> = ({
 				</div>
 				<div className='flex flex-col md:flex-row items-center gap-3'>
 					<div className='flex flex-col md:flex-row gap-3 items-stretch w-full md:w-auto'>
-						<div className='relative flex flex-row gap-1 outline outline-1 outline-white rounded-lg px-1 py-1'>
+						<div className='relative flex flex-row gap-1 outline outline-1 outline-white rounded-lg'>
 							<Input
 								value={inputValue}
 								required
@@ -115,8 +116,22 @@ const Banner: React.FC<BannerProps> = ({
 								onChange={(e) => setInputValue(e.target.value)}
 								type='text'
 								className='bg-white text-black hover:bg-neutral-100 dark:hover:bg-popover-foreground rounded-lg px-4 py-2 transition duration-200 ease-in-out w-full'
-								placeholder='Type your message...'
+								placeholder='Send a message...'
 							/>
+
+							{inputValue && (
+								<div
+									onClick={handleSendMessage}
+									className='absolute right-2 top-1/2 transform -translate-y-1/2 cursor-pointer'
+								>
+									{isLoading ? (
+										<div className='w-5 h-5 border-2 border-t-2 border-gray-500 border-t-transparent rounded-full animate-spin' />
+									) : (
+										<Send className='w-5 h-5 text-gray-500 hover:text-blue-500' />
+									)}
+								</div>
+							)}
+
 							{isFocused && (
 								<div
 									ref={suggestionsRef}
@@ -135,21 +150,23 @@ const Banner: React.FC<BannerProps> = ({
 									</ul>
 								</div>
 							)}
-							<Button
-								variant='outline'
-								className='border-white text-white hover:bg-foreground hover:text-neutral-300 hover:border-neutral-300'
-								onClick={handleSendMessage}
-								disabled={isLoading}
-								aria-label='Message the owner'
-							>
-								<span className='flex flex-row items-center gap-1'>
-									{isLoading ? 'Sending...' : spiels.BUTTON_MESSAGE}
-								</span>
-							</Button>
 						</div>
+
+						{/* <Button
+							variant='outline'
+							className=''
+							onClick={handleSendMessage}
+							disabled={isLoading}
+							aria-label='Message the owner'
+						>
+							<span className='flex flex-row items-center gap-1'>
+								{isLoading ? 'Sending...' : spiels.BUTTON_MESSAGE}
+							</span>
+						</Button> */}
+
 						<Button
-							variant='secondary'
-							className='bg-white text-black hover:bg-neutral-100 dark:hover:bg-popover-foreground rounded-lg px-4 py-2 transition duration-200 ease-in-out w-full md:w-auto'
+							variant='outline'
+							className='bg-primary text-gray-100 border-white hover:bg-[#0b317a] hover:text-white rounded-lg px-4 py-2 transition duration-200 ease-in-out w-full md:w-auto'
 							onClick={() => {
 								window.location.href = `/property/company/${companyId}`;
 							}}
