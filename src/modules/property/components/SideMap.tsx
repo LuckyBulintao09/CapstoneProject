@@ -132,7 +132,7 @@ const SideMap: React.FC<SideReviewsProps> = ({
 		const directionsResults = await Promise.all(directionsPromises);
 	
 		const filteredLandmarks = directionsResults.filter(
-			(landmark) => landmark.directions !== null
+			({ directions }) => directions !== null
 		);
 	
 		setLandmarkDirections(filteredLandmarks);

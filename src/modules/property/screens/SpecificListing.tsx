@@ -47,7 +47,6 @@ import {
 	DirectionsService,
 	DirectionsRenderer,
 } from '@react-google-maps/api';
-import { get_unitAmenities } from '@/actions/listings/amenities';
 import {
 	Tooltip,
 	TooltipContent,
