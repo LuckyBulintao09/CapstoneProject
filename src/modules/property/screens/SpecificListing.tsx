@@ -313,7 +313,7 @@ export function SpecificListing({ id }: SpecificListingProps) {
 				/>
 			</div>
 
-			<div className='shadow-lg rounded-lg'>
+			<div className='rounded-lg'>
 				<SpecificListingTabs />
 			</div>
 
@@ -539,12 +539,12 @@ export function SpecificListing({ id }: SpecificListingProps) {
 				<div className='flex items-center justify-between pb-4'>
 					<h4 className='text-2xl font-semibold tracking-tight'>Location</h4>
 					<Button
-						className='text-primary dark:text-foreground dark:bg-primary border-primary gap-2 items-center justify-center'
+						className='text-primary hover:bg-background dark:text-foreground dark:bg-primary border-primary gap-2 items-center justify-center'
 						variant='outline'
 						onClick={handleAddUserLocation}
 					>
 						<MapPin className='h-5 w-5' />
-						Show Directions
+						Show Direction
 					</Button>
 				</div>
 				<Card className='lg:h-[550px] xs:h-[365px] border-none'>

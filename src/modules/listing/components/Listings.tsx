@@ -458,8 +458,8 @@ export default function Listings() {
 									<div className='flex items-center space-x-2'>
 										<ArrowDownUp className='w-4 h-auto' />
 										<span>
-											Sort by price:{' '}
-											{sortOrder === 'asc' ? 'Low to High' : 'High to Low'}
+											Sort by: Price{' '}
+											{sortOrder === 'asc' ? '(Low to High)' : '(High to Low)'}
 										</span>
 									</div>
 								</Button>
