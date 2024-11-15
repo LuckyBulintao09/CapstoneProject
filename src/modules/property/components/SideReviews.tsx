@@ -77,11 +77,11 @@ const SideReviews: React.FC<SideReviewsProps> = ({
 			<Card className='bg-white dark:bg-secondary border border-gray-300 mr-0'>
 				<CardHeader className='pb-3'>
 					<CardDescription>
-						<p className='text-lg mb-0 pb-0 font-bold dark:text-gray-100'>
+						<p className='text-lg mb-0 pb-0 font-bold text-primary dark:text-blue-300'>
 							{overallRating.toFixed(1)} {ratingDescription}
 						</p>
-						<p className='text-md pt-0 mt-0 text-primary dark:text-blue-300'>
-							{totalReviews} review{totalReviews !== 1 && 's'}
+						<p className='text-md pt-0 mt-0 dark:text-gray-300'>
+							Overall Rating Score
 						</p>
 					</CardDescription>
 				</CardHeader>

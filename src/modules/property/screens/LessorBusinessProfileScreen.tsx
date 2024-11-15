@@ -31,14 +31,14 @@ const LessorBusinessProfileScreen = async ({
 										Dormitory
 									</Badge> */}
 									<div className='flex flex-col'>
-										<h1 className='font-semibold xs:text-xl sm:text-2xl md:text-3xl lg:text-3xl xl:text-4xl text-left dark:text-white ml-4'>
+										<h1 className='font-semibold xs:text-xl sm:text-2xl md:text-3xl lg:text-3xl xl:text-4xl text-left dark:text-white ml-4 mb-1'>
 											{data.company?.company_name}
 										</h1>
-										<p className='flex items-center text-muted-foreground lg:text-md ml-4'>
+										<p className='flex items-center text-foreground lg:text-md ml-4'>
 											<MapPin className='mr-1' height={18} width={18} />
 											{data.company?.address}
 										</p>
-										<p className='flex items-center text-muted-foreground lg:text-md ml-4'>
+										<p className='flex items-center text-foreground lg:text-md ml-4'>
 											Joined UniHomes since{' '}
 											{new Date(data.company?.created_at).toLocaleDateString(
 												'en-US',
@@ -80,9 +80,12 @@ const LessorBusinessProfileScreen = async ({
 									<h1 className='font-semibold xl:text-md text-center dark:text-primary-foreground'>
 										{data?.owner?.firstname} {data?.owner?.lastname}
 									</h1>
-									<p className='text-sm text-gray-700'>Proprietor</p>
+									<p className='text-sm text-foreground'>Proprietor</p>
 								</div>
-								<Button className='text-xs p-0 m-0' variant='link'>
+								<Button
+									className='text-xs p-0 m-0 dark:text-blue-300'
+									variant='link'
+								>
 									<LucideMessageCircle
 										className='mr-1'
 										height={12}
