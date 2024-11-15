@@ -98,11 +98,16 @@ export function SpecificListing({ id }: SpecificListingProps) {
 	const [unitImage, setUnitImage] = useState<any>(null);
 	const [unitCount, setUnitCount] = useState(0);
 	const [totalOccupants, setTotalOccupants] = useState(0);
+	const [landmarks, setLandmarks] = useState([]);
 
 	
 	useEffect(() => {
 		const loadUserAndProperty = async () => {
 			try {
+				const fetchedLandmark = await fetchLandmarks();
+				setLandmarks(fetchedLandmark);
+
+
 				const fetchedUserId = await fetchUser();
 				setUserId(fetchedUserId);
 
@@ -141,6 +146,7 @@ export function SpecificListing({ id }: SpecificListingProps) {
 		
 	}, [id]);
 
+	
 
 
 	const handleToggleFavourite = async () => {
@@ -191,6 +197,7 @@ export function SpecificListing({ id }: SpecificListingProps) {
 		if (!userPosition) return;
 	
 		const directionsService = new google.maps.DirectionsService();
+
 		directionsService.route(
 			{
 				origin: userPosition,
@@ -207,6 +214,7 @@ export function SpecificListing({ id }: SpecificListingProps) {
 		);
 	};
 
+	
 	const handleOpenBookingModal = (unit_id: number) => {
 		setIsBookingModalOpen(true);
 		setSelectedUnit(unit_id);
@@ -346,6 +354,7 @@ export function SpecificListing({ id }: SpecificListingProps) {
 							propertyId={property.id}
 							propertyLoc={position}
 							propertyReviews={propertyReviews}
+							landmarks={landmarks}
 						/>
 					</div>
 				</div>

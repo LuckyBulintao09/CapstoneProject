@@ -11,13 +11,15 @@ import Distance from '@/components/google/distance';
 interface SideReviewsProps {
 	propertyId: number;
 	propertyLoc: any;
-	propertyReviews: any
+	propertyReviews: any;
+	landmarks: any;
 }
 
 const SideMap: React.FC<SideReviewsProps> = ({
 	propertyId,
 	propertyLoc,
-	propertyReviews
+	propertyReviews,
+	landmarks,
 }) => {
 	const [locationAverage, setLocationAverage] = useState<number>(0);
 	const [directions, setDirections] = useState<any>(null);
@@ -26,18 +28,7 @@ const SideMap: React.FC<SideReviewsProps> = ({
 		lng: number;
 	} | null>(null);
 	const [position, setPosition] = useState(propertyLoc);
-
-	const landmarks = [
-		{ name: 'SM Baguio City', distance: 1.0 },
-		{ name: 'Burnham Park', distance: 1.2 },
-		{ name: 'Session Road', distance: 1.5 },
-		{ name: 'Mines View Park', distance: 2.3 },
-		{ name: 'Botanical Garden', distance: 1.8 },
-		{ name: 'Wright Park', distance: 2.0 },
-		{ name: 'The Mansion', distance: 2.1 },
-		{ name: 'Our Lady of Lourdes Grotto', distance: 3.0 },
-	];
-
+	const [landmarkDirections, setLandmarkDirections] = useState<any[]>([]);
 
 	useEffect(() => {
 		if (propertyReviews.length > 0) {
@@ -58,6 +49,34 @@ const SideMap: React.FC<SideReviewsProps> = ({
 			fetchDirections();
 		}
 	}, [userPosition]);
+
+	useEffect(() => {
+		fetchDirectionsForLandmarks();
+	}, [landmarks]);
+
+	const fetchDirectionsForLandmarks = () => {
+		// GOOGLE MAP DIRECTION SERVICE NEEDS TO BE CLICKED BECAUSE REFERENCE ERROR WHEN PAGE LOADS
+
+        const directionsService = new google.maps.DirectionsService();
+        landmarks.forEach((landmark) => {
+            directionsService.route(
+                {
+                    origin: propertyLoc,
+                    destination: { lat: landmark.latitude, lng: landmark.longitude },
+                    travelMode: google.maps.TravelMode.DRIVING,
+                },
+                (result, status) => {
+                    if (status === google.maps.DirectionsStatus.OK && result?.routes[0]?.legs[0]) {
+                        //ADJUST HERE
+						setLandmarkDirections((prevState) => [...prevState, result]);
+                    } else {
+                        console.error('Directions request failed:', status);
+                    }
+                }
+            );
+        });
+		console.log(landmarkDirections)
+    };
 
 	const handleAddUserLocation = () => {
 		navigator.geolocation.getCurrentPosition(
@@ -96,6 +115,12 @@ const SideMap: React.FC<SideReviewsProps> = ({
 			}
 		);
 	};
+
+	
+
+    
+
+	
 
 
 	const mapScoreToRating = (averageScore: number): string => {
@@ -155,7 +180,9 @@ const SideMap: React.FC<SideReviewsProps> = ({
 									className='flex justify-between items-center mt-1 dark:text-gray-300'
 								>
 									<p className='text-xs'>{landmark.name}</p>
-									<p className='text-xs text-right'>{landmark.distance} km</p>
+									{landmark.directions
+										? `${(landmark.directions.distance?.text || '')} (${landmark.directions.duration?.text || ''})`
+										: 'N/A'}
 								</div>
 							))}
 							{landmarks.length > 4 && (
@@ -180,7 +207,9 @@ const SideMap: React.FC<SideReviewsProps> = ({
 											>
 												<p className='text-xs'>{landmark.name}</p>
 												<p className='text-xs text-right'>
-													{landmark.distance} km
+												{landmark.directions
+                                                        ? `${(landmark.directions.distance?.text || '')} (${landmark.directions.duration?.text || ''})`
+                                                        : 'N/A'}
 												</p>
 											</div>
 										))}
