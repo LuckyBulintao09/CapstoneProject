@@ -80,6 +80,7 @@ export default function Listings() {
     };
 
     const handleMapClick = async (event) => {
+        setDeviceLocation(null);
         if (event.latLng) {
             const { lat, lng } = event.latLng.toJSON();
             setPosition({ lat, lng });
@@ -127,7 +128,6 @@ export default function Listings() {
             }
     
             setListings(updatedListings);
-            console.log(listings)
         } catch (err) {
             setError('Failed to fetch listings.');
         }

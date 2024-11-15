@@ -55,7 +55,6 @@ export const fetchPropertyFacilities = async (propertyId: number) => {
     console.error("Error fetching property facilities:", error);
     return null;
   }
-  console.log(data)
   return data.map(item => item.amenity_name)
 }
 
