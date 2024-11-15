@@ -64,7 +64,6 @@ import SideMap from '../components/SideMap';
 import UnitGalleryModal from '../components/UnitGalleryModal';
 import { Dialog, DialogContent } from '@/components/ui/dialog';
 import { BookingCardModal } from '../components/BookingCardModal';
-import Distance from '@/components/google/distance';
 import { set } from 'date-fns';
 import { fetchLandmarks } from '@/actions/landmarks/landmark';
 
@@ -202,7 +201,7 @@ export function SpecificListing({ id }: SpecificListingProps) {
 			{
 				origin: userPosition,
 				destination: position,
-				travelMode: google.maps.TravelMode.DRIVING,
+				travelMode: google.maps.TravelMode.WALKING,
 			},
 			(result, status) => {
 				if (status === google.maps.DirectionsStatus.OK && result?.routes[0]?.legs[0]) {
