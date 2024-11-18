@@ -1,5 +1,6 @@
 import { createClient } from "@/utils/supabase/client";
 import { format } from "date-fns";
+import { sendMessageAfterReservation } from "../chat/sendMessageAfterReservation";
 
 const supabase = createClient();
 
@@ -92,6 +93,6 @@ export const createReservation = async (
       return { success: false, error: unitError.message };
     }
   }
-
+  await sendMessageAfterReservation(unitId, userId);
   return { success: true };
 };
