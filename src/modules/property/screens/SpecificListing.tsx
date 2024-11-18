@@ -1,5 +1,5 @@
 'use client';
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useMemo } from 'react';
 import ResponsiveLayout from '@/components/ResponsiveLayout';
 import {
 	ArrowUpRight,
@@ -73,12 +73,22 @@ import SideMap from '../components/SideMap';
 import UnitGalleryModal from '../components/UnitGalleryModal';
 import { Dialog, DialogContent } from '@/components/ui/dialog';
 import { BookingCardModal } from '../components/BookingCardModal';
-import { set } from 'date-fns';
+import { useSearchParams } from 'next/navigation'
+import { useRouter } from 'next/router'
 import { fetchLandmarks } from '@/actions/landmarks/landmark';
 
 interface SpecificListingProps {
 	id: number;
 }
+
+type SearchParams = {
+	amenities?: string | string[]
+	privacy?: string
+	minPrice?: string
+	maxPrice?: string
+	room?: string
+	bed?: string
+  }
 
 export function SpecificListing({ id }: SpecificListingProps) {
 	const [isFavourite, setIsFavourite] = useState(false);
@@ -107,6 +117,27 @@ export function SpecificListing({ id }: SpecificListingProps) {
 	const [unitCount, setUnitCount] = useState(0);
 	const [totalOccupants, setTotalOccupants] = useState(0);
 	const [landmarks, setLandmarks] = useState([]);
+
+	//Parameter Filters
+	const searchParams = useSearchParams()
+	
+	const getSearchParam = (param: keyof SearchParams): string | string[] | null => {
+		if (param === 'amenities') {
+		  const amenities = searchParams.getAll('amenities')
+		  return amenities.length > 0 ? amenities : null
+		}
+		const value = searchParams.get(param)
+		return value ?? null
+	  }
+	
+	  const amenities = getSearchParam('amenities')
+	  const privacy = getSearchParam('privacy')
+	  const minPrice = getSearchParam('minPrice')
+	  const maxPrice = getSearchParam('maxPrice')
+	  const room = getSearchParam('room')
+	  const bed = getSearchParam('bed')
+
+	  
 
 	
 	useEffect(() => {
@@ -153,6 +184,59 @@ export function SpecificListing({ id }: SpecificListingProps) {
 		loadUserAndProperty();
 		
 	}, [id]);
+
+	const sortedUnits = useMemo(() => {
+		if (!Array.isArray(units) || units.length === 0) {
+		  return [];
+		}
+	  
+		return [...units].sort((a, b) => {
+		  let scoreA = 0;
+		  let scoreB = 0;
+	  
+		  // Price range scoring (Highest priority)
+		  if (minPrice && maxPrice) {
+			const minP = parseInt(minPrice as string);
+			const maxP = parseInt(maxPrice as string);
+			if (a.price >= minP && a.price <= maxP) scoreA += 100;
+			if (b.price >= minP && b.price <= maxP) scoreB += 100;
+		  }
+	  
+		  // Rooms and beds scoring (Second priority)
+		  if (room) {
+			const targetRoom = parseInt(room as string);
+			if (a.bedrooms === targetRoom) scoreA += 50;
+			if (b.bedrooms === targetRoom) scoreB += 50;
+		  }
+	  
+		  if (bed) {
+			const targetBed = parseInt(bed as string);
+			if (a.beds === targetBed) scoreA += 50;
+			if (b.beds === targetBed) scoreB += 50;
+		  }
+	  
+		  // Amenity matching score (Third priority)
+		  if (amenities && Array.isArray(amenities)) {
+			const aAmenities = new Set(a.amenities);
+			const bAmenities = new Set(b.amenities);
+			const aMatches = amenities.filter((am) => aAmenities.has(am)).length;
+			const bMatches = amenities.filter((am) => bAmenities.has(am)).length;
+	  
+			scoreA += aMatches * 10; // Weight for each matching amenity
+			scoreB += bMatches * 10;
+		  }
+	  
+		  // Privacy type scoring (Lowest priority)
+		  if (privacy) {
+			if (a.privacy_type === privacy) scoreA += 5;
+			if (b.privacy_type === privacy) scoreB += 5;
+		  }
+	  
+		  // Sort by descending score
+		  return scoreB - scoreA;
+		});
+	  }, [units]);
+	  
 
 
 	const handleToggleFavourite = async () => {
@@ -395,10 +479,10 @@ export function SpecificListing({ id }: SpecificListingProps) {
 
 				<div className='flex flex-col gap-4'>
 					{/* MAP UNITS HERE */}
-					{units.map((unit) => (
+					{sortedUnits.map((unit, index) => (
 						<Card
 							key={unit.id}
-							className='bg-white dark:bg-secondary border border-gray-300 shadow-md'
+							className={`bg-white dark:bg-secondary border border-gray-300 shadow-md ${index === 0 ? 'border-2 border-primary dark:border-blue-300' : ''}`}
 						>
 							<CardHeader>
 								<CardTitle className='text-lg'>

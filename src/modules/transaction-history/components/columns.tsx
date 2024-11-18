@@ -4,7 +4,7 @@ import { useState, useEffect } from "react";
 import { format, isWithinInterval, parseISO } from "date-fns";
 import { ColumnDef, Row } from "@tanstack/react-table";
 import { Button } from "@/components/ui/button";
-import { DataTableColumnHeader } from "@/app/(auth)/(lessor-dashboard)/reservations/data-column-header";
+import { DataTableColumnHeader } from "@/components/table/data-column-header";
 import { Badge } from "@/components/ui/badge";
 import { Star, XCircle } from "lucide-react";
 import AddReviewModal from "./AddReviewModal";

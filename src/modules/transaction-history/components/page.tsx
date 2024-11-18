@@ -1,7 +1,7 @@
 "use client";
 
 import React, { useState, useEffect } from "react";
-import { DataTable } from "@/app/(auth)/(lessor-dashboard)/reservations/data-table";
+import { DataTable } from "@/components/table/data-table";
 import { columns, Transaction } from "./columns";
 import { createClient } from "../../../utils/supabase/client";
 

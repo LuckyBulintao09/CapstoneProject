@@ -5,6 +5,8 @@ import { Badge } from '../ui/badge';
 import { Star } from 'lucide-react';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faWalking } from '@fortawesome/free-solid-svg-icons';
+import { useRouter } from 'next/navigation';
+import { Select } from '@react-three/drei';
 export default function BranchListings({
 	id,
 	title,
@@ -20,7 +22,15 @@ export default function BranchListings({
 	company_name,
 	distance,
 	travelTime,
+	selectedFilter,
+	selectedPrivacyType,
+	minPrice,
+	maxPrice,
+	rooms,
+	beds
 }: BranchlistingsProps) {
+	const router = useRouter();
+
 	const min_formattedPrice = new Intl.NumberFormat('en-PH', {
 		style: 'currency',
 		currency: 'PHP',
@@ -40,9 +50,22 @@ export default function BranchListings({
 		: 'N/A';
 
 	const handleClick = () => {
-		window.location.href = `/property/${id}`;
-	};
+		const query = new URLSearchParams();
 
+		if(selectedFilter.length > 0){
+			selectedFilter.forEach((amenity) => {
+				query.append('amenities', amenity);
+			})
+		}
+		if (selectedPrivacyType) query.set('privacy', selectedPrivacyType);
+		if (minPrice) query.set('minPrice', minPrice.toString());
+		if (maxPrice) query.set('maxPrice', maxPrice.toString());
+		if (beds) query.set('bed', beds.toString());
+		if (rooms) query.set('room', rooms.toString());
+
+		const queryString = query.toString();
+		router.push(`/property/${id}?${queryString}`);
+	};
 	return (
 		<div>
 			<BentoGrid

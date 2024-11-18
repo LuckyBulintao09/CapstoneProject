@@ -4,7 +4,6 @@ import { Button } from '@/components/ui/button';
 import { ArrowDownUp, Filter, MinusCircle, PlusCircle } from 'lucide-react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Label } from '@/components/ui/label';
-import { GoogleMap } from '@react-google-maps/api';
 import { MapContext } from './ListingsPage';
 import { getAllAmenities } from '@/actions/listings/amenities';
 import LoadingPage from '@/components/LoadingPage';
@@ -13,6 +12,8 @@ import { Checkbox } from '@/components/ui/checkbox';
 import { Input } from '@/components/ui/input';
 import { Slider } from '@nextui-org/slider';
 import FilterModal from './FilterModal';
+import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
+
 
 const householdPrivacyTypes = [
 	{ value: 'Private Room', label: 'Private Room' },
@@ -27,25 +28,25 @@ const propertyStructureOptions = [
 ];
 
 const propertyRating = [
-	{ value: 1, label: '1 star' },
-	{ value: 2, label: '2 stars' },
-	{ value: 3, label: '3 stars' },
-	{ value: 4, label: '4 stars' },
-	{ value: 5, label: '5 stars' },
+	{ value: 1, label: '1+ star' },
+	{ value: 2, label: '2+ stars' },
+	{ value: 3, label: '3+ stars' },
+	{ value: 4, label: '4+ stars' },
+	{ value: 5, label: '5+ stars' },
 ];
 
 const reviewScore = [
-	{ value: 1, label: 'Wonderful: 9+' },
-	{ value: 2, label: 'Very Good: 8+' },
-	{ value: 3, label: 'Good: 7+' },
-	{ value: 4, label: 'Pleasant: 6+' },
+	{ value: 9, label: 'Wonderful: 9+' },
+	{ value: 8, label: 'Very Good: 8+' },
+	{ value: 7, label: 'Good: 7+' },
+	{ value: 6, label: 'Pleasant: 6+' },
 ];
 
 const distanceFromLocation = [
-	{ value: '>250m', label: 'Less than 250 m (0.2 km) ' },
-	{ value: '>500m', label: 'Less than 500 m (0.5 km)' },
-	{ value: '>750m', label: 'Less than 750 m (0.75 km)' },
-	{ value: '>1000m', label: 'Less than 1000 m (1 km)' },
+	{ value: 250, label: 'Less than 250 m (0.2 km) ' },
+	{ value: 500, label: 'Less than 500 m (0.5 km)' },
+	{ value: 750, label: 'Less than 750 m (0.75 km)' },
+	{ value: 1000, label: 'Less than 1000 m (1 km)' },
 ];
 // Helper function to calculate Haversine distance in km
 const haversineDistance = (location1, location2) => {
@@ -72,8 +73,10 @@ const estimateTravelTime = (distance, averageSpeed = 4) => {
 };
 
 export default function Listings() {
+
 	const [listings, setListings] = useState([]);
 	const [loading, setLoading] = useState(true);
+	const [listingLoading, setListingLoading] = useState(false);
 	const [error, setError] = useState(null);
 	const [sortOrder, setSortOrder] = useState('asc');
 
@@ -94,9 +97,11 @@ export default function Listings() {
 	const [selectedStructure, setSelectedStructure] = useState([]);
 	const [minPrice, setMinPrice] = useState(0);
 	const [maxPrice, setMaxPrice] = useState(30000);
-	const [rooms, setRooms] = useState(1);
-	const [beds, setBeds] = useState(1);
-	const [isApplyFilter, setIsApplyFilter] = useState(false);
+	const [rooms, setRooms] = useState(0);
+	const [beds, setBeds] = useState(0);
+	const [distanceFilter, setDistanceFilter] = useState<any>(null);
+	const [starFilter, setStarFilter] = useState<number>(null);
+	const [scoreFilter, setScoreFilter] = useState<number>(null)
 
 	const handleDeviceLocation = async () => {
 		if (deviceLocation) {
@@ -119,7 +124,10 @@ export default function Listings() {
 				maxPrice,
 				beds,
 				rooms,
-				selectedStructure
+				selectedStructure,
+				distanceFilter,
+				starFilter,
+				scoreFilter
 			);
 
 			let updatedListings;
@@ -137,18 +145,39 @@ export default function Listings() {
 			}
 
 			setListings(updatedListings);
-			console.log(listings);
 		} catch (err) {
 			setError('Failed to fetch listings.');
 		}
 		setLoading(false);
-		setIsApplyFilter(false);
 	};
 
 	useEffect(() => {
-		handleDeviceLocation();
-		fetchFilteredListings();
-	}, [isApplyFilter, deviceLocation, selectedLocation]);
+		const fetchData = async () => {
+			setListingLoading(true);
+			await handleDeviceLocation();
+			await fetchFilteredListings();
+			setListingLoading(false);
+		};
+	
+		fetchData();
+	}, [
+		deviceLocation, 
+		selectedLocation, 
+		selectedStructure,
+		selectedPrivacyType,
+		selectedFilter,
+		rooms,
+		beds,
+		distanceFilter,
+		starFilter,
+		scoreFilter,
+		minPrice,
+		maxPrice,
+		radius
+	]);
+	
+
+	
 
 	const sortedListings = [...listings].sort((a, b) => {
 		if (a.ispropertyboosted && !b.ispropertyboosted) return -1;
@@ -188,6 +217,19 @@ export default function Listings() {
 												<Checkbox
 													id={item.value}
 													className='dark:border-blue-300'
+													checked={selectedStructure.includes(item.value)}
+													onCheckedChange={(checked) => {
+														if (checked) {
+															setSelectedStructure((prev) =>
+																prev.concat(item.value)
+															);
+														} else {
+															setSelectedStructure(
+																prev =>
+																	prev.filter((value) => value !== item.value)
+															);
+														}
+													}}
 												/>
 												<label
 													htmlFor={item.value}
@@ -211,6 +253,19 @@ export default function Listings() {
 												<Checkbox
 													id={item.value}
 													className='dark:border-blue-300'
+													checked={selectedPrivacyType.includes(item.value)}
+													onCheckedChange={(checked) => {
+														if (checked) {
+															setSelectedPrivacyType((prev) =>
+																prev.concat(item.value)
+															);
+														} else {
+															setSelectedPrivacyType(
+																prev =>
+																	prev.filter((value) => value !== item.value)
+															);
+														}
+													}}
 												/>
 												<label
 													htmlFor={item.value}
@@ -224,6 +279,7 @@ export default function Listings() {
 								</div>
 
 								{/* Price Range Filter Section */}
+								{/* Need to create price range handle commit */}
 								<div className='mt-3'>
 									<Label htmlFor='price_range' className='font-semibold'>
 										Price Range
@@ -231,6 +287,7 @@ export default function Listings() {
 
 									<div className='space-y-2 mt-2'>
 										<Slider
+											isDisabled={true}
 											step={100}
 											minValue={0}
 											maxValue={30000}
@@ -354,6 +411,19 @@ export default function Listings() {
 												<Checkbox
 													id={item.value}
 													className='dark:border-blue-300'
+													checked={selectedFilter.includes(item.value)}
+													onCheckedChange={(checked) => {
+														if (checked) {
+															setSelectedFilter((prev) =>
+																prev.concat(item.value)
+															);
+														} else {
+															setSelectedFilter(
+																prev =>
+																	prev.filter((value) => value !== item.value)
+															);
+														}
+													}}
 												/>
 												<label
 													htmlFor={item.value}
@@ -373,20 +443,20 @@ export default function Listings() {
 									</Label>
 
 									<div className='space-y-2 mt-2'>
+									<RadioGroup onValueChange={setDistanceFilter} value={distanceFilter}>
 										{distanceFromLocation.map((item) => (
-											<div key={item.value} className='flex items-center'>
-												<Checkbox
-													id={item.label}
-													className='dark:border-blue-300'
-												/>
-												<label
-													htmlFor={item.label}
-													className='text-sm dark:foreground font-normal leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70 ml-2'
-												>
+											<div key={item.value} className="flex items-center space-x-2">
+												<RadioGroupItem 
+													value={item.value} 
+													id={item.label} 
+													checked={distanceFilter === item.value}
+													/>
+												<Label htmlFor={item.label} className="text-sm font-normal">
 													{item.label}
-												</label>
+												</Label>
 											</div>
 										))}
+									</RadioGroup>
 									</div>
 								</div>
 
@@ -397,20 +467,20 @@ export default function Listings() {
 									</Label>
 
 									<div className='space-y-2 mt-2'>
-										{propertyRating.map((item) => (
-											<div key={item.value} className='flex items-center'>
-												<Checkbox
-													id={item.label}
-													className='dark:border-blue-300'
-												/>
-												<label
-													htmlFor={item.label}
-													className='text-sm dark:foreground font-normal leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70 ml-2'
-												>
-													{item.label}
-												</label>
-											</div>
-										))}
+										<RadioGroup onValueChange={setStarFilter} value={starFilter}>
+											{propertyRating.map((item) => (
+												<div key={item.value} className="flex items-center space-x-2">
+													<RadioGroupItem 
+														value={item.value} 
+														id={item.label}
+														checked={starFilter === item.value}
+													/>
+													<Label htmlFor={item.label} className="text-sm font-normal">
+														{item.label}
+													</Label>
+												</div>
+											))}
+										</RadioGroup>
 									</div>
 								</div>
 
@@ -421,20 +491,20 @@ export default function Listings() {
 									</Label>
 
 									<div className='space-y-2 mt-2'>
-										{reviewScore.map((item) => (
-											<div key={item.value} className='flex items-center'>
-												<Checkbox
-													id={item.label}
-													className='dark:border-blue-300'
-												/>
-												<label
-													htmlFor={item.label}
-													className='text-sm dark:foreground font-normal leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70 ml-2'
-												>
-													{item.label}
-												</label>
-											</div>
-										))}
+										<RadioGroup onValueChange={setScoreFilter} value={scoreFilter}>
+											{reviewScore.map((item) => (
+												<div key={item.value} className="flex items-center space-x-2">
+													<RadioGroupItem 
+														value={item.value} 
+														id={item.label}
+														checked={scoreFilter === item.value}
+													/>
+													<Label htmlFor={item.label} className="text-sm font-normal">
+														{item.label}
+													</Label>
+												</div>
+											))}
+										</RadioGroup>
 									</div>
 								</div>
 							</form>
@@ -479,16 +549,41 @@ export default function Listings() {
 									setRooms={setRooms}
 									beds={beds}
 									setBeds={setBeds}
-									setIsApplyFilter={setIsApplyFilter}
+									starFilter={starFilter}
+									setStarFilter={setStarFilter}
+									scoreFilter={scoreFilter}
+									setScoreFilter={setScoreFilter}
+									setDistanceFilter={setDistanceFilter}
+									listings={listings}
+									selectedLocation={selectedLocation}
+									setSelectedLocation={setSelectedLocation}
+									position={position}
+									setPosition={setPosition}
+									deviceLocation={deviceLocation}
+									setDeviceLocation={setDeviceLocation}
+									radius={radius}
+									setRadius={setRadius}
 								/>
 							</div>
 						</div>
 					</div>
 
 					{/* Lower Row: Listings */}
+					{listingLoading && (
+						<div className='flex justify-center items-center w-full'>
+							<LoadingPage />
+						</div>
+					)}
 					<div className='row-span-1 grid grid-cols-1 lg:grid-cols-3 md:grid-cols-2 gap-4'>
-						{sortedListings.map((item) => (
-							<BranchListings key={item.id} {...item} />
+						{!listingLoading && sortedListings.map((item) => (
+							<BranchListings
+								key={item.id} {...item}
+								selectedFilter={selectedFilter}
+								selectedPrivacyType={selectedPrivacyType}
+								minPrice={minPrice}
+								maxPrice={maxPrice}
+								rooms={rooms}
+								beds={beds} />
 						))}
 					</div>
 				</div>

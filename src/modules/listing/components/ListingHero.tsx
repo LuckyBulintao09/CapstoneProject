@@ -20,8 +20,7 @@ export default function ListingHero({
 	const [deviceLocation, setDeviceLocation] = useContext(MapContext);
 	const inputRef = useRef<HTMLInputElement>(null);
 	const autocompleteRef = useRef<google.maps.places.Autocomplete | null>(null);
-	const [placesAutocomplete, setPlacesAutocomplete] =
-		useState<google.maps.places.Autocomplete | null>(null);
+	const [placesAutocomplete, setPlacesAutocomplete] = useState<google.maps.places.Autocomplete | null>(null);
 	const places = useMapsLibrary('places');
 
 	useEffect(() => {
@@ -55,6 +54,7 @@ export default function ListingHero({
 	}, [places]);
 
 	const handleCurrentLocationClick = () => {
+		console.log(places)
 		if (navigator.geolocation) {
 			navigator.geolocation.getCurrentPosition((position) => {
 				if (position.coords.accuracy > 100) {
