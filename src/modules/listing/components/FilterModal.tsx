@@ -1,5 +1,5 @@
 'use client';
-
+import { useEffect, useRef } from 'react';
 import {
 	Dialog,
 	DialogContent,
@@ -20,14 +20,15 @@ import {
 	GoogleMap,
 	Marker,
 	MarkerClusterer,
+	StandaloneSearchBox
 } from '@react-google-maps/api';
-import { MapContext } from './ListingsPage';
-import { get_allProperties } from '@/actions/listings/filtering-complete';
 import { Slider as RadiusSlider } from '@/components/ui/slider';
 import { Card, CardContent } from '@/components/ui/card';
 import { Slider as PriceSlider } from '@nextui-org/slider';
-import { Checkbox } from '@/components/ui/checkbox';
 import { MdOutlineMyLocation } from 'react-icons/md';
+import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
+import { toast } from 'sonner';
+import { set } from 'date-fns';
 
 const householdPrivacyTypes = [
 	{ value: 'Private Room', label: 'Private Room' },
@@ -42,43 +43,20 @@ const propertyStructureOptions = [
 ];
 
 const propertyRating = [
-	{ value: 1, label: '1 star' },
-	{ value: 2, label: '2 stars' },
-	{ value: 3, label: '3 stars' },
-	{ value: 4, label: '4 stars' },
-	{ value: 5, label: '5 stars' },
+	{ value: 1, label: '1+ star' },
+	{ value: 2, label: '2+ stars' },
+	{ value: 3, label: '3+ stars' },
+	{ value: 4, label: '4+ stars' },
+	{ value: 5, label: '5+ stars' },
 ];
 
 const reviewScore = [
-	{ value: 1, label: 'Wonderful: 9+' },
-	{ value: 2, label: 'Very Good: 8+' },
-	{ value: 3, label: 'Good: 7+' },
-	{ value: 4, label: 'Pleasant: 6+' },
+	{ value: 9, label: 'Wonderful: 9+' },
+	{ value: 8, label: 'Very Good: 8+' },
+	{ value: 7, label: 'Good: 7+' },
+	{ value: 6, label: 'Pleasant: 6+' },
 ];
 
-// Helper function to calculate Haversine distance in km
-const haversineDistance = (location1, location2) => {
-	const toRadians = (degrees) => degrees * (Math.PI / 180);
-	const R = 6371;
-	const dLat = toRadians(location2.lat - location1.lat);
-	const dLng = toRadians(location2.lng - location1.lng);
-	const lat1 = toRadians(location1.lat);
-	const lat2 = toRadians(location2.lat);
-
-	const a =
-		Math.sin(dLat / 2) * Math.sin(dLat / 2) +
-		Math.sin(dLng / 2) * Math.sin(dLng / 2) * Math.cos(lat1) * Math.cos(lat2);
-	const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
-	return Math.round((R * c + Number.EPSILON) * 100) / 100;
-};
-
-// Function to estimate travel time in minutes based on average speed (e.g., 4 km/h)
-const estimateTravelTime = (distance, averageSpeed = 4) => {
-	const timeInSeconds = (distance / averageSpeed) * 60 * 60; // time in seconds
-	const minutes = Math.floor(timeInSeconds / 60);
-	const seconds = Math.floor(timeInSeconds % 60);
-	return { minutes, seconds };
-};
 
 export default function FilterModal({
 	householdAmenities = [],
@@ -96,35 +74,78 @@ export default function FilterModal({
 	setRooms,
 	beds,
 	setBeds,
-	setIsApplyFilter,
+	starFilter,
+	setStarFilter,
+	scoreFilter,
+	setScoreFilter,
+	setDistanceFilter,
+	listings,
+	selectedLocation,
+	setSelectedLocation,
+	position,
+	setPosition,
+	deviceLocation,
+	setDeviceLocation,
+	radius,
+	setRadius,
 }) {
 	const [isOpen, setIsOpen] = useState(false);
-	const [error, setError] = useState(null);
-	const [loading, setLoading] = useState(true);
 
 	const increment = (value, setter) => setter(value + 1);
 	const decrement = (value, setter) => setter(value > 0 ? value - 1 : 0);
 
-	const clearFilters = () => {
-		setSelectedFilter([]);
-		setSelectedPrivacyType([]);
-		setSelectedStructure([]);
-		setMinPrice(0);
-		setMaxPrice(30000);
-		setRooms(1);
-		setBeds(1);
-	};
-
-	const [listings, setListings] = useState([]);
-	const [sortOrder, setSortOrder] = useState('asc');
 
 	// Map and Location Filter
 	const [mapKey, setMapKey] = useState(0);
-	const [deviceLocation, setDeviceLocation] = useContext(MapContext);
-	const [position, setPosition] = useState({ lat: 16.42, lng: 120.599 });
-	const [selectedLocation, setSelectedLocation] = useState(deviceLocation);
 	const [selectedListing, setSelectedListing] = useState(null);
-	const [radius, setRadius] = useState([250]);
+	const [searchTerm, setSearchTerm] = useState<any>(null);
+	const [mapRadius, setMapRadius] = useState([250]);
+	const mapRef = useRef(null); 
+	const circleRef = useRef(null); 
+
+	//Filters
+	const [popUpAmenities, setPopUpAmenities] = useState(JSON.parse(JSON.stringify(selectedFilter)));
+	const [popUpPrivacyType, setPopUpPrivacyType] = useState(JSON.parse(JSON.stringify(selectedPrivacyType)));
+	const [popUpStructure, setPopUpStructure] = useState(JSON.parse(JSON.stringify(selectedStructure)));
+	const [popUpMinPrice, setPopUpMinPrice] = useState(minPrice);
+	const [popUpMaxPrice, setPopUpMaxPrice] = useState(maxPrice);
+	const [popUpRooms, setPopUpRooms] = useState(rooms);
+	const [popUpBeds, setPopUpBeds] = useState(beds);
+	const [popUpStarFilter, setPopUpStarFilter] = useState<any>(JSON.parse(JSON.stringify(starFilter)));
+	const [popUpScoreFilter, setPopUpScoreFilter] = useState<any>(JSON.parse(JSON.stringify(scoreFilter)));
+	
+
+	const handleCurrentLocationClick = () => {
+		if (navigator.geolocation) {
+			navigator.geolocation.getCurrentPosition((position) => {
+				if (position.coords.accuracy > 100) {
+					toast.error(
+						'Location accuracy is too low. Manually search location or use a mobile device instead.'
+					);
+				} else {
+					toast.success('Device Location Retrieved!');
+					setDeviceLocation({
+						lat: position.coords.latitude,
+						lng: position.coords.longitude,
+					});
+					setSearchTerm('Current Location');
+				}
+			});
+		}
+	};
+
+
+	useEffect(() => {
+		setPopUpAmenities(JSON.parse(JSON.stringify(selectedFilter)));
+		setPopUpPrivacyType(JSON.parse(JSON.stringify(selectedPrivacyType)));
+		setPopUpStructure(JSON.parse(JSON.stringify(selectedStructure)));
+		setPopUpMinPrice(minPrice);
+		setPopUpMaxPrice(maxPrice);
+		setPopUpRooms(rooms);
+		setPopUpBeds(beds);
+		setPopUpStarFilter(JSON.parse(JSON.stringify(starFilter)));
+		setPopUpScoreFilter(JSON.parse(JSON.stringify(scoreFilter)));
+	}, [isOpen]);
 
 	const defaultOptions = {
 		strokeOpacity: 0.5,
@@ -145,67 +166,71 @@ export default function FilterModal({
 
 	const handleMapClick = async (event) => {
 		if (event.latLng) {
-			const { lat, lng } = event.latLng.toJSON();
-			setPosition({ lat, lng });
-			setSelectedLocation({ lat, lng });
-			setMapKey((prevKey) => prevKey + 1);
+		  const { lat, lng } = event.latLng.toJSON();
+	
+		  // If there's a previously selected location, clear it (remove the old circle)
+		  if (circleRef.current) {
+			circleRef.current.setMap(null); // Remove the old circle from the map
+		  }
+	
+		  // Update the selectedLocation state for the new circle
+		  setSelectedLocation({ lat, lng });
+	
+		  // Create a new circle and store it in the circleRef
+		  const newCircle = new window.google.maps.Circle({
+			center: { lat, lng },
+			radius: mapRadius[0],
+			options: closeOptions,
+		  });
+	
+		  if (mapRef.current instanceof window.google.maps.Map) {
+			newCircle.setMap(mapRef.current);  // Ensure mapRef is a Google Maps instance
+			circleRef.current = newCircle; // Store the circle reference
+		  } else {
+			console.error("Map instance not found.");
+		  }
+	
 		}
-	};
+	  };
 
-	const fetchFilteredListings = async () => {
-		try {
-			const fetchedListings = await get_allProperties(
-				selectedLocation ?? {},
-				selectedPrivacyType,
-				selectedFilter,
-				radius[0],
-				minPrice,
-				maxPrice,
-				beds,
-				rooms,
-				selectedStructure
-			);
-
-			let updatedListings;
-			if (selectedLocation) {
-				updatedListings = fetchedListings.map((listing) => {
-					const distance = haversineDistance(selectedLocation, {
-						lat: listing.latitude,
-						lng: listing.longitude,
-					});
-					const travelTime = estimateTravelTime(distance);
-					return { ...listing, distance, travelTime };
-				});
-			} else {
-				updatedListings = fetchedListings;
-			}
-
-			setListings(updatedListings);
-			console.log(listings);
-		} catch (err) {
-			setError('Failed to fetch listings.');
-		}
-		setLoading(false);
-		setIsApplyFilter(false);
-	};
 
 	const handleMarkerClick = (listing) => {
 		setSelectedListing(listing);
 	};
 
+	//RADIUS BUG: NOT INSTANTLY UPDATING WHEN CHANGING VALUE
 	const handleRadiusCommit = (value) => {
+		setDistanceFilter(null)
 		setRadius(value);
-		fetchFilteredListings();
 		setMapKey((prevKey) => prevKey + 1);
 	};
 
-	const sortedListings = [...listings].sort((a, b) => {
-		if (a.ispropertyboosted && !b.ispropertyboosted) return -1;
-		if (!a.ispropertyboosted && b.ispropertyboosted) return 1;
-		return sortOrder === 'asc'
-			? a.minimum_price - b.minimum_price
-			: b.minimum_price - a.minimum_price;
-	});
+	const handleApplyFilter = () => {
+		setSelectedFilter(popUpAmenities);
+		setSelectedPrivacyType(popUpPrivacyType);
+		setSelectedStructure(popUpStructure);
+		setMinPrice(popUpMinPrice);
+		setMaxPrice(popUpMaxPrice);
+		setRooms(popUpRooms);
+		setBeds(popUpBeds);	
+		setStarFilter(popUpStarFilter);
+		setScoreFilter(popUpScoreFilter);
+
+		setIsOpen(false);
+	};
+
+	const clearFilters = () => {
+		setPopUpAmenities([]);
+		setPopUpPrivacyType([]);
+		setPopUpStructure([]);
+		setPopUpMinPrice(0);
+		setPopUpMaxPrice(30000);
+		setPopUpRooms(0);
+		setPopUpBeds(0);
+		setPopUpStarFilter(null);
+		setPopUpScoreFilter(null);
+		setDistanceFilter(null);
+	};
 
 	return (
 		<Dialog open={isOpen} onOpenChange={setIsOpen}>
@@ -236,61 +261,56 @@ export default function FilterModal({
 						<div className='col-span-3 relative'>
 							<div className='absolute top-4 left-1/2 transform -translate-x-1/2 w-11/12 z-10'>
 								<div className='relative flex lg:w-full shadow-lg'>
-									<SearchIcon className='absolute left-3 top-1/2 -translate-y-1/2 h-5 w-5 text-black dark:text-foreground' />
+									<SearchIcon className='absolute left-3 top-1/2 -translate-y-1/2 h-5 w-5 text-black dark:text-muted-foreground' />
 									<input
 										// ref={inputRef}
 										type='search'
 										name='search'
 										id='search'
-										className='block w-full rounded-lg border-1 bg-white dark:bg-secondary px-10 py-2 text-black dark:text-foreground placeholder:text-muted-foreground focus:ring-2 focus:ring-accent'
+										className='block w-full rounded-lg border-0 bg-white px-10 py-2 text-black dark:text-muted-foreground placeholder:text-muted-foreground focus:ring-2 focus:ring-accent'
 										placeholder='Search'
-										// value={searchTerm}
-										// onChange={(e) => setSearchTerm(e.target.value)}
-										// onKeyDown={(e) => e.key === 'Enter' && e.preventDefault()}
+										value={searchTerm}
+										onChange={(e) => setSearchTerm(e.target.value)}
+										onKeyDown={(e) => e.key === 'Enter' && e.preventDefault()}
 									/>
 									<button
 										type='button'
 										className='absolute inset-y-0 right-0 pr-3 flex items-center p-1 bg-transparent border-0 focus:outline-none'
 										aria-label='Use my location'
-										// onClick={handleCurrentLocationClick}
+										onClick={handleCurrentLocationClick}
 									>
-										<MdOutlineMyLocation className='h-5 w-5 text-black dark:text-foreground' />
+										<MdOutlineMyLocation className='h-5 w-5 text-black dark:text-muted-foreground' />
 									</button>
 								</div>
 							</div>
 							<GoogleMap
-								key={mapKey}
+								ref={mapRef}  // Attach map reference
 								onClick={handleMapClick}
 								center={position}
 								zoom={15}
-								mapContainerClassName='w-full h-[300px] lg:h-full min-h-[340px]'
+								mapContainerClassName="w-full h-[300px] lg:h-full min-h-[340px]"
 								options={{ disableDefaultUI: true }}
-							>
+								>
 								{selectedLocation && (
 									<>
-										<Marker position={selectedLocation} />
-										<Circle
-											center={selectedLocation}
-											radius={radius[0]}
-											options={closeOptions}
-										/>
+									<Marker position={selectedLocation} />
 									</>
 								)}
 								<MarkerClusterer>
 									{(clusterer) => (
-										<>
-											{sortedListings.map((listing) => (
-												<Marker
-													key={listing.id}
-													position={{
-														lat: listing.latitude,
-														lng: listing.longitude,
-													}}
-													clusterer={clusterer}
-													onClick={() => handleMarkerClick(listing)}
-												/>
-											))}
-										</>
+									<>
+										{listings.map((listing) => (
+										<Marker
+											key={listing.id}
+											position={{
+											lat: listing.latitude,
+											lng: listing.longitude,
+											}}
+											clusterer={clusterer}
+											onClick={() => handleMarkerClick(listing)}
+										/>
+										))}
+									</>
 									)}
 								</MarkerClusterer>
 							</GoogleMap>
@@ -310,10 +330,10 @@ export default function FilterModal({
 											</div>
 											<RadiusSlider
 												className='my-2'
-												defaultValue={radius}
+												defaultValue={mapRadius}
 												max={1000}
 												step={1}
-												onValueChange={setRadius}
+												onValueChange={setMapRadius}
 												onValueCommit={handleRadiusCommit}
 											/>
 										</form>
@@ -330,7 +350,7 @@ export default function FilterModal({
 								</Label>
 								<ToggleGroup
 									type='multiple'
-									value={selectedStructure}
+									value={popUpStructure}
 									className='flex gap-2 w-full text-xs'
 								>
 									{propertyStructureOptions.map((type) => (
@@ -338,28 +358,28 @@ export default function FilterModal({
 											key={type.value}
 											value={type.value}
 											onClick={() => {
-												if (selectedStructure.includes(type.value)) {
-													setSelectedStructure(
-														selectedStructure.filter(
+												if (popUpStructure.includes(type.value)) {
+													setPopUpStructure(
+														popUpStructure.filter(
 															(item) => item !== type.value
 														)
 													);
 												} else {
-													setSelectedStructure([
-														...selectedStructure,
+													setPopUpStructure([
+														...popUpStructure,
 														type.value,
 													]);
 												}
 											}}
 											style={{
-												backgroundColor: selectedStructure.includes(type.value)
+												backgroundColor: popUpStructure.includes(type.value)
 													? 'rgb(15, 72, 159)'
 													: 'white',
-												color: selectedStructure.includes(type.value)
+												color: popUpStructure.includes(type.value)
 													? 'white'
 													: 'rgb(55, 48, 63)',
 												transition: 'all 0.2s ease',
-												fontWeight: selectedStructure.includes(type.value)
+												fontWeight: popUpStructure.includes(type.value)
 													? '600'
 													: 'normal',
 											}}
@@ -380,7 +400,7 @@ export default function FilterModal({
 								</Label>
 								<ToggleGroup
 									type='multiple'
-									value={selectedPrivacyType}
+									value={popUpPrivacyType}
 									className='flex gap-2 w-full rounded-lg text-xs'
 								>
 									{householdPrivacyTypes.map((type) => (
@@ -388,26 +408,26 @@ export default function FilterModal({
 											key={type.value}
 											value={type.value}
 											onClick={() => {
-												if (selectedPrivacyType.includes(type.value)) {
-													setSelectedPrivacyType(
-														selectedPrivacyType.filter(
+												if (popUpPrivacyType.includes(type.value)) {
+													setPopUpPrivacyType(
+														popUpPrivacyType.filter(
 															(item) => item !== type.value
 														)
 													);
 												} else {
-													setSelectedPrivacyType([
-														...selectedPrivacyType,
+													setPopUpPrivacyType([
+														...popUpPrivacyType,
 														type.value,
 													]);
 												}
 											}}
 											style={{
-												backgroundColor: selectedPrivacyType.includes(
+												backgroundColor: popUpPrivacyType.includes(
 													type.value
 												)
 													? 'rgb(15, 72, 159)'
 													: 'white',
-												color: selectedPrivacyType.includes(type.value)
+												color: popUpPrivacyType.includes(type.value)
 													? 'white'
 													: 'rgb(55, 48, 63)',
 												transition: 'all 0.2s ease',
@@ -431,10 +451,10 @@ export default function FilterModal({
 									step={100}
 									minValue={0}
 									maxValue={30000}
-									value={[minPrice, maxPrice]}
+									value={[popUpMinPrice, popUpMaxPrice]}
 									onChange={(value) => {
-										setMinPrice(value[0]);
-										setMaxPrice(value[1]);
+										setPopUpMinPrice(value[0]);
+										setPopUpMaxPrice(value[1]);
 									}}
 									formatOptions={{ style: 'currency', currency: 'PHP' }}
 									className='w-full'
@@ -449,8 +469,8 @@ export default function FilterModal({
 											<Input
 												type='number'
 												className='w-[100px] border border-gray-300 p-1 h-7 pl-4 rounded-full justify-center text-center text-xs mb-2'
-												value={minPrice}
-												onChange={(e) => setMinPrice(Number(e.target.value))}
+												value={popUpMinPrice}
+												onChange={(e) => setPopUpMinPrice(Number(e.target.value))}
 											/>
 										</div>
 									</div>
@@ -467,8 +487,8 @@ export default function FilterModal({
 											<Input
 												type='number'
 												className='w-[100px] border border-gray-300 p-1 h-7 pl-4 rounded-full justify-center text-center text-xs mb-2'
-												value={maxPrice}
-												onChange={(e) => setMaxPrice(Number(e.target.value))}
+												value={popUpMaxPrice}
+												onChange={(e) => setPopUpMaxPrice(Number(e.target.value))}
 											/>
 										</div>
 									</div>
@@ -490,18 +510,18 @@ export default function FilterModal({
 										</Label>
 										<div className='flex items-center space-x-4'>
 											<div
-												onClick={() => decrement(rooms, setRooms)}
+												onClick={() => decrement(popUpRooms, setPopUpRooms)}
 												className='px-2 py-1 rounded-full  transition-all cursor-pointer'
 											>
 												<MinusCircle className='text-sm' />{' '}
 											</div>
 
 											<span className='text-sm font-medium flex items-center justify-center w-[40px]'>
-												{rooms === 0 ? 'Any' : rooms}
+												{popUpRooms === 0 ? 'Any' : popUpRooms}
 											</span>
 
 											<div
-												onClick={() => increment(rooms, setRooms)}
+												onClick={() => increment(popUpRooms, setPopUpRooms)}
 												className='px-2 py-1 rounded-full transition-all cursor-pointer'
 											>
 												<PlusCircle className='text-sm' />{' '}
@@ -516,18 +536,18 @@ export default function FilterModal({
 										</Label>
 										<div className='flex items-center space-x-4'>
 											<div
-												onClick={() => decrement(beds, setBeds)}
+												onClick={() => decrement(popUpBeds, setPopUpBeds)}
 												className='px-2 py-1 rounded-full  transition-all cursor-pointer'
 											>
 												<MinusCircle className='text-sm' />{' '}
 											</div>
 
 											<span className='text-sm font-medium flex items-center justify-center w-[40px]'>
-												{beds === 0 ? 'Any' : beds}
+												{popUpBeds === 0 ? 'Any' : popUpBeds}
 											</span>
 
 											<div
-												onClick={() => increment(beds, setBeds)}
+												onClick={() => increment(popUpBeds, setPopUpBeds)}
 												className='px-2 py-1 rounded-full transition-all cursor-pointer'
 											>
 												<PlusCircle className='text-sm' />{' '}
@@ -546,7 +566,7 @@ export default function FilterModal({
 								</Label>
 								<ToggleGroup
 									type='multiple'
-									value={selectedFilter}
+									value={popUpAmenities}
 									className='grid gap-2 grid-cols-3 md:grid-cols-3 text-xs'
 								>
 									{householdAmenities.map((type) => (
@@ -554,19 +574,19 @@ export default function FilterModal({
 											key={type.id}
 											value={type.value}
 											onClick={() => {
-												if (selectedFilter.includes(type.value)) {
-													setSelectedFilter(
-														selectedFilter.filter((item) => item !== type.value)
+												if (popUpAmenities.includes(type.value)) {
+													setPopUpAmenities(
+														popUpAmenities.filter((item) => item !== type.value)
 													);
 												} else {
-													setSelectedFilter([...selectedFilter, type.value]);
+													setPopUpAmenities([...popUpAmenities, type.value]);
 												}
 											}}
 											style={{
-												backgroundColor: selectedFilter.includes(type.value)
+												backgroundColor: popUpAmenities.includes(type.value)
 													? 'rgb(15, 72, 159)'
 													: 'white',
-												color: selectedFilter.includes(type.value)
+												color: popUpAmenities.includes(type.value)
 													? 'white'
 													: 'rgb(55, 48, 63)',
 												transition: 'all 0.2s ease',
@@ -589,20 +609,20 @@ export default function FilterModal({
 									</Label>
 
 									<div className='space-y-2 mt-2'>
-										{propertyRating.map((item) => (
-											<div key={item.value} className='flex items-center'>
-												<Checkbox
-													id={item.label}
-													className='dark:border-blue-300'
-												/>
-												<label
-													htmlFor={item.label}
-													className='text-sm dark:foreground font-normal leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70 ml-2'
-												>
-													{item.label}
-												</label>
-											</div>
-										))}
+										<RadioGroup onValueChange={setPopUpStarFilter} value={popUpStarFilter}>
+											{propertyRating.map((item) => (
+												<div key={item.value} className="flex items-center space-x-2">
+													<RadioGroupItem 
+														value={item.value} 
+														id={item.label} 
+														checked={popUpStarFilter === item.value}
+														/>
+													<Label htmlFor={item.label} className="text-sm font-normal">
+														{item.label}
+													</Label>
+												</div>
+											))}
+										</RadioGroup>
 									</div>
 								</div>
 								{/* Review Score Filter Section */}
@@ -612,20 +632,20 @@ export default function FilterModal({
 									</Label>
 
 									<div className='space-y-2 mt-2'>
-										{reviewScore.map((item) => (
-											<div key={item.value} className='flex items-center'>
-												<Checkbox
-													id={item.label}
-													className='dark:border-blue-300'
-												/>
-												<label
-													htmlFor={item.label}
-													className='text-sm dark:foreground font-normal leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70 ml-2'
-												>
-													{item.label}
-												</label>
-											</div>
-										))}
+										<RadioGroup onValueChange={setPopUpScoreFilter} value={popUpScoreFilter}>
+											{reviewScore.map((item) => (
+												<div key={item.value} className="flex items-center space-x-2">
+													<RadioGroupItem 
+														value={item.value} 
+														id={item.label}
+														checked={popUpScoreFilter === item.value}
+														/>
+													<Label htmlFor={item.label} className="text-sm font-normal">
+														{item.label}
+													</Label>
+												</div>
+											))}
+										</RadioGroup>
 									</div>
 								</div>
 							</div>
@@ -642,10 +662,7 @@ export default function FilterModal({
 								<Button
 									variant='default'
 									className='py-2 rounded-lg bg-primary text-white transition-all'
-									onClick={() => {
-										setIsApplyFilter(true);
-										setIsOpen(false);
-									}}
+									onClick={handleApplyFilter}
 								>
 									Apply Filters
 								</Button>
@@ -657,3 +674,4 @@ export default function FilterModal({
 		</Dialog>
 	);
 }
+

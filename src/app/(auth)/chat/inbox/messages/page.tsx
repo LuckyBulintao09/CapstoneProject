@@ -1,3 +1,5 @@
+"use client";
+
 import { useEffect, useState, useRef, useMemo, useCallback } from "react";
 import { checkConversation } from "@/actions/chat/checkConversation";
 import { sendMessage } from "@/actions/chat/sendMessage";
