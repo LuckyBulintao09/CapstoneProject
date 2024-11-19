@@ -198,8 +198,10 @@ export function SpecificListing({ id }: SpecificListingProps) {
 		  if (minPrice && maxPrice) {
 			const minP = parseInt(minPrice as string);
 			const maxP = parseInt(maxPrice as string);
-			if (a.price >= minP && a.price <= maxP) scoreA += 100;
-			if (b.price >= minP && b.price <= maxP) scoreB += 100;
+			const aDistance = Math.min(Math.abs(a.price - minP), Math.abs(a.price - maxP));
+			const bDistance = Math.min(Math.abs(b.price - minP), Math.abs(b.price - maxP));
+			if (aDistance < bDistance) scoreA += 100;
+			if (bDistance < aDistance) scoreB += 100;
 		  }
 	  
 		  // Rooms and beds scoring (Second priority)
