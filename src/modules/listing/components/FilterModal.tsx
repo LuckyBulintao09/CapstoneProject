@@ -28,7 +28,7 @@ import { Slider as PriceSlider } from '@nextui-org/slider';
 import { MdOutlineMyLocation } from 'react-icons/md';
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 import { toast } from 'sonner';
-import { set } from 'date-fns';
+import { useMapsLibrary } from '@vis.gl/react-google-maps';
 
 const householdPrivacyTypes = [
 	{ value: 'Private Room', label: 'Private Room' },
@@ -105,6 +105,8 @@ export default function FilterModal({
 		lat: 0.2342,
 		lng: 0.2342
 	}); 
+	const inputRef = useRef(null)
+	const places = useMapsLibrary('places');
 
 	//Filters
 	const [popUpAmenities, setPopUpAmenities] = useState(JSON.parse(JSON.stringify(selectedFilter)));
@@ -117,38 +119,6 @@ export default function FilterModal({
 	const [popUpStarFilter, setPopUpStarFilter] = useState<any>(JSON.parse(JSON.stringify(starFilter)));
 	const [popUpScoreFilter, setPopUpScoreFilter] = useState<any>(JSON.parse(JSON.stringify(scoreFilter)));
 	
-
-	const handleCurrentLocationClick = () => {
-		if (navigator.geolocation) {
-			navigator.geolocation.getCurrentPosition((position) => {
-				if (position.coords.accuracy > 100) {
-					toast.error(
-						'Location accuracy is too low. Manually search location or use a mobile device instead.'
-					);
-				} else {
-					toast.success('Device Location Retrieved!');
-					setDeviceLocation({
-						lat: position.coords.latitude,
-						lng: position.coords.longitude,
-					});
-					setSearchTerm('Current Location');
-				}
-			});
-		}
-	};
-
-
-	useEffect(() => {
-		setPopUpAmenities(JSON.parse(JSON.stringify(selectedFilter)));
-		setPopUpPrivacyType(JSON.parse(JSON.stringify(selectedPrivacyType)));
-		setPopUpStructure(JSON.parse(JSON.stringify(selectedStructure)));
-		setPopUpMinPrice(minPrice);
-		setPopUpMaxPrice(maxPrice);
-		setPopUpRooms(rooms);
-		setPopUpBeds(beds);
-		setPopUpStarFilter(JSON.parse(JSON.stringify(starFilter)));
-		setPopUpScoreFilter(JSON.parse(JSON.stringify(scoreFilter)));
-	}, [isOpen]);
 
 	const defaultOptions = {
 		strokeOpacity: 0.5,
@@ -165,6 +135,85 @@ export default function FilterModal({
 		fillOpacity: 0.2,
 		strokeColor: '#4567b7',
 		fillColor: '#4567b7',
+	};
+
+
+	useEffect(() => {
+		setPopUpAmenities(JSON.parse(JSON.stringify(selectedFilter)));
+		setPopUpPrivacyType(JSON.parse(JSON.stringify(selectedPrivacyType)));
+		setPopUpStructure(JSON.parse(JSON.stringify(selectedStructure)));
+		setPopUpMinPrice(minPrice);
+		setPopUpMaxPrice(maxPrice);
+		setPopUpRooms(rooms);
+		setPopUpBeds(beds);
+		setPopUpStarFilter(JSON.parse(JSON.stringify(starFilter)));
+		setPopUpScoreFilter(JSON.parse(JSON.stringify(scoreFilter)));
+	}, [isOpen]);
+
+	const autocompleteRef = useRef<google.maps.places.Autocomplete | null>(null);
+
+	useEffect(() => {
+		if (!places || !inputRef.current || !isOpen) return;
+	
+		const options = {
+			bounds: new google.maps.LatLngBounds(
+				new google.maps.LatLng(117.17427453, 5.58100332277),
+				new google.maps.LatLng(126.537423944, 18.5052273625)
+			),
+			fields: ['geometry', 'name', 'formatted_address'],
+			componentRestrictions: { country: 'ph' },
+		};
+		autocompleteRef.current = new places.Autocomplete(inputRef.current, options);
+		const autocomplete = new places.Autocomplete(inputRef.current, options);
+	
+		autocomplete.addListener('place_changed', () => {
+			const place = autocomplete.getPlace();
+			setSearchTerm(place.formatted_address || '');
+			setSelectedLocation({
+				lat: place.geometry.location.lat(),
+				lng: place.geometry.location.lng(),
+			});
+			setPosition({
+				lat: place.geometry.location.lat(),
+				lng: place.geometry.location.lng(),
+			});
+			setCircleLoc({
+				lat: place.geometry.location.lat(),
+				lng: place.geometry.location.lng(),
+			});
+			setMapKey((prevKey) => prevKey + 1);
+		});
+	
+		return () => autocomplete.unbindAll(); // Cleanup
+	}, [places, isOpen]);
+	
+
+	const handleCurrentLocationClick = () => {
+		if (navigator.geolocation) {
+			navigator.geolocation.getCurrentPosition((position) => {
+				if ( position.coords.accuracy > 100) {
+					toast.error(
+						'Location accuracy is too low. Manually search location or use a mobile device instead.'
+					);
+				} else {
+					toast.success('Device Location Retrieved!');
+					setSelectedLocation({
+						lat:  position.coords.latitude,
+						lng:  position.coords.longitude,
+					});
+					setCircleLoc({
+						lat:  position.coords.latitude,
+						lng:  position.coords.longitude,
+					})
+					setPosition({
+						lat:  position.coords.latitude,
+						lng:  position.coords.longitude,
+					})
+					setSearchTerm('Current Location');
+					setMapKey((prevKey) => prevKey + 1);
+				}
+			});
+		}
 	};
 
 	const handleMapClick = async (event) => {
@@ -246,7 +295,7 @@ export default function FilterModal({
 								<div className='relative flex lg:w-full shadow-lg'>
 									<SearchIcon className='absolute left-3 top-1/2 -translate-y-1/2 h-5 w-5 text-black dark:text-muted-foreground' />
 									<input
-										// ref={inputRef}
+										ref={inputRef}
 										type='search'
 										name='search'
 										id='search'
