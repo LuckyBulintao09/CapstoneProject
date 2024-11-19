@@ -101,7 +101,10 @@ export default function FilterModal({
 	const [searchTerm, setSearchTerm] = useState<any>(null);
 	const [mapRadius, setMapRadius] = useState([250]);
 	const mapRef = useRef(null); 
-	const circleRef = useRef(null); 
+	const [circleLoc, setCircleLoc] = useState({
+		lat: 0.2342,
+		lng: 0.2342
+	}); 
 
 	//Filters
 	const [popUpAmenities, setPopUpAmenities] = useState(JSON.parse(JSON.stringify(selectedFilter)));
@@ -159,7 +162,7 @@ export default function FilterModal({
 	const closeOptions = {
 		...defaultOptions,
 		zIndex: 3,
-		fillOpacity: 0.05,
+		fillOpacity: 0.2,
 		strokeColor: '#4567b7',
 		fillColor: '#4567b7',
 	};
@@ -167,28 +170,8 @@ export default function FilterModal({
 	const handleMapClick = async (event) => {
 		if (event.latLng) {
 		  const { lat, lng } = event.latLng.toJSON();
-	
-		  // If there's a previously selected location, clear it (remove the old circle)
-		  if (circleRef.current) {
-			circleRef.current.setMap(null); // Remove the old circle from the map
-		  }
-	
-		  // Update the selectedLocation state for the new circle
 		  setSelectedLocation({ lat, lng });
-	
-		  // Create a new circle and store it in the circleRef
-		  const newCircle = new window.google.maps.Circle({
-			center: { lat, lng },
-			radius: mapRadius[0],
-			options: closeOptions,
-		  });
-	
-		  if (mapRef.current instanceof window.google.maps.Map) {
-			newCircle.setMap(mapRef.current);  // Ensure mapRef is a Google Maps instance
-			circleRef.current = newCircle; // Store the circle reference
-		  } else {
-			console.error("Map instance not found.");
-		  }
+		  setCircleLoc({ lat, lng });
 	
 		}
 	  };
@@ -284,7 +267,7 @@ export default function FilterModal({
 								</div>
 							</div>
 							<GoogleMap
-								ref={mapRef}  // Attach map reference
+								ref={mapRef}
 								onClick={handleMapClick}
 								center={position}
 								zoom={15}
@@ -294,8 +277,14 @@ export default function FilterModal({
 								{selectedLocation && (
 									<>
 									<Marker position={selectedLocation} />
+									
 									</>
 								)}
+								<Circle
+										options={closeOptions}
+										center={circleLoc}
+										radius={mapRadius[0]}
+								/>
 								<MarkerClusterer>
 									{(clusterer) => (
 									<>

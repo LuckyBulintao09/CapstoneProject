@@ -291,7 +291,7 @@ export default function Listings() {
 											step={100}
 											minValue={0}
 											maxValue={30000}
-											value={[minPrice, maxPrice]}
+											value={[minPrice, maxPrice]}                                                                                                                                                                                                                                                                                                                                                       
 											onChange={(value) => {
 												setMinPrice(value[0]);
 												setMaxPrice(value[1]);
