@@ -86,14 +86,14 @@ const SideReviews: React.FC<SideReviewsProps> = ({
 					</CardDescription>
 				</CardHeader>
 				<CardContent className='text-sm font-normal'>
-					<div className='space-x-2 space-y-2 pl-1'>
-						<Badge className='bg-blue-100 text-blue-800 hover:bg-blue-100 hover:text-blue-900 inline-block max-w-fit rounded-sm px-1'>
+					<div className='space-y-2 pl-1'>
+						<Badge className='bg-blue-100 text-blue-800 hover:bg-blue-100 hover:text-blue-900 inline-block max-w-fit rounded-sm px-2 mr-2'>
 							Location: {locationPercentage.toFixed(1)}
 						</Badge>
-						<Badge className='bg-blue-100 text-blue-800 hover:bg-blue-100 hover:text-blue-900 inline-block max-w-fit rounded-sm px-2'>
+						<Badge className='bg-blue-100 text-blue-800 hover:bg-blue-100 hover:text-blue-900 inline-block max-w-fit rounded-sm px-2 mr-2'>
 							Cleanliness: {cleanlinessPercentage.toFixed(1)}
 						</Badge>
-						<Badge className='bg-blue-100 text-blue-800 hover:bg-blue-100 hover:text-blue-900 inline-block max-w-fit rounded-sm px-1'>
+						<Badge className='bg-blue-100 text-blue-800 hover:bg-blue-100 hover:text-blue-900 inline-block max-w-fit rounded-sm px-2'>
 							Value for Money: {valueForMoneyPercentage.toFixed(1)}
 						</Badge>
 					</div>

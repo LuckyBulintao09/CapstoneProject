@@ -61,6 +61,63 @@ function NavBar() {
 
 	return (
 		<div className='md:sticky md:top-0 md:shadow-lg z-[50] bg-white bg-opacity-80 backdrop-blur-md dark:bg-card'>
+			{/* MOBILE */}
+			<div className='block lg:hidden shadow-sm fixed top-0 w-full z-[999] bg-white bg-opacity-80 backdrop-blur-md dark:bg-card h-[76px] p-0 m-0'>
+				<div className='flex justify-between px-4 items-center h-full w-full'>
+					<Image src='/logo.png' alt='logo' width={80} height={28} />
+					<div className='flex items-center gap-[10px]'>
+						{menu ? (
+							<X
+								className='cursor-pointer dark:text-white text-black z-[999]'
+								onClick={toggleMenu}
+							/>
+						) : (
+							<LucideAlignJustify
+								className='cursor-pointer'
+								onClick={toggleMenu}
+							/>
+						)}
+						<NotificationPopover />
+						<div className='pr-2'>
+							<ModeToggle />
+						</div>
+						{loggedIn && (
+							<ProfileDropdown
+								onLogout={handleLogout}
+								profileData={profileData.initials}
+								nameData={profileData.firstname + ' ' + profileData.lastname}
+							/>
+						)}
+					</div>
+				</div>
+
+				{menu && (
+					<div className='bg-white dark:bg-card py-4 w-full z-[999]'>
+						<div className='flex flex-col gap-8 mt-8 mx-4'>
+							{spiels.NAVBAR_OVERALL_LIST.map((item, index) =>
+								loggedIn ||
+								(item.label !== 'Favorites' && item.label !== 'Messages') ? (
+									<a
+										key={index}
+										href={item.href}
+										className='hover:text-card cursor-pointer flex items-center gap-2 font-[500] text-gray'
+									>
+										{item.label}
+									</a>
+								) : null
+							)}
+							{!loggedIn && (
+								<a
+									onClick={() => openModal('register')}
+									className='cursor-pointer'
+								>
+									{spiels.BUTTON_SIGN_UP}
+								</a>
+							)}
+						</div>
+					</div>
+				)}
+			</div>
 			{/* DESKTOP */}
 			<div className='hidden lg:block animate-in fade-in zoom-in p-4'>
 				<div className='flex justify-between mx-2 md:mx-[30px] items-center'>
@@ -90,64 +147,6 @@ function NavBar() {
 						)}
 					</div>
 				</div>
-			</div>
-
-			{/* MOBILE */}
-			<div className='block lg:hidden shadow-sm fixed top-0 w-full z-[999] bg-white bg-opacity-80 backdrop-blur-md dark:bg-card h-[76px] p-0 m-0'>
-				<div className='flex justify-between px-4 items-center h-full w-full'>
-					<Image src='/logo.png' alt='logo' width={80} height={28} />
-					<div className='flex items-center gap-[10px]'>
-						{menu ? (
-							<X
-								className='cursor-pointer dark:text-white text-black'
-								onClick={toggleMenu}
-							/>
-						) : (
-							<LucideAlignJustify
-								className='cursor-pointer'
-								onClick={toggleMenu}
-							/>
-						)}
-						<NotificationPopover />
-						<div className='pr-2'>
-							<ModeToggle />
-						</div>
-						{loggedIn && (
-							<ProfileDropdown
-								onLogout={handleLogout}
-								profileData={profileData.initials}
-								nameData={profileData.firstname + ' ' + profileData.lastname}
-							/>
-						)}
-					</div>
-				</div>
-
-				{menu && (
-					<div className='bg-white dark:bg-card bg-opacity-90 py-4 w-full'>
-						<div className='flex flex-col gap-8 mt-8 mx-4'>
-							{spiels.NAVBAR_OVERALL_LIST.map(
-								(item, index) =>
-									loggedIn || (item.label !== 'Favorites' && item.label !== 'Messages') ? (
-										<a
-											key={index}
-											href={item.href}
-											className='hover:text-card cursor-pointer flex items-center gap-2 font-[500] text-gray'
-										>
-											{item.label}
-										</a>
-									) : null
-							)}
-							{!loggedIn && (
-								<a
-									onClick={() => openModal('register')}
-									className='cursor-pointer'
-								>
-									{spiels.BUTTON_SIGN_UP}
-								</a>
-							)}
-						</div>
-					</div>
-				)}
 			</div>
 
 			{/* Modals */}

@@ -8,7 +8,7 @@ import Link from 'next/link';
 
 const Footer = () => {
 	return (
-		<footer className='flex flex-col justify-center items-center py-5 dark:bg-background border-t'>
+		<footer className='flex flex-col justify-center items-center py-5 dark:bg-secondary border-t'>
 			<div className='flex flex-row justify-center items-center gap-1 text-xs text-muted-foreground'>
 				<span>{spiels.FOOTER}</span>
 				<Separator orientation='vertical' className='h-5 mx-2 w-0.5' />

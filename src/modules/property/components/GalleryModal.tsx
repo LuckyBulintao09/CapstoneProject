@@ -49,16 +49,17 @@ const GalleryModal: React.FC<GalleryModalProps> = ({
 	};
 
 	const getReviewAverage = () => {
-		return (locationPercentage + cleanlinessPercentage + valueForMoneyPercentage) / 3;
+		return (
+			(locationPercentage + cleanlinessPercentage + valueForMoneyPercentage) / 3
+		);
 	};
-
 
 	const overallRating = getReviewAverage();
 	const ratingDescription = mapScoreToRating(overallRating);
 
 	return (
 		<Dialog open={isOpen} onOpenChange={onClose}>
-			<DialogContent className='p-6 max-w-7xl bg-white mx-2 dark:bg-secondary'>
+			<DialogContent className='p-6 max-w-[80%] bg-white mx-2 dark:bg-secondary'>
 				<DialogHeader>
 					<DialogTitle>All Photos</DialogTitle>
 				</DialogHeader>
@@ -78,9 +79,9 @@ const GalleryModal: React.FC<GalleryModalProps> = ({
 					{/* PROPERTY VIEW */}
 					<TabsContent value='property_view' className='h-[450px] mt-0'>
 						<div className='grid grid-cols-4'>
-							<div className='col-span-3 border-r-1 border-gray-300'>
+							<div className='col-span-2 lg:col-span-3 md:col-span-2 sm:col-span-2 border-r-1 border-gray-300'>
 								<ScrollArea className='h-[430px] overflow-y-auto pr-4 my-4'>
-									<div className='grid grid-cols-3 gap-4'>
+									<div className='grid grid-cols-1 lg:grid-cols-2 gap-4'>
 										{/* CHANGE: property_images dapat dito */}
 										{images.map((url, index) => (
 											<img
@@ -95,11 +96,11 @@ const GalleryModal: React.FC<GalleryModalProps> = ({
 								</ScrollArea>
 							</div>
 
-							<div className='grid-rows-2 col-span-1'>
+							<div className='grid-rows-2 col-span-2 lg:col-span-1'>
 								<div>
 									<Card className='bg-white dark:bg-secondary border-none shadow-none'>
 										<CardHeader className='p-3 my-2'>
-											<div className='grid grid-cols-5 items-center'>
+											<div className='grid grid-cols-5 items-center gap-1'>
 												<div className='flex justify-center items-center'>
 													{/* review score */}
 													<Card className='p-2 bg-primary text-center text-white border-none'>

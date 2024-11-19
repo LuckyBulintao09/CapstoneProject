@@ -7,7 +7,7 @@ import pricing from '@/lib/constants/pricing';
 const Pricing = () => {
 	return (
 		<div className='dark:bg-secondary'>
-			<section className='pt-[15%] lg:pt-[4%] md:pt-[12%] xs:pt-[20%] xl:mx-[15%]'>
+			<section className='pt-[5%] xl:mx-[15%]'>
 				{/* 1ST SECTION */}
 				<PricingTextArea
 					title={pricing.PRICING_PLAN}

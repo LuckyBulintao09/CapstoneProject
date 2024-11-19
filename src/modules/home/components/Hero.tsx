@@ -19,10 +19,13 @@ const Hero = () => {
 		},
 	];
 	return (
-		<section className='pl-32 pr-28 py-32 xl:py-10'>
+		<section className='pl-32 pr-28 py-4 md:pr-8 sm:pr-28'>
 			<div className='grid items-center gap-6 lg:grid-cols-9'>
 				<div className='col-span-4 flex flex-col items-center text-center lg:items-start lg:text-left '>
-					<Badge variant='outline' className='bg-primary text-primary-foreground'>
+					<Badge
+						variant='outline'
+						className='bg-primary text-primary-foreground'
+					>
 						{spiels.HERO_BADGE}
 						<ArrowDownRight className='ml-1 size-4' />
 					</Badge>

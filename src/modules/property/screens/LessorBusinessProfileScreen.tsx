@@ -15,16 +15,16 @@ const LessorBusinessProfileScreen = async ({
 }) => {
 	const data = await getSpecificCompany(companyId.params.id);
 	return (
-		<ResponsiveLayout className='h-screen'>
-			<div className='xl:w-full xl:flex xl:justify-center'>
-				<div className='xl:w-[1250px]'>
-					<div className='dark:text-white h-[100px] md:h-[70px] lg:h-[1px]' />
+		<div className='h-screen py-16'>
+			<div className='px-32 md:px-24 sm:px-20 xs:px-10'>
+				<div className=''>
+					<div className='dark:text-white' />
 
 					{/* Business Profile Section */}
-					<div className='section py-5 px-4'>
-						<div className='grid grid-cols-4'>
+					<div className=''>
+						<div className='grid grid-cols-4 gap-2'>
 							{/* Left Column: Business Logo and Info */}
-							<div className='flex items-center col-span-3 w-[580px] xl:w-full'>
+							<div className='flex items-center col-span-3'>
 								<BusinessLogo />
 								<div className='pt-4 w-full'>
 									{/* <Badge className='inline-block ml-4 py-1 mb-2'>
@@ -68,7 +68,7 @@ const LessorBusinessProfileScreen = async ({
 							</div>
 
 							{/* Right Column: Lessor Info (visible on md and up) */}
-							<div className='hidden md:flex flex-col items-center justify-start col-span-1 mx-auto py-10'>
+							<div className='hidden md:flex flex-col items-center justify-start mx-auto py-10 relative z-10'>
 								<div className='flex flex-col items-center'>
 									<Avatar className='mb-1'>
 										<AvatarImage src={data?.owner?.profile_url} />
@@ -98,7 +98,7 @@ const LessorBusinessProfileScreen = async ({
 					</div>
 
 					{/* Mobile View: Lessor Info (visible on sm and xs) */}
-					<div className='md:hidden px-8 py-4'>
+					<div className='md:hidden py-4'>
 						<div className='flex items-center p-2 border-y py-4 justify-between'>
 							<div className='flex items-center'>
 								<Avatar className='mb-1'>
@@ -109,9 +109,7 @@ const LessorBusinessProfileScreen = async ({
 									</AvatarFallback>
 								</Avatar>
 								<div className='flex flex-col ml-4'>
-									<p className='text-sm text-gray-700'>
-										Contact business owner
-									</p>
+									<p className='text-sm text-gray-700'>Contact Proprietor</p>
 									<h1 className='font-semibold xl:text-md dark:text-primary-foreground'>
 										{data?.owner?.firstname} {data?.owner?.lastname}
 									</h1>
@@ -123,20 +121,19 @@ const LessorBusinessProfileScreen = async ({
 						</div>
 					</div>
 				</div>
+				{/* Business Details Section */}
+				<BusinessDetails
+					companyName={data.company?.company_name}
+					about={data.company?.about}
+					created_at={data.company?.created_at}
+					companyId={data.company?.id}
+					firstname={data.owner?.firstname}
+					lastname={data.owner?.lastname}
+					email={data.owner?.email}
+					cp_number={data.owner?.cp_number}
+				/>
 			</div>
-
-			{/* Business Details Section */}
-			<BusinessDetails
-				companyName={data.company?.company_name}
-				about={data.company?.about}
-				created_at={data.company?.created_at}
-				companyId={data.company?.id}
-				firstname={data.owner?.firstname}
-				lastname={data.owner?.lastname}
-				email={data.owner?.email}
-				cp_number={data.owner?.cp_number}
-			/>
-		</ResponsiveLayout>
+		</div>
 	);
 };
 

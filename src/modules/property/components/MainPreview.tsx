@@ -18,7 +18,10 @@ interface MainPreviewProps {
 	propertyReviews: any;
 }
 
-const MainPreview: React.FC<MainPreviewProps> = ({ propertyId, propertyReviews }) => {
+const MainPreview: React.FC<MainPreviewProps> = ({
+	propertyId,
+	propertyReviews,
+}) => {
 	const [propertyImages, setPropertyImages] = useState<string[]>([]);
 	const [loading, setLoading] = useState<boolean>(true);
 	const [selectedImage, setSelectedImage] = useState<string | null>(null);
@@ -38,13 +41,13 @@ const MainPreview: React.FC<MainPreviewProps> = ({ propertyId, propertyReviews }
 				.from('property')
 				.select('property_image')
 				.eq('id', propertyId);
-		
+
 			if (error) {
 				console.error('Error fetching property images:', error);
 			} else if (data && data.length > 0) {
 				setPropertyImages(data[0].property_image || []);
 			}
-		
+
 			setLoading(false);
 		};
 
@@ -63,9 +66,9 @@ const MainPreview: React.FC<MainPreviewProps> = ({ propertyId, propertyReviews }
 					(sum, review) => sum + review.value_for_money,
 					0
 				);
-				setLocationPercentage((locationSum / totalReviews));
-				setCleanlinessPercentage((cleanlinessSum / totalReviews));
-				setValueForMoneyPercentage((valueForMoneySum / totalReviews));
+				setLocationPercentage(locationSum / totalReviews);
+				setCleanlinessPercentage(cleanlinessSum / totalReviews);
+				setValueForMoneyPercentage(valueForMoneySum / totalReviews);
 			}
 		}
 
@@ -73,7 +76,7 @@ const MainPreview: React.FC<MainPreviewProps> = ({ propertyId, propertyReviews }
 	}, [propertyId]);
 	return (
 		<>
-			<div className='col-span-4 pr-0 mr-0'>
+			<div className='col-span-4 md:col-span-4 xs:col-span-5 sm:col-span-4 pr-0 mr-0'>
 				<Card className='lg:h-[550px] md:h-full sm:h-[300px] xs:h-[365px] border-none relative'>
 					{loading ? (
 						<div className='flex flex-col items-center justify-center h-full'>
@@ -125,7 +128,7 @@ const MainPreview: React.FC<MainPreviewProps> = ({ propertyId, propertyReviews }
 				setSelectedImage={setSelectedImage}
 				reviews={propertyReviews}
 			/>
-			<div>
+			<div className='hidden sm:block'>
 				<Carousel
 					orientation='vertical'
 					plugins={[
