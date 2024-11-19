@@ -380,7 +380,9 @@ export function SpecificListing({ id }: SpecificListingProps) {
 	return (
 		<ResponsiveLayout>
 			{/* paki fix breadcrumbs */}
-			<BreadcrumbSection />
+			<BreadcrumbSection 
+				propertyName={title}
+			/>
 			<div className='flex justify-between items-center mt-4'>
 				<div>
 					<h1 className='font-semibold text-3xl dark:text-white'>{title}</h1>
