@@ -203,11 +203,11 @@ const Inbox = ({ receiver_id, company_name }) => {
             </DialogTrigger>
             <DialogContent className="sm:max-w-[425px]">
               <DialogHeader>
-                <DialogTitle className="text-white">Send an image</DialogTitle>
+                <DialogTitle >Send an image</DialogTitle>
               </DialogHeader>
               <div className="grid gap-4 py-4">
                 <div className="grid items-center">
-                  <Input id="file-input" type="file" className="col-span-3 rounded-full bg-secondary text-white" onChange={handleFileChange} />
+                  <Input id="file-input" type="file" className="col-span-3 rounded-full bg-secondary " onChange={handleFileChange} />
                 </div>
               </div>
               <DialogFooter>
