@@ -68,49 +68,43 @@ export function BusinessDetails({
 	}, [companyId]);
 
 	return (
-		<div className='xl:flex xl:justify-center'>
-			<Tabs
-				defaultValue='about'
-				className='w-[606px] sm:w-[750px] md:w-[1006px] lg:w-[1246px] xl:w-[1300px] px-8 py-4'
-			>
-				<TabsList className='grid grid-cols-3 dark:text-white dark:bg-opacity-15'>
-					<TabsTrigger value='about'>About</TabsTrigger>
-					<TabsTrigger value='branchesAndRooms'>Properties</TabsTrigger>
-					<TabsTrigger value='reviews'>Reviews Under this Company</TabsTrigger>
-				</TabsList>
+		<Tabs defaultValue='about' className=''>
+			<TabsList className='grid grid-cols-3 dark:text-white dark:bg-opacity-15'>
+				<TabsTrigger value='about'>About</TabsTrigger>
+				<TabsTrigger value='branchesAndRooms'>Properties</TabsTrigger>
+				<TabsTrigger value='reviews'>Company Reviews</TabsTrigger>
+			</TabsList>
 
-				{/* ABOUT SECTION */}
-				<TabsContent value='about'>
-					<Card className='dark:bg-transparent bg-transparent'>
-						<CardHeader>
-							<CardTitle>About {companyName}</CardTitle>
-							<CardDescription>
-								On UniHomes since{' '}
-								{new Date(created_at).toLocaleDateString('en-US', {
-									year: 'numeric',
-									month: 'long',
-									day: 'numeric',
-								})}
-							</CardDescription>
-						</CardHeader>
-						<CardContent className='space-y-2 dark:text-white'>
-							<div className='space-y-1'>{about}</div>
-						</CardContent>
-					</Card>
-				</TabsContent>
+			{/* ABOUT SECTION */}
+			<TabsContent value='about'>
+				<Card className='dark:bg-transparent bg-transparent'>
+					<CardHeader>
+						<CardTitle>About {companyName}</CardTitle>
+						<CardDescription>
+							On UniHomes since{' '}
+							{new Date(created_at).toLocaleDateString('en-US', {
+								year: 'numeric',
+								month: 'long',
+								day: 'numeric',
+							})}
+						</CardDescription>
+					</CardHeader>
+					<CardContent className='space-y-2 dark:text-white'>
+						<div className='space-y-1'>{about}</div>
+					</CardContent>
+				</Card>
+			</TabsContent>
 
-				{/* PROPERTIES SECTION */}
-				<TabsContent value='branchesAndRooms'>
-					<Card className='dark:bg-transparent bg-transparent'>
-						<CardHeader>
-							<CardTitle>Properties</CardTitle>
-							<CardDescription>
-								Explore our different properties
-							</CardDescription>
-						</CardHeader>
-						<CardContent className='space-y-1'>
-							<ScrollArea className='h-[300px] w-full rounded-md'>
-								{/* {loading ? (
+			{/* PROPERTIES SECTION */}
+			<TabsContent value='branchesAndRooms'>
+				<Card className='dark:bg-transparent bg-transparent'>
+					<CardHeader>
+						<CardTitle>Properties</CardTitle>
+						<CardDescription>Explore our different properties</CardDescription>
+					</CardHeader>
+					<CardContent className='space-y-1'>
+						<ScrollArea className='h-[300px] w-full rounded-md'>
+							{/* {loading ? (
                   <div>Loading units...</div>
                 ) : units.length > 0 ? (
                   <div className="space-y-1 pt-1 pl-2 pb-3">
@@ -119,37 +113,36 @@ export function BusinessDetails({
                 ) : (
                   <p>No units available.</p>
                 )} */}
-								{loading ? (
-									<div className='text-center'>Loading properties...</div>
-								) : (
-									<div className='grid grid-cols-1 gap-4 m-2 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-3'>
-										{properties.slice(0, 4).map((item) => (
-											<div key={item.id}>
-												<BranchListings key={item.id} {...item} />
-											</div>
-										))}
-									</div>
-								)}
-							</ScrollArea>
-						</CardContent>
-					</Card>
-				</TabsContent>
+							{loading ? (
+								<div className='text-center'>Loading properties...</div>
+							) : (
+								<div className='grid grid-cols-1 gap-4 m-2 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-3'>
+									{properties.slice(0, 4).map((item) => (
+										<div key={item.id}>
+											<BranchListings key={item.id} {...item} />
+										</div>
+									))}
+								</div>
+							)}
+						</ScrollArea>
+					</CardContent>
+				</Card>
+			</TabsContent>
 
-				{/* REVIEWS SECTION */}
-				<TabsContent value='reviews'>
-					<Card className='dark:bg-transparent bg-transparent'>
-						<CardHeader>
-							<CardTitle>Customer Reviews</CardTitle>
-							<CardDescription>Read what people have to say</CardDescription>
-						</CardHeader>
-						<CardContent>
-							<ScrollArea className='h-[300px] w-full rounded-md p-4'>
-								<ReviewsUnderCompany companyId={companyId} />
-							</ScrollArea>
-						</CardContent>
-					</Card>
-				</TabsContent>
-			</Tabs>
-		</div>
+			{/* REVIEWS SECTION */}
+			<TabsContent value='reviews'>
+				<Card className='dark:bg-transparent bg-transparent'>
+					<CardHeader>
+						<CardTitle>Customer Reviews</CardTitle>
+						<CardDescription>Read what people have to say</CardDescription>
+					</CardHeader>
+					<CardContent>
+						<ScrollArea className='h-[300px] w-full rounded-md p-4'>
+							<ReviewsUnderCompany companyId={companyId} />
+						</ScrollArea>
+					</CardContent>
+				</Card>
+			</TabsContent>
+		</Tabs>
 	);
 }

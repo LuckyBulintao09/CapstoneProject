@@ -1,19 +1,15 @@
-"use client"
+'use client';
 import React, { useState } from 'react';
 import ListingsHero from '../components/ListingsPage';
 
-
-
 const ListingsScreen = () => {
-	return(
+	return (
 		<>
-		<div className='h-full'>
-			<ListingsHero />
-		</div>
+			<div className='h-full'>
+				<ListingsHero />
+			</div>
 		</>
-		
-	)
-		
+	);
 };
 
 export default ListingsScreen;

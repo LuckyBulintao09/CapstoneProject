@@ -73,8 +73,8 @@ import SideMap from '../components/SideMap';
 import UnitGalleryModal from '../components/UnitGalleryModal';
 import { Dialog, DialogContent } from '@/components/ui/dialog';
 import { BookingCardModal } from '../components/BookingCardModal';
-import { useSearchParams } from 'next/navigation'
-import { useRouter } from 'next/router'
+import { useSearchParams } from 'next/navigation';
+import { useRouter } from 'next/router';
 import { fetchLandmarks } from '@/actions/landmarks/landmark';
 
 interface SpecificListingProps {
@@ -82,13 +82,13 @@ interface SpecificListingProps {
 }
 
 type SearchParams = {
-	amenities?: string | string[]
-	privacy?: string
-	minPrice?: string
-	maxPrice?: string
-	room?: string
-	bed?: string
-  }
+	amenities?: string | string[];
+	privacy?: string;
+	minPrice?: string;
+	maxPrice?: string;
+	room?: string;
+	bed?: string;
+};
 
 export function SpecificListing({ id }: SpecificListingProps) {
 	const [isFavourite, setIsFavourite] = useState(false);
@@ -119,37 +119,34 @@ export function SpecificListing({ id }: SpecificListingProps) {
 	const [landmarks, setLandmarks] = useState([]);
 
 	//Parameter Filters
-	const searchParams = useSearchParams()
-	
-	const getSearchParam = (param: keyof SearchParams): string | string[] | null => {
+	const searchParams = useSearchParams();
+
+	const getSearchParam = (
+		param: keyof SearchParams
+	): string | string[] | null => {
 		if (param === 'amenities') {
-		  const amenities = searchParams.getAll('amenities')
-		  return amenities.length > 0 ? amenities : null
+			const amenities = searchParams.getAll('amenities');
+			return amenities.length > 0 ? amenities : null;
 		}
-		const value = searchParams.get(param)
-		return value ?? null
-	  }
-	
-	  const amenities = getSearchParam('amenities')
-	  const privacy = getSearchParam('privacy')
-	  const minPrice = getSearchParam('minPrice')
-	  const maxPrice = getSearchParam('maxPrice')
-	  const room = getSearchParam('room')
-	  const bed = getSearchParam('bed')
+		const value = searchParams.get(param);
+		return value ?? null;
+	};
 
-	  
+	const amenities = getSearchParam('amenities');
+	const privacy = getSearchParam('privacy');
+	const minPrice = getSearchParam('minPrice');
+	const maxPrice = getSearchParam('maxPrice');
+	const room = getSearchParam('room');
+	const bed = getSearchParam('bed');
 
-	
 	useEffect(() => {
 		const loadUserAndProperty = async () => {
 			try {
 				const fetchedLandmark = await fetchLandmarks();
 				setLandmarks(fetchedLandmark);
 
-
 				const fetchedUserId = await fetchUser();
 				setUserId(fetchedUserId);
-
 
 				const { property } = await fetchProperty(id, fetchedUserId);
 				if (!property) {
@@ -157,7 +154,7 @@ export function SpecificListing({ id }: SpecificListingProps) {
 					setLoading(false);
 					return;
 				}
-				
+
 				setProperty(property);
 				setPropertyReviews(await fetchPropertyReviews(id));
 				setCommonFacilities(await fetchPropertyFacilities(id));
@@ -168,12 +165,12 @@ export function SpecificListing({ id }: SpecificListingProps) {
 				});
 				const fetchedUnits = await fetchPropertyUnits(id);
 				setUnits(fetchedUnits);
-				setUnitCount(fetchedUnits.length || 0); 
+				setUnitCount(fetchedUnits.length || 0);
 
 				const occupantsCount = fetchedUnits.reduce(
 					(total, unit) => total + unit.current_occupants,
 					0
-				)
+				);
 				setTotalOccupants(occupantsCount);
 
 				setLoading(false);
@@ -182,62 +179,59 @@ export function SpecificListing({ id }: SpecificListingProps) {
 			}
 		};
 		loadUserAndProperty();
-		
 	}, [id]);
 
 	const sortedUnits = useMemo(() => {
 		if (!Array.isArray(units) || units.length === 0) {
-		  return [];
+			return [];
 		}
-	  
-		return [...units].sort((a, b) => {
-		  let scoreA = 0;
-		  let scoreB = 0;
-	  
-		  // Price range scoring (Highest priority)
-		  if (minPrice && maxPrice) {
-			const minP = parseInt(minPrice as string);
-			const maxP = parseInt(maxPrice as string);
-			if (a.price >= minP && a.price <= maxP) scoreA += 100;
-			if (b.price >= minP && b.price <= maxP) scoreB += 100;
-		  }
-	  
-		  // Rooms and beds scoring (Second priority)
-		  if (room) {
-			const targetRoom = parseInt(room as string);
-			if (a.bedrooms === targetRoom) scoreA += 50;
-			if (b.bedrooms === targetRoom) scoreB += 50;
-		  }
-	  
-		  if (bed) {
-			const targetBed = parseInt(bed as string);
-			if (a.beds === targetBed) scoreA += 50;
-			if (b.beds === targetBed) scoreB += 50;
-		  }
-	  
-		  // Amenity matching score (Third priority)
-		  if (amenities && Array.isArray(amenities)) {
-			const aAmenities = new Set(a.amenities);
-			const bAmenities = new Set(b.amenities);
-			const aMatches = amenities.filter((am) => aAmenities.has(am)).length;
-			const bMatches = amenities.filter((am) => bAmenities.has(am)).length;
-	  
-			scoreA += aMatches * 10; // Weight for each matching amenity
-			scoreB += bMatches * 10;
-		  }
-	  
-		  // Privacy type scoring (Lowest priority)
-		  if (privacy) {
-			if (a.privacy_type === privacy) scoreA += 5;
-			if (b.privacy_type === privacy) scoreB += 5;
-		  }
-	  
-		  // Sort by descending score
-		  return scoreB - scoreA;
-		});
-	  }, [units]);
-	  
 
+		return [...units].sort((a, b) => {
+			let scoreA = 0;
+			let scoreB = 0;
+
+			// Price range scoring (Highest priority)
+			if (minPrice && maxPrice) {
+				const minP = parseInt(minPrice as string);
+				const maxP = parseInt(maxPrice as string);
+				if (a.price >= minP && a.price <= maxP) scoreA += 100;
+				if (b.price >= minP && b.price <= maxP) scoreB += 100;
+			}
+
+			// Rooms and beds scoring (Second priority)
+			if (room) {
+				const targetRoom = parseInt(room as string);
+				if (a.bedrooms === targetRoom) scoreA += 50;
+				if (b.bedrooms === targetRoom) scoreB += 50;
+			}
+
+			if (bed) {
+				const targetBed = parseInt(bed as string);
+				if (a.beds === targetBed) scoreA += 50;
+				if (b.beds === targetBed) scoreB += 50;
+			}
+
+			// Amenity matching score (Third priority)
+			if (amenities && Array.isArray(amenities)) {
+				const aAmenities = new Set(a.amenities);
+				const bAmenities = new Set(b.amenities);
+				const aMatches = amenities.filter((am) => aAmenities.has(am)).length;
+				const bMatches = amenities.filter((am) => bAmenities.has(am)).length;
+
+				scoreA += aMatches * 10; // Weight for each matching amenity
+				scoreB += bMatches * 10;
+			}
+
+			// Privacy type scoring (Lowest priority)
+			if (privacy) {
+				if (a.privacy_type === privacy) scoreA += 5;
+				if (b.privacy_type === privacy) scoreB += 5;
+			}
+
+			// Sort by descending score
+			return scoreB - scoreA;
+		});
+	}, [units]);
 
 	const handleToggleFavourite = async () => {
 		if (!userId) {
@@ -285,7 +279,7 @@ export function SpecificListing({ id }: SpecificListingProps) {
 
 	const fetchDirections = () => {
 		if (!userPosition) return;
-	
+
 		const directionsService = new google.maps.DirectionsService();
 
 		directionsService.route(
@@ -295,7 +289,10 @@ export function SpecificListing({ id }: SpecificListingProps) {
 				travelMode: google.maps.TravelMode.WALKING,
 			},
 			(result, status) => {
-				if (status === google.maps.DirectionsStatus.OK && result?.routes[0]?.legs[0]) {
+				if (
+					status === google.maps.DirectionsStatus.OK &&
+					result?.routes[0]?.legs[0]
+				) {
 					setDirections(result);
 				} else {
 					console.error('Directions request failed:', status);
@@ -304,7 +301,6 @@ export function SpecificListing({ id }: SpecificListingProps) {
 		);
 	};
 
-	
 	const handleOpenBookingModal = (unit_id: number) => {
 		setIsBookingModalOpen(true);
 		setSelectedUnit(unit_id);
@@ -376,7 +372,7 @@ export function SpecificListing({ id }: SpecificListingProps) {
 	} = property;
 
 	return (
-		<ResponsiveLayout>
+		<div className='px-32 md:px-24 sm:px-20 xs:px-10'>
 			{/* paki fix breadcrumbs */}
 			<BreadcrumbSection />
 			<div className='flex justify-between items-center mt-4'>
@@ -471,18 +467,19 @@ export function SpecificListing({ id }: SpecificListingProps) {
 				</div>
 			</div>
 
-			{/* ROOMS */}
+			{/* UNITS */}
 			<div className='flex flex-col border-t border-gray-300 py-8' id='rooms'>
 				<h4 className='text-2xl font-semibold tracking-tight pb-4'>
-					Available Rooms
+					Available Units
 				</h4>
 
-				<div className='flex flex-col gap-4'>
+				<div className='flex flex-col gap-4 overflow-x-auto'>
 					{/* MAP UNITS HERE */}
 					{sortedUnits.map((unit, index) => (
 						<Card
 							key={unit.id}
-							className={`bg-white dark:bg-secondary border border-gray-300 shadow-md ${index === 0 ? 'border-2 border-primary dark:border-blue-300' : ''}`}
+							className='bg-white overflow-x-auto min-w-auto dark:bg-secondary border border-gray-300 shadow-md
+							'
 						>
 							<CardHeader>
 								<CardTitle className='text-lg'>
@@ -565,7 +562,7 @@ export function SpecificListing({ id }: SpecificListingProps) {
 													</div>
 												</td>
 
-												<td className='pl-4 py-2 border-r border-gray-300 max-w-[10px] text-center'>
+												<td className='px-4 py-2 border-r border-gray-300 max-w-[10px] text-center'>
 													<TooltipProvider>
 														<Tooltip>
 															<TooltipTrigger asChild>
@@ -598,11 +595,11 @@ export function SpecificListing({ id }: SpecificListingProps) {
 													</TooltipProvider>
 												</td>
 
-												<td className='pl-4 py-2 border-r border-gray-300 text-center dark:text-gray-200'>
+												<td className='px-4 py-2 border-r border-gray-300 text-center dark:text-gray-200'>
 													P{unit.price}/month
 												</td>
 
-												<td className='py-2 flex justify-center items-center my-16'>
+												<td className='py-2 border-r border-gray-300 text-center dark:text-gray-200 px-4'>
 													<Button
 														className='text-white px-4 py-2 rounded'
 														onClick={() => handleOpenBookingModal(unit.id)}
@@ -712,6 +709,6 @@ export function SpecificListing({ id }: SpecificListingProps) {
 					</Tooltip>
 				</TooltipProvider>
 			)}
-		</ResponsiveLayout>
+		</div>
 	);
 }

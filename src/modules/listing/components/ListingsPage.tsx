@@ -21,7 +21,7 @@ export default function ListingsPage() {
 	return (
 		<MapContext.Provider value={[deviceLocation, setDeviceLocation]}>
 			<div className='dark:bg-secondary min-h-screen flex flex-col'>
-				<div className='row-span-1 bg-gradient-to-r from-blue-900 via-blue-950 to-blue-900 lg:mt-0 md:mt-8 sm:mt-3 xs:mt-2 shadow-xl'>
+				<div className='row-span-1 bg-gradient-to-r from-blue-900 via-blue-950 to-blue-900 shadow-xl'>
 					<div className='h-[205px] justify-center'>
 						<ListingHero
 							searchTerm={searchTerm}

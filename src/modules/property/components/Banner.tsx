@@ -135,7 +135,7 @@ const Banner: React.FC<BannerProps> = ({
 							{isFocused && (
 								<div
 									ref={suggestionsRef}
-									className='absolute top-full left-0 w-full mt-2 bg-white shadow-lg rounded-lg'
+									className='absolute top-full left-0 w-full mt-2 bg-white shadow-lg rounded-lg z-[10]'
 								>
 									<ul className='text-sm text-gray-700'>
 										{suggestedMessages.map((message, index) => (

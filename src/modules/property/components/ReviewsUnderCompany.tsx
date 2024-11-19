@@ -48,7 +48,7 @@ const ReviewsUnderCompany: React.FC<ReviewsUnderCompanyProps> = ({
 
 	return (
 		<div>
-			<div className='grid grid-cols-3 gap-4'>
+			<div className='grid grid-cols-1 lg:grid-cols-3 md:grid-cols-2 sm:grid-cols-1 gap-4'>
 				{loading ? (
 					<div className='flex justify-center items-center h-32'>
 						<Loader className='h-10 w-10 animate-spin text-sky-500' />

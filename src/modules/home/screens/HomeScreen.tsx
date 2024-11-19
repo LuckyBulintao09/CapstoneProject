@@ -1,4 +1,4 @@
-"use client"
+'use client';
 import Hero from '../components/Hero';
 import HowItWorks from '../components/HowItWorks';
 import Stats from '../components/Stats';
@@ -16,7 +16,7 @@ const HomeScreen = () => {
 
 	React.useEffect(() => {
 		getTopReviews().then((res) => {
-			console.log("Fetched testimonials data:", res);
+			console.log('Fetched testimonials data:', res);
 			setTestimonials(res);
 		});
 	}, []);
@@ -28,11 +28,11 @@ const HomeScreen = () => {
 	// }, [testimonials]);
 
 	return (
-		<HomeContext.Provider value={{testimonials}}>
-			<section className='dark:bg-background pb-10'>
+		<HomeContext.Provider value={{ testimonials }}>
+			<section className='dark:bg-secondary pb-10'>
 				{/* <section className='relative before:absolute before:inset-0 before:bg-primary/10 before:[mask-image:url(https://www.shadcnblocks.com/images/block/waves.svg)] before:[mask-repeat:repeat] before:[mask-size:_64px_32px]'> */}
-				<TracingBeam>
-					<section id='introduction' className='py-16'>
+				<TracingBeam className=''>
+					<section id='introduction' className='py-16 sm:py-8'>
 						<Hero />
 					</section>
 					<section id='features' className='py-16 px-32 xl:py-10 md:py-8'>
