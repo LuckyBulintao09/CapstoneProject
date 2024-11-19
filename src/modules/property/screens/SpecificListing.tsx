@@ -150,6 +150,9 @@ export function SpecificListing({ id }: SpecificListingProps) {
 				const fetchedUserId = await fetchUser();
 				setUserId(fetchedUserId);
 
+				
+				setIsFavourite(await fetchFavorite(userId, id));
+
 
 				const { property } = await fetchProperty(id, fetchedUserId);
 				if (!property) {
@@ -161,7 +164,6 @@ export function SpecificListing({ id }: SpecificListingProps) {
 				setProperty(property);
 				setPropertyReviews(await fetchPropertyReviews(id));
 				setCommonFacilities(await fetchPropertyFacilities(id));
-				setIsFavourite(await fetchFavorite(userId, id));
 				setPosition({
 					lat: (await fetchPropertyLocation(id))[0].latitude,
 					lng: (await fetchPropertyLocation(id))[0].longitude,
@@ -183,7 +185,7 @@ export function SpecificListing({ id }: SpecificListingProps) {
 		};
 		loadUserAndProperty();
 		
-	}, [id]);
+	}, [id, isFavourite]);
 
 	const sortedUnits = useMemo(() => {
 		if (!Array.isArray(units) || units.length === 0) {
