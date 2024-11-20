@@ -125,7 +125,7 @@ const PropertyListingActionsCell = ({
     <Switch
       isSelected={isApproved}
       size="lg"
-      color={isApproved ? "success" : "error"}
+      color={isApproved ? "primary" : "error"}
       onValueChange={(value) => !loading && handleApprovalToggle(value)}
       startContent={<CheckIcon className="h-5 w-5 text-green-500" />}
       endContent={<XMarkIcon className="h-5 w-5 text-red-500" />}
