@@ -52,7 +52,8 @@ export default function BranchListings({
 	const handleClick = () => {
 		const query = new URLSearchParams();
 
-		if(selectedFilter.length > 0){
+		
+		if (selectedFilter?.length > 0) {
 			selectedFilter.forEach((amenity) => {
 				query.append('amenities', amenity);
 			})
@@ -64,7 +65,11 @@ export default function BranchListings({
 		if (rooms) query.set('room', rooms.toString());
 
 		const queryString = query.toString();
-		router.push(`/property/${id}?${queryString}`);
+		if (queryString) {
+			router.push(`/property/${id}?${queryString}`);
+		} else {
+			router.push(`/property/${id}`);
+		}
 	};
 	return (
 		<div>

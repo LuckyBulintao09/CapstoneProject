@@ -37,13 +37,13 @@ export default function ListingHero({
 		const autocomplete = new places.Autocomplete(inputRef.current, options);
 		setPlacesAutocomplete(autocomplete);
 
-		// Event listener for place change
+
 		autocomplete.addListener('place_changed', () => {
 			const place = autocomplete.getPlace();
 			const location = place.geometry?.location;
 
 			if (location) {
-				// Update the search term with the place name or formatted address
+
 				setSearchTerm(place.formatted_address || place.name || '');
 				setDeviceLocation({
 					lat: location.lat(),

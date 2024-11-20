@@ -97,11 +97,29 @@ export default function FavoriteListings({
 	}
 
 	if (favorites.length === 0) {
-		return <div>No favorite properties found.</div>;
+		return (
+			<div className="flex flex-col items-center justify-center h-full">
+				<p className="text-lg font-semibold">
+					You don't have any favorite properties yet.
+				</p>
+				<p className="text-sm text-gray-500">
+					Start adding listings to your favorites and they will show up here.
+				</p>
+			</div>
+		);
 	}
 
 	if (filteredFavorites.length === 0) {
-		return <div>No favorite properties found.</div>;
+		return (
+			<div className="flex flex-col items-center justify-center h-full">
+				<p className="text-lg font-semibold">
+					No favorite properties found.
+				</p>
+				<p className="text-sm text-gray-500">
+					Try searching for a specific property or adding more listings to your favorites.
+				</p>
+			</div>
+		);
 	}
 
 	return (

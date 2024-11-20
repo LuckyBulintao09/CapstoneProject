@@ -118,7 +118,7 @@ export const toggleFavourite = async (
   } else {
     const { error } = await supabase
       .from("favorites")
-      .insert([{ Account_ID: userId, property_ID: propertyId }]);
+      .insert({ Account_ID: userId, property_ID: propertyId });
     return !error;
   }
 };

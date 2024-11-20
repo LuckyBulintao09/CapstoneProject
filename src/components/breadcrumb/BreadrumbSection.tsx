@@ -14,7 +14,9 @@ import {
 	DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu';
 
-export function BreadcrumbSection() {
+export function BreadcrumbSection({
+	propertyName,
+}) {
 	return (
 		<Breadcrumb className='pt-6'>
 			<BreadcrumbList>
@@ -22,7 +24,7 @@ export function BreadcrumbSection() {
 					<BreadcrumbLink href='/'>Home</BreadcrumbLink>
 				</BreadcrumbItem>
 				<BreadcrumbSeparator />
-				<BreadcrumbItem>
+				{/* <BreadcrumbItem>
 					<DropdownMenu>
 						<DropdownMenuTrigger className='flex items-center gap-1'>
 							<BreadcrumbEllipsis className='h-4 w-4' />
@@ -35,13 +37,13 @@ export function BreadcrumbSection() {
 						</DropdownMenuContent>
 					</DropdownMenu>
 				</BreadcrumbItem>
-				<BreadcrumbSeparator />
+				<BreadcrumbSeparator /> */}
 				<BreadcrumbItem>
-					<BreadcrumbLink href='/docs/components'>Components</BreadcrumbLink>
+					<BreadcrumbLink href='/client/listings'>Listings</BreadcrumbLink>
 				</BreadcrumbItem>
 				<BreadcrumbSeparator />
 				<BreadcrumbItem>
-					<BreadcrumbPage>Breadcrumb</BreadcrumbPage>
+					<BreadcrumbPage>{propertyName}</BreadcrumbPage>
 				</BreadcrumbItem>
 			</BreadcrumbList>
 		</Breadcrumb>

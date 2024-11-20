@@ -28,7 +28,7 @@ import { Slider as PriceSlider } from '@nextui-org/slider';
 import { MdOutlineMyLocation } from 'react-icons/md';
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 import { toast } from 'sonner';
-import { set } from 'date-fns';
+import { useMapsLibrary } from '@vis.gl/react-google-maps';
 
 const householdPrivacyTypes = [
 	{ value: 'Private Room', label: 'Private Room' },
@@ -101,7 +101,11 @@ export default function FilterModal({
 	const [searchTerm, setSearchTerm] = useState<any>(null);
 	const [mapRadius, setMapRadius] = useState([250]);
 	const mapRef = useRef(null); 
-	const circleRef = useRef(null); 
+	const [circleLoc, setCircleLoc] = useState({
+		lat: 0.2342,
+		lng: 0.2342
+	}); 
+	const autocompleteRef = useRef<google.maps.places.Autocomplete | null>(null);
 
 	//Filters
 	const [popUpAmenities, setPopUpAmenities] = useState(JSON.parse(JSON.stringify(selectedFilter)));
@@ -115,23 +119,21 @@ export default function FilterModal({
 	const [popUpScoreFilter, setPopUpScoreFilter] = useState<any>(JSON.parse(JSON.stringify(scoreFilter)));
 	
 
-	const handleCurrentLocationClick = () => {
-		if (navigator.geolocation) {
-			navigator.geolocation.getCurrentPosition((position) => {
-				if (position.coords.accuracy > 100) {
-					toast.error(
-						'Location accuracy is too low. Manually search location or use a mobile device instead.'
-					);
-				} else {
-					toast.success('Device Location Retrieved!');
-					setDeviceLocation({
-						lat: position.coords.latitude,
-						lng: position.coords.longitude,
-					});
-					setSearchTerm('Current Location');
-				}
-			});
-		}
+	const defaultOptions = {
+		strokeOpacity: 0.5,
+		strokeWeight: 1,
+		clickable: false,
+		draggable: false,
+		editable: false,
+		visible: true,
+	};
+
+	const closeOptions = {
+		...defaultOptions,
+		zIndex: 3,
+		fillOpacity: 0.2,
+		strokeColor: '#4567b7',
+		fillColor: '#4567b7',
 	};
 
 
@@ -147,49 +149,53 @@ export default function FilterModal({
 		setPopUpScoreFilter(JSON.parse(JSON.stringify(scoreFilter)));
 	}, [isOpen]);
 
-	const defaultOptions = {
-		strokeOpacity: 0.5,
-		strokeWeight: 1,
-		clickable: false,
-		draggable: false,
-		editable: false,
-		visible: true,
-	};
+	
+	
 
-	const closeOptions = {
-		...defaultOptions,
-		zIndex: 3,
-		fillOpacity: 0.05,
-		strokeColor: '#4567b7',
-		fillColor: '#4567b7',
+	const handlePlaceSelection = () => {
+		const place = autocompleteRef.current?.getPlaces()?.[0];
+		if (place) {
+		  setSearchTerm(place.formatted_address || '');
+		  const location = {
+			lat: place.geometry?.location?.lat() || 0,
+			lng: place.geometry?.location?.lng() || 0,
+		  };
+		  setSelectedLocation(location);
+		  setPosition(location);
+		  setCircleLoc(location);
+		  setMapKey((prevKey) => prevKey + 1);
+		}
+	  };
+	
+
+	const handleCurrentLocationClick = () => {
+		if (navigator.geolocation) {
+			navigator.geolocation.getCurrentPosition((position) => {
+				if ( position.coords.accuracy > 100) {
+					toast.error(
+						'Location accuracy is too low. Manually search location or use a mobile device instead.'
+					);
+				} else {
+					const location = {
+						lat: position.coords.latitude,
+						lng: position.coords.longitude,
+					};
+					toast.success('Device Location Retrieved!');
+					setSelectedLocation(location);
+					setCircleLoc(location);
+					setPosition(location);
+					setSearchTerm('Current Location');
+					setMapKey((prevKey) => prevKey + 1);
+				}
+			});
+		}
 	};
 
 	const handleMapClick = async (event) => {
 		if (event.latLng) {
 		  const { lat, lng } = event.latLng.toJSON();
-	
-		  // If there's a previously selected location, clear it (remove the old circle)
-		  if (circleRef.current) {
-			circleRef.current.setMap(null); // Remove the old circle from the map
-		  }
-	
-		  // Update the selectedLocation state for the new circle
 		  setSelectedLocation({ lat, lng });
-	
-		  // Create a new circle and store it in the circleRef
-		  const newCircle = new window.google.maps.Circle({
-			center: { lat, lng },
-			radius: mapRadius[0],
-			options: closeOptions,
-		  });
-	
-		  if (mapRef.current instanceof window.google.maps.Map) {
-			newCircle.setMap(mapRef.current);  // Ensure mapRef is a Google Maps instance
-			circleRef.current = newCircle; // Store the circle reference
-		  } else {
-			console.error("Map instance not found.");
-		  }
-	
+		  setCircleLoc({ lat, lng });
 		}
 	  };
 
@@ -260,31 +266,36 @@ export default function FilterModal({
 					<div className='grid grid-cols-2 lg:grid-cols-5 lg:gap-4 md:gap-0'>
 						<div className='col-span-3 relative'>
 							<div className='absolute top-4 left-1/2 transform -translate-x-1/2 w-11/12 z-10'>
-								<div className='relative flex lg:w-full shadow-lg'>
-									<SearchIcon className='absolute left-3 top-1/2 -translate-y-1/2 h-5 w-5 text-black dark:text-muted-foreground' />
-									<input
-										// ref={inputRef}
-										type='search'
-										name='search'
-										id='search'
-										className='block w-full rounded-lg border-0 bg-white px-10 py-2 text-black dark:text-muted-foreground placeholder:text-muted-foreground focus:ring-2 focus:ring-accent'
-										placeholder='Search'
-										value={searchTerm}
-										onChange={(e) => setSearchTerm(e.target.value)}
-										onKeyDown={(e) => e.key === 'Enter' && e.preventDefault()}
-									/>
-									<button
-										type='button'
-										className='absolute inset-y-0 right-0 pr-3 flex items-center p-1 bg-transparent border-0 focus:outline-none'
-										aria-label='Use my location'
-										onClick={handleCurrentLocationClick}
-									>
-										<MdOutlineMyLocation className='h-5 w-5 text-black dark:text-muted-foreground' />
-									</button>
-								</div>
+								<StandaloneSearchBox
+									onLoad={(box) => (autocompleteRef.current = box)}
+									onPlacesChanged={handlePlaceSelection}
+								>
+									<div className='relative flex lg:w-full shadow-lg'>
+										<SearchIcon className='absolute left-3 top-1/2 -translate-y-1/2 h-5 w-5 text-black dark:text-muted-foreground' />
+										<input
+											// ref={inputRef}
+											type='search'
+											name='search'
+											id='search'
+											className='block w-full rounded-lg border-0 bg-white px-10 py-2 text-black dark:text-muted-foreground placeholder:text-muted-foreground focus:ring-2 focus:ring-accent'
+											placeholder='Search'
+											value={searchTerm}
+											onChange={(e) => setSearchTerm(e.target.value)}
+											onKeyDown={(e) => e.key === 'Enter' && e.preventDefault()}
+										/>
+										<button
+											type='button'
+											className='absolute inset-y-0 right-0 pr-3 flex items-center p-1 bg-transparent border-0 focus:outline-none'
+											aria-label='Use my location'
+											onClick={handleCurrentLocationClick}
+										>
+											<MdOutlineMyLocation className='h-5 w-5 text-black dark:text-muted-foreground' />
+										</button>
+									</div>
+								</StandaloneSearchBox>
 							</div>
 							<GoogleMap
-								ref={mapRef}  // Attach map reference
+								ref={mapRef}
 								onClick={handleMapClick}
 								center={position}
 								zoom={15}
@@ -294,8 +305,14 @@ export default function FilterModal({
 								{selectedLocation && (
 									<>
 									<Marker position={selectedLocation} />
+									
 									</>
 								)}
+								<Circle
+										options={closeOptions}
+										center={circleLoc}
+										radius={mapRadius[0]}
+								/>
 								<MarkerClusterer>
 									{(clusterer) => (
 									<>

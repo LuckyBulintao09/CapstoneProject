@@ -148,6 +148,10 @@ export function SpecificListing({ id }: SpecificListingProps) {
 				const fetchedUserId = await fetchUser();
 				setUserId(fetchedUserId);
 
+				
+				setIsFavourite(await fetchFavorite(userId, id));
+
+
 				const { property } = await fetchProperty(id, fetchedUserId);
 				if (!property) {
 					setError(true);
@@ -158,7 +162,6 @@ export function SpecificListing({ id }: SpecificListingProps) {
 				setProperty(property);
 				setPropertyReviews(await fetchPropertyReviews(id));
 				setCommonFacilities(await fetchPropertyFacilities(id));
-				setIsFavourite(await fetchFavorite(userId, id));
 				setPosition({
 					lat: (await fetchPropertyLocation(id))[0].latitude,
 					lng: (await fetchPropertyLocation(id))[0].longitude,
@@ -179,59 +182,64 @@ export function SpecificListing({ id }: SpecificListingProps) {
 			}
 		};
 		loadUserAndProperty();
-	}, [id]);
+		
+	}, [id, isFavourite]);
 
 	const sortedUnits = useMemo(() => {
 		if (!Array.isArray(units) || units.length === 0) {
 			return [];
 		}
-
+	  
 		return [...units].sort((a, b) => {
-			let scoreA = 0;
-			let scoreB = 0;
-
-			// Price range scoring (Highest priority)
-			if (minPrice && maxPrice) {
-				const minP = parseInt(minPrice as string);
-				const maxP = parseInt(maxPrice as string);
-				if (a.price >= minP && a.price <= maxP) scoreA += 100;
-				if (b.price >= minP && b.price <= maxP) scoreB += 100;
-			}
-
-			// Rooms and beds scoring (Second priority)
-			if (room) {
-				const targetRoom = parseInt(room as string);
-				if (a.bedrooms === targetRoom) scoreA += 50;
-				if (b.bedrooms === targetRoom) scoreB += 50;
-			}
-
-			if (bed) {
-				const targetBed = parseInt(bed as string);
-				if (a.beds === targetBed) scoreA += 50;
-				if (b.beds === targetBed) scoreB += 50;
-			}
-
-			// Amenity matching score (Third priority)
-			if (amenities && Array.isArray(amenities)) {
-				const aAmenities = new Set(a.amenities);
-				const bAmenities = new Set(b.amenities);
-				const aMatches = amenities.filter((am) => aAmenities.has(am)).length;
-				const bMatches = amenities.filter((am) => bAmenities.has(am)).length;
-
-				scoreA += aMatches * 10; // Weight for each matching amenity
-				scoreB += bMatches * 10;
-			}
-
-			// Privacy type scoring (Lowest priority)
-			if (privacy) {
-				if (a.privacy_type === privacy) scoreA += 5;
-				if (b.privacy_type === privacy) scoreB += 5;
-			}
-
-			// Sort by descending score
-			return scoreB - scoreA;
+		  let scoreA = 0;
+		  let scoreB = 0;
+	  
+		  // Price range scoring (Highest priority)
+		  if (minPrice && maxPrice) {
+			const minP = parseInt(minPrice as string);
+			const maxP = parseInt(maxPrice as string);
+			const aDistance = Math.min(Math.abs(a.price - minP), Math.abs(a.price - maxP));
+			const bDistance = Math.min(Math.abs(b.price - minP), Math.abs(b.price - maxP));
+			if (aDistance < bDistance) scoreA += 100;
+			if (bDistance < aDistance) scoreB += 100;
+		  }
+	  
+		  // Rooms and beds scoring (Second priority)
+		  if (room) {
+			const targetRoom = parseInt(room as string);
+			if (a.bedrooms === targetRoom) scoreA += 50;
+			if (b.bedrooms === targetRoom) scoreB += 50;
+		  }
+	  
+		  if (bed) {
+			const targetBed = parseInt(bed as string);
+			if (a.beds === targetBed) scoreA += 50;
+			if (b.beds === targetBed) scoreB += 50;
+		  }
+	  
+		  // Amenity matching score (Third priority)
+		  if (amenities && Array.isArray(amenities)) {
+			const aAmenities = new Set(a.amenities);
+			const bAmenities = new Set(b.amenities);
+			const aMatches = amenities.filter((am) => aAmenities.has(am)).length;
+			const bMatches = amenities.filter((am) => bAmenities.has(am)).length;
+	  
+			scoreA += aMatches * 10; // Weight for each matching amenity
+			scoreB += bMatches * 10;
+		  }
+	  
+		  // Privacy type scoring (Lowest priority)
+		  if (privacy) {
+			if (a.privacy_type === privacy) scoreA += 5;
+			if (b.privacy_type === privacy) scoreB += 5;
+		  }
+	  
+		  // Sort by descending score
+		  return scoreB - scoreA;
 		});
-	}, [units]);
+	  }, [units]);
+	  
+
 
 	const handleToggleFavourite = async () => {
 		if (!userId) {
@@ -374,7 +382,9 @@ export function SpecificListing({ id }: SpecificListingProps) {
 	return (
 		<div className='px-32 md:px-24 sm:px-20 xs:px-10'>
 			{/* paki fix breadcrumbs */}
-			<BreadcrumbSection />
+			<BreadcrumbSection 
+				propertyName={title}
+			/>
 			<div className='flex justify-between items-center mt-4'>
 				<div>
 					<h1 className='font-semibold text-3xl dark:text-white'>{title}</h1>
