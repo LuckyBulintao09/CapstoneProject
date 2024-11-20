@@ -60,7 +60,7 @@ function NavigationBar() {
     */
 	const [user, setUser] = React.useState<User | null>(null);
 	const [open, setOpen] = React.useState<boolean>(false);
-	const isDesktop = useMediaQuery('(min-width: 950px)');
+	const isDesktop = useMediaQuery('(min-width: 980px)');
 
 	const pathname = usePathname();
 
@@ -100,7 +100,7 @@ function NavigationBar() {
 
 	return (
 		<nav className='py-3 sticky z-[999] airBnbDesktop:z-999 top-0 w-full bg-white/95 shadow backdrop-blur supports-[backdrop-filter]:bg-white/60 dark:bg-background'>
-			<div className='w-full grid grid-flow-col px-5'>
+			<div className='w-full grid md1:grid-cols-3 grid-flow-col px-5'>
 				<div className='flex flex-nowrap items-center justify-start h-11'>
 					<Image
 						src='/Logo.png'
