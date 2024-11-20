@@ -1,37 +1,27 @@
-"use client";
-import React, { useState, useEffect, useMemo } from "react";
-import ResponsiveLayout from "@/components/ResponsiveLayout";
+/* eslint-disable @typescript-eslint/no-explicit-any */
+'use client';
+import React, { useState, useEffect, useMemo } from 'react';
 import {
-  ArrowUpRight,
-  Axis3D,
-  Bed,
-  Check,
-  Glasses,
-  MapPin,
-  User,
-  User2,
-  UserCheck,
-  UserCheck2,
-  Users2,
-  House,
-  Shield,
-  Pin,
-  ArrowUp,
-  ArrowUpToLine,
-  ChevronUpCircle,
-} from "lucide-react";
-import BusinessReviews from "../components/BusinessReviews";
-import MainPreview from "../components/MainPreview";
-import PropertyDetails from "../components/PropertyDetails";
-import Banner from "../components/Banner";
+	Axis3D,
+	Bed,
+	Check,
+	Glasses,
+	MapPin,
+	User2,
+	UserCheck2,
+	Users2,
+	House,
+	Shield,
+} from 'lucide-react';
+import BusinessReviews from '../components/BusinessReviews';
+import MainPreview from '../components/MainPreview';
+import PropertyDetails from '../components/PropertyDetails';
+import Banner from '../components/Banner';
 import {
-  ChevronDoubleUpIcon,
-  HeartIcon as HeartOutline,
-} from "@heroicons/react/24/outline";
-import {
-  ChevronDoubleRightIcon,
-  HeartIcon as HeartSolid,
-} from "@heroicons/react/24/solid";
+	ChevronDoubleUpIcon,
+	HeartIcon as HeartOutline,
+} from '@heroicons/react/24/outline';
+import { HeartIcon as HeartSolid } from '@heroicons/react/24/solid';
 import {
   Card,
   CardDescription,
@@ -40,42 +30,35 @@ import {
 } from "@/components/ui/card";
 import { NavbarModalLogin } from "@/components/navbar/NavbarModalLogin";
 import {
-  fetchUser,
-  fetchProperty,
-  toggleFavourite,
-  fetchFavorite,
-  fetchPropertyLocation,
-  fetchPropertyReviews,
-  fetchPropertyFacilities,
-  fetchPropertyUnits,
-} from "@/actions/listings/specific-listing";
-import ErrorPage from "@/components/ui/ErrorPage";
+	fetchUser,
+	fetchProperty,
+	toggleFavourite,
+	fetchFavorite,
+	fetchPropertyLocation,
+	fetchPropertyReviews,
+	fetchPropertyFacilities,
+	fetchPropertyUnits,
+} from '@/actions/listings/specific-listing';
+import ErrorPage from '@/components/ui/ErrorPage';
+import { Marker, GoogleMap, DirectionsRenderer } from '@react-google-maps/api';
 import {
-  Marker,
-  GoogleMap,
-  DirectionsService,
-  DirectionsRenderer,
-} from "@react-google-maps/api";
-import {
-  Tooltip,
-  TooltipContent,
-  TooltipProvider,
-  TooltipTrigger,
-} from "@/components/ui/tooltip";
-import LoadingPage from "@/components/LoadingPage";
-import { toast } from "sonner";
-import { Button } from "@/components/ui/button";
-import { BreadcrumbSection } from "@/components/breadcrumb/BreadrumbSection";
-import SpecificListingTabs from "../components/SpecificListingTabs";
-import RightReviews from "../components/SideReviews";
-import SideReviews from "../components/SideReviews";
-import SideMap from "../components/SideMap";
-import UnitGalleryModal from "../components/UnitGalleryModal";
-import { Dialog, DialogContent } from "@/components/ui/dialog";
-import { BookingCardModal } from "../components/BookingCardModal";
-import { useSearchParams } from "next/navigation";
-import { useRouter } from "next/router";
-import { fetchLandmarks } from "@/actions/landmarks/landmark";
+	Tooltip,
+	TooltipContent,
+	TooltipProvider,
+	TooltipTrigger,
+} from '@/components/ui/tooltip';
+import LoadingPage from '@/components/LoadingPage';
+import { toast } from 'sonner';
+import { Button } from '@/components/ui/button';
+import { BreadcrumbSection } from '@/components/breadcrumb/BreadrumbSection';
+import SpecificListingTabs from '../components/SpecificListingTabs';
+import SideReviews from '../components/SideReviews';
+import SideMap from '../components/SideMap';
+import UnitGalleryModal from '../components/UnitGalleryModal';
+import { Dialog, DialogContent } from '@/components/ui/dialog';
+import { BookingCardModal } from '../components/BookingCardModal';
+import { useSearchParams } from 'next/navigation';
+import { fetchLandmarks } from '@/actions/landmarks/landmark';
 
 interface SpecificListingProps {
   id: number;
@@ -91,32 +74,33 @@ type SearchParams = {
 };
 
 export function SpecificListing({ id }: SpecificListingProps) {
-  const [isFavourite, setIsFavourite] = useState(false);
-  const [property, setProperty] = useState<any | null>(null);
-  const [propertyReviews, setPropertyReviews] = useState<any>(null);
-  const [units, setUnits] = useState<any>(null);
-  const [commonFacilities, setCommonFacilities] = useState<any>(null);
-  const [userId, setUserId] = useState<string | null>(null);
-  const [isLoginModalOpen, setIsLoginModalOpen] = useState(false);
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState(false);
-  const [position, setPosition] = useState({
-    lat: 16.420039834357972,
-    lng: 120.59908426196893,
-  });
-  const [userPosition, setUserPosition] = useState<{
-    lat: number;
-    lng: number;
-  } | null>(null);
-  const [directions, setDirections] = useState(null);
-  const [isUnitGalleryModalOpen, setIsUnitGalleryModalOpen] = useState(false);
-  const [selectedImage, setSelectedImage] = useState<string | null>(null);
-  const [isBookingModalOpen, setIsBookingModalOpen] = useState(false);
-  const [selectedUnit, setSelectedUnit] = useState<any>(null);
-  const [unitImage, setUnitImage] = useState<any>(null);
-  const [unitCount, setUnitCount] = useState(0);
-  const [totalOccupants, setTotalOccupants] = useState(0);
-  const [landmarks, setLandmarks] = useState([]);
+	const [isFavourite, setIsFavourite] = useState(false);
+	const [property, setProperty] = useState<any | null>(null);
+	const [propertyReviews, setPropertyReviews] = useState<any>(null);
+	const [units, setUnits] = useState<any>(null);
+	const [commonFacilities, setCommonFacilities] = useState<any>(null);
+	const [userId, setUserId] = useState<string | null>(null);
+	const [isLoginModalOpen, setIsLoginModalOpen] = useState(false);
+	const [loading, setLoading] = useState(true);
+	const [error, setError] = useState(false);
+	const [position, setPosition] = useState({
+		lat: 16.420039834357972,
+		lng: 120.59908426196893,
+	});
+	const [userPosition, setUserPosition] = useState<{
+		lat: number;
+		lng: number;
+	} | null>(null);
+	const [directions, setDirections] = useState(null);
+	const [isUnitGalleryModalOpen, setIsUnitGalleryModalOpen] = useState(false);
+	const [selectedImage, setSelectedImage] = useState<string | null>(null);
+	const [isBookingModalOpen, setIsBookingModalOpen] = useState(false);
+	const [selectedUnit, setSelectedUnit] = useState<any>(null);
+	const [unitImage, setUnitImage] = useState<any>(null);
+	const [unitCount, setUnitCount] = useState(0);
+	const [totalOccupants, setTotalOccupants] = useState(0);
+	const [landmarks, setLandmarks] = useState([]);
+	const [availableSpots, setAvailableSpots] = useState<number | null>(null);
   const [selectedUnitOccupants, setSelectedUnitOccupants] = useState<number>(0);
 
   //Parameter Filters
@@ -146,10 +130,10 @@ export function SpecificListing({ id }: SpecificListingProps) {
         const fetchedLandmark = await fetchLandmarks();
         setLandmarks(fetchedLandmark);
 
-        const fetchedUserId = await fetchUser();
-        setUserId(fetchedUserId);
+				const fetchedUserId = await fetchUser();
+				setUserId(fetchedUserId);
 
-        setIsFavourite(await fetchFavorite(userId, id));
+				setIsFavourite(await fetchFavorite(userId, id));
 
         const { property } = await fetchProperty(id, fetchedUserId);
         if (!property) {
@@ -175,73 +159,73 @@ export function SpecificListing({ id }: SpecificListingProps) {
         );
         setTotalOccupants(occupantsCount);
 
-        setLoading(false);
-      } catch (err) {
-        setError(true);
-      }
-    };
-    loadUserAndProperty();
-  }, [id, isFavourite]);
+				setLoading(false);
+			} catch (err) {
+				setError(true);
+			}
+		};
+		loadUserAndProperty();
+	}, [id, isFavourite]);
 
-  const sortedUnits = useMemo(() => {
-    if (!Array.isArray(units) || units.length === 0) {
-      return [];
-    }
+	const sortedUnits = useMemo(() => {
+		if (!Array.isArray(units) || units.length === 0) {
+			return [];
+		}
 
-    return [...units].sort((a, b) => {
-      let scoreA = 0;
-      let scoreB = 0;
+		return [...units].sort((a, b) => {
+			let scoreA = 0;
+			let scoreB = 0;
 
-      // Price range scoring (Highest priority)
-      if (minPrice && maxPrice) {
-        const minP = parseInt(minPrice as string);
-        const maxP = parseInt(maxPrice as string);
-        const aDistance = Math.min(
-          Math.abs(a.price - minP),
-          Math.abs(a.price - maxP)
-        );
-        const bDistance = Math.min(
-          Math.abs(b.price - minP),
-          Math.abs(b.price - maxP)
-        );
-        if (aDistance < bDistance) scoreA += 100;
-        if (bDistance < aDistance) scoreB += 100;
-      }
+			// Price range scoring (Highest priority)
+			if (minPrice && maxPrice) {
+				const minP = parseInt(minPrice as string);
+				const maxP = parseInt(maxPrice as string);
+				const aDistance = Math.min(
+					Math.abs(a.price - minP),
+					Math.abs(a.price - maxP)
+				);
+				const bDistance = Math.min(
+					Math.abs(b.price - minP),
+					Math.abs(b.price - maxP)
+				);
+				if (aDistance < bDistance) scoreA += 100;
+				if (bDistance < aDistance) scoreB += 100;
+			}
 
-      // Rooms and beds scoring (Second priority)
-      if (room) {
-        const targetRoom = parseInt(room as string);
-        if (a.bedrooms === targetRoom) scoreA += 50;
-        if (b.bedrooms === targetRoom) scoreB += 50;
-      }
+			// Rooms and beds scoring (Second priority)
+			if (room) {
+				const targetRoom = parseInt(room as string);
+				if (a.bedrooms === targetRoom) scoreA += 50;
+				if (b.bedrooms === targetRoom) scoreB += 50;
+			}
 
-      if (bed) {
-        const targetBed = parseInt(bed as string);
-        if (a.beds === targetBed) scoreA += 50;
-        if (b.beds === targetBed) scoreB += 50;
-      }
+			if (bed) {
+				const targetBed = parseInt(bed as string);
+				if (a.beds === targetBed) scoreA += 50;
+				if (b.beds === targetBed) scoreB += 50;
+			}
 
-      // Amenity matching score (Third priority)
-      if (amenities && Array.isArray(amenities)) {
-        const aAmenities = new Set(a.amenities);
-        const bAmenities = new Set(b.amenities);
-        const aMatches = amenities.filter((am) => aAmenities.has(am)).length;
-        const bMatches = amenities.filter((am) => bAmenities.has(am)).length;
+			// Amenity matching score (Third priority)
+			if (amenities && Array.isArray(amenities)) {
+				const aAmenities = new Set(a.amenities);
+				const bAmenities = new Set(b.amenities);
+				const aMatches = amenities.filter((am) => aAmenities.has(am)).length;
+				const bMatches = amenities.filter((am) => bAmenities.has(am)).length;
 
-        scoreA += aMatches * 10; // Weight for each matching amenity
-        scoreB += bMatches * 10;
-      }
+				scoreA += aMatches * 10; // Weight for each matching amenity
+				scoreB += bMatches * 10;
+			}
 
-      // Privacy type scoring (Lowest priority)
-      if (privacy) {
-        if (a.privacy_type === privacy) scoreA += 5;
-        if (b.privacy_type === privacy) scoreB += 5;
-      }
+			// Privacy type scoring (Lowest priority)
+			if (privacy) {
+				if (a.privacy_type === privacy) scoreA += 5;
+				if (b.privacy_type === privacy) scoreB += 5;
+			}
 
-      // Sort by descending score
-      return scoreB - scoreA;
-    });
-  }, [units]);
+			// Sort by descending score
+			return scoreB - scoreA;
+		});
+	}, [units]);
 
   const handleToggleFavourite = async () => {
     if (!userId) {
@@ -311,17 +295,17 @@ export function SpecificListing({ id }: SpecificListingProps) {
     );
   };
 
-  const handleOpenBookingModal = (unit_id: number) => {
+  const handleOpenBookingModal = (unit_id: number, availableSpots: number) => {
     setIsBookingModalOpen(true);
     setSelectedUnit(unit_id);
-    const unit = units.find((u) => u.id === unit_id);
-    setSelectedUnitOccupants(unit ? unit.occupants : 0);
+		setAvailableSpots(availableSpots);
+    // const unit = units.find((u) => u.id === unit_id);
+    // setSelectedUnitOccupants(unit ? unit.occupants : 0);
   };
 
   const handleCloseBookingModal = () => {
     setIsBookingModalOpen(false);
     setSelectedUnit(null);
-    setSelectedUnitOccupants(occupants);
   };
 
   const handleOpenUnitGallery = (unit_image: any) => {
@@ -366,64 +350,48 @@ export function SpecificListing({ id }: SpecificListingProps) {
   }
   if (!property) return <div>No property found.</div>;
 
-  const {
-    title,
-    price,
-    address,
-    thumbnail_url,
-    privacy_type,
-    structure,
-    description,
-    company_id,
-    company: {
-      logo,
-      about,
-      owner_id,
-      company_name,
-      account: { firstname, lastname, profile_url },
-    },
-  } = property;
+	const { title, address, structure, description } = property;
 
-  return (
-    <div className="px-32 md:px-24 sm:px-20 xs:px-10">
-      {/* paki fix breadcrumbs */}
-      <BreadcrumbSection propertyName={title} />
-      <div className="flex justify-between items-center mt-4">
-        <div>
-          <h1 className="font-semibold text-3xl dark:text-white">{title}</h1>
-          <p className="flex items-center text-muted-foreground">
-            <MapPin className="mr-1" height={18} width={18} />
-            {address}
-          </p>
-        </div>
-        <div className="relative flex items-center">
-          <TooltipProvider>
-            <Tooltip>
-              <TooltipTrigger>
-                <Button
-                  onClick={handleToggleFavourite}
-                  className="cursor-pointer flex items-center space-x-1 bg-transparent hover:bg-gray-200"
-                  size="sm"
-                >
-                  {isFavourite ? (
-                    <HeartSolid className="h-6 w-6 text-red-500 " />
-                  ) : (
-                    <HeartOutline className="h-6 w-6 text-gray-500 dark:text-gray-300" />
-                  )}
-                  <span className="text-gray-500 dark:text-gray-300 underline">
-                    {isFavourite ? "Saved" : "Save"}
-                  </span>
-                </Button>
-              </TooltipTrigger>
-              <TooltipContent>
-                <p>
-                  {isFavourite ? "Remove from favorites" : "Save to favorites"}
-                </p>
-              </TooltipContent>
-            </Tooltip>
-          </TooltipProvider>
-        </div>
-      </div>
+	return (
+		<div className='px-32 md:px-24 sm:px-20 xs:px-10'>
+			{/* paki fix breadcrumbs */}
+			<BreadcrumbSection propertyName={title} />
+			<div className='flex justify-between items-center mt-4'>
+				<div>
+					<h1 className='font-semibold text-3xl dark:text-white'>{title}</h1>
+					<p className='flex items-center text-muted-foreground'>
+						<MapPin className='mr-1' height={18} width={18} />
+						{address}
+					</p>
+				</div>
+				<div className='relative flex items-center'>
+					<TooltipProvider>
+						<Tooltip>
+							<TooltipTrigger>
+								<Button
+									onClick={handleToggleFavourite}
+									className='cursor-pointer flex items-center space-x-1 bg-transparent hover:bg-gray-200'
+									size='sm'
+								>
+									{isFavourite ? (
+										<HeartSolid className='h-6 w-6 text-red-500 ' />
+									) : (
+										<HeartOutline className='h-6 w-6 text-gray-500 dark:text-gray-300' />
+									)}
+									<span className='text-gray-500 dark:text-gray-300 underline'>
+										{isFavourite ? 'Saved' : 'Save'}
+									</span>
+								</Button>
+							</TooltipTrigger>
+							<TooltipContent>
+								<p>
+									{isFavourite ? 'Remove from favorites' : 'Save to favorites'}
+								</p>
+							</TooltipContent>
+						</Tooltip>
+					</TooltipProvider>
+				</div>
+			</div>
 
       <div className="grid grid-cols-5 gap-2 mt-4">
         <MainPreview
@@ -486,149 +454,168 @@ export function SpecificListing({ id }: SpecificListingProps) {
           Available Units
         </h4>
 
-        <div className="flex flex-col gap-4 overflow-x-auto">
-          {/* MAP UNITS HERE */}
-          {sortedUnits.map((unit, index) => (
-            <Card
-              key={unit.id}
-              className="bg-white overflow-x-auto min-w-auto dark:bg-secondary border border-gray-300 shadow-md
-							"
-            >
-              <CardHeader>
-                <CardTitle className="text-lg">
-                  {/* Redirect to the modal for this specific unit */}
-                  <Button
-                    onClick={() => handleOpenUnitGallery(unit.unit_image)}
-                    className="text-primary dark:text-blue-300 underline text-md font-semibold pl-0"
-                    variant="link"
-                  >
-                    {unit.title}
-                  </Button>
-                </CardTitle>
+				<div className='flex flex-col gap-4 overflow-x-auto'>
+					{/* MAP UNITS HERE */}
+					{sortedUnits.map((unit) => (
+						<Card
+							key={unit.id}
+							className='bg-white overflow-x-auto min-w-auto dark:bg-secondary border border-gray-300 shadow-md
+							'
+						>
+							<CardHeader>
+								<CardTitle className='text-lg'>
+									{/* Redirect to the modal for this specific unit */}
+									<Button
+										onClick={() => handleOpenUnitGallery(unit.unit_image)}
+										className='text-primary dark:text-blue-300 underline text-md font-semibold pl-0'
+										variant='link'
+									>
+										{unit.title}
+									</Button>
+								</CardTitle>
 
-                <CardDescription className="">
-                  <table className="w-full table-auto">
-                    <thead>
-                      <tr className="border-b dark:text-gray-100">
-                        <th className="px-4 py-2 text-center">Details</th>
-                        <th className="px-4 py-2 text-center">
-                          Current Number of Occupants
-                        </th>
-                        <th className="px-4 py-2 text-center">Price</th>
-                        <th className="px-4 py-2 text-center">Action</th>
-                      </tr>
-                    </thead>
-                    <tbody>
-                      <tr className="border-b">
-                        <td className="pl-4 py-2 border-r border-gray-300 w-[480px] dark:text-gray-200">
-                          <div className="flex items-center">
-                            <Shield className="mr-2" size={16} />
-                            <span>Privacy Type: {unit.privacy_type}</span>
-                          </div>
-                          <div className="flex items-center">
-                            <House className="mr-2" size={16} />
-                            <span>{unit.bedrooms} rooms</span>
-                          </div>
-                          <div className="flex items-center">
-                            <Bed className="mr-2" size={16} />
-                            <span>{unit.beds} beds</span>
-                          </div>
-                          <div className="flex items-center">
-                            <Users2 className="mr-2" size={16} />
-                            <span>For: {unit.occupants} guests</span>
-                          </div>
-                          <div className="flex items-center">
-                            <Axis3D className="mr-2" size={16} />
-                            <span>
-                              Room size:{" "}
-                              {unit.room_size > 0
-                                ? `${unit.room_size} m²`
-                                : "N/A"}
-                            </span>
-                          </div>
-                          <div className="flex items-center">
-                            <Glasses className="mr-2" size={16} />
-                            <span>
-                              {unit.outside_view
-                                ? "With Outdoor View"
-                                : "No Outdoor View"}
-                            </span>
-                          </div>
-                          <div className="border-t border-gray-300 my-3" />
-                          <div className="grid lg:grid-cols-2 sm:grid-cols-1">
-                            {unit.amenities && unit.amenities.length > 0 && (
-                              <div className="grid lg:grid-cols-2 sm:grid-cols-1">
-                                {unit.amenities.map((amenity, index) => (
-                                  <div
-                                    key={index}
-                                    className="flex items-center"
-                                  >
-                                    <Check
-                                      className="mr-2 text-green-600"
-                                      size={12}
-                                    />
-                                    <span>{amenity}</span>
-                                  </div>
-                                ))}
-                              </div>
-                            )}
-                          </div>
-                        </td>
+								<CardDescription className=''>
+									<table className='w-full table-auto'>
+										<thead>
+											<tr className='border-b dark:text-gray-100'>
+												<th className='px-4 py-2 text-center'>Details</th>
+												<th className='px-4 py-2 text-center'>
+													Current Number of Occupants
+												</th>
+												<th className='px-4 py-2 text-center'>Price</th>
+												<th className='px-4 py-2 text-center'>Action</th>
+											</tr>
+										</thead>
+										<tbody>
+											<tr className='border-b'>
+												<td className='pl-4 py-2 border-r border-gray-300 w-[480px] dark:text-gray-200'>
+													<div className='flex items-center'>
+														<Shield className='mr-2' size={16} />
+														<span>Privacy Type: {unit.privacy_type}</span>
+													</div>
+													<div className='flex items-center'>
+														<House className='mr-2' size={16} />
+														<span>
+															{unit.bedrooms}{' '}
+															{unit.bedrooms === 1 ? 'room' : 'rooms'}
+														</span>
+													</div>
+													<div className='flex items-center'>
+														<Bed className='mr-2' size={16} />
+														<span>
+															{unit.beds} {unit.beds === 1 ? 'bed' : 'beds'}
+														</span>
+													</div>
+													<div className='flex items-center'>
+														<Users2 className='mr-2' size={16} />
+														<span>
+															For: {unit.occupants}{' '}
+															{unit.occupants === 1 ? 'guest' : 'guests'}
+														</span>
+													</div>
+													<div className='flex items-center'>
+														<Axis3D className='mr-2' size={16} />
+														<span>
+															Room size:{' '}
+															{unit.room_size > 0
+																? `${unit.room_size} m²`
+																: 'N/A'}
+														</span>
+													</div>
+													<div className='flex items-center'>
+														<Glasses className='mr-2' size={16} />
+														<span>
+															{unit.outside_view
+																? 'With Outdoor View'
+																: 'No Outdoor View'}
+														</span>
+													</div>
+													<div className='border-t border-gray-300 my-3' />
+													<div className='grid lg:grid-cols-2 sm:grid-cols-1'>
+														{unit.amenities && unit.amenities.length > 0 && (
+															<div className='grid lg:grid-cols-2 sm:grid-cols-1'>
+																{unit.amenities.map((amenity, index) => (
+																	<div
+																		key={index}
+																		className='flex items-center'
+																	>
+																		<Check
+																			className='mr-2 text-green-600'
+																			size={12}
+																		/>
+																		<span>{amenity}</span>
+																	</div>
+																))}
+															</div>
+														)}
+													</div>
+												</td>
 
-                        <td className="px-4 py-2 border-r border-gray-300 max-w-[10px] text-center">
-                          <TooltipProvider>
-                            <Tooltip>
-                              <TooltipTrigger asChild>
-                                <div className="flex justify-center items-center space-x-1 cursor-pointer">
-                                  {Array.from(
-                                    { length: unit.occupants },
-                                    (_, i) =>
-                                      i < unit.current_occupants ? (
-                                        <UserCheck2
-                                          key={i}
-                                          className="text-primary dark:text-blue-300"
-                                        />
-                                      ) : (
-                                        <User2
-                                          key={i}
-                                          className="text-gray-500 dark:text-gray-200"
-                                        />
-                                      )
-                                  )}
-                                </div>
-                              </TooltipTrigger>
-                              <TooltipContent>
-                                <p>
-                                  {unit.current_occupants} occupants —{" "}
-                                  {unit.occupants - unit.current_occupants}{" "}
-                                  spots available
-                                </p>
-                              </TooltipContent>
-                            </Tooltip>
-                          </TooltipProvider>
-                        </td>
+												<td className='px-4 py-2 border-r border-gray-300 max-w-[10px] text-center'>
+													<TooltipProvider>
+														<Tooltip>
+															<TooltipTrigger asChild>
+																<div className='flex justify-center items-center space-x-1 cursor-pointer'>
+																	{Array.from(
+																		{ length: unit.occupants },
+																		(_, i) =>
+																			i < unit.current_occupants ? (
+																				<UserCheck2
+																					key={i}
+																					className='text-primary dark:text-blue-300'
+																				/>
+																			) : (
+																				<User2
+																					key={i}
+																					className='text-gray-500 dark:text-gray-200'
+																				/>
+																			)
+																	)}
+																</div>
+															</TooltipTrigger>
+															<TooltipContent>
+																<p>
+																	{unit.current_occupants} occupant
+																	{unit.current_occupants !== 1
+																		? 's'
+																		: ''} —{' '}
+																	{unit.occupants - unit.current_occupants} spot
+																	{unit.occupants - unit.current_occupants !== 1
+																		? 's'
+																		: ''}{' '}
+																	available
+																</p>
+															</TooltipContent>
+														</Tooltip>
+													</TooltipProvider>
+												</td>
 
                         <td className="px-4 py-2 border-r border-gray-300 text-center dark:text-gray-200">
                           P{unit.price}/month
                         </td>
 
-                        <td className="py-2 border-r border-gray-300 text-center dark:text-gray-200 px-4">
-                          <Button
-                            className="text-white px-4 py-2 rounded"
-                            onClick={() => handleOpenBookingModal(unit.id)}
-                          >
-                            Book Now
-                          </Button>
-                        </td>
-                      </tr>
-                    </tbody>
-                  </table>
-                </CardDescription>
-              </CardHeader>
-            </Card>
-          ))}
-        </div>
-      </div>
+												<td className='py-2 border-r border-gray-300 text-center dark:text-gray-200 px-4'>
+													<Button
+														className='text-white px-4 py-2 rounded'
+														onClick={() =>
+															handleOpenBookingModal(
+																unit.id,
+																unit.occupants - unit.current_occupants
+															)
+														}
+													>
+														Book Now
+													</Button>
+												</td>
+											</tr>
+										</tbody>
+									</table>
+								</CardDescription>
+							</CardHeader>
+						</Card>
+					))}
+				</div>
+			</div>
 
       <UnitGalleryModal
         isOpen={isUnitGalleryModalOpen}
@@ -636,12 +623,12 @@ export function SpecificListing({ id }: SpecificListingProps) {
         images={unitImage}
       />
 
-      <BookingCardModal
-        isOpen={isBookingModalOpen}
-        onClose={handleCloseBookingModal}
-        unitID={selectedUnit}
-        occupants={selectedUnitOccupants}
-      />
+			<BookingCardModal
+				isOpen={isBookingModalOpen}
+				onClose={handleCloseBookingModal}
+				unitID={selectedUnit}
+				availableSpots={availableSpots}
+			/>
 
       {/* REVIEWS */}
       <div
