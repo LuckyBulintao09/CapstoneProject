@@ -11,10 +11,10 @@ import React, {
 import { Card } from '@/components/ui/card';
 import { fetchConversations } from '@/actions/chat/fetchConversations';
 import { createClient } from '@/utils/supabase/client';
-import { BadgeCheck, MoreVertical, ChevronsUpDown, X } from 'lucide-react';
+import { BadgeCheck, ChevronsUpDown, X, MoreVertical } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Command, CommandItem, CommandList } from '@/components/ui/command';
-import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
+import { DropdownMenu, DropdownMenuTrigger, DropdownMenuContent, DropdownMenuItem, DropdownMenuLabel, DropdownMenuSeparator } from '@/components/ui/dropdown-menu';
 import { toast } from 'sonner';
 
 const Inbox = lazy(() => import('./messages/page'));
@@ -126,8 +126,8 @@ const Page = () => {
                     </div>
                   )}
                 </div>
-                <Popover>
-                  <PopoverTrigger asChild>
+                <DropdownMenu>
+                  <DropdownMenuTrigger asChild>
                     <Button
                       variant='ghost'
                       className='p-0'
@@ -135,19 +135,18 @@ const Page = () => {
                     >
                       <MoreVertical className='w-4 h-4' />
                     </Button>
-                  </PopoverTrigger>
-                  <PopoverContent>
-                    <Button
-                      variant='ghost'
-                      size='sm'
-                      onClick={() =>
-                        toggleArchiveConversation(conversation.user2, conversation.isArchived)
-                      }
+                  </DropdownMenuTrigger>
+                  <DropdownMenuContent className="w-40">
+                  <DropdownMenuLabel className='text-xs'>Actions</DropdownMenuLabel>
+                  <DropdownMenuSeparator />
+                    <DropdownMenuItem
+                    className='text-xs'
+                      onClick={() => toggleArchiveConversation(conversation.user2, conversation.isArchived)}
                     >
                       {conversation.isArchived ? 'Unarchive Conversation' : 'Archive Conversation'}
-                    </Button>
-                  </PopoverContent>
-                </Popover>
+                    </DropdownMenuItem>
+                  </DropdownMenuContent>
+                </DropdownMenu>
               </div>
               <small className='text-sm truncate block'>
                 {conversation.last_message}
@@ -175,35 +174,16 @@ const Page = () => {
 
           {/* Combobox for Archived Conversations */}
           <div className='relative flex justify-between'>
-            <Popover open={open} onOpenChange={setOpen}>
-              <PopoverTrigger asChild>
-                <Button
-                  variant='outline'
-                  role='combobox'
-                  aria-expanded={open}
-                  className='w-full justify-between mb-4'
-                >
-                  {showArchived ? 'Archived Conversations' : 'Current Conversations'}
-                  <ChevronsUpDown className='opacity-50' />
-                </Button>
-              </PopoverTrigger>
-              <PopoverContent
-                className='absolute right-0 top-full mt-2 w-auto min-w-[200px] max-w-full rounded-md shadow-md p-0'
-              >
-                <Command>
-                  <CommandList>
-                    <CommandItem
-                      onSelect={() => {
-                        setShowArchived(!showArchived);
-                        setOpen(false);
-                      }}
-                    >
-                      {showArchived ? 'Current' : 'Archived'} Conversations
-                    </CommandItem>
-                  </CommandList>
-                </Command>
-              </PopoverContent>
-            </Popover>
+            <Button
+              variant='outline'
+              role='combobox'
+              aria-expanded={open}
+              className='w-full justify-between mb-4'
+              onClick={() => setShowArchived(!showArchived)}
+            >
+              {showArchived ? 'Archived Conversations' : 'Current Conversations'}
+              <ChevronsUpDown className='opacity-50' />
+            </Button>
             <div className='relative group'>
               <Button
                 className='ml-2'
