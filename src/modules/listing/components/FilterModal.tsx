@@ -11,8 +11,8 @@ import {
 import { Button } from '@/components/ui/button';
 import { Label } from '@/components/ui/label';
 import { ToggleGroup, ToggleGroupItem } from '@/components/ui/toggle-group';
-import { Map, MinusCircle, PlusCircle, Search, SearchIcon } from 'lucide-react';
-import { useState, useContext } from 'react';
+import { Map, MinusCircle, PlusCircle, SearchIcon } from 'lucide-react';
+import { useState } from 'react';
 import { Input } from '@/components/ui/input';
 import { ScrollArea } from '@/components/ui/scroll-area';
 import {
@@ -20,15 +20,14 @@ import {
 	GoogleMap,
 	Marker,
 	MarkerClusterer,
-	StandaloneSearchBox
+	StandaloneSearchBox,
 } from '@react-google-maps/api';
 import { Slider as RadiusSlider } from '@/components/ui/slider';
 import { Card, CardContent } from '@/components/ui/card';
 import { Slider as PriceSlider } from '@nextui-org/slider';
 import { MdOutlineMyLocation } from 'react-icons/md';
-import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
+import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group';
 import { toast } from 'sonner';
-import { useMapsLibrary } from '@vis.gl/react-google-maps';
 
 const householdPrivacyTypes = [
 	{ value: 'Private Room', label: 'Private Room' },
@@ -57,7 +56,6 @@ const reviewScore = [
 	{ value: 6, label: 'Pleasant: 6+' },
 ];
 
-
 export default function FilterModal({
 	householdAmenities = [],
 	selectedFilter,
@@ -84,8 +82,6 @@ export default function FilterModal({
 	setSelectedLocation,
 	position,
 	setPosition,
-	deviceLocation,
-	setDeviceLocation,
 	radius,
 	setRadius,
 }) {
@@ -94,30 +90,38 @@ export default function FilterModal({
 	const increment = (value, setter) => setter(value + 1);
 	const decrement = (value, setter) => setter(value > 0 ? value - 1 : 0);
 
-
 	// Map and Location Filter
 	const [mapKey, setMapKey] = useState(0);
 	const [selectedListing, setSelectedListing] = useState(null);
 	const [searchTerm, setSearchTerm] = useState<any>(null);
 	const [mapRadius, setMapRadius] = useState([250]);
-	const mapRef = useRef(null); 
+	const mapRef = useRef(null);
 	const [circleLoc, setCircleLoc] = useState({
 		lat: 0.2342,
-		lng: 0.2342
-	}); 
+		lng: 0.2342,
+	});
 	const autocompleteRef = useRef<google.maps.places.Autocomplete | null>(null);
 
 	//Filters
-	const [popUpAmenities, setPopUpAmenities] = useState(JSON.parse(JSON.stringify(selectedFilter)));
-	const [popUpPrivacyType, setPopUpPrivacyType] = useState(JSON.parse(JSON.stringify(selectedPrivacyType)));
-	const [popUpStructure, setPopUpStructure] = useState(JSON.parse(JSON.stringify(selectedStructure)));
+	const [popUpAmenities, setPopUpAmenities] = useState(
+		JSON.parse(JSON.stringify(selectedFilter))
+	);
+	const [popUpPrivacyType, setPopUpPrivacyType] = useState(
+		JSON.parse(JSON.stringify(selectedPrivacyType))
+	);
+	const [popUpStructure, setPopUpStructure] = useState(
+		JSON.parse(JSON.stringify(selectedStructure))
+	);
 	const [popUpMinPrice, setPopUpMinPrice] = useState(minPrice);
 	const [popUpMaxPrice, setPopUpMaxPrice] = useState(maxPrice);
 	const [popUpRooms, setPopUpRooms] = useState(rooms);
 	const [popUpBeds, setPopUpBeds] = useState(beds);
-	const [popUpStarFilter, setPopUpStarFilter] = useState<any>(JSON.parse(JSON.stringify(starFilter)));
-	const [popUpScoreFilter, setPopUpScoreFilter] = useState<any>(JSON.parse(JSON.stringify(scoreFilter)));
-	
+	const [popUpStarFilter, setPopUpStarFilter] = useState<any>(
+		JSON.parse(JSON.stringify(starFilter))
+	);
+	const [popUpScoreFilter, setPopUpScoreFilter] = useState<any>(
+		JSON.parse(JSON.stringify(scoreFilter))
+	);
 
 	const defaultOptions = {
 		strokeOpacity: 0.5,
@@ -136,7 +140,6 @@ export default function FilterModal({
 		fillColor: '#4567b7',
 	};
 
-
 	useEffect(() => {
 		setPopUpAmenities(JSON.parse(JSON.stringify(selectedFilter)));
 		setPopUpPrivacyType(JSON.parse(JSON.stringify(selectedPrivacyType)));
@@ -149,29 +152,25 @@ export default function FilterModal({
 		setPopUpScoreFilter(JSON.parse(JSON.stringify(scoreFilter)));
 	}, [isOpen]);
 
-	
-	
-
 	const handlePlaceSelection = () => {
 		const place = autocompleteRef.current?.getPlaces()?.[0];
 		if (place) {
-		  setSearchTerm(place.formatted_address || '');
-		  const location = {
-			lat: place.geometry?.location?.lat() || 0,
-			lng: place.geometry?.location?.lng() || 0,
-		  };
-		  setSelectedLocation(location);
-		  setPosition(location);
-		  setCircleLoc(location);
-		  setMapKey((prevKey) => prevKey + 1);
+			setSearchTerm(place.formatted_address || '');
+			const location = {
+				lat: place.geometry?.location?.lat() || 0,
+				lng: place.geometry?.location?.lng() || 0,
+			};
+			setSelectedLocation(location);
+			setPosition(location);
+			setCircleLoc(location);
+			setMapKey((prevKey) => prevKey + 1);
 		}
-	  };
-	
+	};
 
 	const handleCurrentLocationClick = () => {
 		if (navigator.geolocation) {
 			navigator.geolocation.getCurrentPosition((position) => {
-				if ( position.coords.accuracy > 100) {
+				if (position.coords.accuracy > 100) {
 					toast.error(
 						'Location accuracy is too low. Manually search location or use a mobile device instead.'
 					);
@@ -193,12 +192,11 @@ export default function FilterModal({
 
 	const handleMapClick = async (event) => {
 		if (event.latLng) {
-		  const { lat, lng } = event.latLng.toJSON();
-		  setSelectedLocation({ lat, lng });
-		  setCircleLoc({ lat, lng });
+			const { lat, lng } = event.latLng.toJSON();
+			setSelectedLocation({ lat, lng });
+			setCircleLoc({ lat, lng });
 		}
-	  };
-
+	};
 
 	const handleMarkerClick = (listing) => {
 		setSelectedListing(listing);
@@ -206,7 +204,7 @@ export default function FilterModal({
 
 	//RADIUS BUG: NOT INSTANTLY UPDATING WHEN CHANGING VALUE
 	const handleRadiusCommit = (value) => {
-		setDistanceFilter(null)
+		setDistanceFilter(null);
 		setRadius(value);
 		setMapKey((prevKey) => prevKey + 1);
 	};
@@ -218,7 +216,7 @@ export default function FilterModal({
 		setMinPrice(popUpMinPrice);
 		setMaxPrice(popUpMaxPrice);
 		setRooms(popUpRooms);
-		setBeds(popUpBeds);	
+		setBeds(popUpBeds);
 		setStarFilter(popUpStarFilter);
 		setScoreFilter(popUpScoreFilter);
 
@@ -253,7 +251,7 @@ export default function FilterModal({
 				</Button>
 			</DialogTrigger>
 
-			<DialogContent className='max-w-[90%] xs:h-[450px] md:h-[500px] lg:h-[710px] bg-white dark:bg-secondary rounded-lg shadow-lg'>
+			<DialogContent className='max-w-[90%] xs:h-[450px] md:h-[500px] lg:h-[80%] bg-white dark:bg-secondary rounded-lg shadow-lg'>
 				<DialogHeader className=''>
 					<DialogTitle>Filter</DialogTitle>
 					<DialogDescription className='border-b border-gray-300 dark:text-gray-200 pb-2'>
@@ -299,35 +297,34 @@ export default function FilterModal({
 								onClick={handleMapClick}
 								center={position}
 								zoom={15}
-								mapContainerClassName="w-full h-[300px] lg:h-full min-h-[340px]"
+								mapContainerClassName='w-full h-[300px] lg:h-full min-h-[340px]'
 								options={{ disableDefaultUI: true }}
-								>
+							>
 								{selectedLocation && (
 									<>
-									<Marker position={selectedLocation} />
-									
+										<Marker position={selectedLocation} />
 									</>
 								)}
 								<Circle
-										options={closeOptions}
-										center={circleLoc}
-										radius={mapRadius[0]}
+									options={closeOptions}
+									center={circleLoc}
+									radius={mapRadius[0]}
 								/>
 								<MarkerClusterer>
 									{(clusterer) => (
-									<>
-										{listings.map((listing) => (
-										<Marker
-											key={listing.id}
-											position={{
-											lat: listing.latitude,
-											lng: listing.longitude,
-											}}
-											clusterer={clusterer}
-											onClick={() => handleMarkerClick(listing)}
-										/>
-										))}
-									</>
+										<>
+											{listings.map((listing) => (
+												<Marker
+													key={listing.id}
+													position={{
+														lat: listing.latitude,
+														lng: listing.longitude,
+													}}
+													clusterer={clusterer}
+													onClick={() => handleMarkerClick(listing)}
+												/>
+											))}
+										</>
 									)}
 								</MarkerClusterer>
 							</GoogleMap>
@@ -377,15 +374,10 @@ export default function FilterModal({
 											onClick={() => {
 												if (popUpStructure.includes(type.value)) {
 													setPopUpStructure(
-														popUpStructure.filter(
-															(item) => item !== type.value
-														)
+														popUpStructure.filter((item) => item !== type.value)
 													);
 												} else {
-													setPopUpStructure([
-														...popUpStructure,
-														type.value,
-													]);
+													setPopUpStructure([...popUpStructure, type.value]);
 												}
 											}}
 											style={{
@@ -439,9 +431,7 @@ export default function FilterModal({
 												}
 											}}
 											style={{
-												backgroundColor: popUpPrivacyType.includes(
-													type.value
-												)
+												backgroundColor: popUpPrivacyType.includes(type.value)
 													? 'rgb(15, 72, 159)'
 													: 'white',
 												color: popUpPrivacyType.includes(type.value)
@@ -487,7 +477,9 @@ export default function FilterModal({
 												type='number'
 												className='w-[100px] border border-gray-300 p-1 h-7 pl-4 rounded-full justify-center text-center text-xs mb-2'
 												value={popUpMinPrice}
-												onChange={(e) => setPopUpMinPrice(Number(e.target.value))}
+												onChange={(e) =>
+													setPopUpMinPrice(Number(e.target.value))
+												}
 											/>
 										</div>
 									</div>
@@ -505,7 +497,9 @@ export default function FilterModal({
 												type='number'
 												className='w-[100px] border border-gray-300 p-1 h-7 pl-4 rounded-full justify-center text-center text-xs mb-2'
 												value={popUpMaxPrice}
-												onChange={(e) => setPopUpMaxPrice(Number(e.target.value))}
+												onChange={(e) =>
+													setPopUpMaxPrice(Number(e.target.value))
+												}
 											/>
 										</div>
 									</div>
@@ -626,15 +620,24 @@ export default function FilterModal({
 									</Label>
 
 									<div className='space-y-2 mt-2'>
-										<RadioGroup onValueChange={setPopUpStarFilter} value={popUpStarFilter}>
+										<RadioGroup
+											onValueChange={setPopUpStarFilter}
+											value={popUpStarFilter}
+										>
 											{propertyRating.map((item) => (
-												<div key={item.value} className="flex items-center space-x-2">
-													<RadioGroupItem 
-														value={item.value} 
-														id={item.label} 
+												<div
+													key={item.value}
+													className='flex items-center space-x-2'
+												>
+													<RadioGroupItem
+														value={item.value}
+														id={item.label}
 														checked={popUpStarFilter === item.value}
-														/>
-													<Label htmlFor={item.label} className="text-sm font-normal">
+													/>
+													<Label
+														htmlFor={item.label}
+														className='text-sm font-normal'
+													>
 														{item.label}
 													</Label>
 												</div>
@@ -649,15 +652,24 @@ export default function FilterModal({
 									</Label>
 
 									<div className='space-y-2 mt-2'>
-										<RadioGroup onValueChange={setPopUpScoreFilter} value={popUpScoreFilter}>
+										<RadioGroup
+											onValueChange={setPopUpScoreFilter}
+											value={popUpScoreFilter}
+										>
 											{reviewScore.map((item) => (
-												<div key={item.value} className="flex items-center space-x-2">
-													<RadioGroupItem 
-														value={item.value} 
+												<div
+													key={item.value}
+													className='flex items-center space-x-2'
+												>
+													<RadioGroupItem
+														value={item.value}
 														id={item.label}
 														checked={popUpScoreFilter === item.value}
-														/>
-													<Label htmlFor={item.label} className="text-sm font-normal">
+													/>
+													<Label
+														htmlFor={item.label}
+														className='text-sm font-normal'
+													>
 														{item.label}
 													</Label>
 												</div>
@@ -691,4 +703,3 @@ export default function FilterModal({
 		</Dialog>
 	);
 }
-

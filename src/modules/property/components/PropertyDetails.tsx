@@ -1,6 +1,7 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import { Check } from 'lucide-react';
 import React, { useEffect, useRef, useState } from 'react';
-import { Shield, Building, Bed, UserIcon, House } from 'lucide-react';
+import { Building, UserIcon, House } from 'lucide-react';
 import {
 	Card,
 	CardContent,
@@ -119,7 +120,7 @@ const PropertyDetails: React.FC<PropertyDetailsProps> = ({
 						<div className='flex items-center justify-between'>
 							<div className='flex items-center'>
 								<House className='w-6 h-6 text-gray-700 dark:text-neutral-300 mr-2' />
-								<h5 className='text-md font-semibold'>Current Units</h5>
+								<h5 className='text-md font-semibold'>Number of Units</h5>
 							</div>
 							<p className='text-gray-700 dark:text-neutral-300'>{unitCount}</p>
 						</div>

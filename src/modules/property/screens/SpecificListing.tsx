@@ -1,24 +1,17 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 'use client';
 import React, { useState, useEffect, useMemo } from 'react';
-import ResponsiveLayout from '@/components/ResponsiveLayout';
 import {
-	ArrowUpRight,
 	Axis3D,
 	Bed,
 	Check,
 	Glasses,
 	MapPin,
-	User,
 	User2,
-	UserCheck,
 	UserCheck2,
 	Users2,
 	House,
 	Shield,
-	Pin,
-	ArrowUp,
-	ArrowUpToLine,
-	ChevronUpCircle,
 } from 'lucide-react';
 import BusinessReviews from '../components/BusinessReviews';
 import MainPreview from '../components/MainPreview';
@@ -28,10 +21,7 @@ import {
 	ChevronDoubleUpIcon,
 	HeartIcon as HeartOutline,
 } from '@heroicons/react/24/outline';
-import {
-	ChevronDoubleRightIcon,
-	HeartIcon as HeartSolid,
-} from '@heroicons/react/24/solid';
+import { HeartIcon as HeartSolid } from '@heroicons/react/24/solid';
 import {
 	Card,
 	CardDescription,
@@ -50,12 +40,7 @@ import {
 	fetchPropertyUnits,
 } from '@/actions/listings/specific-listing';
 import ErrorPage from '@/components/ui/ErrorPage';
-import {
-	Marker,
-	GoogleMap,
-	DirectionsService,
-	DirectionsRenderer,
-} from '@react-google-maps/api';
+import { Marker, GoogleMap, DirectionsRenderer } from '@react-google-maps/api';
 import {
 	Tooltip,
 	TooltipContent,
@@ -67,14 +52,12 @@ import { toast } from 'sonner';
 import { Button } from '@/components/ui/button';
 import { BreadcrumbSection } from '@/components/breadcrumb/BreadrumbSection';
 import SpecificListingTabs from '../components/SpecificListingTabs';
-import RightReviews from '../components/SideReviews';
 import SideReviews from '../components/SideReviews';
 import SideMap from '../components/SideMap';
 import UnitGalleryModal from '../components/UnitGalleryModal';
 import { Dialog, DialogContent } from '@/components/ui/dialog';
 import { BookingCardModal } from '../components/BookingCardModal';
 import { useSearchParams } from 'next/navigation';
-import { useRouter } from 'next/router';
 import { fetchLandmarks } from '@/actions/landmarks/landmark';
 
 interface SpecificListingProps {
@@ -117,6 +100,7 @@ export function SpecificListing({ id }: SpecificListingProps) {
 	const [unitCount, setUnitCount] = useState(0);
 	const [totalOccupants, setTotalOccupants] = useState(0);
 	const [landmarks, setLandmarks] = useState([]);
+	const [availableSpots, setAvailableSpots] = useState<number | null>(null);
 
 	//Parameter Filters
 	const searchParams = useSearchParams();
@@ -148,9 +132,7 @@ export function SpecificListing({ id }: SpecificListingProps) {
 				const fetchedUserId = await fetchUser();
 				setUserId(fetchedUserId);
 
-				
 				setIsFavourite(await fetchFavorite(userId, id));
-
 
 				const { property } = await fetchProperty(id, fetchedUserId);
 				if (!property) {
@@ -182,64 +164,67 @@ export function SpecificListing({ id }: SpecificListingProps) {
 			}
 		};
 		loadUserAndProperty();
-		
 	}, [id, isFavourite]);
 
 	const sortedUnits = useMemo(() => {
 		if (!Array.isArray(units) || units.length === 0) {
 			return [];
 		}
-	  
-		return [...units].sort((a, b) => {
-		  let scoreA = 0;
-		  let scoreB = 0;
-	  
-		  // Price range scoring (Highest priority)
-		  if (minPrice && maxPrice) {
-			const minP = parseInt(minPrice as string);
-			const maxP = parseInt(maxPrice as string);
-			const aDistance = Math.min(Math.abs(a.price - minP), Math.abs(a.price - maxP));
-			const bDistance = Math.min(Math.abs(b.price - minP), Math.abs(b.price - maxP));
-			if (aDistance < bDistance) scoreA += 100;
-			if (bDistance < aDistance) scoreB += 100;
-		  }
-	  
-		  // Rooms and beds scoring (Second priority)
-		  if (room) {
-			const targetRoom = parseInt(room as string);
-			if (a.bedrooms === targetRoom) scoreA += 50;
-			if (b.bedrooms === targetRoom) scoreB += 50;
-		  }
-	  
-		  if (bed) {
-			const targetBed = parseInt(bed as string);
-			if (a.beds === targetBed) scoreA += 50;
-			if (b.beds === targetBed) scoreB += 50;
-		  }
-	  
-		  // Amenity matching score (Third priority)
-		  if (amenities && Array.isArray(amenities)) {
-			const aAmenities = new Set(a.amenities);
-			const bAmenities = new Set(b.amenities);
-			const aMatches = amenities.filter((am) => aAmenities.has(am)).length;
-			const bMatches = amenities.filter((am) => bAmenities.has(am)).length;
-	  
-			scoreA += aMatches * 10; // Weight for each matching amenity
-			scoreB += bMatches * 10;
-		  }
-	  
-		  // Privacy type scoring (Lowest priority)
-		  if (privacy) {
-			if (a.privacy_type === privacy) scoreA += 5;
-			if (b.privacy_type === privacy) scoreB += 5;
-		  }
-	  
-		  // Sort by descending score
-		  return scoreB - scoreA;
-		});
-	  }, [units]);
-	  
 
+		return [...units].sort((a, b) => {
+			let scoreA = 0;
+			let scoreB = 0;
+
+			// Price range scoring (Highest priority)
+			if (minPrice && maxPrice) {
+				const minP = parseInt(minPrice as string);
+				const maxP = parseInt(maxPrice as string);
+				const aDistance = Math.min(
+					Math.abs(a.price - minP),
+					Math.abs(a.price - maxP)
+				);
+				const bDistance = Math.min(
+					Math.abs(b.price - minP),
+					Math.abs(b.price - maxP)
+				);
+				if (aDistance < bDistance) scoreA += 100;
+				if (bDistance < aDistance) scoreB += 100;
+			}
+
+			// Rooms and beds scoring (Second priority)
+			if (room) {
+				const targetRoom = parseInt(room as string);
+				if (a.bedrooms === targetRoom) scoreA += 50;
+				if (b.bedrooms === targetRoom) scoreB += 50;
+			}
+
+			if (bed) {
+				const targetBed = parseInt(bed as string);
+				if (a.beds === targetBed) scoreA += 50;
+				if (b.beds === targetBed) scoreB += 50;
+			}
+
+			// Amenity matching score (Third priority)
+			if (amenities && Array.isArray(amenities)) {
+				const aAmenities = new Set(a.amenities);
+				const bAmenities = new Set(b.amenities);
+				const aMatches = amenities.filter((am) => aAmenities.has(am)).length;
+				const bMatches = amenities.filter((am) => bAmenities.has(am)).length;
+
+				scoreA += aMatches * 10; // Weight for each matching amenity
+				scoreB += bMatches * 10;
+			}
+
+			// Privacy type scoring (Lowest priority)
+			if (privacy) {
+				if (a.privacy_type === privacy) scoreA += 5;
+				if (b.privacy_type === privacy) scoreB += 5;
+			}
+
+			// Sort by descending score
+			return scoreB - scoreA;
+		});
+	}, [units]);
 
 	const handleToggleFavourite = async () => {
 		if (!userId) {
@@ -309,9 +294,10 @@ export function SpecificListing({ id }: SpecificListingProps) {
 		);
 	};
 
-	const handleOpenBookingModal = (unit_id: number) => {
+	const handleOpenBookingModal = (unit_id: number, availableSpots: number) => {
 		setIsBookingModalOpen(true);
 		setSelectedUnit(unit_id);
+		setAvailableSpots(availableSpots);
 	};
 
 	const handleCloseBookingModal = () => {
@@ -361,30 +347,12 @@ export function SpecificListing({ id }: SpecificListingProps) {
 	}
 	if (!property) return <div>No property found.</div>;
 
-	const {
-		title,
-		price,
-		address,
-		thumbnail_url,
-		privacy_type,
-		structure,
-		description,
-		company_id,
-		company: {
-			logo,
-			about,
-			owner_id,
-			company_name,
-			account: { firstname, lastname, profile_url },
-		},
-	} = property;
+	const { title, address, structure, description } = property;
 
 	return (
 		<div className='px-32 md:px-24 sm:px-20 xs:px-10'>
 			{/* paki fix breadcrumbs */}
-			<BreadcrumbSection 
-				propertyName={title}
-			/>
+			<BreadcrumbSection propertyName={title} />
 			<div className='flex justify-between items-center mt-4'>
 				<div>
 					<h1 className='font-semibold text-3xl dark:text-white'>{title}</h1>
@@ -485,7 +453,7 @@ export function SpecificListing({ id }: SpecificListingProps) {
 
 				<div className='flex flex-col gap-4 overflow-x-auto'>
 					{/* MAP UNITS HERE */}
-					{sortedUnits.map((unit, index) => (
+					{sortedUnits.map((unit) => (
 						<Card
 							key={unit.id}
 							className='bg-white overflow-x-auto min-w-auto dark:bg-secondary border border-gray-300 shadow-md
@@ -524,15 +492,23 @@ export function SpecificListing({ id }: SpecificListingProps) {
 													</div>
 													<div className='flex items-center'>
 														<House className='mr-2' size={16} />
-														<span>{unit.bedrooms} rooms</span>
+														<span>
+															{unit.bedrooms}{' '}
+															{unit.bedrooms === 1 ? 'room' : 'rooms'}
+														</span>
 													</div>
 													<div className='flex items-center'>
 														<Bed className='mr-2' size={16} />
-														<span>{unit.beds} beds</span>
+														<span>
+															{unit.beds} {unit.beds === 1 ? 'bed' : 'beds'}
+														</span>
 													</div>
 													<div className='flex items-center'>
 														<Users2 className='mr-2' size={16} />
-														<span>For: {unit.occupants} guests</span>
+														<span>
+															For: {unit.occupants}{' '}
+															{unit.occupants === 1 ? 'guest' : 'guests'}
+														</span>
 													</div>
 													<div className='flex items-center'>
 														<Axis3D className='mr-2' size={16} />
@@ -596,9 +572,15 @@ export function SpecificListing({ id }: SpecificListingProps) {
 															</TooltipTrigger>
 															<TooltipContent>
 																<p>
-																	{unit.current_occupants} occupants —{' '}
-																	{unit.occupants - unit.current_occupants}{' '}
-																	spots available
+																	{unit.current_occupants} occupant
+																	{unit.current_occupants !== 1
+																		? 's'
+																		: ''} —{' '}
+																	{unit.occupants - unit.current_occupants} spot
+																	{unit.occupants - unit.current_occupants !== 1
+																		? 's'
+																		: ''}{' '}
+																	available
 																</p>
 															</TooltipContent>
 														</Tooltip>
@@ -612,7 +594,12 @@ export function SpecificListing({ id }: SpecificListingProps) {
 												<td className='py-2 border-r border-gray-300 text-center dark:text-gray-200 px-4'>
 													<Button
 														className='text-white px-4 py-2 rounded'
-														onClick={() => handleOpenBookingModal(unit.id)}
+														onClick={() =>
+															handleOpenBookingModal(
+																unit.id,
+																unit.occupants - unit.current_occupants
+															)
+														}
 													>
 														Book Now
 													</Button>
@@ -637,6 +624,7 @@ export function SpecificListing({ id }: SpecificListingProps) {
 				isOpen={isBookingModalOpen}
 				onClose={handleCloseBookingModal}
 				unitID={selectedUnit}
+				availableSpots={availableSpots}
 			/>
 
 			{/* REVIEWS */}
