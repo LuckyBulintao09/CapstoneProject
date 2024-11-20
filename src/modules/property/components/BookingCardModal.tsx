@@ -32,12 +32,14 @@ interface BookingCardProps {
   isOpen: boolean;
   onClose: () => void;
   unitID: number;
+  occupants: number;
 }
 
 export const BookingCardModal: React.FC<BookingCardProps> = ({
   isOpen,
   onClose,
   unitID,
+  occupants,
 }) => {
   const [date, setDate] = useState<Date | undefined>();
   const [isCalendarOpen, setIsCalendarOpen] = useState(false);
@@ -49,7 +51,6 @@ export const BookingCardModal: React.FC<BookingCardProps> = ({
   const [userId, setUserId] = useState<string | null>(null);
 
   const today = new Date();
-
   useEffect(() => {
     const initializeData = async () => {
       const fetchedUserId = await fetchUserData();
@@ -190,9 +191,15 @@ export const BookingCardModal: React.FC<BookingCardProps> = ({
                   id="guests"
                   type="number"
                   value={numGuests}
-                  onChange={(e) => setNumGuests(Number(e.target.value))}
+                  onChange={(e) => {
+                    const inputValue = Number(e.target.value);
+                    if (inputValue <= occupants) {
+                      setNumGuests(inputValue);
+                    }
+                  }}
                   className="border-gray-400 mt-3"
                   min={1}
+                  max={occupants}
                 />
               </div>
 
