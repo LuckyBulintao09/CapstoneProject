@@ -84,6 +84,7 @@ export default function FilterModal({
 	setPosition,
 	radius,
 	setRadius,
+	setDeviceLocation
 }) {
 	const [isOpen, setIsOpen] = useState(false);
 
@@ -150,6 +151,11 @@ export default function FilterModal({
 		setPopUpBeds(beds);
 		setPopUpStarFilter(JSON.parse(JSON.stringify(starFilter)));
 		setPopUpScoreFilter(JSON.parse(JSON.stringify(scoreFilter)));
+
+		setCircleLoc({
+			lat: 0.2342,
+			lng: 0.2342,
+		})
 	}, [isOpen]);
 
 	const handlePlaceSelection = () => {
@@ -192,6 +198,7 @@ export default function FilterModal({
 
 	const handleMapClick = async (event) => {
 		if (event.latLng) {
+			setDeviceLocation(null)
 			const { lat, lng } = event.latLng.toJSON();
 			setSelectedLocation({ lat, lng });
 			setCircleLoc({ lat, lng });
@@ -242,7 +249,7 @@ export default function FilterModal({
 				<Button
 					variant='outline'
 					className='mb-2 px-4 py-2 rounded-lg transition-all'
-					onClick={() => setIsOpen(true)}
+					onClick={() => {setIsOpen(true)}}
 				>
 					<div className='flex items-center space-x-2'>
 						<Map className='w-4 h-auto ' />
@@ -267,11 +274,16 @@ export default function FilterModal({
 								<StandaloneSearchBox
 									onLoad={(box) => (autocompleteRef.current = box)}
 									onPlacesChanged={handlePlaceSelection}
+									options={{
+										bounds: new google.maps.LatLngBounds(
+											new google.maps.LatLng(16.374445, 120.592389),
+											new google.maps.LatLng(16.446445, 120.633389)
+										),
+									}}
 								>
 									<div className='relative flex lg:w-full shadow-lg'>
 										<SearchIcon className='absolute left-3 top-1/2 -translate-y-1/2 h-5 w-5 text-black dark:text-muted-foreground' />
 										<input
-											// ref={inputRef}
 											type='search'
 											name='search'
 											id='search'
@@ -302,7 +314,14 @@ export default function FilterModal({
 							>
 								{selectedLocation && (
 									<>
-										<Marker position={selectedLocation} />
+										<Marker 
+											position={selectedLocation} 
+											options={
+												{
+													icon: 'https://maps.google.com/mapfiles/ms/micons/blue-dot.png'
+												}
+											} 
+										/>
 									</>
 								)}
 								<Circle

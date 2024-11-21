@@ -103,6 +103,10 @@ export default function Listings() {
 	const [starFilter, setStarFilter] = useState<number>(null);
 	const [scoreFilter, setScoreFilter] = useState<number>(null)
 
+	const handleAutoComplete = async () => {
+		
+	};
+	
 	const handleDeviceLocation = async () => {
 		if (deviceLocation) {
 			setSelectedLocation(deviceLocation);
@@ -200,9 +204,31 @@ export default function Listings() {
 			<div className='grid grid-cols-1 gap-4 lg:grid-cols-4 md:grid-cols-3 sm:grid-cols-1'>
 				<div className=''>
 					<Card className='w-full bg-white dark:bg-secondary drop-shadow-md border border-gray-400'>
-						<CardHeader className='p-4 py-2'>
-							<CardTitle className='text-md'>Filter by:</CardTitle>
+						<CardHeader className="p-4 py-2 flex">
+							<div className='flex items-center justify-between space-x-2'>
+								<CardTitle className="text-md self-center">Filter by:</CardTitle>
+								<Button 
+									variant='outline'
+									className="text-sm h-8 rounded-md border border-gray-400 px-2 hover:bg-gray-100 dark:hover:bg-gray-600 dark:text-white dark:border-gray-600"
+									onClick={() => {
+										setSelectedFilter([]);
+										setSelectedStructure([]);
+										setSelectedPrivacyType([]);
+										setRooms(0);
+										setBeds(0);
+										setMinPrice(0);
+										setMaxPrice(30000);
+										setDistanceFilter(null);
+										setStarFilter(null);
+										setScoreFilter(null);
+										setMapKey((prevKey) => prevKey + 1);
+									}}
+								>
+									Clear Filters
+								</Button>
+							</div>
 						</CardHeader>
+
 
 						<CardContent className='border-t border-gray-200 px-4'>
 							<form className='mt-3'>
@@ -559,10 +585,9 @@ export default function Listings() {
 									setSelectedLocation={setSelectedLocation}
 									position={position}
 									setPosition={setPosition}
-									deviceLocation={deviceLocation}
-									setDeviceLocation={setDeviceLocation}
 									radius={radius}
 									setRadius={setRadius}
+									setDeviceLocation={setDeviceLocation}
 								/>
 							</div>
 						</div>
