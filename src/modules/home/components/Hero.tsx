@@ -4,8 +4,10 @@ import { Button } from '@/components/ui/button';
 import spiels from '@/lib/constants/spiels';
 import { TypewriterEffectSmooth } from '@/components/ui/typewriter-effect';
 import { Globe } from './Globe';
+import { useRouter } from 'next/navigation';
 
 const Hero = () => {
+	const router = useRouter();
 	const words = [
 		{
 			text: 'Welcome',
@@ -36,12 +38,23 @@ const Hero = () => {
 						{spiels.HERO_DESCRIPTION}
 					</p>
 					<div className='flex w-full flex-col justify-center gap-2 sm:flex-row lg:justify-start'>
-						<Button className='w-full sm:w-auto dark:text-foreground'>
+						<Button
+							className='w-full sm:w-auto dark:text-foreground'
+							onClick={() => {
+								router.push('client/listings')
+							}}
+						>
 							{spiels.BUTTON_EXPLORE_NOW}
 						</Button>
 						<Button
 							variant='outline'
 							className='w-full sm:w-auto dark:bg-accent-foreground dark:text-secondary hover:bg-accent'
+							onClick={() => {
+								const element = document.getElementById('features');
+								if (element) {
+									element.scrollIntoView({ behavior: 'smooth' });
+								}
+							}}
 						>
 							{spiels.BUTTON_LEARN_MORE}
 							<ArrowDownRight className='ml-2 size-4' />
