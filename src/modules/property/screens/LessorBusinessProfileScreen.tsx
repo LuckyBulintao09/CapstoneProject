@@ -13,7 +13,7 @@ const LessorBusinessProfileScreen = async ({
 }) => {
 	const data = await getSpecificCompany(companyId.params.id);
 	return (
-		<div className='h-full py-16 flex flex-col min-h-screen'>
+		<div className='h-full py-16 flex flex-col min-h-screen bg-background dark:bg-secondary'>
 			<div className='px-32 md:px-24 sm:px-20 xs:px-10'>
 				<div className=''>
 					<div className='dark:text-white' />

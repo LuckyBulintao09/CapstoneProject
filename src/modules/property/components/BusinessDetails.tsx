@@ -95,10 +95,10 @@ export function BusinessDetails({
 
 			{/* ABOUT SECTION */}
 			<TabsContent value='about'>
-				<Card className='dark:bg-transparent bg-transparent'>
+				<Card className='dark:bg-transparent bg-white border border-gray-300 shadow-md'>
 					<CardHeader>
 						<CardTitle>About {companyName}</CardTitle>
-						<CardDescription>
+						<CardDescription className='border-b border-gray-300 pb-3'>
 							On UniHomes since{' '}
 							{new Date(created_at).toLocaleDateString('en-US', {
 								year: 'numeric',
@@ -115,10 +115,12 @@ export function BusinessDetails({
 
 			{/* PROPERTIES SECTION */}
 			<TabsContent value='branchesAndRooms'>
-				<Card className='dark:bg-transparent bg-transparent'>
+				<Card className='dark:bg-transparent bg-white border border-gray-300 shadow-md'>
 					<CardHeader>
 						<CardTitle>Properties</CardTitle>
-						<CardDescription>Explore our different properties</CardDescription>
+						<CardDescription className='border-b border-gray-300 pb-3'>
+							Explore our different properties
+						</CardDescription>
 					</CardHeader>
 					<CardContent className='space-y-1'>
 						<ScrollArea className='h-[320px] w-full rounded-md'>
@@ -149,10 +151,12 @@ export function BusinessDetails({
 
 			{/* REVIEWS SECTION */}
 			<TabsContent value='reviews'>
-				<Card className='dark:bg-transparent bg-transparent'>
+				<Card className='dark:bg-transparent bg-white border border-gray-300 shadow-md'>
 					<CardHeader>
 						<CardTitle>Customer Reviews</CardTitle>
-						<CardDescription>Read what people have to say</CardDescription>
+						<CardDescription className='border-b border-gray-300 pb-3'>
+							Read what people have to say
+						</CardDescription>
 					</CardHeader>
 					<CardContent>
 						<ScrollArea className='h-[320px] w-full rounded-md pr-4'>
