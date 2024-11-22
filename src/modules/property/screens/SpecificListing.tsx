@@ -23,12 +23,12 @@ import {
 } from '@heroicons/react/24/outline';
 import { HeartIcon as HeartSolid } from '@heroicons/react/24/solid';
 import {
-  Card,
-  CardDescription,
-  CardHeader,
-  CardTitle,
-} from "@/components/ui/card";
-import { NavbarModalLogin } from "@/components/navbar/NavbarModalLogin";
+	Card,
+	CardDescription,
+	CardHeader,
+	CardTitle,
+} from '@/components/ui/card';
+import { NavbarModalLogin } from '@/components/navbar/NavbarModalLogin';
 import {
 	fetchUser,
 	fetchProperty,
@@ -61,16 +61,16 @@ import { useSearchParams } from 'next/navigation';
 import { fetchLandmarks } from '@/actions/landmarks/landmark';
 
 interface SpecificListingProps {
-  id: number;
+	id: number;
 }
 
 type SearchParams = {
-  amenities?: string | string[];
-  privacy?: string;
-  minPrice?: string;
-  maxPrice?: string;
-  room?: string;
-  bed?: string;
+	amenities?: string | string[];
+	privacy?: string;
+	minPrice?: string;
+	maxPrice?: string;
+	room?: string;
+	bed?: string;
 };
 
 export function SpecificListing({ id }: SpecificListingProps) {
@@ -101,63 +101,63 @@ export function SpecificListing({ id }: SpecificListingProps) {
 	const [totalOccupants, setTotalOccupants] = useState(0);
 	const [landmarks, setLandmarks] = useState([]);
 	const [availableSpots, setAvailableSpots] = useState<number | null>(null);
-  const [selectedUnitOccupants, setSelectedUnitOccupants] = useState<number>(0);
+	const [selectedUnitOccupants, setSelectedUnitOccupants] = useState<number>(0);
 
-  //Parameter Filters
-  const searchParams = useSearchParams();
+	//Parameter Filters
+	const searchParams = useSearchParams();
 
-  const getSearchParam = (
-    param: keyof SearchParams
-  ): string | string[] | null => {
-    if (param === "amenities") {
-      const amenities = searchParams.getAll("amenities");
-      return amenities.length > 0 ? amenities : null;
-    }
-    const value = searchParams.get(param);
-    return value ?? null;
-  };
+	const getSearchParam = (
+		param: keyof SearchParams
+	): string | string[] | null => {
+		if (param === 'amenities') {
+			const amenities = searchParams.getAll('amenities');
+			return amenities.length > 0 ? amenities : null;
+		}
+		const value = searchParams.get(param);
+		return value ?? null;
+	};
 
-  const amenities = getSearchParam("amenities");
-  const privacy = getSearchParam("privacy");
-  const minPrice = getSearchParam("minPrice");
-  const maxPrice = getSearchParam("maxPrice");
-  const room = getSearchParam("room");
-  const bed = getSearchParam("bed");
+	const amenities = getSearchParam('amenities');
+	const privacy = getSearchParam('privacy');
+	const minPrice = getSearchParam('minPrice');
+	const maxPrice = getSearchParam('maxPrice');
+	const room = getSearchParam('room');
+	const bed = getSearchParam('bed');
 
-  useEffect(() => {
-    const loadUserAndProperty = async () => {
-      try {
-        const fetchedLandmark = await fetchLandmarks();
-        setLandmarks(fetchedLandmark);
+	useEffect(() => {
+		const loadUserAndProperty = async () => {
+			try {
+				const fetchedLandmark = await fetchLandmarks();
+				setLandmarks(fetchedLandmark);
 
 				const fetchedUserId = await fetchUser();
 				setUserId(fetchedUserId);
 
 				setIsFavourite(await fetchFavorite(userId, id));
 
-        const { property } = await fetchProperty(id, fetchedUserId);
-        if (!property) {
-          setError(true);
-          setLoading(false);
-          return;
-        }
+				const { property } = await fetchProperty(id, fetchedUserId);
+				if (!property) {
+					setError(true);
+					setLoading(false);
+					return;
+				}
 
-        setProperty(property);
-        setPropertyReviews(await fetchPropertyReviews(id));
-        setCommonFacilities(await fetchPropertyFacilities(id));
-        setPosition({
-          lat: (await fetchPropertyLocation(id))[0].latitude,
-          lng: (await fetchPropertyLocation(id))[0].longitude,
-        });
-        const fetchedUnits = await fetchPropertyUnits(id);
-        setUnits(fetchedUnits);
-        setUnitCount(fetchedUnits.length || 0);
+				setProperty(property);
+				setPropertyReviews(await fetchPropertyReviews(id));
+				setCommonFacilities(await fetchPropertyFacilities(id));
+				setPosition({
+					lat: (await fetchPropertyLocation(id))[0].latitude,
+					lng: (await fetchPropertyLocation(id))[0].longitude,
+				});
+				const fetchedUnits = await fetchPropertyUnits(id);
+				setUnits(fetchedUnits);
+				setUnitCount(fetchedUnits.length || 0);
 
-        const occupantsCount = fetchedUnits.reduce(
-          (total, unit) => total + unit.current_occupants,
-          0
-        );
-        setTotalOccupants(occupantsCount);
+				const occupantsCount = fetchedUnits.reduce(
+					(total, unit) => total + unit.current_occupants,
+					0
+				);
+				setTotalOccupants(occupantsCount);
 
 				setLoading(false);
 			} catch (err) {
@@ -227,128 +227,128 @@ export function SpecificListing({ id }: SpecificListingProps) {
 		});
 	}, [units]);
 
-  const handleToggleFavourite = async () => {
-    if (!userId) {
-      setIsLoginModalOpen(true);
-      return;
-    }
+	const handleToggleFavourite = async () => {
+		if (!userId) {
+			setIsLoginModalOpen(true);
+			return;
+		}
 
-    const success = await toggleFavourite(isFavourite, userId, property?.id);
-    if (success) {
-      setIsFavourite(!isFavourite);
-    }
-  };
+		const success = await toggleFavourite(isFavourite, userId, property?.id);
+		if (success) {
+			setIsFavourite(!isFavourite);
+		}
+	};
 
-  const handleLoginSuccess = async () => {
-    setIsLoginModalOpen(false);
-    const fetchedUserId = await fetchUser();
-    setUserId(fetchedUserId);
-  };
+	const handleLoginSuccess = async () => {
+		setIsLoginModalOpen(false);
+		const fetchedUserId = await fetchUser();
+		setUserId(fetchedUserId);
+	};
 
-  useEffect(() => {
-    if (userPosition) {
-      fetchDirections();
-    }
-  }, [userPosition]);
+	useEffect(() => {
+		if (userPosition) {
+			fetchDirections();
+		}
+	}, [userPosition]);
 
-  const handleAddUserLocation = () => {
-    navigator.geolocation.getCurrentPosition(
-      (position) => {
-        if (position.coords.accuracy > 100) {
-          toast.error(
-            "Location accuracy is too low. Manually search location or use a mobile device instead."
-          );
-        } else {
-          setUserPosition({
-            lat: position.coords.latitude,
-            lng: position.coords.longitude,
-          });
-        }
-      },
-      (error) => {
-        console.error("Error fetching user location:", error);
-      }
-    );
-  };
+	const handleAddUserLocation = () => {
+		navigator.geolocation.getCurrentPosition(
+			(position) => {
+				if (position.coords.accuracy > 100) {
+					toast.error(
+						'Location accuracy is too low. Manually search location or use a mobile device instead.'
+					);
+				} else {
+					setUserPosition({
+						lat: position.coords.latitude,
+						lng: position.coords.longitude,
+					});
+				}
+			},
+			(error) => {
+				console.error('Error fetching user location:', error);
+			}
+		);
+	};
 
-  const fetchDirections = () => {
-    if (!userPosition) return;
+	const fetchDirections = () => {
+		if (!userPosition) return;
 
-    const directionsService = new google.maps.DirectionsService();
+		const directionsService = new google.maps.DirectionsService();
 
-    directionsService.route(
-      {
-        origin: userPosition,
-        destination: position,
-        travelMode: google.maps.TravelMode.WALKING,
-      },
-      (result, status) => {
-        if (
-          status === google.maps.DirectionsStatus.OK &&
-          result?.routes[0]?.legs[0]
-        ) {
-          setDirections(result);
-        } else {
-          console.error("Directions request failed:", status);
-        }
-      }
-    );
-  };
+		directionsService.route(
+			{
+				origin: userPosition,
+				destination: position,
+				travelMode: google.maps.TravelMode.WALKING,
+			},
+			(result, status) => {
+				if (
+					status === google.maps.DirectionsStatus.OK &&
+					result?.routes[0]?.legs[0]
+				) {
+					setDirections(result);
+				} else {
+					console.error('Directions request failed:', status);
+				}
+			}
+		);
+	};
 
-  const handleOpenBookingModal = (unit_id: number, availableSpots: number) => {
-    setIsBookingModalOpen(true);
-    setSelectedUnit(unit_id);
+	const handleOpenBookingModal = (unit_id: number, availableSpots: number) => {
+		setIsBookingModalOpen(true);
+		setSelectedUnit(unit_id);
 		setAvailableSpots(availableSpots);
-    // const unit = units.find((u) => u.id === unit_id);
-    // setSelectedUnitOccupants(unit ? unit.occupants : 0);
-  };
+		// const unit = units.find((u) => u.id === unit_id);
+		// setSelectedUnitOccupants(unit ? unit.occupants : 0);
+	};
 
-  const handleCloseBookingModal = () => {
-    setIsBookingModalOpen(false);
-    setSelectedUnit(null);
-  };
+	const handleCloseBookingModal = () => {
+		setIsBookingModalOpen(false);
+		setSelectedUnit(null);
+	};
 
-  const handleOpenUnitGallery = (unit_image: any) => {
-    setUnitImage(unit_image);
-    setIsUnitGalleryModalOpen(true);
-  };
+	const handleOpenUnitGallery = (unit_image: any) => {
+		setUnitImage(unit_image);
+		setIsUnitGalleryModalOpen(true);
+	};
 
-  const handleCloseUnitGallery = () => {
-    setUnitImage(null);
-    setIsUnitGalleryModalOpen(false);
-  };
-  const [showBackToTop, setShowBackToTop] = useState(false);
+	const handleCloseUnitGallery = () => {
+		setUnitImage(null);
+		setIsUnitGalleryModalOpen(false);
+	};
+	const [showBackToTop, setShowBackToTop] = useState(false);
 
-  // For back to top
-  useEffect(() => {
-    const handleScroll = () => {
-      if (window.scrollY > 100) {
-        setShowBackToTop(true);
-      } else {
-        setShowBackToTop(false);
-      }
-    };
+	// For back to top
+	useEffect(() => {
+		const handleScroll = () => {
+			if (window.scrollY > 100) {
+				setShowBackToTop(true);
+			} else {
+				setShowBackToTop(false);
+			}
+		};
 
-    window.addEventListener("scroll", handleScroll);
-    return () => {
-      window.removeEventListener("scroll", handleScroll);
-    };
-  }, []);
+		window.addEventListener('scroll', handleScroll);
+		return () => {
+			window.removeEventListener('scroll', handleScroll);
+		};
+	}, []);
 
-  const scrollToTop = () => {
-    window.scrollTo({ top: 0, behavior: "smooth" });
-  };
+	const scrollToTop = () => {
+		window.scrollTo({ top: 0, behavior: 'smooth' });
+	};
 
-  if (loading)
-    return (
-      <div>
-        <LoadingPage />
-      </div>
-    );
-  if (error) {
-    return <ErrorPage />;
-  }
-  if (!property) return <div>No property found.</div>;
+	if (loading)
+		return (
+			<div>
+				<LoadingPage />
+			</div>
+		);
+	if (error) {
+		return <ErrorPage />;
+	}
+	if (!property) return <div>No property found.</div>;
 
 	const { title, address, structure, description } = property;
 
@@ -393,66 +393,66 @@ export function SpecificListing({ id }: SpecificListingProps) {
 				</div>
 			</div>
 
-      <div className="grid grid-cols-5 gap-2 mt-4">
-        <MainPreview
-          propertyId={property.id}
-          propertyReviews={propertyReviews}
-        />
-      </div>
+			<div className='grid grid-cols-5 gap-2 mt-4'>
+				<MainPreview
+					propertyId={property.id}
+					propertyReviews={propertyReviews}
+				/>
+			</div>
 
-      <div className="rounded-lg">
-        <SpecificListingTabs />
-      </div>
+			<div className='rounded-lg'>
+				<SpecificListingTabs />
+			</div>
 
-      {/* OVERVIEW */}
-      <div
-        className="grid lg:grid-cols-3 grid-cols-1 lg:gap-4 md:gap-0"
-        id="overview"
-      >
-        <div className="col-span-2 space-y-5">
-          <PropertyDetails
-            structure={structure}
-            occupants={totalOccupants}
-            description={description}
-            facilities={commonFacilities}
-            address={address}
-            unitCount={unitCount}
-          />
-          <Banner
-            ownerName={property.company.account.firstname}
-            ownerLastname={property.company.account.lastname}
-            ownerId={property.company.owner_id}
-            companyId={property.company_id}
-            companyName={property.company.company_name}
-            propertyId={id}
-            profileUrl={property.company.account.profile_url}
-            session={userId}
-          />
-        </div>
+			{/* OVERVIEW */}
+			<div
+				className='grid lg:grid-cols-3 grid-cols-1 lg:gap-4 md:gap-0'
+				id='overview'
+			>
+				<div className='col-span-2 space-y-5'>
+					<PropertyDetails
+						structure={structure}
+						occupants={totalOccupants}
+						description={description}
+						facilities={commonFacilities}
+						address={address}
+						unitCount={unitCount}
+					/>
+					<Banner
+						ownerName={property.company.account.firstname}
+						ownerLastname={property.company.account.lastname}
+						ownerId={property.company.owner_id}
+						companyId={property.company_id}
+						companyName={property.company.company_name}
+						propertyId={id}
+						profileUrl={property.company.account.profile_url}
+						session={userId}
+					/>
+				</div>
 
-        <div className="col-span-1 lg:mt-0 md:mt-4 sticky top-20 h-[calc(100vh-90px)] overflow-y-auto">
-          <div>
-            <SideReviews
-              propertyId={property.id}
-              propertyReviews={propertyReviews}
-            />
-          </div>
-          <div className="mt-4">
-            <SideMap
-              propertyId={property.id}
-              propertyLoc={position}
-              propertyReviews={propertyReviews}
-              landmarks={landmarks}
-            />
-          </div>
-        </div>
-      </div>
+				<div className='col-span-1 lg:mt-0 md:mt-4 sticky top-20 h-[calc(100vh-90px)] overflow-y-auto'>
+					<div>
+						<SideReviews
+							propertyId={property.id}
+							propertyReviews={propertyReviews}
+						/>
+					</div>
+					<div className='mt-4'>
+						<SideMap
+							propertyId={property.id}
+							propertyLoc={position}
+							propertyReviews={propertyReviews}
+							landmarks={landmarks}
+						/>
+					</div>
+				</div>
+			</div>
 
-      {/* UNITS */}
-      <div className="flex flex-col border-t border-gray-300 py-8" id="rooms">
-        <h4 className="text-2xl font-semibold tracking-tight pb-4">
-          Available Units
-        </h4>
+			{/* UNITS */}
+			<div className='flex flex-col border-t border-gray-300 py-8' id='rooms'>
+				<h4 className='text-2xl font-semibold tracking-tight pb-4'>
+					Available Units
+				</h4>
 
 				<div className='flex flex-col gap-4 overflow-x-auto'>
 					{/* MAP UNITS HERE */}
@@ -465,13 +465,24 @@ export function SpecificListing({ id }: SpecificListingProps) {
 							<CardHeader>
 								<CardTitle className='text-lg'>
 									{/* Redirect to the modal for this specific unit */}
-									<Button
-										onClick={() => handleOpenUnitGallery(unit.unit_image)}
-										className='text-primary dark:text-blue-300 underline text-md font-semibold pl-0'
-										variant='link'
-									>
-										{unit.title}
-									</Button>
+									<TooltipProvider>
+										<Tooltip>
+											<TooltipTrigger asChild>
+												<Button
+													onClick={() => handleOpenUnitGallery(unit.unit_image)}
+													className='text-primary dark:text-blue-300 underline text-md font-semibold pl-0'
+													variant='link'
+												>
+													{unit.title}
+												</Button>
+											</TooltipTrigger>
+											<TooltipContent side='top'>
+												<p className='font-normal'>
+													Click to view the unit gallery
+												</p>
+											</TooltipContent>
+										</Tooltip>
+									</TooltipProvider>
 								</CardTitle>
 
 								<CardDescription className=''>
@@ -590,9 +601,9 @@ export function SpecificListing({ id }: SpecificListingProps) {
 													</TooltipProvider>
 												</td>
 
-                        <td className="px-4 py-2 border-r border-gray-300 text-center dark:text-gray-200">
-                          P{unit.price}/month
-                        </td>
+												<td className='px-4 py-2 border-r border-gray-300 text-center dark:text-gray-200'>
+													P{unit.price}/month
+												</td>
 
 												<td className='py-2 border-r border-gray-300 text-center dark:text-gray-200 px-4'>
 													<Button
@@ -617,11 +628,11 @@ export function SpecificListing({ id }: SpecificListingProps) {
 				</div>
 			</div>
 
-      <UnitGalleryModal
-        isOpen={isUnitGalleryModalOpen}
-        onClose={() => handleCloseUnitGallery()}
-        images={unitImage}
-      />
+			<UnitGalleryModal
+				isOpen={isUnitGalleryModalOpen}
+				onClose={() => handleCloseUnitGallery()}
+				images={unitImage}
+			/>
 
 			<BookingCardModal
 				isOpen={isBookingModalOpen}
@@ -630,86 +641,86 @@ export function SpecificListing({ id }: SpecificListingProps) {
 				availableSpots={availableSpots}
 			/>
 
-      {/* REVIEWS */}
-      <div
-        className="flex flex-col border-t border-gray-300 py-8 mr-4"
-        id="reviews"
-      >
-        <h4 className="text-2xl font-semibold tracking-tight pb-4">
-          Customer Reviews
-        </h4>
-        <BusinessReviews propertyId={id} propertyReviews={propertyReviews} />
-      </div>
+			{/* REVIEWS */}
+			<div
+				className='flex flex-col border-t border-gray-300 py-8 mr-4'
+				id='reviews'
+			>
+				<h4 className='text-2xl font-semibold tracking-tight pb-4'>
+					Customer Reviews
+				</h4>
+				<BusinessReviews propertyId={id} propertyReviews={propertyReviews} />
+			</div>
 
-      {/* LOCATION */}
-      <div
-        className="flex flex-col border-t border-gray-300 py-8 mr-4"
-        id="location"
-      >
-        <div className="flex items-center justify-between pb-4">
-          <h4 className="text-2xl font-semibold tracking-tight">Location</h4>
-          <Button
-            className="text-primary hover:bg-background dark:text-foreground dark:bg-primary border-primary gap-2 items-center justify-center"
-            variant="outline"
-            onClick={handleAddUserLocation}
-          >
-            <MapPin className="h-5 w-5" />
-            Show Direction
-          </Button>
-        </div>
-        <Card className="lg:h-[550px] xs:h-[365px] border-none">
-          <GoogleMap
-            mapContainerClassName="w-full h-full rounded-md"
-            zoom={14}
-            center={userPosition || position}
-          >
-            {userPosition && <Marker position={userPosition} />}
-            <Marker position={position} />
-            {directions && <DirectionsRenderer directions={directions} />}
-          </GoogleMap>
-        </Card>
-      </div>
+			{/* LOCATION */}
+			<div
+				className='flex flex-col border-t border-gray-300 py-8 mr-4'
+				id='location'
+			>
+				<div className='flex items-center justify-between pb-4'>
+					<h4 className='text-2xl font-semibold tracking-tight'>Location</h4>
+					<Button
+						className='text-primary hover:bg-background dark:text-foreground dark:bg-primary border-primary gap-2 items-center justify-center'
+						variant='outline'
+						onClick={handleAddUserLocation}
+					>
+						<MapPin className='h-5 w-5' />
+						Show Direction
+					</Button>
+				</div>
+				<Card className='lg:h-[550px] xs:h-[365px] border-none'>
+					<GoogleMap
+						mapContainerClassName='w-full h-full rounded-md'
+						zoom={14}
+						center={userPosition || position}
+					>
+						{userPosition && <Marker position={userPosition} />}
+						<Marker position={position} />
+						{directions && <DirectionsRenderer directions={directions} />}
+					</GoogleMap>
+				</Card>
+			</div>
 
-      {isLoginModalOpen && (
-        <NavbarModalLogin
-          isOpen={isLoginModalOpen}
-          onClose={() => setIsLoginModalOpen(false)}
-          openModal={() => setIsLoginModalOpen(true)}
-          onLoginSuccess={handleLoginSuccess}
-        />
-      )}
+			{isLoginModalOpen && (
+				<NavbarModalLogin
+					isOpen={isLoginModalOpen}
+					onClose={() => setIsLoginModalOpen(false)}
+					openModal={() => setIsLoginModalOpen(true)}
+					onLoginSuccess={handleLoginSuccess}
+				/>
+			)}
 
-      {selectedImage && (
-        <Dialog
-          open={Boolean(selectedImage)}
-          onOpenChange={() => setSelectedImage(null)}
-        >
-          <DialogContent className="p-0 max-w-6xl">
-            <img
-              src={selectedImage}
-              alt="Selected property"
-              className="w-full h-auto"
-            />
-          </DialogContent>
-        </Dialog>
-      )}
-      {showBackToTop && (
-        <TooltipProvider>
-          <Tooltip>
-            <TooltipTrigger asChild>
-              <button
-                onClick={scrollToTop}
-                className="fixed bottom-16 right-14 bg-primary text-white p-2 mb-10 rounded-full shadow-lg"
-              >
-                <ChevronDoubleUpIcon className="h-8 w-8" />
-              </button>
-            </TooltipTrigger>
-            <TooltipContent>
-              <p>Back to Top</p>
-            </TooltipContent>
-          </Tooltip>
-        </TooltipProvider>
-      )}
-    </div>
-  );
+			{selectedImage && (
+				<Dialog
+					open={Boolean(selectedImage)}
+					onOpenChange={() => setSelectedImage(null)}
+				>
+					<DialogContent className='p-0 max-w-6xl'>
+						<img
+							src={selectedImage}
+							alt='Selected property'
+							className='w-full h-auto'
+						/>
+					</DialogContent>
+				</Dialog>
+			)}
+			{showBackToTop && (
+				<TooltipProvider>
+					<Tooltip>
+						<TooltipTrigger asChild>
+							<button
+								onClick={scrollToTop}
+								className='fixed bottom-16 right-14 bg-primary text-white p-2 mb-10 rounded-full shadow-lg'
+							>
+								<ChevronDoubleUpIcon className='h-8 w-8' />
+							</button>
+						</TooltipTrigger>
+						<TooltipContent>
+							<p>Back to Top</p>
+						</TooltipContent>
+					</Tooltip>
+				</TooltipProvider>
+			)}
+		</div>
+	);
 }
