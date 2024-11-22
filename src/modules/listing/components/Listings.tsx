@@ -114,10 +114,8 @@ export default function Listings() {
 	const [starFilter, setStarFilter] = useState<number>(null);
 	const [scoreFilter, setScoreFilter] = useState<number>(null);
 
-	const handleAutoComplete = async () => {
-		
-	};
-	
+	const handleAutoComplete = async () => {};
+
 	const handleDeviceLocation = async () => {
 		if (deviceLocation) {
 			setSelectedLocation(deviceLocation);
@@ -213,31 +211,44 @@ export default function Listings() {
 				{/* LEFT COL */}
 				<div className='hidden lg:block md1:hidden'>
 					<Card className='w-full bg-white dark:bg-secondary drop-shadow-md border border-gray-400'>
-						<CardHeader className="p-4 py-2 flex">
+						<CardHeader className='p-4 py-2 flex'>
 							<div className='flex items-center justify-between space-x-2'>
-								<CardTitle className="text-md self-center">Filter by:</CardTitle>
-								<Button 
-									variant='outline'
-									className="text-sm h-8 rounded-md border border-gray-400 px-2 hover:bg-gray-100 dark:hover:bg-gray-600 dark:text-white dark:border-gray-600"
-									onClick={() => {
-										setSelectedFilter([]);
-										setSelectedStructure([]);
-										setSelectedPrivacyType([]);
-										setRooms(0);
-										setBeds(0);
-										setMinPrice(0);
-										setMaxPrice(30000);
-										setDistanceFilter(null);
-										setStarFilter(null);
-										setScoreFilter(null);
-										setMapKey((prevKey) => prevKey + 1);
-									}}
-								>
-									Clear Filters
-								</Button>
+								<CardTitle className='text-md self-center'>
+									Filter by:
+								</CardTitle>
+								{/* Show Clear Filters Button Only When Filters Are Active */}
+								{(selectedFilter.length > 0 ||
+									selectedStructure.length > 0 ||
+									selectedPrivacyType.length > 0 ||
+									rooms > 0 ||
+									beds > 0 ||
+									minPrice > 0 ||
+									maxPrice < 30000 ||
+									distanceFilter !== null ||
+									starFilter !== null ||
+									scoreFilter !== null) && (
+									<Button
+										variant='link'
+										className='text-sm h-5 hover:text-blue-500 dark:text-blue-300 dark:hover:text-blue-200 underline px-1'
+										onClick={() => {
+											setSelectedFilter([]);
+											setSelectedStructure([]);
+											setSelectedPrivacyType([]);
+											setRooms(0);
+											setBeds(0);
+											setMinPrice(0);
+											setMaxPrice(30000);
+											setDistanceFilter(null);
+											setStarFilter(null);
+											setScoreFilter(null);
+											setMapKey((prevKey) => prevKey + 1);
+										}}
+									>
+										Clear Filters
+									</Button>
+								)}
 							</div>
 						</CardHeader>
-
 
 						<CardContent className='border-t border-gray-200 px-4'>
 							<form className='mt-3'>
@@ -487,6 +498,7 @@ export default function Listings() {
 														value={item.value}
 														id={item.label}
 														checked={distanceFilter === item.value}
+														className='dark:border-blue-300'
 													/>
 													<Label
 														htmlFor={item.label}
@@ -520,6 +532,7 @@ export default function Listings() {
 														value={item.value}
 														id={item.label}
 														checked={starFilter === item.value}
+														className='dark:border-blue-300'
 													/>
 													<Label
 														htmlFor={item.label}
@@ -553,6 +566,7 @@ export default function Listings() {
 														value={item.value}
 														id={item.label}
 														checked={scoreFilter === item.value}
+														className='dark:border-blue-300'
 													/>
 													<Label
 														htmlFor={item.label}
@@ -573,7 +587,6 @@ export default function Listings() {
 				{/* RIGHT COL */}
 				<div className='lg:col-span-3 md1:col-span-3 md:col-span-3 sm:col-span-2 gap-4'>
 					{/* Upper Row: Buttons */}
-					{/* Upper Row: Buttons */}
 					<div className='row-span-1'>
 						<div className='flex justify-between items-center mb-4 flex-wrap gap-4'>
 							<p className='font-bold pl-2 text-xl'>
@@ -584,7 +597,7 @@ export default function Listings() {
 							<div className='hidden sm:flex items-center space-x-2'>
 								<Button
 									variant='outline'
-									className='mb-2'
+									className='mb-2 hover:bg-primary hover:text-white dark:hover:bg-border'
 									onClick={toggleSortOrder}
 								>
 									<div className='flex items-center space-x-2'>
@@ -597,7 +610,7 @@ export default function Listings() {
 								</Button>
 								<Button
 									variant='outline'
-									className='mb-2'
+									className='mb-2 hover:bg-primary hover:text-white dark:hover:bg-border'
 									onClick={() => setIsFilterOpen(true)}
 								>
 									<div className='flex items-center space-x-2'>
@@ -647,7 +660,7 @@ export default function Listings() {
 										<MoreVertical className='w-5 h-5 hover:text-primary' />
 									</DropdownMenuTrigger>
 
-									<DropdownMenuContent className='w-48 translate-x-[-32px] bg-white border-gray-300 shadow-lg'>
+									<DropdownMenuContent className='w-48 translate-x-[-32px] bg-white dark:bg-secondary border-gray-300 shadow-lg'>
 										{/* Sort by: Price */}
 										<DropdownMenuItem
 											onClick={toggleSortOrder}
@@ -673,7 +686,6 @@ export default function Listings() {
 									</DropdownMenuContent>
 								</DropdownMenu>
 
-								{/* The Modal itself */}
 								<FilterModal
 									isOpen={isFilterOpen}
 									setIsOpen={setIsFilterOpen}
