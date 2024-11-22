@@ -21,7 +21,7 @@ const Hero = () => {
 		},
 	];
 	return (
-		<section className='pl-32 pr-28 py-4 md:pr-8 sm:pr-28'>
+		<section className='lg:pl-32 lg:pr-26 md:pr-8 sm:pl-20 sm:pr-28 xs:pr-6 xs:pl-16'>
 			<div className='grid items-center gap-6 lg:grid-cols-9'>
 				<div className='col-span-4 flex flex-col items-center text-center lg:items-start lg:text-left '>
 					<Badge
@@ -41,7 +41,7 @@ const Hero = () => {
 						<Button
 							className='w-full sm:w-auto dark:text-foreground'
 							onClick={() => {
-								router.push('client/listings')
+								router.push('client/listings');
 							}}
 						>
 							{spiels.BUTTON_EXPLORE_NOW}
