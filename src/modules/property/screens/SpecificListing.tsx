@@ -352,7 +352,7 @@ export function SpecificListing({ id }: SpecificListingProps) {
 	const { title, address, structure, description } = property;
 
 	return (
-		<div className='px-32 md:px-24 sm:px-20 xs:px-10'>
+		<div className='px-32 md:px-24 sm:px-20 xs:px-10 dark:bg-secondary'>
 			{/* paki fix breadcrumbs */}
 			<BreadcrumbSection propertyName={title} />
 			<div className='flex justify-between items-center mt-4'>
@@ -448,7 +448,7 @@ export function SpecificListing({ id }: SpecificListingProps) {
 			</div>
 
 			{/* UNITS */}
-			<div className='flex flex-col border-t border-gray-300 py-8' id='rooms'>
+			<div className='flex flex-col border-t border-gray-300 py-8' id='units'>
 				<h4 className='text-2xl font-semibold tracking-tight pb-4'>
 					Available Units
 				</h4>
