@@ -212,7 +212,7 @@ function NavigationBar() {
 									<DropdownMenuContent
 										side='bottom'
 										align='end'
-										className='border-gray-200 border-1 w-full min-w-56 px-0 pt-3 bg-white z-[999] shadow-xl'
+										className='border-gray-200 border-1 w-full min-w-56 px-0 pt-3 bg-white dark:bg-secondary z-[999] shadow-xl'
 										forceMount
 									>
 										<DropdownMenuLabel className='font-normal'>

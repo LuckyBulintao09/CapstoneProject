@@ -98,10 +98,10 @@ export function NotificationPopover() {
 					)}
 				</div>
 			</PopoverTrigger>
-			<PopoverContent className='bg-white border border-gray-200 rounded-lg shadow-lg w-[300px] md:w-[400px] lg:w-[350px] max-w-full'>
+			<PopoverContent className='bg-white dark:bg-secondary border border-gray-200 rounded-lg shadow-lg w-[300px] md:w-[400px] lg:w-[350px] max-w-full'>
 				<ScrollArea className='h-72 rounded-md'>
 					<div className='p-4'>
-						<div className='mb-2 text-sm font-semibold lg:pl-0 pl-4 text-gray-500'>
+						<div className='mb-2 text-sm font-semibold lg:pl-0 pl-4 text-foreground'>
 							Notifications
 						</div>
 						{notifications.length > 0 ? (
@@ -119,7 +119,7 @@ export function NotificationPopover() {
 								))}
 							</div>
 						) : (
-							<div className='text-sm w-[300px] pl-4 lg:pl-0 xs:text-gray-500'>
+							<div className='text-sm w-[300px] pl-4 lg:pl-0 xs:text-gray-500 dark:text-gray-400'>
 								No new notifications
 							</div>
 						)}
