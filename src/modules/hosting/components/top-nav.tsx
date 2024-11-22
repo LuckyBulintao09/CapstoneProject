@@ -231,7 +231,7 @@ function TopNavigation() {
                                     {open ? <X /> : <Menu />}
                                 </Button>
                             </SheetTrigger>
-                            <SheetContent className="h-[calc(100vh-80px)] mt-[calc(80px-12px)] py-0 bg-white" side="top">
+                            <SheetContent className="h-[100vh] mt-[calc(80px-12px)] py-0 bg-white" side="top">
                                 <ScrollArea className="h-[calc(100vh-80px)]">
                                     <SheetClose className="sr-only">Close</SheetClose>
                                     <SheetHeader className="sr-only">
@@ -377,6 +377,7 @@ function TopNavigation() {
             </div>
         </nav>
     );
+    // mt-[calc(80px-12px)]
 }
 
 export default TopNavigation;

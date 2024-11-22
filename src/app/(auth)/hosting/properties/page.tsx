@@ -14,7 +14,6 @@ async function getPropertiesByUserCompany(companies: any) {
         if (error) {
             throw error;
         }
-        console.log("Fetched Properties Data:", data);
         return data;
     } catch (error: any) {
         throw error;

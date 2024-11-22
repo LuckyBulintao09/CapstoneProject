@@ -103,7 +103,7 @@ export const columns: ColumnDef<any>[] = [
                         )}
                         <div className="absolute top-0 right-0 mt-3 mr-3">
                             <Link
-                                href={`/hosting/properties/${propertyId}`}
+                                href={`/hosting/properties/${propertyId}/details`}
                                 className={cn(
                                     buttonVariants({ variant: "default", size: "sm" }),
                                     "flex items-center justify-center gap-2 rounded-full text-primary-foreground"
@@ -177,7 +177,7 @@ export const columns: ColumnDef<any>[] = [
                 //     </DropdownMenuContent>
                 // </DropdownMenu>
                 <Link 
-                    href={`/hosting/properties/${propertyId}`}
+                    href={`/hosting/properties/${propertyId}/details`}
                     className={cn(buttonVariants({ variant: "ghost", size: "sm" }), "flex items-center justify-center gap-2 px-1 rounded-full")}
                 >
                     Go to property
