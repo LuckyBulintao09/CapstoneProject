@@ -50,7 +50,7 @@ const ReviewsUnderCompany: React.FC<ReviewsUnderCompanyProps> = ({
 		<div>
 			<div className='grid grid-cols-1 lg:grid-cols-3 md:grid-cols-2 sm:grid-cols-1 gap-4'>
 				{loading ? (
-					<div className='flex justify-center items-center h-32'>
+					<div className='col-span-3 flex justify-center items-center h-32'>
 						<Loader className='h-10 w-10 animate-spin text-sky-500' />
 					</div>
 				) : reviews.length > 0 ? (
@@ -87,7 +87,7 @@ const ReviewsUnderCompany: React.FC<ReviewsUnderCompanyProps> = ({
 											<span className='mx-1'>|</span>
 
 											<div className='flex space-x-1 ml-1'>
-												{[...Array(5)].map((_, index) => (
+												{/* {[...Array(5)].map((_, index) => (
 													<Star
 														key={index}
 														className={`h-3 w-3 ${
@@ -97,7 +97,19 @@ const ReviewsUnderCompany: React.FC<ReviewsUnderCompanyProps> = ({
 														}`}
 														fill={index < review.ratings ? '#eab308' : 'none'}
 													/>
-												))}
+												))} */}
+												{review.ratings ? (
+													<>
+														<Star
+															className='h-4 w-4 text-yellow-500'
+															fill='#eab308'
+														/>
+														<span className='ml-1 text-sm xs:text-xs'>
+															{review.ratings.toFixed(1)}
+														</span>
+													</>
+												) : // nilagay ko lang para sa mga hindi na-review na listing
+												null}
 											</div>
 										</div>
 									</div>
@@ -109,9 +121,14 @@ const ReviewsUnderCompany: React.FC<ReviewsUnderCompanyProps> = ({
 						</Card>
 					))
 				) : (
-					<p className='text-center text-gray-500 dark:text-gray-400'>
-						No reviews available for this company.
-					</p>
+					<div className='col-span-3 items-center justify-center text-center mt-20'>
+						<p className='text-md font-semibold'>
+							No reviews available for this company.
+						</p>
+						<p className='text-sm text-gray-500'>
+							No reviews yet, but you can be the first to share your thoughts!
+						</p>
+					</div>
 				)}
 			</div>
 		</div>
