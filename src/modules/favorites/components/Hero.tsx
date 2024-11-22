@@ -16,19 +16,13 @@ export default function HeroSection({
 }: HeroSectionProps) {
 	return (
 		<div className='flex items-center justify-center h-screen w-screen'>
-			<div className='lg:fixed w-full px-4 lg:py-8'>
+			<div className='w-full px-4 lg:py-8'>
 				<div className='flex flex-col items-center text-center'>
-					<p className='my-6 text-pretty text-lg text-slate-300'>
+					<p className='my-2 text-pretty text-lg text-gray-200'>
 						{spiels.FAVORITES_SUBHEADER}
 					</p>
 					<h1 className='text-pretty text-4xl font-bold lg:text-6xl md:text-5xl text-white'>
-						UniHomes
-					</h1>
-					<h1 className='text-pretty text-4xl font-bold lg:text-6xl md:text-5xl text-white'>
-						Favorite
-					</h1>
-					<h1 className='text-pretty text-4xl font-bold lg:text-6xl md:text-5xl text-white'>
-						Listings
+						Favorites
 					</h1>
 					<form className='flex mt-5 w-full max-w-md justify-center'>
 						<label htmlFor='search' className='sr-only'>
@@ -40,7 +34,7 @@ export default function HeroSection({
 								type='search'
 								name='search'
 								id='search'
-								className='block w-full rounded-3xl border-0 bg-white px-10 py-2 text-black dark:text-muted-foreground placeholder:text-muted-foreground focus:ring-2 focus:ring-accent'
+								className='block w-full rounded-lg border-0 bg-white px-10 py-2 text-black dark:text-muted-foreground placeholder:text-muted-foreground focus:ring-2 focus:ring-accent'
 								placeholder='Search'
 								value={searchTerm}
 								onChange={(e) => setSearchTerm(e.target.value)}
