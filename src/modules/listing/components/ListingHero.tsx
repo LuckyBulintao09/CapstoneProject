@@ -28,8 +28,8 @@ export default function ListingHero({
 
 		const options = {
 			bounds: new google.maps.LatLngBounds(
-				new google.maps.LatLng(117.17427453, 5.58100332277),
-				new google.maps.LatLng(126.537423944, 18.5052273625)
+				new google.maps.LatLng(16.374445, 120.592389),
+				new google.maps.LatLng(16.446445, 120.633389)
 			),
 			fields: ['geometry', 'name', 'formatted_address'],
 			componentRestrictions: { country: 'ph' },

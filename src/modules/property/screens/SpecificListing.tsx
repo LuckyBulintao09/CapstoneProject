@@ -101,7 +101,6 @@ export function SpecificListing({ id }: SpecificListingProps) {
 	const [totalOccupants, setTotalOccupants] = useState(0);
 	const [landmarks, setLandmarks] = useState([]);
 	const [availableSpots, setAvailableSpots] = useState<number | null>(null);
-	const [selectedUnitOccupants, setSelectedUnitOccupants] = useState<number>(0);
 
 	//Parameter Filters
 	const searchParams = useSearchParams();
@@ -642,10 +641,7 @@ export function SpecificListing({ id }: SpecificListingProps) {
 			/>
 
 			{/* REVIEWS */}
-			<div
-				className='flex flex-col border-t border-gray-300 py-8 mr-4'
-				id='reviews'
-			>
+			<div className='flex flex-col border-t border-gray-300 py-8' id='reviews'>
 				<h4 className='text-2xl font-semibold tracking-tight pb-4'>
 					Customer Reviews
 				</h4>
@@ -654,7 +650,7 @@ export function SpecificListing({ id }: SpecificListingProps) {
 
 			{/* LOCATION */}
 			<div
-				className='flex flex-col border-t border-gray-300 py-8 mr-4'
+				className='flex flex-col border-t border-gray-300 py-8'
 				id='location'
 			>
 				<div className='flex items-center justify-between pb-4'>
@@ -710,9 +706,9 @@ export function SpecificListing({ id }: SpecificListingProps) {
 						<TooltipTrigger asChild>
 							<button
 								onClick={scrollToTop}
-								className='fixed bottom-16 right-14 bg-primary text-white p-2 mb-10 rounded-full shadow-lg'
+								className='fixed bottom-16 right-1 lg:right-5 md:right-5 sm:right-5 bg-primary text-white p-2 mb-10 rounded-full shadow-lg'
 							>
-								<ChevronDoubleUpIcon className='h-8 w-8' />
+								<ChevronDoubleUpIcon className='lg:h-8 lg:w-8 md:h-5 md:w-5 xs:h-4 xs:w-4' />
 							</button>
 						</TooltipTrigger>
 						<TooltipContent>
