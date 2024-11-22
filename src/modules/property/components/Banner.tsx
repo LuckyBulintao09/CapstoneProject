@@ -34,7 +34,6 @@ const Banner: React.FC<BannerProps> = ({
 	ownerLastname,
 	ownerId,
 	companyId,
-	companyName,
 	propertyId,
 	profileUrl,
 	session,
@@ -115,14 +114,14 @@ const Banner: React.FC<BannerProps> = ({
 								onBlur={() => setTimeout(() => setIsFocused(false), 150)}
 								onChange={(e) => setInputValue(e.target.value)}
 								type='text'
-								className='bg-white text-black hover:bg-neutral-100 dark:hover:bg-popover-foreground rounded-lg px-4 py-2 transition duration-200 ease-in-out w-full'
+								className='bg-white text-black hover:bg-neutral-100 dark:hover:bg-popover-foreground rounded-lg px-4 py-2 pr-10 w-full transition duration-200 ease-in-out'
 								placeholder='Send a message...'
 							/>
 
 							{inputValue && (
 								<div
 									onClick={handleSendMessage}
-									className='absolute right-2 top-1/2 transform -translate-y-1/2 cursor-pointer'
+									className='absolute right-2 top-1/2 transform -translate-y-1/2 cursor-pointer z-10'
 								>
 									{isLoading ? (
 										<div className='w-5 h-5 border-2 border-t-2 border-gray-500 border-t-transparent rounded-full animate-spin' />

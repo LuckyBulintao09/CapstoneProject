@@ -6,12 +6,11 @@ import {
 	DialogDescription,
 	DialogHeader,
 	DialogTitle,
-	DialogTrigger,
 } from '@/components/ui/dialog';
 import { Button } from '@/components/ui/button';
 import { Label } from '@/components/ui/label';
 import { ToggleGroup, ToggleGroupItem } from '@/components/ui/toggle-group';
-import { Map, MinusCircle, PlusCircle, SearchIcon } from 'lucide-react';
+import { MinusCircle, PlusCircle, SearchIcon } from 'lucide-react';
 import { useState } from 'react';
 import { Input } from '@/components/ui/input';
 import { ScrollArea } from '@/components/ui/scroll-area';
@@ -57,6 +56,8 @@ const reviewScore = [
 ];
 
 export default function FilterModal({
+	setIsOpen,
+	isOpen,
 	householdAmenities = [],
 	selectedFilter,
 	setSelectedFilter,
@@ -84,9 +85,9 @@ export default function FilterModal({
 	setPosition,
 	radius,
 	setRadius,
-	setDeviceLocation
+	setDeviceLocation,
 }) {
-	const [isOpen, setIsOpen] = useState(false);
+	// const [isOpen, setIsOpen] = useState(false);
 
 	const increment = (value, setter) => setter(value + 1);
 	const decrement = (value, setter) => setter(value > 0 ? value - 1 : 0);
@@ -155,7 +156,7 @@ export default function FilterModal({
 		setCircleLoc({
 			lat: 0.2342,
 			lng: 0.2342,
-		})
+		});
 	}, [isOpen]);
 
 	const handlePlaceSelection = () => {
@@ -198,7 +199,7 @@ export default function FilterModal({
 
 	const handleMapClick = async (event) => {
 		if (event.latLng) {
-			setDeviceLocation(null)
+			setDeviceLocation(null);
 			const { lat, lng } = event.latLng.toJSON();
 			setSelectedLocation({ lat, lng });
 			setCircleLoc({ lat, lng });
@@ -245,18 +246,18 @@ export default function FilterModal({
 
 	return (
 		<Dialog open={isOpen} onOpenChange={setIsOpen}>
-			<DialogTrigger asChild>
+			{/* <DialogTrigger asChild>
 				<Button
 					variant='outline'
-					className='mb-2 px-4 py-2 rounded-lg transition-all'
-					onClick={() => {setIsOpen(true)}}
+					className='mb-2 px-4 py-2 rounded-lg transition-all hidden sm:block'
+					onClick={() => setIsOpen(true)}
 				>
 					<div className='flex items-center space-x-2'>
 						<Map className='w-4 h-auto ' />
 						<span className='font-semibold'>Check Map</span>
 					</div>
 				</Button>
-			</DialogTrigger>
+			</DialogTrigger> */}
 
 			<DialogContent className='max-w-[90%] xs:h-[450px] md:h-[500px] lg:h-[80%] bg-white dark:bg-secondary rounded-lg shadow-lg'>
 				<DialogHeader className=''>
@@ -314,13 +315,11 @@ export default function FilterModal({
 							>
 								{selectedLocation && (
 									<>
-										<Marker 
-											position={selectedLocation} 
-											options={
-												{
-													icon: 'https://maps.google.com/mapfiles/ms/micons/blue-dot.png'
-												}
-											} 
+										<Marker
+											position={selectedLocation}
+											options={{
+												icon: 'https://maps.google.com/mapfiles/ms/micons/blue-dot.png',
+											}}
 										/>
 									</>
 								)}

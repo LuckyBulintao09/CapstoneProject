@@ -7,14 +7,8 @@ import {
 	BreadcrumbPage,
 	BreadcrumbSeparator,
 } from '@/components/ui/breadcrumb';
-import {
-	DropdownMenu,
-	DropdownMenuContent,
-	DropdownMenuItem,
-	DropdownMenuTrigger,
-} from '@/components/ui/dropdown-menu';
 
-export function BreadcrumbSection({ propertyName }) {
+export function FavoritesBreadcrumbSection() {
 	return (
 		<Breadcrumb className='pt-6'>
 			<BreadcrumbList>
@@ -37,13 +31,12 @@ export function BreadcrumbSection({ propertyName }) {
 				</BreadcrumbItem>
 				<BreadcrumbSeparator /> */}
 				<BreadcrumbItem>
-					<BreadcrumbLink href='/client/listings'>Listings</BreadcrumbLink>
-				</BreadcrumbItem>
-				<BreadcrumbSeparator />
-				<BreadcrumbItem>
-					<BreadcrumbPage className='text-primary dark:text-blue-300 font-semibold'>
-						{propertyName}
-					</BreadcrumbPage>
+					<BreadcrumbLink
+						href='/client/favorites'
+						className='text-primary dark:text-blue-300 font-semibold'
+					>
+						Favorites
+					</BreadcrumbLink>
 				</BreadcrumbItem>
 			</BreadcrumbList>
 		</Breadcrumb>
