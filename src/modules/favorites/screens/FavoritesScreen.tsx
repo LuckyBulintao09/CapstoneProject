@@ -30,7 +30,7 @@ export default function FavoritesScreen() {
 	);
 
 	return (
-		<div className='px-32 md:px-24 sm:px-20 xs:px-10 h-full relative mb-8 bg-background flex flex-col min-h-screen'>
+		<div className='px-32 md:px-24 sm:px-20 xs:px-10 h-full relative mb-8 bg-background dark:bg-secondary flex flex-col min-h-screen'>
 			<FavoritesBreadcrumbSection />
 			<div className='flex justify-between items-center mt-4'>
 				<div>
