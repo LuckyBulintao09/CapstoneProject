@@ -17,7 +17,7 @@ const Footer = () => {
 					target='_blank'
 					className={cn(
 						buttonVariants({ variant: 'link', size: 'sm' }),
-						' text-xs mx-0 px-0'
+						' text-xs mx-0 px-0 dark:text-blue-300'
 					)}
 				>
 					Terms and Conditions

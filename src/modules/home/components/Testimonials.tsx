@@ -1,13 +1,10 @@
-
 import { TestimonialsCard } from './Testimonials-CardStack';
 import spiels from '@/lib/constants/spiels';
 
 const Testimonials = () => {
-	
-
 	return (
 		<section className='py-12'>
-			<div className='container mx-auto px-4'>
+			<div className=''>
 				<div className='flex flex-col-reverse lg:flex-row lg:space-x-4'>
 					<div className='lg:w-2/3 lg:order-1 md:pt-8 sm:pt-10 xs:pt-12'>
 						<p className='mb-2 text-xs text-muted-foreground text-left lg:text-right'>

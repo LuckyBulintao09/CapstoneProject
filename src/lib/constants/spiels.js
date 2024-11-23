@@ -218,9 +218,9 @@ const spiels = {
 			value: 'overview',
 		},
 		{
-			label: 'Rooms',
-			href: '/rooms',
-			value: 'rooms',
+			label: 'Units',
+			href: '/units',
+			value: 'units',
 		},
 		{
 			label: 'Reviews',

@@ -212,7 +212,7 @@ function NavigationBar() {
 									<DropdownMenuContent
 										side='bottom'
 										align='end'
-										className='border-gray-200 border-1 w-full min-w-56 px-0 pt-3 bg-white z-[999] shadow-xl'
+										className='border-gray-200 border-1 w-full min-w-56 px-0 pt-3 bg-white dark:bg-secondary z-[999] shadow-xl'
 										forceMount
 									>
 										<DropdownMenuLabel className='font-normal'>
@@ -294,7 +294,6 @@ function NavigationBar() {
 					</>
 				) : (
 					// mobile view
-
 					<div className='flex flex-nowrap items-center justify-end gap-2'>
 						<>
 							<ModeToggle />
@@ -316,7 +315,7 @@ function NavigationBar() {
 								</Button>
 							</SheetTrigger>
 							<SheetContent
-								className={`h-[calc(100vh-80px)] mt-[calc(80px-12px)] py-0 bg-white ${
+								className={`h-[calc(100vh-80px)] mt-[calc(80px-12px)] py-0 bg-white dark:bg-background ${
 									open ? '' : ''
 								}`}
 								side='top'
@@ -334,12 +333,12 @@ function NavigationBar() {
 										{/* menu */}
 										<ul className='flex flex-col gap-2 [&_svg]:size-6'>
 											<li className='mb-2'>MENU</li>
-											<li>
+											<li className=''>
 												<Link
 													href={`/`}
 													className={cn(
 														buttonVariants({ variant: 'ghost' }),
-														'w-full justify-start rounded-none px-0 gap-2'
+														'w-full justify-start rounded-lg px-0 gap-2 hover:rounded-lg hover:p-1 transition-all duration-300'
 													)}
 												>
 													<Home /> Home
@@ -350,7 +349,7 @@ function NavigationBar() {
 													href={`/client/listings`}
 													className={cn(
 														buttonVariants({ variant: 'ghost' }),
-														'w-full justify-start rounded-none px-0 gap-2'
+														'w-full justify-start rounded-lg px-0 gap-2 hover:rounded-lg hover:p-1 transition-all duration-300'
 													)}
 												>
 													<Scroll />
@@ -364,7 +363,7 @@ function NavigationBar() {
 															href={`/chat/inbox`}
 															className={cn(
 																buttonVariants({ variant: 'ghost' }),
-																'w-full justify-start rounded-none px-0 gap-2'
+																'w-full justify-start rounded-lg px-0 gap-2 hover:rounded-lg hover:p-1 transition-all duration-300'
 															)}
 														>
 															<MessageCircleMore />
@@ -376,7 +375,7 @@ function NavigationBar() {
 															href={`/client/favorites`}
 															className={cn(
 																buttonVariants({ variant: 'ghost' }),
-																'w-full justify-start rounded-none px-0 gap-2'
+																'w-full justify-start rounded-lg px-0 gap-2 hover:rounded-lg hover:p-1 transition-all duration-300'
 															)}
 														>
 															<Heart />
@@ -390,7 +389,7 @@ function NavigationBar() {
 													href={`/pricing`}
 													className={cn(
 														buttonVariants({ variant: 'ghost' }),
-														'w-full justify-start rounded-none px-0 gap-2'
+														'w-full justify-start rounded-lg px-0 gap-2 hover:rounded-lg hover:p-1 transition-all duration-300'
 													)}
 												>
 													<Wallet />
@@ -410,7 +409,7 @@ function NavigationBar() {
 															href={`/client/profile`}
 															className={cn(
 																buttonVariants({ variant: 'ghost' }),
-																'w-full justify-start rounded-none px-0 gap-2'
+																'w-full justify-start rounded-lg px-0 gap-2 hover:rounded-lg hover:p-1 transition-all duration-300'
 															)}
 														>
 															<UserIcon /> Profile
@@ -421,7 +420,7 @@ function NavigationBar() {
 															href={`/client/transaction_history`}
 															className={cn(
 																buttonVariants({ variant: 'ghost' }),
-																'w-full justify-start rounded-none px-0 gap-2'
+																'w-full justify-start rounded-lg px-0 gap-2 hover:rounded-lg hover:p-1 transition-all duration-300'
 															)}
 														>
 															<IconExchange />
@@ -433,7 +432,7 @@ function NavigationBar() {
 															href={`/hosting`}
 															className={cn(
 																buttonVariants({ variant: 'ghost' }),
-																'w-full justify-start rounded-none px-0 gap-2'
+																'w-full justify-start rounded-lg px-0 gap-2 hover:rounded-lg hover:p-1 transition-all duration-300'
 															)}
 														>
 															<LayoutDashboard />

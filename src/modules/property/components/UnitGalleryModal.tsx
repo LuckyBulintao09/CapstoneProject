@@ -23,7 +23,7 @@ const UnitGalleryModal: React.FC<UnitGalleryModalProps> = ({
 }) => {
 	return (
 		<Dialog open={isOpen} onOpenChange={onClose}>
-			<DialogContent className='p-6 max-w-[80%] bg-white mx-2 dark:bg-secondary'>
+			<DialogContent className='p-6 max-w-[80%] bg-white mx-2 dark:bg-secondary shadow-lg rounded-lg'>
 				<DialogHeader>
 					<DialogTitle className='text-primary dark:text-gray-100'>
 						Room Images
@@ -38,7 +38,7 @@ const UnitGalleryModal: React.FC<UnitGalleryModalProps> = ({
 						<div>
 							<ScrollArea className='h-[430px] overflow-y-auto pr-4 my-4'>
 								{images && (
-									<div className='grid grid-cols-1 lg:grid-cols-2 md:grid-cols-2 gap-4'>
+									<div className='grid grid-cols-1 lg:grid-cols-2 md:grid-cols-2 gap-4 xs:mr-0'>
 										{images.map((url, index) => (
 											<img
 												key={index}
