@@ -1,6 +1,6 @@
 import { createClient } from "@/utils/supabase/client";
 import { checkConversation } from "./checkConversation";
-import { sendMessage } from "./sendMessage";
+import { sendSystemMessage } from "./systemGeneratedMessage";
 import { toast } from "sonner";
 
 const supabase = createClient();
@@ -33,11 +33,11 @@ export const sendMessageAfterReservation = async (
     ]);
 
     if (conversationId) {
-      await sendMessage({
+      await sendSystemMessage({
         userId,
         receiverId: ownerAccountId,
         conversationId,
-        messageContent: "I have reserved a unit!",
+        messageContent: "Unit reservation has been made.",
         setMessages,
       });
       toast.success("Owner notified. You can now chat with the owner!");

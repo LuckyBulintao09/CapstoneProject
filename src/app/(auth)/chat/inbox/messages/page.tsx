@@ -156,34 +156,41 @@ const Inbox = ({ receiver_id, company_name }) => {
           </Card>
         )}
 
-        <ScrollArea className="flex-1 p-4 rounded-lg mb-4 bg-transparent">
-          {messages.length === 0 ? (
-            <p className="text-center text-muted-foreground">No conversation selected.</p>
+<ScrollArea className="flex-1 p-4 rounded-lg mb-4 bg-transparent">
+  {messages.length === 0 ? (
+    <p className="text-center text-muted-foreground">No conversation selected.</p>
+  ) : (
+    messages.map((msg) => {
+      const isSystemGenerated = msg.system_generated === true;
+      const messageClasses = isSystemGenerated
+        ? "mx-auto italic text-center p-3 rounded-md shadow-md border border-dashed border-gray-400"
+        : msg.sender_id === user.id
+          ? "ml-auto bg-primary text-primary-foreground"
+          : "mr-auto bg-gray-300 text-gray-800";
+
+      return (
+        <div key={msg.id} className={`mb-2 max-w-xs p-2 rounded-lg text-sm break-words ${messageClasses}`}>
+          {msg.content.startsWith("http") ? (
+            <img 
+              src={msg.content} 
+              alt="sent image" 
+              className="rounded-md cursor-pointer" 
+              onClick={() => setExpandedImage(msg.content)} 
+            />
           ) : (
-            messages.map((msg) => (
-              <div key={msg.id} className={`mb-2 max-w-xs p-2 rounded-lg text-sm break-words ${
-                msg.sender_id === user.id
-                  ? "ml-auto bg-primary text-primary-foreground"
-                  : "mr-auto bg-gray-300 text-gray-800"
-              }`}>
-                {msg.content.startsWith("http") ? (
-                  <img 
-                    src={msg.content} 
-                    alt="sent image" 
-                    className="rounded-md cursor-pointer" 
-                    onClick={() => setExpandedImage(msg.content)} 
-                  />
-                ) : (
-                  <p>{msg.content}</p>
-                )}
-                <small className="block text-xs mt-1">
-                  {new Date(msg.created_at).toLocaleTimeString()}
-                </small>
-              </div>
-            ))
+            <p>{msg.content}</p>
           )}
-          <div ref={messagesEndRef} />
-        </ScrollArea>
+          <small className="block text-xs mt-1">
+            {new Date(msg.created_at).toLocaleTimeString()}
+          </small>
+        </div>
+      );
+    })
+  )}
+  <div ref={messagesEndRef} />
+</ScrollArea>
+
+
 
     
         {expandedImage && (

@@ -184,20 +184,22 @@ const Page = () => {
               {showArchived ? 'Archived Conversations' : 'Current Conversations'}
               <ChevronsUpDown className='opacity-50' />
             </Button>
-            <div className='relative group'>
-              <Button
-                className='ml-2'
-                onClick={() => {
-                  setSelectedReceiverId(null);
-                  setSelectedCompanyName(null);
-                }}
-              >
-                <X className='w-4 h-4' />
-              </Button>
-              <span className='absolute left-1/2 transform -translate-x-1/2 bottom-full mb-2 text-xs text-white-500 opacity-0 group-hover:opacity-100 transition-opacity'>
-                Close conversation
-              </span>
-            </div>
+            {selectedReceiverId && (
+              <div className='relative group'>
+                <Button
+                  className='ml-2'
+                  onClick={() => {
+                    setSelectedReceiverId(null);
+                    setSelectedCompanyName(null);
+                  }}
+                >
+                  <X className='w-4 h-4' />
+                </Button>
+                <span className='absolute left-1/2 transform -translate-x-1/2 bottom-full mb-2 text-xs text-white-500 opacity-0 group-hover:opacity-100 transition-opacity'>
+                  Close conversation
+                </span>
+              </div>
+            )}
           </div>
           {loading ? (
             <div className='text-center text-gray-600'>Loading conversations...</div>
