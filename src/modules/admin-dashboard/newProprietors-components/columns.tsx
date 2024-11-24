@@ -8,6 +8,7 @@ import ApproveConfirmationModal from '../components/ApproveConfirmationModal';
 import RejectConfirmationModal from '../components/RejectConfirmationModal';
 import { ProfileAlert } from '../components/ProfileAlert';
 import { updateProprietorStatus } from '@/actions/admin/updateProprietorStatus';
+import { toast } from 'sonner';
 
 export type NewProprietors = {
 	id: string;
@@ -39,10 +40,10 @@ const NewProprietorsActionsCell = ({
 	const handleApprove = async () => {
 		const result = await updateProprietorStatus(row.original.id, true);
 		if (result) {
-			alert('Client approved successfully!');
+			toast.success('Client approved successfully!');
 			onProprietorUpdate(row.original.id);
 		} else {
-			alert('Failed to approve the client. Please try again.');
+			toast.error('Failed to approve the client. Please try again.');
 		}
 		setIsApproveModalOpen(false);
 	};
@@ -50,10 +51,10 @@ const NewProprietorsActionsCell = ({
 	const handleReject = async () => {
 		const result = await updateProprietorStatus(row.original.id, false);
 		if (result) {
-			alert('Client rejected successfully!');
+			toast.success('Client rejected successfully!')
 			onProprietorUpdate(row.original.id);
 		} else {
-			alert('Failed to reject client. Please try again.');
+			toast.error('Failed to reject client. Please try again.');
 		}
 		setIsRejectModalOpen(false);
 	};

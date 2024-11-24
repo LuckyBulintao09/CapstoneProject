@@ -1,7 +1,6 @@
-"use server";
+'use server';
 
 import { createClient } from "@/utils/supabase/server";
-
 import { loginSchema, LoginFormData } from "@/lib/schemas/authSchema";
 import { redirect } from "next/navigation";
 
@@ -23,13 +22,12 @@ export async function LoginWithPassword(values: LoginFormData) {
         });
 
         if (error) {
-            throw error.message;
+            throw new Error("Invalid login credentials");  
         }
 
         return;
     } catch (error: any) {
-        // handle some error if possible
-        throw error;
+        throw error; 
     }
 }
 
