@@ -1,9 +1,9 @@
-"use server";
+
 
 // gets all units under a property under a company
 // ex. get units a,b, and c from property 1 under company 1
 
-import { createClient } from "@/utils/supabase/server";
+import { createClient } from "@/utils/supabase/client";
 
 const supabase = createClient();
 

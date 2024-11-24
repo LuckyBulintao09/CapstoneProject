@@ -52,31 +52,31 @@ export const getSpecificAmenity = async (amenity_name: string[]) => {
 }
 
 //Used for the fetching amenities on specific listing
-export const get_unitAmenities = async (unit_id: number) => {
-    try {
-        const { data: unitAmenities, error: unitAmenitiesError } = await supabase
-            .from('unit_amenities')
-            .select('amenity_id')
-            .eq('unit_id', unit_id) 
+// export const get_unitAmenities = async (unit_id: number) => {
+//     try {
+//         const { data: unitAmenities, error: unitAmenitiesError } = await supabase
+//             .from('unit_amenities')
+//             .select('amenity_id')
+//             .eq('unit_id', unit_id) 
 
-        if (unitAmenitiesError) {
-            console.error(unitAmenitiesError);
-            return unitAmenitiesError;
-        }
+//         if (unitAmenitiesError) {
+//             console.error(unitAmenitiesError);
+//             return unitAmenitiesError;
+//         }
 
-        const {data: Amenities, error: AmenitiesError} = await supabase
-            .from('amenity')
-            .select('id,amenity_name')
-            .in('id', unitAmenities.map(unitAmenity => unitAmenity.amenity_id))
+//         const {data: Amenities, error: AmenitiesError} = await supabase
+//             .from('amenity')
+//             .select('id,amenity_name')
+//             .in('id', unitAmenities.map(unitAmenity => unitAmenity.amenity_id))
         
-            if (AmenitiesError) {
-                console.error(AmenitiesError);
-                return AmenitiesError;
-            }
-            return(Amenities)
+//             if (AmenitiesError) {
+//                 console.error(AmenitiesError);
+//                 return AmenitiesError;
+//             }
+//             return(Amenities)
 
-    }catch (error: any) {
-        console.error(error);
-        return error;
-    }
-}
+//     }catch (error: any) {
+//         console.error(error);
+//         return error;
+//     }
+// }

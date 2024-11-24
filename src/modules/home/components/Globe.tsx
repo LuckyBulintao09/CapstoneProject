@@ -472,8 +472,8 @@ export function Globe() {
 	];
 
 	return (
-		<div className='flex items-center justify-center h-full md:h-auto relative w-full dark:bg-transparent'>
-			<div className='max-w-auto mx-auto w-full relative overflow-hidden h-full xl:h-[40rem] xlg:h-[32rem] lg:h-[45rem] xl:pl-10 md:h-[35rem] sm:h-[15rem] xs:h-[12rem]'>
+		<div className='justify-center h-full relative w-full dark:bg-transparent'>
+			<div className='max-w-auto mx-auto w-full relative overflow-visible h-full xl:h-[40rem] xlg:h-[32rem] lg:h-[42rem] xl:pl-10 md:h-[32rem] sm:h-[18rem] xs:h-[12rem]'>
 				<motion.div
 					initial={{
 						opacity: 0,

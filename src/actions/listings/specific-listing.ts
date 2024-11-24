@@ -55,7 +55,6 @@ export const fetchPropertyFacilities = async (propertyId: number) => {
     console.error("Error fetching property facilities:", error);
     return null;
   }
-  console.log(data)
   return data.map(item => item.amenity_name)
 }
 
@@ -119,7 +118,7 @@ export const toggleFavourite = async (
   } else {
     const { error } = await supabase
       .from("favorites")
-      .insert([{ Account_ID: userId, property_ID: propertyId }]);
+      .insert({ Account_ID: userId, property_ID: propertyId });
     return !error;
   }
 };

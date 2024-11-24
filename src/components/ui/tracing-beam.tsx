@@ -70,7 +70,7 @@ export const TracingBeam = ({
 							borderColor:
 								scrollYProgress.get() > 0 ? 'white' : 'var(--emerald-600)',
 						}}
-						className='h-2 w-2  rounded-full border border-neutral-300 bg-white'
+						className='h-2 w-2  rounded-full border border-neutral-300 bg-primary'
 					/>
 				</motion.div>
 				<svg

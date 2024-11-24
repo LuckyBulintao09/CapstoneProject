@@ -14,7 +14,10 @@ export const get_allProperties = async (
     maxPrice: number,
     beds: number,
     rooms: number,
-    structure: string[]
+    structure: string[],
+    distance: number | null,
+    stars: number | null,
+    score: number | null
 ) => {
 
     const filteredAmenitys = async () => {
@@ -30,6 +33,9 @@ export const get_allProperties = async (
     if (lat && lng) {
         query = supabase.rpc('get_nearby_properties', {lon: lng, lat: lat, rad: radius });
     }
+    if(distance && lat && lng) {
+        query = supabase.rpc('get_nearby_properties', {lon: lng, lat: lat, rad: distance });
+    }
     if (privacy_type && privacy_type.length > 0) {
         query = query.overlaps('privacy_types', privacy_type);
     }
@@ -37,8 +43,16 @@ export const get_allProperties = async (
     if (unit_id && unit_id.length > 0) {
         query = query.overlaps('unit_ids', unit_id);
     }
-    if (minPrice && maxPrice) {
-        query = query.gte('minimum_price', minPrice).lte('maximum_price', maxPrice);
+    if (minPrice || maxPrice) {
+        if (minPrice && maxPrice) {
+            query = query.or(
+                `minimum_price.gte.${minPrice},maximum_price.lte.${maxPrice}`
+            );
+        } else if (minPrice) {
+            query = query.gte('minimum_price', minPrice);
+        } else if (maxPrice) {
+            query = query.lte('maximum_price', maxPrice);
+        }
     }
     if (beds) {
         query = query.gte('min_bed', beds);
@@ -49,7 +63,12 @@ export const get_allProperties = async (
     if (structure && structure.length > 0) {
         query = query.in('structure', structure);
     }
-
+    if (stars) {
+        query = query.gte('average_ratings', stars);
+    }
+    if (score) {
+        query = query.gte('combined_review_score', score);
+    }
 
     
     const { data, error } = await query;

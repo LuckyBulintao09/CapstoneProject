@@ -57,8 +57,9 @@ export default function FavoriteListings({
 
 			const fetchFavorites = async () => {
 				try {
-					const { data, error } = await supabase
-						.rpc('get_all_fav', { user_id: userId })
+					const { data, error } = await supabase.rpc('get_all_fav', {
+						user_id: userId,
+					});
 
 					if (error) {
 						throw error;
@@ -97,20 +98,39 @@ export default function FavoriteListings({
 	}
 
 	if (favorites.length === 0) {
-		return <div>No favorite properties found.</div>;
+		return (
+			<div className='flex flex-col items-center justify-center h-screen'>
+				<p className='text-lg font-semibold'>
+					You don't have any favorite properties yet.
+				</p>
+				<p className='text-sm text-gray-500'>
+					Start adding listings to your favorites and they will show up here.
+				</p>
+			</div>
+		);
 	}
 
 	if (filteredFavorites.length === 0) {
-		return <div>No favorite properties found.</div>;
+		return (
+			<div className='flex flex-col items-center justify-center h-screen'>
+				<p className='text-lg font-semibold'>No favorite properties found.</p>
+				<p className='text-sm text-gray-500'>
+					Try searching for a specific property or adding more listings to your
+					favorites.
+				</p>
+			</div>
+		);
 	}
 
 	return (
-		<div className='grid grid-cols-1 gap-4 md:grid-cols-3 lg:grid-cols-2 sm:grid-cols-3 xs:grid-cols-2'>
-			{filteredFavorites.slice(0, 4).map((item) => (
-				<div key={item.id}>
-					<BranchListings key={item.id} {...item} />
-				</div>
-			))}
+		<div className='h-full flex flex-col justify-between'>
+			<div className='grid gap-4 lg:grid-cols-3 md:grid-cols-2 sm:grid-cols-2 xs:grid-cols-1'>
+				{filteredFavorites.map((item) => (
+					<div key={item.id}>
+						<BranchListings key={item.id} {...item} />
+					</div>
+				))}
+			</div>
 		</div>
 	);
 }

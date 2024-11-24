@@ -61,8 +61,8 @@ const SideReviews: React.FC<SideReviewsProps> = ({
 		if (averageScore >= 4) return 'Fair';
 		if (averageScore >= 3) return 'Disappointing';
 		if (averageScore >= 2) return 'Poor';
-		if (averageScore >= 1) return 'Very Poor';
-		return 'Bad';
+		if (averageScore > 0) return 'Very Poor';
+		return 'No Reviews';
 	};
 
 	// Calculate the overall average rating
@@ -77,23 +77,23 @@ const SideReviews: React.FC<SideReviewsProps> = ({
 			<Card className='bg-white dark:bg-secondary border border-gray-300 mr-0'>
 				<CardHeader className='pb-3'>
 					<CardDescription>
-						<p className='text-lg mb-0 pb-0 font-bold dark:text-gray-100'>
+						<p className='text-lg mb-0 pb-0 font-bold text-primary dark:text-blue-300'>
 							{overallRating.toFixed(1)} {ratingDescription}
 						</p>
-						<p className='text-md pt-0 mt-0 text-primary dark:text-blue-300'>
-							{totalReviews} review{totalReviews !== 1 && 's'}
+						<p className='text-md pt-0 mt-0 dark:text-gray-300'>
+							Overall Rating Score
 						</p>
 					</CardDescription>
 				</CardHeader>
 				<CardContent className='text-sm font-normal'>
-					<div className='space-x-2 space-y-2 pl-1'>
-						<Badge className='bg-blue-100 text-blue-800 hover:bg-blue-100 hover:text-blue-900 inline-block max-w-fit rounded-sm px-1'>
+					<div className='space-y-2 pl-1'>
+						<Badge className='bg-blue-100 text-blue-800 hover:bg-blue-100 hover:text-blue-900 inline-block max-w-fit rounded-sm px-2 mr-2'>
 							Location: {locationPercentage.toFixed(1)}
 						</Badge>
-						<Badge className='bg-blue-100 text-blue-800 hover:bg-blue-100 hover:text-blue-900 inline-block max-w-fit rounded-sm px-2'>
+						<Badge className='bg-blue-100 text-blue-800 hover:bg-blue-100 hover:text-blue-900 inline-block max-w-fit rounded-sm px-2 mr-2'>
 							Cleanliness: {cleanlinessPercentage.toFixed(1)}
 						</Badge>
-						<Badge className='bg-blue-100 text-blue-800 hover:bg-blue-100 hover:text-blue-900 inline-block max-w-fit rounded-sm px-1'>
+						<Badge className='bg-blue-100 text-blue-800 hover:bg-blue-100 hover:text-blue-900 inline-block max-w-fit rounded-sm px-2'>
 							Value for Money: {valueForMoneyPercentage.toFixed(1)}
 						</Badge>
 					</div>

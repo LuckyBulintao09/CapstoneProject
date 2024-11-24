@@ -31,7 +31,7 @@ body {
 
 @layer base {
   :root {
-    --background: 216 100% 95%;
+    --background: 42 5% 97%;
     --foreground: 216 5% 0%;
     --card: 216 50% 90%;
     --card-foreground: 216 5% 10%;
@@ -180,3 +180,80 @@ body {
   height: 22rem !important;
 }
 
+/* Expanding search bar */
+.search-container {
+  width: 40px;
+  height: 40px;
+  border-radius: 0.5rem;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  position: relative;
+  transition: width 0.5s ease-in-out;
+  overflow: hidden;
+}
+
+.search-container input {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 0;
+  height: 100%;
+  padding-left: 30px;
+  padding-right: 10px;
+  border-radius: 0.5rem;
+  opacity: 0;
+  transition: width 0.2s ease-in-out, opacity 0.5s ease-in-out;
+}
+
+.search-container:hover {
+  width: 400px;
+}
+
+.search-container:hover input {
+  width: 100%;
+  opacity: 1;
+}
+
+@media (max-width: 1024px) {
+
+  .search-container {
+    width: 40px;
+  }
+
+  .search-container:hover {
+    width: 250px;
+  }
+
+  .search-container:hover input {
+    width: 100%;
+  }
+}
+
+@media (max-width: 478px) {
+  .search-container {
+    width: 40px;
+  }
+
+  .search-container:hover {
+    width: 150px;
+  }
+
+  .search-container:hover input {
+    width: 100%;
+  }
+}
+
+@media (max-width: 375px) {
+  .search-container {
+    width: 40px;
+  }
+
+  .search-container:hover {
+    width: 120px;
+  }
+
+  .search-container:hover input {
+    width: 100%;
+  }
+}

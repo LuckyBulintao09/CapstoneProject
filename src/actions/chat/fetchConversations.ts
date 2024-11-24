@@ -8,7 +8,7 @@ export const fetchConversations = async (currentUserId: string) => {
     const [conversationResponse, accountsResponse, companiesResponse] = await Promise.all([
       supabase
         .from("conversations")
-        .select("user2, last_message, updated_at")
+        .select("user2, last_message, updated_at, isArchived") 
         .eq("user1", currentUserId)
         .order("updated_at", { ascending: false }),
       supabase.from("account").select("id, firstname, lastname"),
@@ -38,6 +38,7 @@ export const fetchConversations = async (currentUserId: string) => {
         company_name: companyName || null,
         last_message: conversation.last_message || "No messages yet",
         updated_at: conversation.updated_at,
+        isArchived: conversation.isArchived || false, 
       };
     });
   } catch (error) {

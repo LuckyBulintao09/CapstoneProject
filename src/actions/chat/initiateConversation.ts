@@ -2,6 +2,7 @@
 import { createClient } from '@/utils/supabase/server';
 import { checkConversation } from './checkConversation';
 import { sendMessage } from './sendMessage';
+import { sendSystemMessage } from './systemGeneratedMessage';
 
 const supabase = createClient();
 
@@ -21,12 +22,18 @@ const generateMessage = async (currentUserId, currentReceiverId, propertyId, own
 
   const unitName = unitDetails.data.title;
   const unitPrice = unitDetails.data.price;
-  // const messageTemplate = `Hi ${ownerName}, I am interested in ${unitName} at ${unitPrice} dollars.`;
-  const messageTemplate = ` ${inputValue} on ${unitName}.`;
+  const messageTemplate = ` ${inputValue}`;
 
   const conversationId = await checkConversation(currentUserId, currentReceiverId, ownerName, ownerLastname);
 
   if (conversationId) {
+    await sendSystemMessage({
+      userId: currentUserId,
+      receiverId: currentReceiverId,
+      conversationId,
+      messageContent: `On ${unitName} at ${unitPrice} dollars.`,
+      setMessages: () => {},
+    })
     await sendMessage({
       userId: currentUserId,
       receiverId: currentReceiverId,
