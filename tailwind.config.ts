@@ -135,6 +135,7 @@ const config: Config = {
 				airBnbDesktop: '950px',
 				airBnbTablet: '742px',
 				airBnbMobile: '425px',
+                airBnbBigDesktop: "1440px",
 			},
 			gridTemplateColumns: {
 				'16': 'repeat(16, minmax(0, 1fr))',
