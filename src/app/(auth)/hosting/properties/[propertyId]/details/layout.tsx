@@ -7,15 +7,16 @@ import { buttonVariants } from "@/components/ui/button";
 
 import CustomBreadcrumbs from "@/modules/hosting/components/CustomBreadcrumbs";
 
-import { ArrowLeft, Settings2 } from "lucide-react";
+import { ArrowLeft, Eye, Settings2 } from "lucide-react";
 
 import { cn } from "@/lib/utils";
 import { usePathname } from "next/navigation";
+import { ScrollArea } from "@/components/ui/scroll-area";
 
 function EditPropertyLayout({ children, right, params }: { children: React.ReactNode, right: React.ReactNode, params: { propertyId: string } }) {
     const pathname = usePathname();
     return (
-        <div className="hidden airBnbDesktop:flex my-0 mx-auto h-full pt-11">
+        <div className="hidden airBnbDesktop:flex my-0 mx-auto h-full">
             <section className="border-r flex flex-col h-full w-full airBnbDesktop:grow airBnbDesktop:mx-10 min-[1128px]:mx-20 airBnbBigDesktop:w-[calc(76px+344px+64px)]">
                 <div className="ml-[calc(32px+40px)]">
                     <CustomBreadcrumbs />
@@ -31,7 +32,7 @@ function EditPropertyLayout({ children, right, params }: { children: React.React
                     </h1>
                 </header>
                 <div className="relative grow overflow-y-auto">
-                    <div className="flex flex-col h-full">
+                    <div className="flex flex-col h-full overflow-hidden">
                         {/* tabs */}
                         <div className="airBnbDesktop:flex airBnbDesktop:items-center airBnbDesktop:py-6 airBnbDesktop:pr-8 airBnbDesktop:pl-[calc(44px+24px)]">
                             <div className="grow">
@@ -69,13 +70,12 @@ function EditPropertyLayout({ children, right, params }: { children: React.React
                                         <Settings2 className="h-5 w-5" />
                                     </Link>
                                 </div>
-
-                                <div className="grow overflow-hidden">
-                                    <div className="flex flex-col gap-4 pr-16 pl-[68px] pt-4 airBnbDesktop:pb-32">
-                                        {children}
-                                    </div>
-                                </div>
                             </div>
+                        </div>
+                        <div className="grow overflow-hidden">
+                            <ScrollArea className="h-[calc(100vh-68px-40px-64px-48px-48px)] w-full">
+                                <div className="flex flex-col gap-4 pr-16 pl-[calc(44px+32px)] pt-4 airBnbDesktop:pb-32">{children} </div>
+                            </ScrollArea>
                         </div>
                     </div>
                 </div>
