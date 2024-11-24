@@ -61,8 +61,10 @@ export function NotificationPopover() {
 					time: format(new Date(n.created_at), 'Pp'),
 				}))
 			);
+			setUnreadCount(data.filter((n) => !n.statusRead).length);
 		};
 		fetchOldNotif();
+
 
 		const { data: subscription } = supabase
 			.channel('notifications')
@@ -82,42 +84,20 @@ export function NotificationPopover() {
 						},
 						...prev,
 					]);
-					setUnreadCount((prev) => prev + 1);
+					setUnreadCount(data.filter((n) => !n.statusRead).length);
 				}
 			)
 			.subscribe();
 		return () => subscription?.unsubscribe();
 	}, [user]);
 
-
-	// useEffect(() => {
-	// 	if (!isUserLoggedIn) return;
-
-	// 	const fetchNotifications = async () => {
-	// 		const userId = await fetchUser();
-	// 		if (!userId) return;
-
-	// 		const conflicts = await checkReservationConflict(userId);
-	// 		const newNotifications = conflicts
-	// 			.filter(({ message, unitId }) =>
-	// 				notifications.every((notif) => notif.id !== `${message}-${unitId}`)
-	// 			)
-	// 			.map((conflict) => ({
-	// 				id: `${conflict.message}-${conflict.unitId}`,
-	// 				message: conflict.message,
-	// 				time: new Date().toLocaleTimeString(),
-	// 			}));
-
-	// 		if (newNotifications.length > 0) {
-	// 			setNotifications((prev) => [...prev, ...newNotifications]);
-	// 			setUnreadCount(newNotifications.length);
-	// 		}
-	// 	};
-
-	// 	fetchNotifications();
-	// 	const interval = setInterval(fetchNotifications, 60000);
-	// 	return () => clearInterval(interval);
-	// }, [notifications, isUserLoggedIn]);
+	const handleNotificationRead = async () => {
+		const { error } = await supabase
+			.from('notifications')
+			.update({ statusRead: true })
+			.eq('receiver_id', user);
+		if (error) throw error;
+	};
 
 	if (!isUserLoggedIn) return null;
 
@@ -130,6 +110,7 @@ export function NotificationPopover() {
 			onOpenChange={(isOpen) => {
 				setIsPopoverOpen(isOpen);
 				if (isOpen) setUnreadCount(0);
+				handleNotificationRead()
 			}}
 		>
 			<PopoverTrigger>
