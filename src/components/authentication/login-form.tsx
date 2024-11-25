@@ -43,7 +43,6 @@ function LoginForm() {
                         return "Login successful!";
                     },
                     error: (error) => {
-                        // Display the "Invalid login credentials" message
                         return error.message || "Invalid login credentials";
                     },
                 });
@@ -136,6 +135,12 @@ function LoginForm() {
                 Don't have an account?{" "}
                 <Link href="/register" className="underline">
                     Sign up
+                </Link>
+            </div>
+            <div className=" text-center text-sm">
+                Forgot Password{" "}
+                <Link href="/register" className="underline">
+                    Recover Account
                 </Link>
             </div>
         </div>

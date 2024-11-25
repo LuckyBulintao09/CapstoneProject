@@ -3,22 +3,24 @@ import { EmailTemplate } from '@/components/email-templates/template';
 
 const resend = new Resend(process.env.RESEND_API_KEY);
 
-
 interface SendEmailParams {
   email: string;
   firstName: string;
   lastName: string;
-  status: string; 
+  status: string;
+  reason?: string;  
 }
 
-export async function sendEmail({ email, firstName, lastName, status }: SendEmailParams) {
+export async function sendEmail({ email, firstName, lastName, status, reason }: SendEmailParams) {
   try {
     const { data, error } = await resend.emails.send({
-      from: 'Unihomes <noreply@unihomes.site>', 
+      from: 'Unihomes <noreply@unihomes.site>',
       to: email,
       subject: 'Proprietor Approval Status Update',
-      react: EmailTemplate({ firstName, lastName, status }),
+      react: EmailTemplate({ firstName, lastName, status, reason }), 
     });
+
+    console.log("Email sent");
 
     if (error) {
       throw new Error(JSON.stringify(error));

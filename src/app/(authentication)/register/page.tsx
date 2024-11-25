@@ -1,7 +1,7 @@
 import AuthHeading from "@/components/authentication/auth-heading";
 import AuthLeft from "@/components/authentication/auth-left";
 import AuthTop from "@/components/authentication/auth-top";
-import RegisterForm from "@/components/authentication/regsiter-form";
+import RegisterForm from "@/components/authentication/register-form";
 import React from "react";
 
 function RegisterPage() {

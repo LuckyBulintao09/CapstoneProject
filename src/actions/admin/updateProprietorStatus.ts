@@ -11,6 +11,17 @@ export const updateProprietorStatus = async (
   const supabase = createClient();
 
   try {
+    const { data: proprietor, error: fetchError } = await supabase
+      .from("account")
+      .select("firstname, lastname, email")
+      .eq("id", proprietorId)
+      .single();
+
+    if (fetchError) {
+      console.error("Error fetching proprietor details:", fetchError);
+      return false;
+    }
+
     const updates: any = {
       approved_government: status,
       rejected_government: !status,
@@ -29,6 +40,14 @@ export const updateProprietorStatus = async (
       console.error("Error updating proprietor status:", error);
       return false;
     }
+
+    await sendEmail({
+      email: proprietor.email,
+      firstName: proprietor.firstname,
+      lastName: proprietor.lastname,
+      status: status ? "approved" : "rejected",
+      reason,
+    });
 
     return true;
   } catch (error) {

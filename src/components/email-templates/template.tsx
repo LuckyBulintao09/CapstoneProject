@@ -4,12 +4,14 @@ interface EmailTemplateProps {
   firstName: string;
   lastName: string;
   status: string; 
+  reason?: string;
 }
 
 export const EmailTemplate: React.FC<Readonly<EmailTemplateProps>> = ({
   firstName,
   lastName,
   status,
+  reason,
 }) => (
   <div
     style={{
@@ -55,6 +57,12 @@ export const EmailTemplate: React.FC<Readonly<EmailTemplateProps>> = ({
         {status === 'approved'
           ? 'We are excited to have you onboard. Please check your account for further details.'
           : 'We regret to inform you that you did not meet the criteria for acceptance.'}
+        <br />
+        {status === 'rejected' && reason && (
+          <p style={{ fontSize: '16px', color: '#ff4d4d', marginTop: '10px' }}>
+            Reason for rejection: <strong>{reason}</strong>
+          </p>
+        )}
         <br />
         If you have any questions or would like feedback, please don't hesitate to
         reach out to us. We wish you the best in your future endeavors!

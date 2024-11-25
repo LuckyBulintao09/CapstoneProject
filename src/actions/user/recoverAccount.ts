@@ -4,7 +4,6 @@ import { createClient } from "@/utils/supabase/server";
 export async function sendPasswordReset(email: string) {
   console.log("sendPasswordReset", email);
 
-
   const supabase = createClient();
 
   const { data: user, error: checkError } = await supabase
