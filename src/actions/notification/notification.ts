@@ -103,3 +103,21 @@ export const fetchNotifications = async (userId : string) => {
   if (error) throw error;
   return data;
 }
+
+export const reservationNotification = async (userId : string, propertyTitle : string, unitTitle : string) => {
+  const { data, error } = await supabase
+    .from("notifications")
+    .insert({ receiver_id: userId, text: `Transaction: Room Reservation for ${propertyTitle} - ${unitTitle}` });
+  if (error) throw error;
+}
+
+export const onsiteNotification = async (userId : string, propertyTitle : string, unitTitle : string) => {
+  const { data, error } = await supabase
+    .from("notifications")
+    .insert({ receiver_id: userId, text: `Transaction: Onsite Visit for ${propertyTitle} - ${unitTitle}` });
+  if (error) throw error;
+}
+
+
+//transaction status update
+//admin status update

@@ -27,12 +27,19 @@ import {
 	checkExistingReservation,
 } from '@/actions/listings/booking-process';
 import { toast } from 'sonner';
+import { onsiteNotification,
+	reservationNotification
+ } from '@/actions/notification/notification';
 
 interface BookingCardProps {
 	isOpen: boolean;
 	onClose: () => void;
 	unitID: number;
 	availableSpots: number | null;
+	unitPrice: number | null;
+	accountID: string | null;
+	propertyTitle: string;
+	unitTitle: string;
 }
 
 export const BookingCardModal: React.FC<BookingCardProps> = ({
@@ -40,6 +47,10 @@ export const BookingCardModal: React.FC<BookingCardProps> = ({
 	onClose,
 	unitID,
 	availableSpots,
+	unitPrice,
+	accountID,
+	propertyTitle,
+	unitTitle
 }) => {
 	const [date, setDate] = useState<Date | undefined>();
 	const [isCalendarOpen, setIsCalendarOpen] = useState(false);
@@ -87,6 +98,11 @@ export const BookingCardModal: React.FC<BookingCardProps> = ({
 			setHasReservation(true);
 			if (selectedService === 'Room Reservation') setIsUnitReserved(true);
 			toast.success('Reservation successfully created!');
+			if (selectedService === 'On-Site Visit'){
+				await onsiteNotification(accountID, propertyTitle, unitTitle);
+			}else{
+				await reservationNotification(accountID, propertyTitle, unitTitle);
+			}
 		} else {
 			toast.error(`Error: ${result.error}`);
 		}
@@ -103,6 +119,7 @@ export const BookingCardModal: React.FC<BookingCardProps> = ({
 				</DialogHeader>
 
 				<div className='grid w-full items-center gap-5'>
+					{/* Service Selection */}
 					<div className='flex flex-col space-y-1.5'>
 						<Label htmlFor='service' className='font-semibold'>
 							Service Option
@@ -135,11 +152,10 @@ export const BookingCardModal: React.FC<BookingCardProps> = ({
 						</RadioGroup>
 					</div>
 
+					{/* Date Picker */}
 					<div className='relative'>
 						<Label htmlFor='date' className='font-semibold'>
-							{selectedService === 'On-Site Visit'
-								? 'Visit Date'
-								: 'Date of Move'}
+							{selectedService === 'On-Site Visit' ? 'Visit Date' : 'Date of Move'}
 						</Label>
 						<p className='text-xs text-gray-500 mb-2 dark:text-gray-300'>
 							{selectedService === 'On-Site Visit'
@@ -179,6 +195,7 @@ export const BookingCardModal: React.FC<BookingCardProps> = ({
 						)}
 					</div>
 
+					{/* Pricing Breakdown */}
 					{selectedService === 'Room Reservation' && (
 						<>
 							<div className='flex flex-col space-y-1.5'>
@@ -199,6 +216,7 @@ export const BookingCardModal: React.FC<BookingCardProps> = ({
 								/>
 							</div>
 
+							{/* Payment Option */}
 							<div className='flex flex-col space-y-2'>
 								<Label
 									htmlFor='payment'
@@ -255,25 +273,36 @@ export const BookingCardModal: React.FC<BookingCardProps> = ({
 									</div>
 								</RadioGroup>
 							</div>
+
+							{/* Pricing Table */}
+							<div className='mt-4 border-t border-gray-300 pt-4'>
+								<h3 className='font-semibold text-lg mb-2 dark:text-gray-200'>
+									Pricing Breakdown
+								</h3>
+								<ul className='space-y-2 text-gray-700 dark:text-gray-300'>
+									<li className='flex justify-between'>
+										<span>1-month Advance:</span>
+										<span>₱{unitPrice}</span>
+									</li>
+									<li className='flex justify-between'>
+										<span>1-month Deposit:</span>
+										<span>₱{unitPrice}</span>
+									</li>
+									<li className='flex justify-between font-semibold'>
+										<span>Total:</span>
+										<span>₱{unitPrice * 2}</span>
+									</li>
+								</ul>
+								<div className='mt-2 text-sm text-gray-500 dark:text-gray-400'>
+									*You may upload your receipt on Message Section
+								</div>
+							</div>
 						</>
 					)}
 				</div>
 
-				{selectedService === 'Room Reservation' && (
-					<Table className='min-w-full'>
-						<TableFooter>
-							<TableRow className='bg-white dark:bg-accent'>
-								<TableCell className='font-semibold p-0'>
-									Initial Total
-								</TableCell>
-								<TableCell className='text-right'>₱10500</TableCell>
-							</TableRow>
-						</TableFooter>
-					</Table>
-				)}
-
 				<Button
-					className='w-full'
+					className='w-full mt-4'
 					onClick={handleReserve}
 					disabled={
 						!date || !selectedService || hasReservation || isUnitReserved
@@ -287,5 +316,6 @@ export const BookingCardModal: React.FC<BookingCardProps> = ({
 				</Button>
 			</DialogContent>
 		</Dialog>
+
 	);
 };

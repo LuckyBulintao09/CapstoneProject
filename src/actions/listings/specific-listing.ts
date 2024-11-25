@@ -1,3 +1,4 @@
+"use server"
 import { createClient } from "@/utils/supabase/client";
 
 const supabase = createClient();
@@ -49,12 +50,13 @@ export const fetchPropertyReviews = async (propertyId: number) => {
 
 export const fetchPropertyFacilities = async (propertyId: number) => {
   const { data, error } = await supabase
-  .rpc('get_property_common_amenities', { p_id: propertyId })
+  .rpc('get_property_common_amenities', { p_id: 17 })
 
   if (error) {
     console.error("Error fetching property facilities:", error);
     return null;
-  }
+  } 
+  console.log(data)
   return data.map(item => item.amenity_name)
 }
 
@@ -66,8 +68,8 @@ export const fetchPropertyUnits = async (propertyId: number) => {
     console.error("Error fetching property units:", unitError);
     return null;
   }
+  console.log(units)
   return units
-  //KULANG PA COLUMNS NA NIRERETURN
 }
 
 

@@ -84,7 +84,7 @@ export function NotificationPopover() {
 						},
 						...prev,
 					]);
-					setUnreadCount(data.filter((n) => !n.statusRead).length);
+					setUnreadCount((prev) => prev + 1);
 				}
 			)
 			.subscribe();
@@ -130,7 +130,7 @@ export function NotificationPopover() {
 							Notifications
 						</div>
 						{notifications?.length > 0 ? (
-							<div className='space-y-3'>
+							<div className='space-y-1'>
 								{notifications.map(({ id, text, time }) => (
 									<div
 										key={id}
