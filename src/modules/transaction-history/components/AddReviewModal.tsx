@@ -138,6 +138,26 @@ const AddReviewModal = ({
 
 				<div className='grid w-full items-center gap-5'>
 					<form>
+						{/* Overall Rating */}
+						<div className='flex items-center flex-col space-y-1.5 mb-4'>
+							<Label htmlFor='property_rating'>Overall Property Rating</Label>
+							<div className='flex mb-4 flex-wrap gap-1'>
+								{Array.from({ length: 5 }).map((_, index) => (
+									<Star
+										key={index}
+										onClick={() => setRating(index + 1)}
+										onMouseEnter={() => setHoverRating(index + 1)}
+										onMouseLeave={() => setHoverRating(0)}
+										className={`h-6 w-6 md:h-8 md:w-8 cursor-pointer ${
+											(hoverRating || rating) > index
+												? 'text-amber-500'
+												: 'text-gray-400'
+										}`}
+									/>
+								))}
+							</div>
+						</div>
+
 						{/* Location Rating */}
 						<div className='flex flex-col space-y-1.5 mb-4'>
 							<Label htmlFor='location'>Location Score</Label>
@@ -249,26 +269,6 @@ const AddReviewModal = ({
 										</TooltipProvider>
 									))}
 								</div>
-							</div>
-						</div>
-
-						{/* Overall Rating */}
-						<div className='flex flex-col space-y-1.5 mb-4'>
-							<Label htmlFor='property_rating'>Overall Property Rating</Label>
-							<div className='flex mb-4 flex-wrap gap-1'>
-								{Array.from({ length: 5 }).map((_, index) => (
-									<Star
-										key={index}
-										onClick={() => setRating(index + 1)}
-										onMouseEnter={() => setHoverRating(index + 1)}
-										onMouseLeave={() => setHoverRating(0)}
-										className={`h-6 w-6 md:h-8 md:w-8 cursor-pointer ${
-											(hoverRating || rating) > index
-												? 'text-amber-500'
-												: 'text-gray-400'
-										}`}
-									/>
-								))}
 							</div>
 						</div>
 
