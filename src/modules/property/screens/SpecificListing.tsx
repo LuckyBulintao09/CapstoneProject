@@ -96,6 +96,8 @@ export function SpecificListing({ id }: SpecificListingProps) {
 	const [selectedImage, setSelectedImage] = useState<string | null>(null);
 	const [isBookingModalOpen, setIsBookingModalOpen] = useState(false);
 	const [selectedUnit, setSelectedUnit] = useState<any>(null);
+	const [selectedUnitTitle, setSelectedUnitTitle] = useState<any>(null);
+	const [selectedUnitPrice, setSelectedUnitPrice] = useState(0);
 	const [unitImage, setUnitImage] = useState<any>(null);
 	const [unitCount, setUnitCount] = useState(0);
 	const [totalOccupants, setTotalOccupants] = useState(0);
@@ -164,6 +166,7 @@ export function SpecificListing({ id }: SpecificListingProps) {
 			}
 		};
 		loadUserAndProperty();
+		console.log(property)
 	}, [id, isFavourite]);
 
 	const sortedUnits = useMemo(() => {
@@ -294,10 +297,12 @@ export function SpecificListing({ id }: SpecificListingProps) {
 		);
 	};
 
-	const handleOpenBookingModal = (unit_id: number, availableSpots: number) => {
+	const handleOpenBookingModal = (unit_id: number, availableSpots: number, unitPrice: number, unitTitle: string) => {
 		setIsBookingModalOpen(true);
 		setSelectedUnit(unit_id);
 		setAvailableSpots(availableSpots);
+		setSelectedUnitPrice(unitPrice);
+		setSelectedUnitTitle(unitTitle);
 		// const unit = units.find((u) => u.id === unit_id);
 		// setSelectedUnitOccupants(unit ? unit.occupants : 0);
 	};
@@ -349,7 +354,11 @@ export function SpecificListing({ id }: SpecificListingProps) {
 	}
 	if (!property) return <div>No property found.</div>;
 
-	const { title, address, structure, description } = property;
+	const { title, address, structure, description, company:{
+		account: {
+			id: accountId
+		}
+	} } = property;
 
 	return (
 		<div className='px-32 md:px-24 sm:px-20 xs:px-10 dark:bg-secondary'>
@@ -610,7 +619,9 @@ export function SpecificListing({ id }: SpecificListingProps) {
 														onClick={() =>
 															handleOpenBookingModal(
 																unit.id,
-																unit.occupants - unit.current_occupants
+																unit.occupants - unit.current_occupants,
+																unit.price,
+																unit.title
 															)
 														}
 													>
@@ -638,6 +649,10 @@ export function SpecificListing({ id }: SpecificListingProps) {
 				onClose={handleCloseBookingModal}
 				unitID={selectedUnit}
 				availableSpots={availableSpots}
+				unitPrice={selectedUnitPrice}
+				accountID={accountId}
+				propertyTitle={title}
+				unitTitle={selectedUnitTitle}
 			/>
 
 			{/* REVIEWS */}
