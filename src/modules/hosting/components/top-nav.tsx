@@ -302,8 +302,7 @@ function TopNavigation() {
 									<SheetHeader className='sr-only'>
 										<SheetTitle>Navigation menu</SheetTitle>
 										<SheetDescription>
-											This action cannot be undone. This will permanently delete
-											your account and remove your data from our servers.
+											Mobile navigation menu.
 										</SheetDescription>
 									</SheetHeader>
 									<div className='grid gap-11 py-7'>

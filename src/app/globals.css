@@ -27,6 +27,9 @@ body {
     -ms-overflow-style: none; /* IE and Edge */
     scrollbar-width: none; /* Firefox */
   }
+  .custom-translate3d {
+    transform: translate3d(0, 0, 0);
+  }
 }
 
 @layer base {
