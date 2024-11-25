@@ -26,9 +26,10 @@ import {
 	checkExistingReservation,
 } from '@/actions/listings/booking-process';
 import { toast } from 'sonner';
-import { onsiteNotification,
-	reservationNotification
- } from '@/actions/notification/notification';
+import {
+	onsiteNotification,
+	reservationNotification,
+} from '@/actions/notification/notification';
 
 interface BookingCardProps {
 	isOpen: boolean;
@@ -49,7 +50,7 @@ export const BookingCardModal: React.FC<BookingCardProps> = ({
 	unitPrice,
 	accountID,
 	propertyTitle,
-	unitTitle
+	unitTitle,
 }) => {
 	const [date, setDate] = useState<Date | undefined>();
 	const [isCalendarOpen, setIsCalendarOpen] = useState(false);
@@ -97,11 +98,9 @@ export const BookingCardModal: React.FC<BookingCardProps> = ({
 			setHasReservation(true);
 			if (selectedService === 'Room Reservation') setIsUnitReserved(true);
 			toast.success('Reservation successfully created!');
-			await (selectedService === 'On-Site Visit' ? onsiteNotification : reservationNotification)(
-				accountID,
-				propertyTitle,
-				unitTitle
-			);
+			await (selectedService === 'On-Site Visit'
+				? onsiteNotification
+				: reservationNotification)(accountID, propertyTitle, unitTitle);
 		} else {
 			toast.error(`Error: ${result.error}`);
 		}
@@ -109,7 +108,7 @@ export const BookingCardModal: React.FC<BookingCardProps> = ({
 
 	return (
 		<Dialog open={isOpen} onOpenChange={onClose}>
-			<DialogContent className='max-w-[80%] bg-white dark:bg-secondary shadow-lg rounded-lg'>
+			<DialogContent className='max-w-[80%] lg:max-w-[50%] max-h-[80%] bg-white dark:bg-secondary shadow-lg rounded-lg overflow-y-auto'>
 				<DialogHeader>
 					<DialogTitle>Book Now</DialogTitle>
 					<DialogDescription className='border-b border-gray-300 dark:text-gray-200 pb-2'>
@@ -154,7 +153,9 @@ export const BookingCardModal: React.FC<BookingCardProps> = ({
 					{/* Date Picker */}
 					<div className='relative'>
 						<Label htmlFor='date' className='font-semibold'>
-							{selectedService === 'On-Site Visit' ? 'Visit Date' : 'Date of Move'}
+							{selectedService === 'On-Site Visit'
+								? 'Visit Date'
+								: 'Date of Move'}
 						</Label>
 						<p className='text-xs text-gray-500 mb-2 dark:text-gray-300'>
 							{selectedService === 'On-Site Visit'
@@ -273,12 +274,15 @@ export const BookingCardModal: React.FC<BookingCardProps> = ({
 								</RadioGroup>
 							</div>
 
-							{/* Pricing Table */}
-							<div className='mt-4 border-t border-gray-300 pt-4'>
-								<h3 className='font-semibold text-lg mb-2 dark:text-gray-200'>
+							{/* Pricing */}
+							<div className='flex flex-col space-y-2 border-t border-gray-300 pt-4'>
+								<Label
+									htmlFor='payment'
+									className='font-semibold flex items-center'
+								>
 									Pricing Breakdown
-								</h3>
-								<ul className='space-y-2 text-gray-700 dark:text-gray-300'>
+								</Label>
+								<ul className='space-y-1 text-gray-700 dark:text-gray-300 text-sm'>
 									<li className='flex justify-between'>
 										<span>1-month Advance:</span>
 										<span>₱{unitPrice}</span>
@@ -292,7 +296,7 @@ export const BookingCardModal: React.FC<BookingCardProps> = ({
 										<span>₱{unitPrice * 2}</span>
 									</li>
 								</ul>
-								<div className='mt-2 text-sm text-gray-500 dark:text-gray-400'>
+								<div className='mt-2 text-xs text-gray-500 dark:text-gray-400'>
 									*You may upload your receipt on Message Section
 								</div>
 							</div>
@@ -301,7 +305,7 @@ export const BookingCardModal: React.FC<BookingCardProps> = ({
 				</div>
 
 				<Button
-					className='w-full mt-4'
+					className='w-full mt-2'
 					onClick={handleReserve}
 					disabled={
 						!date || !selectedService || hasReservation || isUnitReserved
@@ -315,6 +319,5 @@ export const BookingCardModal: React.FC<BookingCardProps> = ({
 				</Button>
 			</DialogContent>
 		</Dialog>
-
 	);
 };
