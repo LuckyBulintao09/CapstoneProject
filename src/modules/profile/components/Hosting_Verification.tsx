@@ -21,22 +21,57 @@ const HostingVerification: React.FC = () => {
   const [govIdUrl, setGovIdUrl] = useState<string | null>(null);
   const [userId, setUserId] = useState<string | null>(null);
   const [isApproved, setIsApproved] = useState<boolean>(false);
+  const [isRejected, setIsRejected] = useState<boolean>(false);
+  const [declineReason, setDeclineReason] = useState<string | null>(null);
   const [fileWarning, setFileWarning] = useState<string | null>(null);
 
-  useEffect(() => {
-    const initializeUserSession = async () => {
-      const user = await getUserSession();
-      if (user) {
-        setUserId(user.id);
-        const govIdData = await fetchGovId(user.id);
-        if (govIdData) {
-          setGovIdUrl(govIdData.governmentIdUrl);
-          setIsApproved(govIdData.isApproved);
-        }
-      }
+  const [prevState, setPrevState] = useState<{
+    govIdUrl: string | null;
+    isApproved: boolean;
+    isRejected: boolean;
+    declineReason: string | null;
+  } | null>(null);
+
+  const fetchVerificationData = async () => {
+    const user = await getUserSession();
+    if (!user) return;
+
+    setUserId(user.id);
+
+    const govIdData = await fetchGovId(user.id);
+    if (!govIdData) return;
+
+    const formattedData = {
+      govIdUrl: govIdData.governmentIdUrl || null,
+      isApproved: govIdData.isApproved || false,
+      isRejected: govIdData.isRejected || false,
+      declineReason: govIdData.declineReason || null,
     };
-    initializeUserSession();
-  }, []);
+
+    const hasChanged =
+      formattedData.govIdUrl !== prevState?.govIdUrl ||
+      formattedData.isApproved !== prevState?.isApproved ||
+      formattedData.isRejected !== prevState?.isRejected ||
+      formattedData.declineReason !== prevState?.declineReason;
+
+    if (hasChanged) {
+      setGovIdUrl(formattedData.govIdUrl);
+      setIsApproved(formattedData.isApproved);
+      setIsRejected(formattedData.isRejected);
+      setDeclineReason(formattedData.declineReason);
+      setPrevState(formattedData);
+    }
+  };
+
+  useEffect(() => {
+    fetchVerificationData();
+
+    const interval = setInterval(() => {
+      fetchVerificationData();
+    }, 10000);
+
+    return () => clearInterval(interval);
+  }, [prevState]);
 
   const handleFileChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     const newFile = event.target.files ? event.target.files[0] : null;
@@ -53,6 +88,8 @@ const HostingVerification: React.FC = () => {
     const publicUrl = await uploadGovernmentId(file, userId);
     if (publicUrl) {
       setGovIdUrl(publicUrl);
+      setIsRejected(false);
+      setDeclineReason(null);
     }
   };
 
@@ -63,6 +100,8 @@ const HostingVerification: React.FC = () => {
     if (success) {
       setGovIdUrl(null);
       setIsApproved(false);
+      setIsRejected(false);
+      setDeclineReason(null);
     }
   };
 
@@ -100,6 +139,38 @@ const HostingVerification: React.FC = () => {
                       now proceed with your listings.
                     </p>
                   </div>
+                ) : isRejected ? (
+                  <div className="text-red-700 p-4 rounded-md">
+                    <p className="font-bold">Rejected</p>
+                    <p>
+                      Your document has been rejected. Please upload a valid ID
+                      again for verification.
+                    </p>
+                    {declineReason && (
+                      <p className="text-sm mt-2">
+                        <strong>Reason:</strong> {declineReason}
+                      </p>
+                    )}
+                    <div className="flex flex-col justify-center mt-6">
+                      <input
+                        type="file"
+                        accept="image/*"
+                        onChange={handleFileChange}
+                        className="file-input-class"
+                      />
+                      {fileWarning && (
+                        <p className="text-red-600 mt-2 text-sm">
+                          {fileWarning}
+                        </p>
+                      )}
+                      <Button
+                        className="w-full md:w-[48%] lg:w-[30%] xl:w-[25%] bg-black text-white hover:bg-gray-800 mt-2"
+                        onClick={handleSubmit}
+                      >
+                        {spiels.BUTTON_SEND_REQUEST}
+                      </Button>
+                    </div>
+                  </div>
                 ) : govIdUrl ? (
                   <div className="text-yellow-700 p-4 rounded-md">
                     <p className="font-bold">Waiting for verification</p>
@@ -124,7 +195,7 @@ const HostingVerification: React.FC = () => {
                   </p>
                 )}
               </div>
-              {!govIdUrl && (
+              {!govIdUrl && !isRejected && (
                 <div className="flex flex-col justify-center md:w-1/2 lg:w-[205px] mt-6">
                   <input
                     type="file"
@@ -138,7 +209,7 @@ const HostingVerification: React.FC = () => {
                 </div>
               )}
             </div>
-            {!govIdUrl && (
+            {!govIdUrl && !isRejected && (
               <Button
                 className="w-full md:w-[48%] lg:w-[30%] xl:w-[25%] bg-black text-white hover:bg-gray-800 mt-2"
                 onClick={handleSubmit}

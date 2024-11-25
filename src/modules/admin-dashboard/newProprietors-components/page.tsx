@@ -1,48 +1,49 @@
-'use client';
-import React, { useEffect, useState } from 'react';
-import { DataTable } from '@/components/table/data-table';
-import { columns, NewProprietors } from './columns';
-import { getPendingProprietors } from '@/actions/admin/getPendingProprietors';
+"use client";
+import React, { useEffect, useState } from "react";
+import { DataTable } from "@/components/table/data-table";
+import { columns, NewProprietors } from "./columns";
+import { getPendingProprietors } from "@/actions/admin/getPendingProprietors";
 
 const NewProprietorsDashboard = ({ onCountUpdate }) => {
-	const [data, setData] = useState<NewProprietors[]>([]);
-	const [loading, setLoading] = useState<boolean>(true);
+  const [data, setData] = useState<NewProprietors[]>([]);
+  const [loading, setLoading] = useState<boolean>(true);
 
-	useEffect(() => {
-		const fetchPendingProprietors = async () => {
-			setLoading(true);
-			const pendingProprietors = await getPendingProprietors();
-			if (pendingProprietors) {
-				const mappedData = pendingProprietors.map((proprietor) => ({
-					id: proprietor.id,
-					proprietor_name: `${proprietor.firstname} ${proprietor.lastname}`,
-					email: proprietor.email,
-					cp_number: proprietor.cp_number,
-					dob: proprietor.dob,
-					govIdUrl: proprietor.government_ID_url,
-				}));
-				setData(mappedData);
-				onCountUpdate(mappedData.length);
-			}
-			setLoading(false);
-		};
-		fetchPendingProprietors();
-	}, []);
+  useEffect(() => {
+    const fetchPendingProprietors = async () => {
+      setLoading(true);
+      const pendingProprietors = await getPendingProprietors();
+      if (pendingProprietors) {
+        const mappedData = pendingProprietors.map((proprietor) => ({
+          id: proprietor.id,
+          proprietor_name: `${proprietor.firstname} ${proprietor.lastname}`,
+          email: proprietor.email,
+          cp_number: proprietor.cp_number,
+          dob: proprietor.dob,
+          govIdUrl: proprietor.government_ID_url,
+        }));
+        setData(mappedData);
+        onCountUpdate?.(mappedData.length);
+      }
+      setLoading(false);
+    };
 
-	const handleProprietorUpdate = (proprietorId: string) => {
-		setData((prevData) =>
-			prevData.filter((proprietor) => proprietor.id !== proprietorId)
-		);
-		onCountUpdate(data.length - 1);
-	};
+    fetchPendingProprietors();
+  }, []);
 
-	return (
-		<DataTable
-			columns={columns(handleProprietorUpdate)}
-			data={data}
-			loading={loading}
-		/>
-	);
+  const handleProprietorUpdate = (proprietorId: string) => {
+    setData((prevData) =>
+      prevData.filter((proprietor) => proprietor.id !== proprietorId)
+    );
+    onCountUpdate(data.length - 1);
+  };
+
+  return (
+    <DataTable
+      columns={columns(handleProprietorUpdate)}
+      data={data}
+      loading={loading}
+    />
+  );
 };
 
 export default NewProprietorsDashboard;
