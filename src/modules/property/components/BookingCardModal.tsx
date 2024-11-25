@@ -5,7 +5,6 @@ import { Label } from '@/components/ui/label';
 import { Calendar } from '@/components/ui/calendar';
 import { CalendarIcon, Info } from 'lucide-react';
 import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group';
-import { Table, TableFooter, TableRow, TableCell } from '@/components/ui/table';
 import {
 	Dialog,
 	DialogContent,
@@ -98,11 +97,11 @@ export const BookingCardModal: React.FC<BookingCardProps> = ({
 			setHasReservation(true);
 			if (selectedService === 'Room Reservation') setIsUnitReserved(true);
 			toast.success('Reservation successfully created!');
-			if (selectedService === 'On-Site Visit'){
-				await onsiteNotification(accountID, propertyTitle, unitTitle);
-			}else{
-				await reservationNotification(accountID, propertyTitle, unitTitle);
-			}
+			await (selectedService === 'On-Site Visit' ? onsiteNotification : reservationNotification)(
+				accountID,
+				propertyTitle,
+				unitTitle
+			);
 		} else {
 			toast.error(`Error: ${result.error}`);
 		}
