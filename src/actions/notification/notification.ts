@@ -1,15 +1,9 @@
-import { createClient } from "@/utils/supabase/client";
+"use server"
+import { createClient } from "@/utils/supabase/server";
+import { dataFocusVisibleClasses } from "@nextui-org/theme";
+import { useEffect } from "react";
 
 const supabase = createClient();
-
-export const fetchUser = async () => {
-  const { data, error } = await supabase.auth.getUser();
-  if (error) {
-    console.error("Error fetching user:", error);
-    return null;
-  }
-  return data.user?.id || null;
-};
 
 export const checkReservationConflict = async (userId: string) => {
   try {
@@ -99,3 +93,31 @@ export const checkReservationConflict = async (userId: string) => {
     return [];
   }
 };
+
+export const fetchNotifications = async (userId : string) => {
+  const { data, error } = await supabase
+    .from("notifications")
+    .select("*")
+    .eq("receiver_id", userId)
+    .order("created_at", { ascending: false });
+  if (error) throw error;
+  return data;
+}
+
+export const reservationNotification = async (userId : string, propertyTitle : string, unitTitle : string) => {
+  const { data, error } = await supabase
+    .from("notifications")
+    .insert({ receiver_id: userId, text: `Transaction: Room Reservation for ${propertyTitle} - ${unitTitle}` });
+  if (error) throw error;
+}
+
+export const onsiteNotification = async (userId : string, propertyTitle : string, unitTitle : string) => {
+  const { data, error } = await supabase
+    .from("notifications")
+    .insert({ receiver_id: userId, text: `Transaction: Onsite Visit for ${propertyTitle} - ${unitTitle}` });
+  if (error) throw error;
+}
+
+
+//transaction status update
+//admin status update

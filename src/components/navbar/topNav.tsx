@@ -196,7 +196,7 @@ function NavigationBar() {
 							{/* Notification here */}
 
 							<ModeToggle />
-							<NotificationPopover />
+							<NotificationPopover/>
 							<Separator orientation='vertical' className='mx-2 bg-gray-300' />
 							{user ? (
 								<DropdownMenu modal={false}>

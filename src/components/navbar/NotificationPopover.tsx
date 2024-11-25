@@ -1,12 +1,13 @@
 import { useState, useEffect } from 'react';
-import { Popover, PopoverTrigger, PopoverContent } from '@nextui-org/react';
+import { Popover, PopoverTrigger, PopoverContent, user } from '@nextui-org/react';
 import { BellIcon } from '@radix-ui/react-icons';
 import {
-	checkReservationConflict,
-	fetchUser,
+	fetchNotifications,
 } from '@/actions/notification/notification';
 import { ScrollArea } from '@/components/ui/scroll-area';
 import { Bell, BellElectric, BellRing } from 'lucide-react';
+import { createClient } from '@/utils/supabase/client';
+import { format } from "date-fns";
 
 type Notification = {
 	id: string;
@@ -23,17 +24,20 @@ type CustomPlacement =
 	| 'right';
 
 export function NotificationPopover() {
-	const [notifications, setNotifications] = useState<Notification[]>([]);
+	const supabase = createClient();
+
+	const [notifications, setNotifications] = useState<any[]>([]);
 	const [unreadCount, setUnreadCount] = useState(0);
 	const [isPopoverOpen, setIsPopoverOpen] = useState(false);
 	const [placement, setPlacement] = useState<CustomPlacement>('bottom-end');
 	const [isUserLoggedIn, setIsUserLoggedIn] = useState(false);
+	const [user, setUser] = useState<any>(null);
 
 	useEffect(() => {
-		(async () => {
-			const userId = await fetchUser();
-			setIsUserLoggedIn(!!userId);
-		})();
+		supabase.auth.getSession().then(({ data: { session } }) => {
+			setIsUserLoggedIn(!!session);
+			setUser(session.user.id);
+		})
 	}, []);
 
 	useEffect(() => {
@@ -47,33 +51,53 @@ export function NotificationPopover() {
 	}, [isUserLoggedIn]);
 
 	useEffect(() => {
-		if (!isUserLoggedIn) return;
+		if (!user) return;
 
-		const fetchNotifications = async () => {
-			const userId = await fetchUser();
-			if (!userId) return;
-
-			const conflicts = await checkReservationConflict(userId);
-			const newNotifications = conflicts
-				.filter(({ message, unitId }) =>
-					notifications.every((notif) => notif.id !== `${message}-${unitId}`)
-				)
-				.map((conflict) => ({
-					id: `${conflict.message}-${conflict.unitId}`,
-					message: conflict.message,
-					time: new Date().toLocaleTimeString(),
-				}));
-
-			if (newNotifications.length > 0) {
-				setNotifications((prev) => [...prev, ...newNotifications]);
-				setUnreadCount(newNotifications.length);
-			}
+		const fetchOldNotif = async () => {
+			const data = await fetchNotifications(user);
+			setNotifications(
+				data.map((n) => ({
+					...n,
+					time: format(new Date(n.created_at), 'Pp'),
+				}))
+			);
+			setUnreadCount(data.filter((n) => !n.statusRead).length);
 		};
+		fetchOldNotif();
 
-		fetchNotifications();
-		const interval = setInterval(fetchNotifications, 60000);
-		return () => clearInterval(interval);
-	}, [notifications, isUserLoggedIn]);
+
+		const { data: subscription } = supabase
+			.channel('notifications')
+			.on(
+				'postgres_changes',
+				{
+					event: 'INSERT',
+					schema: 'public',
+					table: 'notifications',
+					filter: `receiver_id=eq.${user}`,
+				},
+				(payload) => {
+					setNotifications((prev) => [
+						{
+							...payload.new,
+							time: format(new Date(payload.new.created_at), 'Pp'),
+						},
+						...prev,
+					]);
+					setUnreadCount((prev) => prev + 1);
+				}
+			)
+			.subscribe();
+		return () => subscription?.unsubscribe();
+	}, [user]);
+
+	const handleNotificationRead = async () => {
+		const { error } = await supabase
+			.from('notifications')
+			.update({ statusRead: true })
+			.eq('receiver_id', user);
+		if (error) throw error;
+	};
 
 	if (!isUserLoggedIn) return null;
 
@@ -86,6 +110,7 @@ export function NotificationPopover() {
 			onOpenChange={(isOpen) => {
 				setIsPopoverOpen(isOpen);
 				if (isOpen) setUnreadCount(0);
+				handleNotificationRead()
 			}}
 		>
 			<PopoverTrigger>
@@ -104,15 +129,15 @@ export function NotificationPopover() {
 						<div className='mb-2 text-sm font-semibold lg:pl-0 pl-4 text-foreground'>
 							Notifications
 						</div>
-						{notifications.length > 0 ? (
-							<div className='space-y-3'>
-								{notifications.map(({ id, message, time }) => (
+						{notifications?.length > 0 ? (
+							<div className='space-y-1'>
+								{notifications.map(({ id, text, time }) => (
 									<div
 										key={id}
 										className='flex items-start gap-2 p-3 bg-gray-50 rounded-lg'
 									>
 										<div className='flex-1'>
-											<div className='text-sm text-gray-800'>{message}</div>
+											<div className='text-sm text-gray-800'>{text}</div>
 											<div className='mt-1 text-xs text-gray-500'>{time}</div>
 										</div>
 									</div>
