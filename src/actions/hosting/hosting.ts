@@ -21,7 +21,9 @@ export const fetchGovId = async (userId: string) => {
   try {
     const { data, error } = await supabase
       .from("account")
-      .select("government_ID_url, approved_government")
+      .select(
+        "government_ID_url, approved_government, rejected_government, decline_reason"
+      )
       .eq("id", userId)
       .single();
 
@@ -31,8 +33,10 @@ export const fetchGovId = async (userId: string) => {
     }
 
     return {
-      governmentIdUrl: data?.government_ID_url,
-      isApproved: data?.approved_government,
+      governmentIdUrl: data?.government_ID_url || null,
+      isApproved: data?.approved_government || false,
+      isRejected: data?.rejected_government || false,
+      declineReason: data?.decline_reason || null,
     };
   } catch {
     toast.error("Unexpected error while fetching government ID.");
@@ -66,7 +70,11 @@ export const uploadGovernmentId = async (file: File, userId: string) => {
 
     const { error: updateError } = await supabase
       .from("account")
-      .update({ government_ID_url: publicUrlData.publicUrl })
+      .update({
+        government_ID_url: publicUrlData.publicUrl,
+        rejected_government: false, 
+        decline_reason: null, 
+      })
       .eq("id", userId);
 
     if (updateError) {
@@ -88,7 +96,11 @@ export const cancelVerification = async (
   try {
     const { error: deleteError } = await supabase
       .from("account")
-      .update({ government_ID_url: null })
+      .update({
+        government_ID_url: null,
+        rejected_government: false, 
+        decline_reason: null, 
+      })
       .eq("id", userId);
 
     if (deleteError) {

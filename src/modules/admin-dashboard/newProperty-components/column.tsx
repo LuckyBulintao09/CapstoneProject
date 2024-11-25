@@ -1,11 +1,11 @@
 "use client";
 import React, { useState, useEffect } from "react";
 import { ColumnDef, Row } from "@tanstack/react-table";
-import { Switch } from "@nextui-org/react";
-import { DataTableColumnHeader } from "@/components/table/data-column-header";
-import { CheckIcon, XMarkIcon } from "@heroicons/react/24/solid";
+import { Button } from "@/components/ui/button";
 import { createClient } from "@/utils/supabase/client";
+import { DataTableColumnHeader } from "@/components/table/data-column-header";
 import PropertyModal from "../components/PropertyModal";
+import RejectionReasonModal from "../components/RejectionReasonModal";
 
 const supabase = createClient();
 
@@ -19,6 +19,7 @@ export type PropertyListing = {
   propertyImageUrls?: string[];
   createdAt: string;
   isApproved: boolean;
+  isRejected: boolean;
   dueDate?: string | null;
 };
 
@@ -77,64 +78,120 @@ const PropertyListingActionsCell = ({
   row,
   onPropertyUpdate,
 }: {
-  row: Row<PropertyListing>;
-  onPropertyUpdate: (id: string, isApproved: boolean) => void;
+  row: any;
+  onPropertyUpdate: (
+    id: string,
+    isApproved: boolean,
+    isRejected?: boolean
+  ) => void;
 }) => {
-  const [isApproved, setIsApproved] = useState(row.original.isApproved);
   const [loading, setLoading] = useState(false);
+  const [isApproved, setIsApproved] = useState(row.original.isApproved);
+  const [isRejected, setIsRejected] = useState(row.original.isRejected);
+  const [isModalOpen, setModalOpen] = useState(false);
 
   useEffect(() => {
+    // Sync local state with row data
     setIsApproved(row.original.isApproved);
-  }, [row.original.isApproved]);
+    setIsRejected(row.original.isRejected);
+  }, [row.original.isApproved, row.original.isRejected]);
 
-  const handleApprovalToggle = async (newValue: boolean) => {
-    setIsApproved(newValue);
+  const handleApproveClick = async () => {
     setLoading(true);
 
     try {
-      const updates: Partial<PropertyListing> = { isApproved: newValue };
-
-      if (newValue) {
-        const dueDate = new Date();
-        dueDate.setFullYear(dueDate.getFullYear() + 2);
-        updates.due_date = dueDate.toISOString();
-      } else {
-        updates.due_date = null;
-      }
+      const updates = {
+        isApproved: true,
+        isRejected: false, 
+        due_date: new Date().toISOString().slice(0, 10),
+      };
 
       const { error } = await supabase
         .from("property")
         .update(updates)
         .eq("id", row.original.id);
 
-      if (error) {
-        console.error("Error updating approval status:", error);
-        setIsApproved(!newValue);
-      } else {
-        onPropertyUpdate(row.original.id, newValue);
+      if (!error) {
+        setIsApproved(true);
+        setIsRejected(false);
+        onPropertyUpdate(row.original.id, true, false);
       }
     } catch (error) {
-      console.error("Unexpected error:", error);
-      setIsApproved(!newValue);
+      console.error("Error updating approval:", error);
     } finally {
       setLoading(false);
     }
   };
 
+  const handleRejectClick = async (reason: string) => {
+    setLoading(true);
+
+    try {
+      const updates = {
+        isApproved: false,
+        isRejected: true,
+        decline_reason: reason,
+        due_date: null,
+      };
+
+      const { error } = await supabase
+        .from("property")
+        .update(updates)
+        .eq("id", row.original.id);
+
+      if (!error) {
+        setIsApproved(false);
+        setIsRejected(true);
+        onPropertyUpdate(row.original.id, false, true);
+      }
+    } catch (error) {
+      console.error("Error updating rejection:", error);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  
+  if (isApproved) {
+    return <span className="text-blue-500 font-bold">Approved</span>;
+  }
+
+  if (isRejected) {
+    return <span className="text-red-500 font-bold">Rejected</span>;
+  }
+
   return (
-    <Switch
-      isSelected={isApproved}
-      size="lg"
-      color={isApproved ? "primary" : "error"}
-      onValueChange={(value) => !loading && handleApprovalToggle(value)}
-      startContent={<CheckIcon className="h-5 w-5 text-green-500" />}
-      endContent={<XMarkIcon className="h-5 w-5 text-red-500" />}
-    />
+    <div className="flex gap-2">
+      <Button
+        variant="default"
+        size="sm"
+        onClick={handleApproveClick}
+      >
+        Approve
+      </Button>
+      <Button
+        variant="outline"
+        size="sm"
+        onClick={() => setModalOpen(true)}
+      >
+        Reject
+      </Button>
+
+      <RejectionReasonModal
+        isOpen={isModalOpen}
+        onClose={() => setModalOpen(false)}
+        onSubmit={(reason) => handleRejectClick(reason)}
+      />
+    </div>
   );
 };
 
 export const columns = (
-  handlePropertyUpdate: (id: string, isApproved: boolean) => void
+  handlePropertyUpdate: (
+    id: string,
+    isApproved: boolean,
+    isRejected: boolean
+  ) => void
 ): ColumnDef<PropertyListing>[] => [
   {
     accessorKey: "proprietor_name",
