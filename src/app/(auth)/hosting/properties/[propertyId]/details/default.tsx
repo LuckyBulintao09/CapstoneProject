@@ -206,6 +206,21 @@ async function PropertyDetailsPage({ params }: { params: { propertyId: string } 
                 </div>
             </div>
 
+            <div>
+                <div className="shadow-xl border rounded-lg relative p-[22px]">
+                    <span className="text-[1rem] leading-5 tracking-normal font-[500]">Documents</span>
+                    <Link
+                        href={`/hosting/properties/17/details/documents`}
+                        className="left-0 right-0 p-0 m-0 absolute bg-transparent top-0 bottom-0 z-[2] outline-none"
+                    ></Link>
+                    <div>
+                        <div className="pt-2 overflow-clip text-[1rem] tracking-normal leading-5 text-ellipsis font-normal whitespace-pre-line text-muted-foreground">
+                            <div>{"3 documents submitted"}</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
             <div className="absolute left-[calc(44px+32px)] right-[64px] mx-auto my-0 bottom-[40px] w-max z-[3] ">
                 <Link
                     href={`/hosting/properties/${params.propertyId}/view-your-space`}
