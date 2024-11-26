@@ -80,9 +80,17 @@ export const createReservation = async (
   }
 
   if (selectedService === "Room Reservation") {
+    const { data: unitOccupants, error: unitOccupantsError } = await supabase
+      .from("unit")
+      .select("current_occupants")
+      .eq("id", unitId)
+      .single();
+    
+    let updatedOccupants = unitOccupants?.current_occupants + guestNumber;
+    
     const { error: unitError } = await supabase
       .from("unit")
-      .update({ isReserved: true })
+      .update({ isReserved: true, current_occupants: updatedOccupants })
       .eq("id", unitId);
 
     if (unitError) {
