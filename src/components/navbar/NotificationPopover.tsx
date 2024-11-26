@@ -1,13 +1,10 @@
 import { useState, useEffect } from 'react';
-import { Popover, PopoverTrigger, PopoverContent, user } from '@nextui-org/react';
-import { BellIcon } from '@radix-ui/react-icons';
-import {
-	fetchNotifications,
-} from '@/actions/notification/notification';
+import { Popover, PopoverTrigger, PopoverContent } from '@nextui-org/react';
+import { fetchNotifications } from '@/actions/notification/notification';
 import { ScrollArea } from '@/components/ui/scroll-area';
-import { Bell, BellElectric, BellRing } from 'lucide-react';
+import { Bell } from 'lucide-react';
 import { createClient } from '@/utils/supabase/client';
-import { format } from "date-fns";
+import { format } from 'date-fns';
 
 type Notification = {
 	id: string;
@@ -65,7 +62,6 @@ export function NotificationPopover() {
 		};
 		fetchOldNotif();
 
-
 		const { data: subscription } = supabase
 			.channel('notifications')
 			.on(
@@ -110,7 +106,7 @@ export function NotificationPopover() {
 			onOpenChange={(isOpen) => {
 				setIsPopoverOpen(isOpen);
 				if (isOpen) setUnreadCount(0);
-				handleNotificationRead()
+				handleNotificationRead();
 			}}
 		>
 			<PopoverTrigger>

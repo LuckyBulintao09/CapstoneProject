@@ -32,7 +32,7 @@ const Pricing = () => {
 				</div>
 
 				{/* 4TH SECTION */}
-				<div className='flex flex-col flex-col-reverse py-8 px-8'>
+				<div className='flex flex-col flex-col-reverse pt-8 px-8 pb-16'>
 					<div>
 						<HowItWorks1 />
 					</div>
@@ -42,11 +42,6 @@ const Pricing = () => {
 							description={pricing.HOW_IT_WORKS_BODY}
 						/>
 					</div>
-				</div>
-
-				{/* 5TH SECTION */}
-				<div className='py-12'>
-					<GetStarted />
 				</div>
 			</section>
 		</div>
