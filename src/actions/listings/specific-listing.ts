@@ -50,7 +50,7 @@ export const fetchPropertyReviews = async (propertyId: number) => {
 
 export const fetchPropertyFacilities = async (propertyId: number) => {
   const { data, error } = await supabase
-  .rpc('get_property_common_amenities', { p_id: 17 })
+  .rpc('get_property_common_amenities', { p_id: propertyId })
 
   if (error) {
     console.error("Error fetching property facilities:", error);
