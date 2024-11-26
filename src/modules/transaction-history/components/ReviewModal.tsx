@@ -42,7 +42,7 @@ interface BookingCardProps {
 	unitTitle: string;
 }
 
-export const BookingCardModal: React.FC<BookingCardProps> = ({
+export const ReviewModal: React.FC<BookingCardProps> = ({
 	isOpen,
 	onClose,
 	unitID,
@@ -108,7 +108,7 @@ export const BookingCardModal: React.FC<BookingCardProps> = ({
 
 	return (
 		<Dialog open={isOpen} onOpenChange={onClose}>
-			<DialogContent className='max-w-[80%] lg:max-w-[50%] max-h-[80%] bg-white dark:bg-secondary shadow-lg rounded-lg overflow-y-auto'>
+			<DialogContent className='max-w-[80%] bg-white dark:bg-secondary shadow-lg rounded-lg'>
 				<DialogHeader>
 					<DialogTitle>Book Now</DialogTitle>
 					<DialogDescription className='border-b border-gray-300 dark:text-gray-200 pb-2'>
@@ -274,15 +274,12 @@ export const BookingCardModal: React.FC<BookingCardProps> = ({
 								</RadioGroup>
 							</div>
 
-							{/* Pricing */}
-							<div className='flex flex-col space-y-2 border-t border-gray-300 pt-4'>
-								<Label
-									htmlFor='payment'
-									className='font-semibold flex items-center'
-								>
+							{/* Pricing Table */}
+							<div className='mt-4 border-t border-gray-300 pt-4'>
+								<h3 className='font-semibold text-lg mb-2 dark:text-gray-200'>
 									Pricing Breakdown
-								</Label>
-								<ul className='space-y-1 text-gray-700 dark:text-gray-300 text-sm'>
+								</h3>
+								<ul className='space-y-2 text-gray-700 dark:text-gray-300'>
 									<li className='flex justify-between'>
 										<span>1-month Advance:</span>
 										<span>₱{unitPrice}</span>
@@ -296,7 +293,7 @@ export const BookingCardModal: React.FC<BookingCardProps> = ({
 										<span>₱{unitPrice * 2}</span>
 									</li>
 								</ul>
-								<div className='mt-2 text-xs text-gray-500 dark:text-gray-400'>
+								<div className='mt-2 text-sm text-gray-500 dark:text-gray-400'>
 									*You may upload your receipt on Message Section
 								</div>
 							</div>
@@ -305,7 +302,7 @@ export const BookingCardModal: React.FC<BookingCardProps> = ({
 				</div>
 
 				<Button
-					className='w-full mt-2'
+					className='w-full mt-4'
 					onClick={handleReserve}
 					disabled={
 						!date || !selectedService || hasReservation || isUnitReserved

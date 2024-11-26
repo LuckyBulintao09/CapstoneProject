@@ -1,127 +1,129 @@
-"use client";
+'use client';
 
-import { DropdownMenuTrigger } from "@radix-ui/react-dropdown-menu";
-import { MixerHorizontalIcon } from "@radix-ui/react-icons";
-import { Table } from "@tanstack/react-table";
+import { DropdownMenuTrigger } from '@radix-ui/react-dropdown-menu';
+import { MixerHorizontalIcon } from '@radix-ui/react-icons';
+import { Table } from '@tanstack/react-table';
 
-import { Button } from "@/components/ui/button";
+import { Button } from '@/components/ui/button';
 import {
-  DropdownMenu,
-  DropdownMenuCheckboxItem,
-  DropdownMenuContent,
-  DropdownMenuLabel,
-  DropdownMenuSeparator,
-} from "@/components/ui/dropdown-menu";
+	DropdownMenu,
+	DropdownMenuCheckboxItem,
+	DropdownMenuContent,
+	DropdownMenuLabel,
+	DropdownMenuSeparator,
+} from '@/components/ui/dropdown-menu';
 
 interface DataTableViewOptionsProps<TData> {
-  table: Table<TData>;
+	table: Table<TData>;
 }
 
 export function DataTableViewOptions<TData>({
-  table,
+	table,
 }: DataTableViewOptionsProps<TData>) {
-  return (
-    <DropdownMenu>
-      <DropdownMenuTrigger asChild>
-        <Button variant="outline" size="sm" className="ml-auto h-8 lg:flex">
-          <MixerHorizontalIcon className="mr-2 h-4 w-4" />
-          View
-        </Button>
-      </DropdownMenuTrigger>
-      <DropdownMenuContent align="end" className="w-[150px]">
-        <DropdownMenuLabel>Toggle columns</DropdownMenuLabel>
-        <DropdownMenuSeparator />
-        {table
-          .getAllColumns()
-          .filter(
-            (column) =>
-              typeof column.accessorFn !== "undefined" && column.getCanHide()
-          )
-          .map((column) => {
-            let columnHeader = "";
+	return (
+		<DropdownMenu>
+			<DropdownMenuTrigger asChild>
+				<Button variant='outline' size='sm' className='ml-auto h-8 lg:flex'>
+					<MixerHorizontalIcon className='mr-2 h-4 w-4' />
+					View
+				</Button>
+			</DropdownMenuTrigger>
+			<DropdownMenuContent align='end' className='w-[150px]'>
+				<DropdownMenuLabel>Toggle columns</DropdownMenuLabel>
+				<DropdownMenuSeparator />
+				{table
+					.getAllColumns()
+					.filter(
+						(column) =>
+							typeof column.accessorFn !== 'undefined' && column.getCanHide()
+					)
+					.map((column) => {
+						let columnHeader = '';
 
-            if (column.id === "room_number") {
-              columnHeader = "Room Number";
-            } else if (column.id === "room_name") {
-              columnHeader = "Room Name";
-            } else if (column.id === "service_option") {
-              columnHeader = "Service Options";
-            } else if (column.id === "appointment_date") {
-              columnHeader = "Date";
-            } else if (column.id === "proprietor_name") {
-              columnHeader = "Proprietor Name";
-            } else if (column.id === "transaction_status") {
-              columnHeader = "Transaction Status";
-            } else if (column.id === "id") {
-              columnHeader = "ID";
-            } else if (column.id === "name") {
-              columnHeader = "Name";
-            } else if (column.id === "message") {
-              columnHeader = "Mesage";
-            } else if (column.id === "property_name") {
-              columnHeader = "Property Name";
-            } else if (column.id === "email") {
-              columnHeader = "Email";
-            } else if (column.id === "dob") {
-              columnHeader = "Date of Birth";
-            } else if (column.id === "cp_number") {
-              columnHeader = "Phone Number";
-            } else if (column.id === "address") {
-              columnHeader = "Address";
-            } else if (column.id === "govIdUrl") {
-              columnHeader = "Government ID";
-            } else if (column.id === "businessLicenseUrl") {
-              columnHeader = "Business License";
-            } else if (column.id === "name") {
-              columnHeader = "Name";
-            } else if (column.id === "user") {
-              columnHeader = "User";
-            } else if (column.id === "userEmail") {
-              columnHeader = "User Email";
-            } else if (column.id === "reviewId") {
-              columnHeader = "Review ID";
-            } else if (column.id === "created_at") {
-              columnHeader = "Review Date";
-            } else if (column.id === "comment") {
-              columnHeader = "Reported Comment";
-            } else if (column.id === "reportedBy") {
-              columnHeader = "Reported By";
-            } else if (column.id === "report_reason") {
-              columnHeader = "Reason for Report";
-            } else if (column.id === "associatedProperty") {
-              columnHeader = "Associated Property";
-            } else if (column.id === "company_name") {
-              columnHeader = "Company Name";
-            } else if (column.id === "business_permit") {
-              columnHeader = "Business Permit";
-            } else if (column.id === "additional_info") {
-              columnHeader = "Additional Information";
-            } else if (column.id === "client_name") {
-              columnHeader = "Client Name";
-            } else if (column.id === "unit_title") {
-              columnHeader = "Unit Title";
-            } else if (column.id === "isPaid") {
-              columnHeader = "Payment Status";
-            } else if (column.id === "action") {
-              columnHeader = "Action";
-            } else if (column.id === "property_title") {
-              columnHeader = "Property Title";
-            } else if (column.id === "businessPermitUrl") {
-              columnHeader = "Business Permit";
-            }
+						if (column.id === 'unit_code') {
+							columnHeader = 'Unit Code';
+						} else if (column.id === 'unit_name') {
+							columnHeader = 'Unit Name';
+						} else if (column.id === 'service_option') {
+							columnHeader = 'Service Options';
+						} else if (column.id === 'appointment_date') {
+							columnHeader = 'Date';
+						} else if (column.id === 'proprietor_name') {
+							columnHeader = 'Proprietor Name';
+						} else if (column.id === 'transaction_status') {
+							columnHeader = 'Transaction Status';
+						} else if (column.id === 'id') {
+							columnHeader = 'ID';
+						} else if (column.id === 'name') {
+							columnHeader = 'Name';
+						} else if (column.id === 'message') {
+							columnHeader = 'Mesage';
+						} else if (column.id === 'property_name') {
+							columnHeader = 'Property Name';
+						} else if (column.id === 'email') {
+							columnHeader = 'Email';
+						} else if (column.id === 'dob') {
+							columnHeader = 'Date of Birth';
+						} else if (column.id === 'cp_number') {
+							columnHeader = 'Phone Number';
+						} else if (column.id === 'address') {
+							columnHeader = 'Address';
+						} else if (column.id === 'govIdUrl') {
+							columnHeader = 'Government ID';
+						} else if (column.id === 'businessLicenseUrl') {
+							columnHeader = 'Business License';
+						} else if (column.id === 'name') {
+							columnHeader = 'Name';
+						} else if (column.id === 'user') {
+							columnHeader = 'User';
+						} else if (column.id === 'userEmail') {
+							columnHeader = 'User Email';
+						} else if (column.id === 'reviewId') {
+							columnHeader = 'Review ID';
+						} else if (column.id === 'created_at') {
+							columnHeader = 'Review Date';
+						} else if (column.id === 'comment') {
+							columnHeader = 'Reported Comment';
+						} else if (column.id === 'reportedBy') {
+							columnHeader = 'Reported By';
+						} else if (column.id === 'report_reason') {
+							columnHeader = 'Reason for Report';
+						} else if (column.id === 'associatedProperty') {
+							columnHeader = 'Associated Property';
+						} else if (column.id === 'company_name') {
+							columnHeader = 'Company Name';
+						} else if (column.id === 'business_permit') {
+							columnHeader = 'Business Permit';
+						} else if (column.id === 'additional_info') {
+							columnHeader = 'Additional Information';
+						} else if (column.id === 'client_name') {
+							columnHeader = 'Client Name';
+						} else if (column.id === 'unit_title') {
+							columnHeader = 'Unit Name';
+						} else if (column.id === 'isPaid') {
+							columnHeader = 'Payment Status';
+						} else if (column.id === 'action') {
+							columnHeader = 'Action';
+						} else if (column.id === 'property_title') {
+							columnHeader = 'Property Title';
+						} else if (column.id === 'businessPermitUrl') {
+							columnHeader = 'Business Permit';
+						} else if (column.id === 'payment_option') {
+							columnHeader = 'Payment Option';
+						}
 
-            return (
-              <DropdownMenuCheckboxItem
-                key={column.id}
-                className="capitalize"
-                checked={column.getIsVisible()}
-                onCheckedChange={(value) => column.toggleVisibility(!!value)}
-              >
-                {columnHeader}
-              </DropdownMenuCheckboxItem>
-            );
-          })}
-      </DropdownMenuContent>
-    </DropdownMenu>
-  );
+						return (
+							<DropdownMenuCheckboxItem
+								key={column.id}
+								className='capitalize'
+								checked={column.getIsVisible()}
+								onCheckedChange={(value) => column.toggleVisibility(!!value)}
+							>
+								{columnHeader}
+							</DropdownMenuCheckboxItem>
+						);
+					})}
+			</DropdownMenuContent>
+		</DropdownMenu>
+	);
 }
