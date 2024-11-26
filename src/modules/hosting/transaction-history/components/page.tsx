@@ -77,6 +77,7 @@ const TransactionDashboard = () => {
         .select("user_id")
         .eq("id", id)
 
+
       const { error: updateError } = await supabase
         .from("transaction")
         .update({ transaction_status: newStatus })
@@ -92,9 +93,23 @@ const TransactionDashboard = () => {
       }
 
       if (newStatus === "reserved") {
+        const { data: transactionData, error: transactionDataError } = await supabase
+            .from("transaction")
+            .select("guest_number")
+            .eq("id", id)
+            .single();
+        
+        const { data: unitCurrentOccupants, error: unitCurrentOccupantsError } = await supabase
+            .from("unit")
+            .select("current_occupants")
+            .eq("id", unitId)
+            .single();
+        
+        let updatedOccupants = transactionData?.guest_number + unitCurrentOccupants?.current_occupants;
+
         const { error: unitUpdateError } = await supabase
           .from("unit")
-          .update({ isReserved: true })
+          .update({ isReserved: true, current_occupants: updatedOccupants  })
           .eq("id", unitId);
 
           await confirm_onsiteNotification(unitId, receiver_id[0].user_id)
