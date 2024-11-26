@@ -5,6 +5,7 @@ import { DataTable } from "@/components/table/data-table";
 import { columns as generateColumns, Transaction } from "./columns";
 import { createClient } from "@/utils/supabase/client";
 import { getTransactionHistory } from "@/actions/transaction/getTransactionHistory";
+import { cancel_lessorNotification, cancelled_onsiteNotification, confirm_onsiteNotification } from "@/actions/notification/notification";
 
 const supabase = createClient();
 
@@ -71,10 +72,20 @@ const TransactionDashboard = () => {
     unitId: number
   ) => {
     try {
+      const { data: receiver_id, error: receiverIdError } = await supabase
+        .from("transaction")
+        .select("user_id")
+        .eq("id", id)
+
+
       const { error: updateError } = await supabase
         .from("transaction")
         .update({ transaction_status: newStatus })
         .eq("id", id);
+      
+      if (newStatus === "cancelled") {
+        await cancel_lessorNotification(receiver_id[0].user_id, unitId)
+      }
 
       if (updateError) {
         setError(`Failed to update status for transaction ID ${id}`);
@@ -82,22 +93,42 @@ const TransactionDashboard = () => {
       }
 
       if (newStatus === "reserved") {
+        const { data: transactionData, error: transactionDataError } = await supabase
+            .from("transaction")
+            .select("guest_number")
+            .eq("id", id)
+            .single();
+        
+        const { data: unitCurrentOccupants, error: unitCurrentOccupantsError } = await supabase
+            .from("unit")
+            .select("current_occupants")
+            .eq("id", unitId)
+            .single();
+        
+        let updatedOccupants = transactionData?.guest_number + unitCurrentOccupants?.current_occupants;
+
         const { error: unitUpdateError } = await supabase
           .from("unit")
-          .update({ isReserved: true })
+          .update({ isReserved: true, current_occupants: updatedOccupants  })
           .eq("id", unitId);
+
+          await confirm_onsiteNotification(unitId, receiver_id[0].user_id)
 
         if (unitUpdateError) {
           setError(`Failed to update reserved status for unit ID ${unitId}`);
           return;
         }
 
-        const { error: cancelOtherError } = await supabase
+        const { data: updatedRows, error: cancelOtherError } = await supabase
           .from("transaction")
           .update({ transaction_status: "cancelled" })
           .eq("unit_id", unitId)
           .eq("transaction_status", "pending")
-          .neq("id", id);
+          .neq("id", id)
+          .select()
+        
+        await cancelled_onsiteNotification(unitId, updatedRows.map((row) => row.user_id))
+          
 
         if (cancelOtherError) {
           setError(

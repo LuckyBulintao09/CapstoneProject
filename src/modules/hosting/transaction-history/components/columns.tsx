@@ -6,6 +6,7 @@ import { Badge } from "@/components/ui/badge";
 import ToggleSwitch from "./toggleSwitch";
 import { createClient } from "@/utils/supabase/client";
 import { CheckCircle2, XCircleIcon } from "lucide-react";
+import React from "react";
 
 const supabase = createClient();
 
@@ -85,17 +86,17 @@ export const columns = (
     ),
     cell: ({ row }) => {
       const status = row.getValue("transaction_status") as string;
-      const badgeColors = {
-        reserved: "border-blue-700 text-blue-800 dark:text-blue-400",
-        pending: "border-amber-600 text-amber-700 dark:text-amber-600",
-        cancelled: "border-red-700 text-red-800 dark:text-red-600",
-        visited: "border-green-700 text-green-800 dark:text-green-600",
+      const badgeStyles = {
+        reserved: "bg-blue-100 text-blue-800 dark:bg-blue-800 dark:text-blue-200",
+        pending: "bg-amber-100 text-amber-800 dark:bg-amber-800 dark:text-amber-200",
+        cancelled: "bg-red-100 text-red-800 dark:bg-red-800 dark:text-red-200",
+        visited: "bg-green-100 text-green-800 dark:bg-green-800 dark:text-green-200",
       };
-      const color = badgeColors[status] || "bg-gray-500";
+      const style = badgeStyles[status] || "bg-gray-100 text-gray-800 dark:bg-gray-800 dark:text-gray-200";
 
       return (
         <Badge
-          className={`${color} bg-foreground dark:bg-gray-900 mx-8 w-[80px] text-center items-center justify-center`}
+          className={`${style} mx-8 w-[80px] text-center items-center justify-center`}
         >
           {status.charAt(0).toUpperCase() + status.slice(1)}
         </Badge>
@@ -108,11 +109,28 @@ export const columns = (
       <DataTableColumnHeader column={column} title="Payment Status" />
     ),
     cell: ({ row }) => {
-      const isPaid = row.getValue("isPaid") as boolean;
-      return isPaid ? (
-        <CheckCircle2 className="text-white bg-green-800 dark:bg-green-700 mx-8 rounded-full p-0" />
-      ) : (
-        <XCircleIcon className="text-white bg-red-800 dark:bg-red-700 mx-8 rounded-full p-0" />
+      const [isPaid, setIsPaid] = React.useState(row.getValue("isPaid") as boolean);
+      
+      const handleClick = async () => {
+        const { data, error } = await supabase
+          .from("transaction")
+          .update({ isPaid: !isPaid })
+          .eq("id", row.original.id);
+        if (error) {
+          console.error(error);
+        } else {
+          setIsPaid(!isPaid);
+        }
+      };
+
+      return (
+        <span className="cursor-pointer" onClick={handleClick}>
+          {isPaid ? (
+            <CheckCircle2 className="text-white bg-green-800 dark:bg-green-700 mx-8 rounded-full p-0" />
+          ) : (
+            <XCircleIcon className="text-white bg-red-800 dark:bg-red-700 mx-8 rounded-full p-0" />
+          )}
+        </span>
       );
     },
   },

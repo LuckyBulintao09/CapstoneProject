@@ -9,10 +9,12 @@ import { Badge } from '@/components/ui/badge';
 import { Star, XCircle } from 'lucide-react';
 import AddReviewModal from './AddReviewModal';
 import {
-	fetchReviewData,
-	deleteReview,
-	cancelTransaction,
-} from '@/actions/transaction/column';
+  fetchReviewData,
+  deleteReview,
+  cancelTransaction,
+} from "@/actions/transaction/column";
+import { cancel_onsiteNotification } from "@/actions/notification/notification";
+
 
 interface Review {
 	id: number;
@@ -48,19 +50,20 @@ const TransactionActionsCell = ({ row }: { row: Row<Transaction> }) => {
 	const handleDeleteReview = async () => {
 		if (!reviewData) return;
 
-		const success = await deleteReview(reviewData.id);
-		if (success) {
-			setReviewData(null);
-			window.location.reload();
-		}
-	};
+    const success = await deleteReview(reviewData.id);
+    if (success) {
+      setReviewData(null);
+    }
+  };
 
-	const handleCancel = async () => {
-		const success = await cancelTransaction(row.original.id);
-		if (success) {
-			window.location.reload();
-		}
-	};
+  const handleCancel = async () => {
+    const success = await cancelTransaction(row.original.id);
+    if (success) {
+      await cancel_onsiteNotification(unitId, row.original.user_id);
+      window.location.reload();
+    }
+  };
+
 
 	return (
 		<div className='flex flex-row gap-3'>
