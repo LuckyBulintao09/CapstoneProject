@@ -33,8 +33,8 @@ export function NotificationPopover() {
 	useEffect(() => {
 		supabase.auth.getSession().then(({ data: { session } }) => {
 			setIsUserLoggedIn(!!session);
-			setUser(session.user.id);
-		});
+			setUser(session?.user.id);
+		})
 	}, []);
 
 	useEffect(() => {
