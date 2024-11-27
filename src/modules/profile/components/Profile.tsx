@@ -1,6 +1,7 @@
 import { PencilIcon, PencilSquareIcon } from "@heroicons/react/24/solid";
 import { createClient } from "../../../utils/supabase/client";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
+import { toast } from "sonner";
 import {
   Modal,
   ModalContent,
@@ -22,9 +23,12 @@ import {
   DialogFooter,
   DialogHeader,
   DialogTitle,
+  DialogTrigger,
 } from "@/components/ui/dialog";
 import { Label } from "@/components/ui/label";
 import { handleResetPassword } from "@/actions/user/updatePassword";
+import { handleDeleteAccount } from "@/actions/user/deleteAccount";
+import { logout } from "@/app/auth/login/actions";
 
 interface ProfileData {
   id: string;
@@ -41,15 +45,14 @@ const ProfileSection = () => {
   const { isOpen, onOpen, onOpenChange } = useDisclosure();
   const fileInputRef = useRef<HTMLInputElement | null>(null);
   const [profileData, setProfileData] = useState<ProfileData | null>(null);
-  const [editProfileData, setEditProfileData] = useState<ProfileData | null>(
-    null
-  );
+  const [editProfileData, setEditProfileData] = useState<ProfileData | null>(null);
   const [loading, setLoading] = useState<boolean>(true);
   const [isResetPasswordOpen, setIsResetPasswordOpen] = useState(false);
   const [isResetLoading, setIsResetLoading] = useState(false);
   const [newPassword, setNewPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
   const supabase = createClient();
+  const [confirmationInput, setConfirmationInput] = useState<string>("");
 
   useEffect(() => {
     const checkSession = async () => {
@@ -57,7 +60,7 @@ const ProfileSection = () => {
       if (data.session) {
         await getProfile(data.session.user.id);
       } else {
-        alert("Login first to access this function!");
+        toast.error("Login first to access this function!");
         window.location.href = "/";
       }
     };
@@ -74,7 +77,7 @@ const ProfileSection = () => {
       setProfileData(data[0]);
       setEditProfileData(data[0]);
     } else if (error) {
-      alert("No profile data found.");
+      toast.error("No profile data found.");
     }
     setLoading(false);
   };
@@ -84,6 +87,24 @@ const ProfileSection = () => {
     setEditProfileData((prevData) =>
       prevData ? { ...prevData, [name]: value } : prevData
     );
+  };
+
+  const handleConfirmationInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    setConfirmationInput(e.target.value);
+  };
+
+  const handleDeleteAccountConfirm = async () => {
+    if (confirmationInput === `${profileData?.firstname} ${profileData?.lastname}`) {
+      try {
+        await handleDeleteAccount(profileData?.id); 
+        toast.success("Account deleted successfully!");
+        await logout();
+      } catch (error) {
+        toast.error("Failed to delete account: " + error.message);
+      }
+    } else {
+      toast.error("Please enter the correct confirmation text.");
+    }
   };
 
   const handleSaveProfile = async () => {
@@ -102,14 +123,14 @@ const ProfileSection = () => {
         });
 
         if (!updateAuthError) {
-          alert("Profile updated successfully!");
+          toast.success("Profile updated successfully!");
           setProfileData(editProfileData);
           onOpenChange(false);
         } else {
-          alert(`Failed to update auth metadata: ${updateAuthError.message}`);
+          toast.error(`Failed to update auth metadata: ${updateAuthError.message}`);
         }
       } else {
-        alert(`Failed to update profile: ${updateProfileError.message}`);
+        toast.error(`Failed to update profile: ${updateProfileError.message}`);
       }
     }
   };
@@ -127,7 +148,7 @@ const ProfileSection = () => {
           .upload(filePath, file);
 
         if (uploadError) {
-          alert(`Failed to upload image: ${uploadError.message}`);
+          toast.error(`Failed to upload image: ${uploadError.message}`);
           return;
         }
 
@@ -136,7 +157,7 @@ const ProfileSection = () => {
           .getPublicUrl(filePath);
 
         if (!publicUrlData?.publicUrl) {
-          alert("Failed to get public URL for the uploaded image.");
+          toast.error("Failed to get public URL for the uploaded image.");
           return;
         }
 
@@ -148,7 +169,7 @@ const ProfileSection = () => {
           .eq("id", profileData.id);
 
         if (updateError) {
-          alert(`Failed to update profile URL: ${updateError.message}`);
+          toast.error(`Failed to update profile URL: ${updateError.message}`);
           return;
         }
 
@@ -156,9 +177,9 @@ const ProfileSection = () => {
           prevData ? { ...prevData, profile_url: publicUrl } : prevData
         );
 
-        alert("Profile image updated successfully!");
+        toast.success("Profile image updated successfully!");
       } catch (error) {
-        alert("An unexpected error occurred during profile image upload.");
+        toast.error("An unexpected error occurred during profile image upload.");
       }
     }
   };
@@ -178,13 +199,11 @@ const ProfileSection = () => {
     const result = await handleResetPassword(newPassword, confirmPassword);
 
     if (result.error) {
-      alert(result.error);
+      toast.error(result.error);
     } else if (result.success) {
       setNewPassword("");
       setConfirmPassword("");
-      alert(result.success);
-      setNewPassword("");
-      setConfirmPassword("");
+      toast.success(result.success);
       setIsResetPasswordOpen(false);
     }
 
@@ -242,133 +261,143 @@ const ProfileSection = () => {
             <h4 className="text-lg font-medium">{`${profileData?.firstname} ${profileData?.lastname}`}</h4>
           </div>
           <div>
-            <p className="text-base font-medium text-default-400">
-              Contact Number
-            </p>
-            <h4 className="text-lg font-medium">
-              {profileData?.cp_number || "---"}
-            </h4>
-          </div>
-          <div>
-            <p className="text-base font-medium text-default-400">Address</p>
-            <h4 className="text-lg font-medium">
-              {profileData?.address || "---"}
-            </h4>
-          </div>
-          <div>
-            <p className="text-base font-medium text-default-400">
-              Date of Birth
-            </p>
-            <h4 className="text-lg font-medium">
-              {profileData?.dob
-                ? new Date(profileData.dob).toLocaleDateString()
-                : "---"}
-            </h4>
+            <p className="text-base font-medium text-default-400">Contact Number</p>
+            <h4 className="text-lg font-medium">{profileData?.cp_number}</h4>
           </div>
           <div>
             <p className="text-base font-medium text-default-400">Email</p>
             <h4 className="text-lg font-medium">{profileData?.email}</h4>
           </div>
+          <div>
+            <p className="text-base font-medium text-default-400">Birthday</p>
+            <h4 className="text-lg font-medium">{profileData?.dob}</h4>
+          </div>
         </div>
 
-        <div className="flex mt-4">
-          <Button
-            className="text-blue-600 underline hover:text-blue-800 bg-transparent"
-            onClick={() => setIsResetPasswordOpen(true)}
-          >
-            Reset Password
-          </Button>
-        </div>
-        <div className="flex mt-4">
-          <Button className="text-red-600 underline hover:text-red-800 bg-transparent">
-            Delete Account
-          </Button>
-        </div>
+        {/* Profile Edit Modal */}
+        <Modal isOpen={isOpen} onOpenChange={onOpenChange}>
+          <ModalContent className="sm:max-w-[425px]">
+            <ModalHeader>
+              <h1 className="font-bold">Edit Profile</h1>
+            </ModalHeader>
+            <ModalBody>
+              <div>
+                <Input
+                  label="First Name"
+                  name="firstname"
+                  value={editProfileData?.firstname || ""}
+                  onChange={handleInputChange}
+                />
+              </div>
+              <div>
+                <Input
+                  label="Last Name"
+                  name="lastname"
+                  value={editProfileData?.lastname || ""}
+                  onChange={handleInputChange}
+                />
+              </div>
+              <div>
+                <Input
+                  label="Contact Number"
+                  name="cp_number"
+                  value={editProfileData?.cp_number || ""}
+                  onChange={handleInputChange}
+                />
+              </div>
+              <div>
+                <Input
+                  label="Address"
+                  name="address"
+                  value={editProfileData?.address || ""}
+                  onChange={handleInputChange}
+                />
+              </div>
+              <div>
+                <Input
+                  label="Date of Birth"
+                  name="dob"
+                  value={editProfileData?.dob || ""}
+                  onChange={handleInputChange}
+                />
+              </div>
+            </ModalBody>
+            <ModalFooter>
+              <Button onClick={handleSaveProfile}>Save</Button>
+            </ModalFooter>
+          </ModalContent>
+        </Modal>
+
+        {/* Reset Password Modal */}
+        <Dialog open={isResetPasswordOpen} onOpenChange={setIsResetPasswordOpen}>
+          <DialogTrigger asChild>
+            <Button>Reset Password</Button>
+          </DialogTrigger>
+          <DialogContent className="sm:max-w-[425px]">
+            <DialogHeader>
+              <DialogTitle>Reset Password</DialogTitle>
+            </DialogHeader>
+            <form onSubmit={handleResetPasswordSubmit}>
+              <div className="py-4">
+                <Input
+                  label="New Password"
+                  value={newPassword}
+                  onChange={(e) => setNewPassword(e.target.value)}
+                  type="password"
+                />
+              </div>
+              <div className="py-4">
+                <Input
+                  label="Confirm Password"
+                  value={confirmPassword}
+                  onChange={(e) => setConfirmPassword(e.target.value)}
+                  type="password"
+                />
+              </div>
+              <DialogFooter>
+                <Button type="submit" isLoading={isResetLoading}>
+                  Reset Password
+                </Button>
+              </DialogFooter>
+            </form>
+          </DialogContent>
+        </Dialog>
+
+        {/* Delete Account Dialog */}
+        <Dialog>
+          <DialogTrigger asChild>
+            <Button>Delete Account</Button>
+          </DialogTrigger>
+          <DialogContent className="sm:max-w-[425px]">
+            <DialogHeader>
+              <DialogTitle>Delete Account</DialogTitle>
+              <DialogDescription>
+                Be careful, this action cannot be undone. This will permanently
+                delete your account and remove its data from our servers.
+              </DialogDescription>
+              <DialogDescription>
+                Enter the words "{profileData?.firstname} {profileData?.lastname}" to proceed.
+              </DialogDescription>
+            </DialogHeader>
+            <div className="grid gap-4 py-4">
+              <div className="grid grid-cols-4 items-center gap-4">
+                <Label htmlFor="confirmationInput" className="text-right">
+                  Enter here:
+                </Label>
+                <Input
+                  id="confirmationInput"
+                  className="col-span-3"
+                  value={confirmationInput}
+                  onChange={handleConfirmationInputChange}
+                />
+              </div>
+            </div>
+            <DialogFooter>
+              <Button onClick={handleDeleteAccountConfirm}>Delete Account</Button>
+            </DialogFooter>
+          </DialogContent>
+        </Dialog>
       </section>
-
-      <Modal isOpen={isOpen} onOpenChange={onOpenChange}>
-        <ModalContent>
-          <ModalHeader>Edit Profile</ModalHeader>
-          <ModalBody>
-            <Label htmlFor="firstname">First Name</Label>
-            <Input
-              id="firstname"
-              name="firstname"
-              value={editProfileData?.firstname}
-              onChange={handleInputChange}
-            />
-            <Label htmlFor="lastname">Last Name</Label>
-            <Input
-              id="lastname"
-              name="lastname"
-              value={editProfileData?.lastname}
-              onChange={handleInputChange}
-            />
-            <Label htmlFor="address">Address</Label>
-            <Input
-              id="address"
-              name="address"
-              value={editProfileData?.address}
-              onChange={handleInputChange}
-            />
-            <Label htmlFor="cp_number">Contact Number</Label>
-            <Input
-              id="cp_number"
-              name="cp_number"
-              value={editProfileData?.cp_number}
-              onChange={handleInputChange}
-            />
-            <Label htmlFor="dob">Date of Birth</Label>
-            <DatePicker
-              label="Birth Date"
-              showMonthAndYearPickers
-              value={
-                editProfileData?.dob ? parseDate(editProfileData.dob) : null
-              }
-              onChange={(dateValue) =>
-                setEditProfileData((prevData) =>
-                  prevData
-                    ? { ...prevData, dob: dateValue?.toString() || "" }
-                    : prevData
-                )
-              }
-            />
-          </ModalBody>
-          <ModalFooter>
-            <Button onClick={handleSaveProfile}>Save Changes</Button>
-          </ModalFooter>
-        </ModalContent>
-      </Modal>
-
-      {/* Reset Password Modal */}
-      <Dialog open={isResetPasswordOpen} onOpenChange={setIsResetPasswordOpen}>
-        <DialogContent style={{ backgroundColor: "#309ec1" }}>
-          <DialogHeader>
-            <DialogTitle>Reset Password</DialogTitle>
-            <small>Current password can't be used as new password</small>
-          </DialogHeader>
-          <Input
-            type="password"
-            placeholder="New Password"
-            value={newPassword}
-            onChange={(e) => setNewPassword(e.target.value)}
-          />
-          <Input
-            type="password"
-            placeholder="Confirm Password"
-            value={confirmPassword}
-            onChange={(e) => setConfirmPassword(e.target.value)}
-          />
-          <DialogFooter>
-            <Button
-              disabled={isResetLoading}
-              onClick={handleResetPasswordSubmit}
-            >
-              {isResetLoading ? "Updating..." : "Save Changes"}
-            </Button>
-          </DialogFooter>
-        </DialogContent>
-      </Dialog>
     </>
   );
 };
