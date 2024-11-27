@@ -1,24 +1,40 @@
-import { createClient } from "@/utils/supabase/client";
-const supabase = createClient();
+import { createClient } from '@supabase/supabase-js';
+import { createClient as cq } from '@/utils/supabase/client';
 
+const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL;
+const serviceRoleSecret = process.env.NEXT_PUBLIC_SERVICE_ROLE_KEY;
 
-export const handleDeleteAccount = async () => {
-	try {
-		const { data, error } = await supabase.auth.getUser();
-		if (error) throw new Error("Could not get the current user");
+if (!supabaseUrl || !serviceRoleSecret) {
+  throw new Error('Supabase environment variables are not set!');
+}
 
-		const userId = data.user.id;
+const supabase = createClient(supabaseUrl, serviceRoleSecret);
+const sb = cq();
 
-		// Delete from auth
-		const { error: authError } = await supabase.auth.admin.deleteUser(userId);
-		if (authError) throw new Error(authError.message);
+export const handleDeleteAccount = async (id: string) => {
+  console.log('handleDeleteAccount called with id:', id);
 
-		// Delete from profile table
-		const { error: accountError } = await supabase.from("account").delete().eq("id", userId);
-		if (accountError) throw new Error(accountError.message);
+  try {
+    const [deleteUserResult, deleteAccountResult] = await Promise.all([
+      supabase.auth.admin.deleteUser(id), 
+      sb.from('account').delete().eq('id', id) 
+    ]);
 
-		return { success: "Account deleted successfully." };
-	} catch (error) {
-		return { error: error.message };
-	}
+    if (deleteUserResult.error) {
+      console.error('Error deleting user:', deleteUserResult.error);
+      return { error: deleteUserResult.error.message };
+    }
+    console.log('User deleted successfully:', deleteUserResult.data);
+
+    if (deleteAccountResult.error) {
+      console.error('Error deleting user from "account" table:', deleteAccountResult.error);
+      return { error: deleteAccountResult.error.message };
+    }
+    console.log('User deleted from "account" table successfully.');
+
+    return { success: true };
+  } catch (error) {
+    console.error('Unexpected error during account deletion:', error);
+    return { error: 'An unexpected error occurred. Please try again later.' };
+  }
 };

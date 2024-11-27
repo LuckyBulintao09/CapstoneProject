@@ -15,6 +15,7 @@ import { toast } from "sonner";
 import { LoginWithPassword } from "@/app/(authentication)/login/actions";
 import { getErrorMessage } from "@/lib/handle-error";
 
+
 function LoginForm() {
     const queryString = typeof window !== "undefined" ? window?.location.search : "";
     const urlSearchParams = new URLSearchParams(queryString);
@@ -139,7 +140,7 @@ function LoginForm() {
             </div>
             <div className=" text-center text-sm">
                 Forgot Password{" "}
-                <Link href="/register" className="underline">
+                <Link href="/forgot-password" className="underline">
                     Recover Account
                 </Link>
             </div>

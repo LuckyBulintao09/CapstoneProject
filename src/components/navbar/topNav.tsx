@@ -196,7 +196,7 @@ function NavigationBar() {
 							{/* Notification here */}
 
 							<ModeToggle />
-							<NotificationPopover/>
+							<NotificationPopover />
 							<Separator orientation='vertical' className='mx-2 bg-gray-300' />
 							{user ? (
 								<DropdownMenu modal={false}>
@@ -271,15 +271,6 @@ function NavigationBar() {
 							) : (
 								<div className='flex flex-nowrap items-center justify-end gap-2'>
 									<Link
-										href='/register'
-										className={cn(
-											buttonVariants({ variant: 'default' }),
-											'rounded-lg'
-										)}
-									>
-										Sign up
-									</Link>
-									<Link
 										href='/login'
 										className={cn(
 											buttonVariants({ variant: 'outline' }),
@@ -287,6 +278,15 @@ function NavigationBar() {
 										)}
 									>
 										Login
+									</Link>
+									<Link
+										href='/register'
+										className={cn(
+											buttonVariants({ variant: 'default' }),
+											'rounded-lg'
+										)}
+									>
+										Sign up
 									</Link>
 								</div>
 							)}
@@ -455,7 +455,7 @@ function NavigationBar() {
 											</>
 										) : (
 											// Show sign up and login buttons when not logged in
-											<div className='flex flex-col gap-2 [&_svg]:size-6 items-center'>
+											<div className='grid grid-cols-1 sm:grid-cols-2 gap-4 items-center'>
 												<Link
 													href='/register'
 													className={cn(
@@ -463,7 +463,16 @@ function NavigationBar() {
 														'w-full justify-center rounded-lg px-2 gap-2 text-center'
 													)}
 												>
-													Sign up
+													Sign Up
+												</Link>
+												<Link
+													href='/login'
+													className={cn(
+														buttonVariants({ variant: 'outline' }),
+														'w-full justify-center rounded-lg px-2 gap-2 text-center'
+													)}
+												>
+													Log In
 												</Link>
 											</div>
 										)}
