@@ -2,8 +2,7 @@
 
 import React from "react";
 
-import { Button, buttonVariants } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
+import { Button } from "@/components/ui/button";
 import { Form, FormControl, FormDescription, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form";
 
 import { useForm } from "react-hook-form";
@@ -33,6 +32,7 @@ function TitlePage() {
         }
     }
     return (
+        
         <div className="flex items-center justify-center grow py-6 airBnbDesktop:pt-0 airBnbDesktop:pb-10">
             <div className="airBnbDesktop:mx-auto airairBnbBigDesktop:w-[608px] min-[1128px]:w-[512px] airBnbDesktop:w-[464px] ">
                 <Form {...propertiesTitleForm}>
