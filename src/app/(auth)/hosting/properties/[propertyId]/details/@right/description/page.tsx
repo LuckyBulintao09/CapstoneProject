@@ -33,7 +33,7 @@ function DescriptionPage() {
         }
     }
     return (
-        <div className="flex  grow py-6 airBnbDesktop:pt-0 airBnbDesktop:pb-10">
+        <div className="flex grow py-6 airBnbDesktop:pt-0 airBnbDesktop:pb-10">
             <div className="airBnbDesktop:mx-auto airairBnbBigDesktop:w-[608px] min-[1128px]:w-[512px] airBnbDesktop:w-[464px] ">
                 <Form {...propertiesDescriptionForm}>
                     <form onSubmit={propertiesDescriptionForm.handleSubmit(onSubmit)} className="space-y-4">
