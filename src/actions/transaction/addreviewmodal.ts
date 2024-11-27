@@ -15,8 +15,11 @@ const censorProfanity = (comment: string): string => {
   let censoredComment = comment;
 
   for (const profaneWord of profanityList) {
-    const regex = new RegExp(profaneWord, 'gi'); 
-    censoredComment = censoredComment.replace(regex, '*'.repeat(profaneWord.length));
+    const regex = new RegExp(profaneWord, "gi");
+    censoredComment = censoredComment.replace(
+      regex,
+      "*".repeat(profaneWord.length)
+    );
   }
 
   return censoredComment;
@@ -26,7 +29,10 @@ export const addReview = async (
   unitId: string,
   userId: string,
   rating: number,
-  comment: string
+  comment: string,
+  location: number,
+  cleanliness: number,
+  valueForMoney: number
 ) => {
   try {
     const sanitizedComment = censorProfanity(comment);
@@ -38,6 +44,9 @@ export const addReview = async (
         ratings: rating,
         comment: sanitizedComment,
         isReported: false,
+        location: location,
+        cleanliness: cleanliness,
+        value_for_money: valueForMoney,
       },
     ]);
 
@@ -55,7 +64,10 @@ export const addReview = async (
 export const updateReview = async (
   reviewId: number,
   rating: number,
-  comment: string
+  comment: string,
+  location: number,
+  cleanliness: number,
+  valueForMoney: number
 ) => {
   try {
     const sanitizedComment = censorProfanity(comment);
@@ -64,7 +76,10 @@ export const updateReview = async (
       .from("ratings_review")
       .update({
         ratings: rating,
-        comment: sanitizedComment, 
+        comment: sanitizedComment,
+        location: location,
+        cleanliness: cleanliness,
+        value_for_money: valueForMoney,
       })
       .eq("id", reviewId);
 
@@ -76,5 +91,25 @@ export const updateReview = async (
   } catch (error) {
     console.error("Error updating review:", error);
     return false;
+  }
+};
+export const fetchReviewData = async (unitId: string, userId: string) => {
+  try {
+    const { data, error } = await supabase
+      .from("ratings_review")
+      .select("*")
+      .eq("unit_id", unitId)
+      .eq("user_id", userId)
+      .single(); // Fetch a single review
+
+    if (error) {
+      console.error("Error fetching review data:", error);
+      return null;
+    }
+
+    return data;
+  } catch (error) {
+    console.error("Error fetching review data:", error);
+    return null;
   }
 };
