@@ -9,6 +9,7 @@ import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { PropertyTitleData, propertyTitleSchema } from "@/lib/schemas/propertySchemaV2";
 import { toast } from "sonner";
+import { updatePropertyTitle } from "@/actions/property/update-property";
 
 function PropertyTitleForm({ title, propertyId }: { title: string, propertyId: string}) {
 
@@ -30,7 +31,19 @@ function PropertyTitleForm({ title, propertyId }: { title: string, propertyId: s
     }, [title, propertiesTitleForm]);
 
     function onSubmit(values: PropertyTitleData) {
-        console.log(title, "title");
+        if (!isPending) {
+            startTransition(() => {
+                toast.promise(updatePropertyTitle(propertyId, values.property_title), {
+                    loading: "Saving changes...",
+                    success: (values) => {
+                        return "Title updated successfully" + values;
+                    },
+                    error: (error) => {
+                        return error.message;
+                    },
+                });
+            });
+        }
     }
 
     return (

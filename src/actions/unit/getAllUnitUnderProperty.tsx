@@ -5,9 +5,11 @@ export const getAllUnitUnderProperty = async (propertyId: string) => {
     const propertyIdNumber = Number(propertyId);
     const { data, error } = await supabase
         .from("unit")
-        .select()
+        .select("*")
         .eq("property_id", propertyIdNumber);
 
     if (error) throw error;
+
     return data;
+
 };

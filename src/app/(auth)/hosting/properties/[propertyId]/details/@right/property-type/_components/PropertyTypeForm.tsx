@@ -10,6 +10,7 @@ import { SelectNative } from "@/components/ui/select-native";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { PropertyTypeData, propertyTypeSchema } from "@/lib/schemas/propertySchemaV2";
+import { updatePropertyType } from "@/actions/property/update-property";
 
 function PropertyTypeForm({propertyType, propertyId} : {propertyType: any, propertyId: string}) {
     const [isPending, startTransition] = React.useTransition();
@@ -25,10 +26,15 @@ function PropertyTypeForm({propertyType, propertyId} : {propertyType: any, prope
     async function onSubmit(values: PropertyTypeData) {
         if (!isPending) {
             startTransition(() => {
-                setTimeout(() => {
-                    console.log("Saved successfully!");
-                    console.log(values);
-                }, 10000);
+                toast.promise(updatePropertyType(propertyId, values.property_type), {
+                    loading: "Saving changes...",
+                    success: (values) => {
+                        return "Property type updated successfully" + values;
+                    },
+                    error: (error) => {
+                        return error.message;
+                    },
+                });
             });
         }
     }

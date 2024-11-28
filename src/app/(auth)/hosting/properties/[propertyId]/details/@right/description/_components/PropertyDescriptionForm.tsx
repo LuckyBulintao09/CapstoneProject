@@ -10,14 +10,15 @@ import { SelectNative } from "@/components/ui/select-native";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { PropertyDescriptionData, propertyDescriptionSchema } from "@/lib/schemas/propertySchemaV2";
+import { updatePropertyDescription } from "@/actions/property/update-property";
 
-function PropertyDescriptionForm({description, params}: {description: string, params?: { propertyId: string }}) {
+function PropertyDescriptionForm({description, propertyId}: {description: string, propertyId: string }) {
     const [isPending, startTransition] = React.useTransition();
 
     const propertiesDescriptionForm = useForm<PropertyDescriptionData>({
         resolver: zodResolver(propertyDescriptionSchema),
         defaultValues: {
-            property_description: description ? description : "",
+            property_description: description ?? "",
         },
         mode: "onChange",
     });
@@ -32,10 +33,15 @@ function PropertyDescriptionForm({description, params}: {description: string, pa
     async function onSubmit(values: PropertyDescriptionData) {
         if (!isPending) {
             startTransition(() => {
-                setTimeout(() => {
-                    console.log("Saved successfully!");
-                    console.log(values);
-                }, 10000);
+                toast.promise(updatePropertyDescription(propertyId, values.property_description), {
+                    loading: "Saving changes...",
+                    success: (values) => {
+                        return "Description updated successfully" + values;
+                    },
+                    error: (error) => {
+                        return error.message;
+                    },
+                });
             });
         }
     }
@@ -50,9 +56,11 @@ function PropertyDescriptionForm({description, params}: {description: string, pa
                             <div className="">
                                 <FormMessage className="text-xs" />
                                 <div className="text-muted-foreground text-sm font-medium">
-                                    {propertiesDescriptionForm.watch("property_description", "").length <= 1000
-                                        ? `${1000 - propertiesDescriptionForm.watch("property_description", "").length} characters remaining`
-                                        : `${propertiesDescriptionForm.watch("property_description", "").length - 1000} characters over the limit`}
+                                    {(propertiesDescriptionForm.watch("property_description", "") || "").length <= 1000
+                                        ? `${1000 - (propertiesDescriptionForm.watch("property_description", "") || "").length} characters remaining`
+                                        : `${
+                                              (propertiesDescriptionForm.watch("property_description", "") || "").length - 1000
+                                          } characters over the limit`}
                                 </div>
                                 <FormControl>
                                     <div className="mt-2">

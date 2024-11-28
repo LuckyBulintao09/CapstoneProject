@@ -20,6 +20,7 @@ import { cn } from "@/lib/utils";
 import { PropertyLocationData, propertyLocationSchema } from "@/lib/schemas/propertySchemaV2";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
+import { updatePropertyLocation } from "@/actions/property/update-property";
 
 function PropertyLocationForm({propertyId, location, address}: {propertyId: string, location: {latitude: number | any, longitude: number | any}, address: string}) {
     const [isPending, startTransition] = React.useTransition();
@@ -80,10 +81,15 @@ function PropertyLocationForm({propertyId, location, address}: {propertyId: stri
     async function onSubmit(values: PropertyLocationData) {
         if (!isPending) {
             startTransition(() => {
-                setTimeout(() => {
-                    console.log("Saved successfully!");
-                    console.log(values);
-                }, 10000);
+                toast.promise(updatePropertyLocation(propertyId, values.property_address, values.property_location), {
+                    loading: "Saving changes...",
+                    success: () => {
+                        return "Description updated successfully";
+                    },
+                    error: (error) => {
+                        return error.message;
+                    },
+                });
             });
         }
     }

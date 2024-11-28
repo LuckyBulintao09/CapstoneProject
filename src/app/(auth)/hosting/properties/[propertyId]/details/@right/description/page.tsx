@@ -35,7 +35,7 @@ async function DescriptionPage({ params }: { params: { propertyId: string } }) {
 
             <div className="flex grow py-6 airBnbDesktop:pt-0 airBnbDesktop:pb-10">
                 <div className="airBnbDesktop:mx-auto airairBnbBigDesktop:w-[608px] min-[1128px]:w-[512px] airBnbDesktop:w-[464px] ">
-                    <PropertyDescriptionForm description={data.description} />
+                    <PropertyDescriptionForm description={data.description} propertyId={params.propertyId} />
                 </div>
             </div>
 
