@@ -17,7 +17,7 @@ function PropertyDescriptionForm({description, params}: {description: string, pa
     const propertiesDescriptionForm = useForm<PropertyDescriptionData>({
         resolver: zodResolver(propertyDescriptionSchema),
         defaultValues: {
-            property_description: description,
+            property_description: description ? description : "",
         },
         mode: "onChange",
     });
