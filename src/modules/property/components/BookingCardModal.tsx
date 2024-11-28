@@ -180,7 +180,7 @@ export const BookingCardModal: React.FC<BookingCardProps> = ({
 							</button>
 						</div>
 						{isCalendarOpen && (
-							<div className='absolute z-10 mt-2 left-2/3 transform -translate-x-1/2'>
+							<div className='absolute z-10 mt-2 left-2/3 transform -translate-x-1/4'>
 								<Calendar
 									mode='single'
 									selected={date}
@@ -227,10 +227,11 @@ export const BookingCardModal: React.FC<BookingCardProps> = ({
 										<Tooltip>
 											<TooltipTrigger asChild>
 												<span className='ml-auto cursor-pointer'>
-													<Info className='w-4 h-4 text-gray-500 dark:text-gray-300 mr-3' />
+													<Info className='w-4 h-4 text-gray-500 dark:text-gray-300 mr-0' />
 												</span>
 											</TooltipTrigger>
-											<TooltipContent className='w-[250px]'>
+											<TooltipContent className='w-[200px] transform -translate-x-24'>
+												{/* Added transform and -translate-x-4 */}
 												<p className='font-normal text-xs'>
 													Select your preferred payment method. After completing
 													the payment, please send the proof to the owner
