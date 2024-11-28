@@ -1,4 +1,5 @@
 import { createClient } from "@/utils/supabase/client";
+import { notifyProprietor } from "../email/notifyProprietor";
 
 const supabase = createClient();
 
@@ -43,21 +44,42 @@ export const deleteReview = async (reviewId: number) => {
   }
 };
 
-export const cancelTransaction = async (transactionId: number) => {
+export const cancelTransaction = async (transactionId: number, unitId: number) => {
   try {
-    const { error } = await supabase
+    const { error: transactionError } = await supabase
       .from("transaction")
       .update({ transaction_status: "cancelled" })
       .match({ id: transactionId });
 
-    if (error) {
-      console.error("Error cancelling transaction:", error.message);
-      return false;
+    if (transactionError) throw new Error("Error cancelling transaction");
+
+    const { data, error } = await supabase
+      .from("unit")
+      .select(`
+        property:property_id (
+          company:company_id (
+            owner:owner_id (
+              email
+            )
+          )
+        )
+      `)
+      .eq("id", unitId)
+      .single();
+
+    if (error || !data?.property?.company?.owner?.email) {
+      throw new Error("Error retrieving owner email");
     }
 
+    const email = data.property.company.owner.email;
+    const subject = "Transaction Cancelled";
+    const message = "A transaction for your unit has been cancelled.";
+    await notifyProprietor({email, subject, message});
+
+    console.log("Email sent to:", email);
     return true;
   } catch (error) {
-    console.error("An error occurred while cancelling the transaction:", error);
+    console.error("Error:", error.message);
     return false;
   }
 };
