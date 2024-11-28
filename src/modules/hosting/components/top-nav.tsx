@@ -180,13 +180,7 @@ function TopNavigation() {
 												asChild
 												className='py-2 px-3 rounded-none font-[500]'
 											>
-												<Link href={`/hosting/unit`}>Listings</Link>
-											</DropdownMenuItem>
-											<DropdownMenuItem
-												asChild
-												className='py-2 px-3 rounded-none font-[500]'
-											>
-												<Link href={`/hosting/property`}>Properties</Link>
+												<Link href={`/hosting/properties`}>Properties</Link>
 											</DropdownMenuItem>
 											<DropdownMenuItem className='py-2 px-3 rounded-none font-[500]'>
 												Reservations

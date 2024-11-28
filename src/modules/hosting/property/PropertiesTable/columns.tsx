@@ -38,6 +38,7 @@ import { showErrorToast } from "@/lib/handle-error";
 import Link from "next/link";
 
 import { removePropertyById } from "@/actions/property/remove-property-by-id";
+import { getAllUnitUnderProperty } from "@/actions/unit/getAllUnitUnderProperty";
 
 import Image from "next/image";
 import { cn } from "@/lib/utils";
@@ -138,10 +139,15 @@ export const columns: ColumnDef<any>[] = [
             return null
         },
     },
-    {
-        accessorKey: "",
-        header: "Units",
-    },
+    // {
+    //     accessorKey: "",
+    //     header: "Units",
+    //     cell: ({ row }) => {
+    //         return (
+    //             <span>{"5"}</span>
+    //         )
+    //     }
+    // },
     {
         accessorKey: "id",
         header: () => {

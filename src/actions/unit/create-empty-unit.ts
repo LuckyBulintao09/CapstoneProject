@@ -3,7 +3,7 @@
 import { createClient } from "@/utils/supabase/server"
 import { redirect } from "next/navigation";
 
-export async function createEmptyUnit() {
+export async function createEmptyUnit(propertyId) {
     const supabase = createClient();
 
         const { data, error } = await supabase
@@ -14,6 +14,6 @@ export async function createEmptyUnit() {
             throw error;
         }
         
-        redirect(`/hosting/unit/add-a-unit/${data.id}/select-a-property`);
+        redirect(`/hosting/properties/${propertyId}/units/add-a-unit/${data.id}/unit-details`);
     
 }

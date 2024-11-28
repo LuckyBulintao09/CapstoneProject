@@ -6,10 +6,13 @@ import Link from "next/link";
 import { buttonVariants } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
 import { Eye } from "lucide-react";
+import { getAllUnitUnderProperty } from "@/actions/unit/getAllUnitUnderProperty";
 
 async function PropertyDetailsPage({ params }: { params: { propertyId: string } }) {
     const property = await getPropertyById(params.propertyId);
-    console.log(property[0]);
+    const units = await getAllUnitUnderProperty(params.propertyId);
+
+    console.log(units.length);
     return (
         <>
             <div>
@@ -141,7 +144,7 @@ async function PropertyDetailsPage({ params }: { params: { propertyId: string } 
                     ></Link>
                     <div>
                         <div className="pt-2 overflow-clip text-[1rem] tracking-normal leading-5 text-ellipsis font-normal whitespace-pre-line text-muted-foreground">
-                            <div>{"free wifi"}</div>
+                            <div>{property[0].address}</div>
                         </div>
                     </div>
                 </div>
@@ -172,6 +175,21 @@ async function PropertyDetailsPage({ params }: { params: { propertyId: string } 
                     <div>
                         <div className="pt-2 overflow-clip text-[1rem] tracking-normal leading-5 text-ellipsis font-normal whitespace-pre-line text-muted-foreground">
                             <div>{"3 documents submitted"}</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div>
+                <div className="shadow-xl border rounded-lg relative p-[22px]">
+                    <span className="text-[1rem] leading-5 tracking-normal font-[500]">Units</span>
+                    <Link
+                        href={`/hosting/properties/17/details/units`}
+                        className="left-0 right-0 p-0 m-0 absolute bg-transparent top-0 bottom-0 z-[2] outline-none"
+                    ></Link>
+                    <div>
+                        <div className="pt-2 overflow-clip text-[1rem] tracking-normal leading-5 text-ellipsis font-normal whitespace-pre-line text-muted-foreground">
+                            <div>{`${units.length} units added`}</div>
                         </div>
                     </div>
                 </div>

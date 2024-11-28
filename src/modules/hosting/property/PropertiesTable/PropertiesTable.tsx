@@ -56,7 +56,7 @@ function PropertiesTable<TData, TValue>({ columns, data }: DataTableProps<TData,
     const isDesktop = useMediaQuery("(min-width: 748px)");
 
     return (
-        <div>
+        <div className="h-[calc(100vh-80px)]">
             <PropertiesHeader table={propertiesTable} />
             <div className="rounded-md border">
                 <Table>
