@@ -1,46 +1,64 @@
 'use client';
-
-import React from "react";
-import Image from "next/image";
-import Link from "next/link";
-import { Button, buttonVariants } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
-import { Form, FormControl, FormDescription, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form";
-import { useForm } from "react-hook-form";
-import { zodResolver } from "@hookform/resolvers/zod";
-import { LoginFormData, loginSchema } from "@/lib/schemas/authSchema";
-import { EyeClosedIcon, EyeOpenIcon } from "@radix-ui/react-icons";
-import { useRouter } from "next/navigation";
-import { toast } from "sonner";
-import { LoginWithPassword } from "@/app/(authentication)/login/actions";
-import { getErrorMessage } from "@/lib/handle-error";
-
-
+import { createClient } from '@/utils/supabase/client';
+import React from 'react';
+import Image from 'next/image';
+import Link from 'next/link';
+import { Button, buttonVariants } from '@/components/ui/button';
+import { Input } from '@/components/ui/input';
+import {
+	Form,
+	FormControl,
+	FormDescription,
+	FormField,
+	FormItem,
+	FormLabel,
+	FormMessage,
+} from '@/components/ui/form';
+import { useForm } from 'react-hook-form';
+import { zodResolver } from '@hookform/resolvers/zod';
+import { LoginFormData, loginSchema } from '@/lib/schemas/authSchema';
+import { EyeClosedIcon, EyeOpenIcon } from '@radix-ui/react-icons';
+import { useRouter } from 'next/navigation';
+import { toast } from 'sonner';
+import { LoginWithPassword } from '@/app/(authentication)/login/actions';
+import { getErrorMessage } from '@/lib/handle-error';
+const supabase = createClient();
 function LoginForm() {
     const queryString = typeof window !== "undefined" ? window?.location.search : "";
     const urlSearchParams = new URLSearchParams(queryString);
     const redirectedFrom = urlSearchParams.get("redirectedFrom");
     const router = useRouter();
-    
+
     const [isPending, startTransition] = React.useTransition();
     const [showPassword, setShowPassword] = React.useState<boolean>(false);
 
-    const loginForm = useForm<LoginFormData>({
-        resolver: zodResolver(loginSchema),
-        defaultValues: {
-            email: "",
-            password: "",
-        },
-    });
+	const loginForm = useForm<LoginFormData>({
+		resolver: zodResolver(loginSchema),
+		defaultValues: {
+			email: '',
+			password: '',
+		},
+	});
 
     async function onSubmit(values: LoginFormData) {
         if (!isPending) {
             startTransition(() => {
                 toast.promise(LoginWithPassword(values), {
                     loading: "Logging in...",
-                    success: () => {
-                        loginForm.reset();
-                        router.push(redirectedFrom || "/");
+                    success: async () => {
+                        const { data, error } = await supabase.auth.getUser();
+                        if (error) {
+                            console.error("Error fetching user:", error.message);
+                            throw new Error("Unable to fetch user data.");
+                        }
+                        const userRole = data?.user?.user_metadata?.user_role;
+                        if (userRole==='Admin') {
+                            window.location.href = '/administrator/dashboard';
+                            loginForm.reset();
+                        }else{
+                            router.push(redirectedFrom || "/");
+                            loginForm.reset();
+                        }
                         return "Login successful!";
                     },
                     error: (error) => {
@@ -61,7 +79,9 @@ function LoginForm() {
                             name="email"
                             render={({ field }) => (
                                 <FormItem className="space-y-0">
-                                    <FormLabel htmlFor="email" className="sr-only">Email</FormLabel>
+                                    <FormLabel htmlFor="email" className="sr-only">
+                                        Email
+                                    </FormLabel>
                                     <FormControl>
                                         <Input
                                             id="email"
@@ -82,12 +102,14 @@ function LoginForm() {
                             name="password"
                             render={({ field }) => (
                                 <FormItem className="space-y-0">
-                                    <FormLabel htmlFor="password" className="sr-only">Password</FormLabel>
+                                    <FormLabel htmlFor="password" className="sr-only">
+                                        Password
+                                    </FormLabel>
                                     <FormControl>
                                         <div className="relative">
                                             <Input
                                                 id="password"
-                                                type={`${showPassword ? "text" : "password"}`}
+                                                type={showPassword ? "text" : "password"}
                                                 placeholder="•••••••••"
                                                 autoComplete="on"
                                                 {...field}
@@ -138,7 +160,7 @@ function LoginForm() {
                     Sign up
                 </Link>
             </div>
-            <div className=" text-center text-sm">
+            <div className="text-center text-sm">
                 Forgot Password{" "}
                 <Link href="/forgot-password" className="underline">
                     Recover Account

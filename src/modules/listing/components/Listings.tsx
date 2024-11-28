@@ -590,7 +590,8 @@ export default function Listings() {
 					<div className='row-span-1'>
 						<div className='flex justify-between items-center mb-4 flex-wrap gap-4'>
 							<p className='font-bold pl-2 text-xl'>
-								{sortedListings.length} Properties found
+								{sortedListings.length}{' '}
+								{sortedListings.length === 1 ? 'Property' : 'Properties'} found
 							</p>
 
 							{/* For Larger Screens */}

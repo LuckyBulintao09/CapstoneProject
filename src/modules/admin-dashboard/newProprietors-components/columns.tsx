@@ -8,6 +8,7 @@ import ApproveConfirmationModal from "../components/ApproveConfirmationModal";
 import RejectConfirmationModal from "../components/RejectConfirmationModal";
 import { toast } from "sonner";
 import { updateProprietorStatus } from "@/actions/admin/updateProprietorStatus";
+import { confirmedProprietorNotification, rejectedProprietorNotification } from "@/actions/notification/notification";
 
 export type NewProprietors = {
   id: string;
@@ -46,6 +47,7 @@ const NewProprietorsActionsCell = ({
     if (result) {
       toast.success("Client approved successfully!");
       onProprietorUpdate(row.original.id);
+      await confirmedProprietorNotification(row.original.id);
     } else {
       setIsApproved(false); 
       toast.error("Failed to approve the client. Please try again.");
@@ -62,6 +64,7 @@ const NewProprietorsActionsCell = ({
     if (result) {
       toast.success("Client rejected successfully!");
       onProprietorUpdate(row.original.id);
+      await rejectedProprietorNotification(row.original.id, reason);
     } else {
       setIsRejected(false); 
       toast.error("Failed to reject client. Please try again.");

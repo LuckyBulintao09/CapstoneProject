@@ -1,7 +1,7 @@
 import { Resend } from 'resend';
 import { EmailTemplate } from '@/components/email-templates/template';
 
-const resend = new Resend(process.env.RESEND_API_KEY);
+const resend = new Resend(process.env.NEXT_PUBLIC_RESEND_API_KEY);
 
 interface SendEmailParams {
   email: string;
@@ -31,3 +31,5 @@ export async function sendEmail({ email, firstName, lastName, status, reason }: 
     throw new Error(`Failed to send email: ${error}`);
   }
 }
+
+

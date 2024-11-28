@@ -6,6 +6,7 @@ import { createClient } from "@/utils/supabase/client";
 import { DataTableColumnHeader } from "@/components/table/data-column-header";
 import PropertyModal from "../components/PropertyModal";
 import RejectionReasonModal from "../components/RejectionReasonModal";
+import { approve_PropertyNotification, reject_PropertyNotification } from "@/actions/notification/notification";
 
 const supabase = createClient();
 
@@ -112,6 +113,7 @@ const PropertyListingActionsCell = ({
         .eq("id", row.original.id);
 
       if (!error) {
+        await approve_PropertyNotification(row.original.proprietor_id, row.original.id);
         setIsApproved(true);
         setIsRejected(false);
         onPropertyUpdate(row.original.id, true, false);
@@ -140,6 +142,7 @@ const PropertyListingActionsCell = ({
         .eq("id", row.original.id);
 
       if (!error) {
+        await reject_PropertyNotification(row.original.proprietor_id, row.original.id, reason);
         setIsApproved(false);
         setIsRejected(true);
         onPropertyUpdate(row.original.id, false, true);

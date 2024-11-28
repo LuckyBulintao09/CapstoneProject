@@ -15,7 +15,7 @@ const SpecificListingTabs = () => {
 			defaultValue='overview'
 			className='my-4 bg-white dark:bg-secondary border border-gray-300 p-4 pt-2 pb-0 shadow-sm rounded-lg'
 		>
-			<div className='overflow-x-auto xs:-mx-4 sm:-mx-0'>
+			<div className='overflow-x-auto pl-0 sm:pl-0 xs:-mx-3 xxs:pl-24 sm:-mx-0'>
 				<TabsList className='flex sm:justify-start xs:justify-center xl:gap-5 lg:gap-5 sm:gap-2 xs:gap-1 bg-white dark:bg-secondary'>
 					{spiels.SPECIFIC_LISTING_TABS.map((item) => (
 						<TabsTrigger

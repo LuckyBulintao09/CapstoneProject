@@ -141,7 +141,7 @@ const PropertyDetails: React.FC<PropertyDetailsProps> = ({
 						<CardTitle>Facilities & Amenities</CardTitle>
 					</CardHeader>
 					<CardContent className='text-sm font-normal'>
-						<div className='grid grid-cols-4 gap-1'>
+						<div className='grid grid-cols-2 lg:grid-cols-4 gap-1'>
 							{facilities.map((item, index) => (
 								<div key={index} className='flex items-center'>
 									<Check className='mr-2 text-green-600' size={16} />

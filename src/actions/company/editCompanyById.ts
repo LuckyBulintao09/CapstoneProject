@@ -8,7 +8,7 @@ export const editCompanyById = async (userId: string, companyId: string, formDat
 
     try {
         
-        const {data, error} = await supabase.from('company').update({ 
+        const {error} = await supabase.from('company').update({ 
             company_name: formData.company_name,
             about: formData.about,
          }).eq('owner_id', userId).eq('id', companyId).select()
@@ -16,10 +16,8 @@ export const editCompanyById = async (userId: string, companyId: string, formDat
         if (error?.code) {
             return error
         }
+        console.log(formData)
 
-        console.log(data)
-
-        return data
 
     } catch (error: any) {
 

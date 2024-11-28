@@ -50,7 +50,11 @@ import {
 	Settings,
 	UserCircle2,
 	X,
+	LogOut
 } from 'lucide-react';
+import { NotificationPopover } from '@/components/navbar/NotificationPopover';
+import { ModeToggle } from '@/components/mode-toggle';
+import { logout } from '@/app/auth/login/actions';
 
 function TopNavigation() {
 	/*
@@ -97,8 +101,8 @@ function TopNavigation() {
 	}, [open]);
 
 	return (
-		<nav className='py-3 sticky z-[99] airBnbDesktop:z-10 top-0 w-full bg-background/95 shadow backdrop-blur supports-[backdrop-filter]:bg-background/60 dark:shadow-secondary'>
-			<div className='w-full grid grid-flow-col px-5'>
+		<nav className='py-3 sticky z-[999] airBnbDesktop:z-999 top-0 w-full bg-white/95 shadow backdrop-blur supports-[backdrop-filter]:bg-white/60 dark:bg-background'>
+			<div className='w-full grid md1:grid-cols-3 grid-flow-col px-5'>
 				<div className='flex flex-nowrap items-center justify-start h-11'>
 					<Image
 						src='/Logo.png'
@@ -108,7 +112,7 @@ function TopNavigation() {
 						priority
 						className='w-14 h-14 object-contain aspect-square'
 					/>
-					<span className='text-xl font-bold'>UniHomes</span>
+					{/* <span className='text-xl font-bold'>Proprietor Dashboard</span> */}
 				</div>
 				{isDesktop ? (
 					<>
@@ -183,7 +187,7 @@ function TopNavigation() {
 												<Link href={`/hosting/properties`}>Properties</Link>
 											</DropdownMenuItem>
 											<DropdownMenuItem className='py-2 px-3 rounded-none font-[500]'>
-												Reservations
+											<Link href={`/hosting/transaction_history`}>Reservations</Link>
 											</DropdownMenuItem>
 											<DropdownMenuItem className='py-2 px-3 rounded-none font-[500]'>
 												Insights
@@ -194,8 +198,10 @@ function TopNavigation() {
 							</li>
 						</ul>
 
-						<div className='flex flex-nowrap items-center justify-end gap-11'>
-							{/* Notification here */}
+						<div className='flex flex-nowrap items-center justify-end gap-5'>
+							<ModeToggle />
+							<NotificationPopover />
+							<Separator orientation='vertical' className='bg-gray-300' />
 							{user ? (
 								<DropdownMenu modal={false}>
 									<DropdownMenuTrigger className='rounded-full'>
@@ -210,7 +216,7 @@ function TopNavigation() {
 									<DropdownMenuContent
 										side='bottom'
 										align='end'
-										className='border-none border-0 w-full min-w-56 px-0 py-5'
+										className='border-gray-200 border-1 w-full min-w-56 px-0 pt-3 bg-white dark:bg-secondary z-[999] shadow-xl'
 										forceMount
 									>
 										<DropdownMenuLabel className='font-normal'>
@@ -226,21 +232,21 @@ function TopNavigation() {
 										</DropdownMenuLabel>
 										<DropdownMenuSeparator />
 										<DropdownMenuGroup>
-											<DropdownMenuItem
+											{/* <DropdownMenuItem
 												asChild
 												className='py-2 px-3 rounded-none font-[500]'
 											>
 												<Link href={`/hosting/profile`}>Profile</Link>
-											</DropdownMenuItem>
+											</DropdownMenuItem> */}
 											<DropdownMenuItem
 												asChild
 												className='py-2 px-3 rounded-none font-[500]'
 											>
 												<Link href={`/hosting/company`}>Company</Link>
 											</DropdownMenuItem>
-											<DropdownMenuItem className='py-2 px-3 rounded-none font-[500]'>
+											{/* <DropdownMenuItem className='py-2 px-3 rounded-none font-[500]'>
 												Settings
-											</DropdownMenuItem>
+											</DropdownMenuItem> */}
 										</DropdownMenuGroup>
 										<DropdownMenuSeparator />
 										<DropdownMenuItem
@@ -249,8 +255,13 @@ function TopNavigation() {
 										>
 											<Link href={`/client/listings`}>Switch to renting</Link>
 										</DropdownMenuItem>
-										<DropdownMenuItem className='py-2 px-3 rounded-none font-[500]'>
-											Sign out
+										<DropdownMenuItem className='py-2 px-3 rounded-none font-[500]'
+										onClick={async () => {
+											await logout();
+											window.location.href = '/';
+										}}
+										>
+										<span>Logout</span>
 										</DropdownMenuItem>
 									</DropdownMenuContent>
 								</DropdownMenu>
@@ -305,7 +316,7 @@ function TopNavigation() {
 											<li className='mb-2'>MENU</li>
 											<li>
 												<Link
-													href={`/test`}
+													href={`/`}
 													className={cn(
 														buttonVariants({ variant: 'ghost' }),
 														'w-full justify-start rounded-none px-0 gap-2'
@@ -316,7 +327,7 @@ function TopNavigation() {
 											</li>
 											<li>
 												<Link
-													href={`/test`}
+													href={`/hosting/properties`}
 													className={cn(
 														buttonVariants({ variant: 'ghost' }),
 														'w-full justify-start rounded-none px-0 gap-2'
@@ -328,7 +339,7 @@ function TopNavigation() {
 											</li>
 											<li>
 												<Link
-													href={`/test`}
+													href={`/chat/inbox`}
 													className={cn(
 														buttonVariants({ variant: 'ghost' }),
 														'w-full justify-start rounded-none px-0 gap-2'
@@ -352,7 +363,7 @@ function TopNavigation() {
 											</li>
 											<li>
 												<Link
-													href={`/test`}
+													href={`/hosting/transaction_history`}
 													className={cn(
 														buttonVariants({ variant: 'ghost' }),
 														'w-full justify-start rounded-none px-0 gap-2'
@@ -379,7 +390,7 @@ function TopNavigation() {
 										{/* account */}
 										<ul className='flex flex-col gap-2 [&_svg]:size-6'>
 											<li className='mb-2'>ACCOUNT</li>
-											<li>
+											{/* <li>
 												<Link
 													href={`/test`}
 													className={cn(
@@ -389,7 +400,7 @@ function TopNavigation() {
 												>
 													<UserCircle2 /> Profile
 												</Link>
-											</li>
+											</li> */}
 											<li>
 												<Link
 													href={`/hosting/company`}
@@ -399,10 +410,10 @@ function TopNavigation() {
 													)}
 												>
 													<Building2 />
-													Manage Companies
+													Manage Company
 												</Link>
 											</li>
-											<li>
+											{/* <li>
 												<Link
 													href={`/test`}
 													className={cn(
@@ -413,7 +424,7 @@ function TopNavigation() {
 													<Settings />
 													Settings
 												</Link>
-											</li>
+											</li> */}
 										</ul>
 										<Separator />
 										{/* sign out */}

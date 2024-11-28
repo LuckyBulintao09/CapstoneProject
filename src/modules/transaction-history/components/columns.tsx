@@ -57,10 +57,11 @@ const TransactionActionsCell = ({ row }: { row: Row<Transaction> }) => {
   };
 
   const handleCancel = async () => {
-    const success = await cancelTransaction(row.original.id);
+    const success = await cancelTransaction(row.original.id, unitId);
+
     if (success) {
       await cancel_onsiteNotification(unitId, row.original.user_id);
-      window.location.reload();
+    window.location.reload();
     }
   };
 

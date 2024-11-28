@@ -39,6 +39,7 @@ export default async function getAllReviewsUnderCompany(companyId: string) {
         .from("ratings_review")
         .select(`
           *,
+          property: unit_id (property_id),
           account: user_id (firstname, lastname, profile_url)
         `) 
         .in("unit_id", unitIds);
@@ -47,5 +48,6 @@ export default async function getAllReviewsUnderCompany(companyId: string) {
         console.error(reviewError);
         return reviewError;
     }
+    console.log(reviews)
     return reviews;
 }
