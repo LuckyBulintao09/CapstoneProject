@@ -9,7 +9,7 @@ async function Company() {
 
     return (
         <div>
-            <HostingContentLayout title="Company">
+            <HostingContentLayout>
                 <CustomBreadcrumbs />
                 
                 <div className="mx-auto max-w-5xl py-11">
