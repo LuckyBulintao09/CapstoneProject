@@ -10,13 +10,15 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { cn } from "@/lib/utils";
 
 import { CircleAlert } from "lucide-react";
+import { getAuthenticatedUser } from "@/utils/supabase/server";
 
-function LessorPage() {
+async function LessorPage() {
+    const user = await getAuthenticatedUser();
     return (
         <div className="pt-16 space-y-11">
             <div className="px-20 max-w-[1440px] mx-auto">
                 <div className="flex justify-between items-center">
-                    <h1 className="text-[2em] font-[500]">Welcome back, Throw</h1>
+                    <h1 className="text-[2em] font-[500]">Welcome back, {`${user?.user_metadata.firstname} ${user?.user_metadata.lastname}`}</h1>
                     <Dialog>
                         <DialogTrigger asChild>
                             <Button variant="link">Show all (3)</Button>

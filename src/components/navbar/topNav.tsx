@@ -249,7 +249,7 @@ function NavigationBar() {
 										<DropdownMenuGroup>
 											<DropdownMenuItem
 												onClick={() => {
-													window.location.href = '/dashboard';
+													window.location.href = '/hosting';
 												}}
 											>
 												<LayoutDashboard className='mr-2 h-4 w-4' />

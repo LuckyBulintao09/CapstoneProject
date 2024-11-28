@@ -194,7 +194,7 @@ function LocationPage() {
     );
 }
 
-const ControlledMap = ({ field, disabled, className }: { field: UseControllerReturn, disabled?: boolean, className?: string }) => {
+const ControlledMap = ({ field, disabled, className }: { field: any, disabled?: boolean, className?: string }) => {
     const [cameraProps, setCameraProps] = React.useState({
         center: field.value,
         zoom: 15
