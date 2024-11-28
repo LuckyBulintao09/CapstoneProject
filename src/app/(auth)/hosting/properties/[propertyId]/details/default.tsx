@@ -11,8 +11,6 @@ import { getAllUnitUnderProperty } from "@/actions/unit/getAllUnitUnderProperty"
 async function PropertyDetailsPage({ params }: { params: { propertyId: string } }) {
     const property = await getPropertyById(params.propertyId);
     const units = await getAllUnitUnderProperty(params.propertyId);
-
-    console.log(units.length);
     return (
         <>
             <div>
@@ -20,14 +18,13 @@ async function PropertyDetailsPage({ params }: { params: { propertyId: string } 
                 <div className="shadow-xl border rounded-lg relative p-[22px]">
                     <span className="text-[1rem] leading-5 tracking-normal font-[500]">Photo gallery</span>
                     <Link
-                        href={`/hosting/properties/17/details/photos`}
+                        href={`/hosting/properties/${params.propertyId}/details/photos`}
                         className="left-0 right-0 p-0 m-0 absolute bg-transparent top-0 bottom-0 z-[2] outline-none"
                     ></Link>
                     <div>
                         <div className="pt-2 overflow-clip text-ellipsis whitespace-pre-line text-muted-foreground">
                             <div className="-mt-1 flex items-center gap-6">
-                                {property[0].property_image.length + 1}
-                                {" photos"}
+                                {(property[0]?.property_image && property[0].property_image.length > 0) ? `${property[0].property_image?.length + 1} photos` : "You have 0 photos for this property right now, consider uploading some."}
                             </div>
                         </div>
 
@@ -36,10 +33,22 @@ async function PropertyDetailsPage({ params }: { params: { propertyId: string } 
                                 <div className="h-auto w-auto bg-cover pt-[100%] bg-center bg-no-repeat">
                                     <div className="left-0 right-0 absolute top-0 bottom-0 flex items-center justify-center ">
                                         <picture>
-                                            <source srcSet={property[0].thumbnail_url} media="(max-width: 0px)" />
+                                            <source
+                                                srcSet={
+                                                    property[0]?.thumbnail_url && property[0].thumbnail_url.length > 0
+                                                        ? property[0].thumbnail_url
+                                                        : "/placeholderImage.webp"
+                                                }
+                                                media="(max-width: 0px)"
+                                            />
+                                            lamao
                                             <Image
-                                                src={property[0].thumbnail_url}
-                                                alt={property[0].title}
+                                                src={
+                                                    property[0]?.thumbnail_url && property[0].thumbnail_url.length > 0
+                                                        ? property[0].thumbnail_url
+                                                        : "/placeholderImage.webp"
+                                                }
+                                                alt={property[0].title || "Thumbnail"}
                                                 width={160}
                                                 height={160}
                                                 className="left-0 right-0 h-full w-full absolute top-0 bottom-0 object-cover overflow-clip"
@@ -53,10 +62,21 @@ async function PropertyDetailsPage({ params }: { params: { propertyId: string } 
                                 <div className="h-auto w-auto bg-cover pt-[100%] bg-center bg-no-repeat">
                                     <div className="left-0 right-0 absolute top-0 bottom-0 flex items-center justify-center ">
                                         <picture>
-                                            <source srcSet={property[0].property_image[0]} media="(max-width: 0px)" />
+                                            <source
+                                                srcSet={
+                                                    property[0]?.property_image && property[0].property_image.length > 0
+                                                        ? property[0].property_image[0]
+                                                        : "/placeholderImage.webp"
+                                                }
+                                                media="(max-width: 0px)"
+                                            />
                                             <Image
-                                                src={property[0].property_image[0]}
-                                                alt={property[0].title}
+                                                src={
+                                                    property[0]?.property_image && property[0].property_image.length > 0
+                                                        ? property[0].property_image[0]
+                                                        : "/placeholderImage.webp"
+                                                }
+                                                alt={property[0].title || "Thumbnail"}
                                                 width={160}
                                                 height={160}
                                                 className="left-0 right-0 h-full w-full absolute top-0 bottom-0 object-cover overflow-clip"
@@ -70,12 +90,20 @@ async function PropertyDetailsPage({ params }: { params: { propertyId: string } 
                                     <div className="left-0 right-0 absolute top-0 bottom-0 flex items-center justify-center ">
                                         <picture>
                                             <source
-                                                srcSet={property[0].property_image[property[0].property_image.length - 1]}
+                                                srcSet={
+                                                    property[0]?.property_image && property[0].property_image.length > 0
+                                                        ? property[0].property_image[property[0].property_image.length - 1]
+                                                        : "/placeholderImage.webp"
+                                                }
                                                 media="(max-width: 0px)"
                                             />
                                             <Image
-                                                src={property[0].property_image[property[0].property_image.length - 1]}
-                                                alt={property[0].title}
+                                                src={
+                                                    property[0]?.property_image && property[0].property_image.length > 0
+                                                        ? property[0].property_image[property[0].property_image.length - 1]
+                                                        : "/placeholderImage.webp"
+                                                }
+                                                alt={property[0].title || "Thumbnail"}
                                                 width={160}
                                                 height={160}
                                                 className="left-0 right-0 h-full w-full absolute top-0 bottom-0 object-cover overflow-clip"
@@ -93,7 +121,7 @@ async function PropertyDetailsPage({ params }: { params: { propertyId: string } 
                 <div className="shadow-xl border rounded-lg relative p-[22px]">
                     <span className="text-[1rem] leading-5 tracking-normal font-[500]">Title</span>
                     <Link
-                        href={`/hosting/properties/17/details/title`}
+                        href={`/hosting/properties/${params.propertyId}/details/title`}
                         className="left-0 right-0 p-0 m-0 absolute bg-transparent top-0 bottom-0 z-[2] outline-none"
                     ></Link>
                     <div>
@@ -108,7 +136,7 @@ async function PropertyDetailsPage({ params }: { params: { propertyId: string } 
                 <div className="shadow-xl border rounded-lg relative p-[22px]">
                     <span className="text-[1rem] leading-5 tracking-normal font-[500]">Property type</span>
                     <Link
-                        href={`/hosting/properties/17/details/property-type`}
+                        href={`/hosting/properties/${params.propertyId}/details/property-type`}
                         className="left-0 right-0 p-0 m-0 absolute bg-transparent top-0 bottom-0 z-[2] outline-none"
                     ></Link>
                     <div>
@@ -123,7 +151,7 @@ async function PropertyDetailsPage({ params }: { params: { propertyId: string } 
                 <div className="shadow-xl border rounded-lg relative p-[22px]">
                     <span className="text-[1rem] leading-5 tracking-normal font-[500]">Description</span>
                     <Link
-                        href={`/hosting/properties/17/details/description`}
+                        href={`/hosting/properties/${params.propertyId}/details/description`}
                         className="left-0 right-0 p-0 m-0 absolute bg-transparent top-0 bottom-0 z-[2] outline-none"
                     ></Link>
                     <div>
@@ -134,12 +162,11 @@ async function PropertyDetailsPage({ params }: { params: { propertyId: string } 
                 </div>
             </div>
 
-
             <div>
                 <div className="shadow-xl border rounded-lg relative p-[22px]">
                     <span className="text-[1rem] leading-5 tracking-normal font-[500]">Location</span>
                     <Link
-                        href={`/hosting/properties/17/details/location`}
+                        href={`/hosting/properties/${params.propertyId}/details/location`}
                         className="left-0 right-0 p-0 m-0 absolute bg-transparent top-0 bottom-0 z-[2] outline-none"
                     ></Link>
                     <div>
@@ -154,7 +181,7 @@ async function PropertyDetailsPage({ params }: { params: { propertyId: string } 
                 <div className="shadow-xl border rounded-lg relative p-[22px]">
                     <span className="text-[1rem] leading-5 tracking-normal font-[500]">House rules</span>
                     <Link
-                        href={`/hosting/properties/17/details/house-rules`}
+                        href={`/hosting/properties/${params.propertyId}/details/house-rules`}
                         className="left-0 right-0 p-0 m-0 absolute bg-transparent top-0 bottom-0 z-[2] outline-none"
                     ></Link>
                     <div>
@@ -169,7 +196,7 @@ async function PropertyDetailsPage({ params }: { params: { propertyId: string } 
                 <div className="shadow-xl border rounded-lg relative p-[22px]">
                     <span className="text-[1rem] leading-5 tracking-normal font-[500]">Documents</span>
                     <Link
-                        href={`/hosting/properties/17/details/documents`}
+                        href={`/hosting/properties/${params.propertyId}/details/documents`}
                         className="left-0 right-0 p-0 m-0 absolute bg-transparent top-0 bottom-0 z-[2] outline-none"
                     ></Link>
                     <div>
@@ -184,7 +211,7 @@ async function PropertyDetailsPage({ params }: { params: { propertyId: string } 
                 <div className="shadow-xl border rounded-lg relative p-[22px]">
                     <span className="text-[1rem] leading-5 tracking-normal font-[500]">Units</span>
                     <Link
-                        href={`/hosting/properties/17/details/units`}
+                        href={`/hosting/properties/${params.propertyId}/details/units`}
                         className="left-0 right-0 p-0 m-0 absolute bg-transparent top-0 bottom-0 z-[2] outline-none"
                     ></Link>
                     <div>
@@ -199,10 +226,7 @@ async function PropertyDetailsPage({ params }: { params: { propertyId: string } 
                 <Link
                     // href={`/hosting/properties/${params.propertyId}/view-your-space`}
                     href={`/property/${params.propertyId}`}
-                    className={cn(
-                        buttonVariants({ variant: "default" }),
-                        "rounded-full space-x-2"
-                    )}
+                    className={cn(buttonVariants({ variant: "default" }), "rounded-full space-x-2")}
                 >
                     <Eye className="h-5 w-5" />
                     <span>View</span>
