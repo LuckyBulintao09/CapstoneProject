@@ -1,22 +1,27 @@
 'use client';
 
-import React from "react";
-import Image from "next/image";
-import Link from "next/link";
-import { Button, buttonVariants } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
-import { Form, FormControl, FormDescription, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form";
-import { useForm } from "react-hook-form";
-import { zodResolver } from "@hookform/resolvers/zod";
-import { LoginFormData, loginSchema } from "@/lib/schemas/authSchema";
-import { EyeClosedIcon, EyeOpenIcon } from "@radix-ui/react-icons";
-import { useRouter } from "next/navigation";
-import { toast } from "sonner";
-import { LoginWithPassword } from "@/app/(authentication)/login/actions";
-import { getErrorMessage } from "@/lib/handle-error";
-import { createClient } from "@/utils/supabase/client";
-
-const supabase = createClient();
+import React from 'react';
+import Image from 'next/image';
+import Link from 'next/link';
+import { Button, buttonVariants } from '@/components/ui/button';
+import { Input } from '@/components/ui/input';
+import {
+	Form,
+	FormControl,
+	FormDescription,
+	FormField,
+	FormItem,
+	FormLabel,
+	FormMessage,
+} from '@/components/ui/form';
+import { useForm } from 'react-hook-form';
+import { zodResolver } from '@hookform/resolvers/zod';
+import { LoginFormData, loginSchema } from '@/lib/schemas/authSchema';
+import { EyeClosedIcon, EyeOpenIcon } from '@radix-ui/react-icons';
+import { useRouter } from 'next/navigation';
+import { toast } from 'sonner';
+import { LoginWithPassword } from '@/app/(authentication)/login/actions';
+import { getErrorMessage } from '@/lib/handle-error';
 
 function LoginForm() {
     const queryString = typeof window !== "undefined" ? window?.location.search : "";
@@ -27,13 +32,13 @@ function LoginForm() {
     const [isPending, startTransition] = React.useTransition();
     const [showPassword, setShowPassword] = React.useState<boolean>(false);
 
-    const loginForm = useForm<LoginFormData>({
-        resolver: zodResolver(loginSchema),
-        defaultValues: {
-            email: "",
-            password: "",
-        },
-    });
+	const loginForm = useForm<LoginFormData>({
+		resolver: zodResolver(loginSchema),
+		defaultValues: {
+			email: '',
+			password: '',
+		},
+	});
 
     async function onSubmit(values: LoginFormData) {
         if (!isPending) {

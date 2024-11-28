@@ -192,7 +192,7 @@ function NavigationBar() {
 							</li>
 						</ul>
 
-						<div className='flex flex-nowrap items-center justify-end gap-2'>
+						<div className='flex flex-nowrap items-center justify-end gap-5'>
 							{/* Notification here */}
 
 							<ModeToggle />
