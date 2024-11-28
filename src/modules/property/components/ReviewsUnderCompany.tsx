@@ -60,7 +60,7 @@ const ReviewsUnderCompany: React.FC<ReviewsUnderCompanyProps> = ({
 							className='relative shadow-lg rounded-lg border-gray-200 bg-white dark:bg-gray-800 dark:border-gray-700'
 						>
 							<div className='absolute top-2 right-4'>
-								<Dropdown unitId={review.unit_id} reviewId={review.id} />
+								<Dropdown unitId={review.property.property_id} reviewId={review.id} />
 							</div>
 							<CardHeader className='flex items-start border-b border-gray-200 dark:border-gray-700 py-3'>
 								<div className='flex items-center space-x-3'>
@@ -180,7 +180,7 @@ const Dropdown: React.FC<{ unitId: number; reviewId: number }> = ({
 							Report Review
 						</a>
 						<Link
-							href={`/property/room/${unitId}`}
+							href={`/property/${unitId}`}
 							className='block px-4 py-2 text-sm text-sky-600 hover:text-sky-800 transition-colors duration-200'
 						>
 							View Property
