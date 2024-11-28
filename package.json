@@ -71,6 +71,7 @@
     "@tiptap/react": "^2.8.0",
     "@tiptap/starter-kit": "^2.8.0",
     "@types/uuid": "^10.0.0",
+    "@uppy/compressor": "^2.1.0",
     "@uppy/dashboard": "^4.1.1",
     "@uppy/drag-drop": "^4.0.3",
     "@uppy/file-input": "^4.0.2",
