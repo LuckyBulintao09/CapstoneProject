@@ -193,7 +193,7 @@ function TopNavigation() {
 												<Link href={`/hosting/property`}>Properties</Link>
 											</DropdownMenuItem>
 											<DropdownMenuItem className='py-2 px-3 rounded-none font-[500]'>
-												Reservations
+											<Link href={`/hosting/transaction_history`}>Reservations</Link>
 											</DropdownMenuItem>
 											<DropdownMenuItem className='py-2 px-3 rounded-none font-[500]'>
 												Insights
@@ -322,7 +322,7 @@ function TopNavigation() {
 											<li className='mb-2'>MENU</li>
 											<li>
 												<Link
-													href={`/test`}
+													href={`/`}
 													className={cn(
 														buttonVariants({ variant: 'ghost' }),
 														'w-full justify-start rounded-none px-0 gap-2'
@@ -333,7 +333,7 @@ function TopNavigation() {
 											</li>
 											<li>
 												<Link
-													href={`/test`}
+													href={`/hosting/properties`}
 													className={cn(
 														buttonVariants({ variant: 'ghost' }),
 														'w-full justify-start rounded-none px-0 gap-2'
@@ -345,7 +345,7 @@ function TopNavigation() {
 											</li>
 											<li>
 												<Link
-													href={`/test`}
+													href={`/chat/inbox`}
 													className={cn(
 														buttonVariants({ variant: 'ghost' }),
 														'w-full justify-start rounded-none px-0 gap-2'
@@ -369,7 +369,7 @@ function TopNavigation() {
 											</li>
 											<li>
 												<Link
-													href={`/test`}
+													href={`/hosting/transaction_history`}
 													className={cn(
 														buttonVariants({ variant: 'ghost' }),
 														'w-full justify-start rounded-none px-0 gap-2'
