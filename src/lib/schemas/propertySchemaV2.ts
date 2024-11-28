@@ -9,7 +9,7 @@ export const propertyTypeSchema = z.object({
 });
 
 export const propertyDescriptionSchema = z.object({
-    property_description: z.string().min(1, { message: "Please enter a description." }).max(500),
+    property_description: z.string().min(1, { message: "Please enter a description." }).max(1000),
 });
 
 export const propertyLocationSchema = z.object({

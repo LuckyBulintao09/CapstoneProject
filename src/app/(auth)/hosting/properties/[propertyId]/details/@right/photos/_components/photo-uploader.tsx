@@ -1,9 +1,5 @@
 "use client";
-
-import * as React from "react";
-
-import { Button } from "@/components/ui/button";
-import { Dialog, DialogClose, DialogContent, DialogDescription, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
+import React from "react";
 
 import Uppy from "@uppy/core";
 import { Dashboard } from "@uppy/react";
@@ -12,16 +8,17 @@ import "@uppy/core/dist/style.min.css";
 import "@uppy/dashboard/dist/style.min.css";
 
 import { createClient } from "@/utils/supabase/client";
-import useGetUser from "@/hooks/user/useGetUserId";
-import { addCompanyBusinessPermit } from "@/actions/company/addCompanyBusinessPermit";
+
 import { toast } from "sonner";
+import { Button } from "@/components/ui/button";
+import { Dialog, DialogClose, DialogContent, DialogDescription, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
 
-export function FileUploader({ companyId }: { companyId: string }) {
+import { addPropertyImages } from "@/actions/property/addPropertyImages";
+import { Plus } from "lucide-react";
 
-    const [open, setOpen] = React.useState(false);
+function PhotoUploader({ userId, propertyId }: { userId: string; propertyId: string }) {
+    const [open, setOpen] = React.useState<boolean>(false);
     const [isFileUploadEmpty, setIsFileUploadEmpty] = React.useState<boolean>(true);
-
-    const { data: user } = useGetUser();
 
     const onBeforeRequest = async (req: any) => {
         const supabase = createClient();
@@ -32,13 +29,13 @@ export function FileUploader({ companyId }: { companyId: string }) {
     const [uppy] = React.useState(() =>
         new Uppy({
             restrictions: {
-                maxNumberOfFiles: 1,
-                allowedFileTypes: ["image/jpg", "image/jpeg", "image/png", ".pdf", ".doc", ".docx"],
+                maxNumberOfFiles: 5,
+                allowedFileTypes: ["image/jpg", "image/jpeg", "image/png", "image/webp", ".webp"],
                 maxFileSize: 6 * 1024 * 1024,
             },
         }).use(Tus, {
             endpoint: `${process.env.NEXT_PUBLIC_SUPABASE_URL}/storage/v1/upload/resumable`,
-            onBeforeRequest,
+            onBeforeRequest, // set header authorization
             retryDelays: [0, 3000, 5000, 10000, 20000],
             headers: {
                 "x-upsert": "true",
@@ -53,78 +50,88 @@ export function FileUploader({ companyId }: { companyId: string }) {
         setIsFileUploadEmpty(false);
         file.meta = {
             ...file.meta,
-            bucketName: "company-logo-test",
+            bucketName: "unihomes image storage",
             contentType: file.type,
             cacheControl: 3600,
         };
     });
-    
 
     uppy.on("file-removed", () => {
         setIsFileUploadEmpty(true);
     });
 
-
     const handleUpload = async () => {
         if (uppy.getFiles().length > 0) {
             const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL;
-            const bucketName = "company-logo-test";
-            const objectName = `${user?.id}/business-permit/${uppy.getFiles()[0].name}`;
-            const fileUrl = `${supabaseUrl}/storage/v1/object/public/${bucketName}/${objectName}`;
-            
-            uppy.setFileMeta(uppy.getFiles()[0].id, {
-                objectName: `${user?.id}/business-permit/${uppy.getFiles()[0].name}`,
+            const bucketName = "unihomes image storage";
+
+            const uploadedFiles: string[] = [];
+
+            const uploadFiles = uppy.getFiles().map(async (file, index) => {
+                const objectName = `property/${userId}/${propertyId}/property_image/${file.name}`;
+                const fileUrl = `${supabaseUrl}/storage/v1/object/public/${bucketName}/${objectName}`;
+                uppy.setFileMeta(file.id, {
+                    objectName,
+                });
+
+                uploadedFiles.push(fileUrl);
+
+                await uppy.upload();
             });
 
-            uppy.upload();
+            await Promise.all(uploadFiles);
 
-            toast.promise(addCompanyBusinessPermit(fileUrl, user?.id, companyId), {
-                loading: "Adding business permit...",
+            toast.promise(addPropertyImages(uploadedFiles, propertyId), {
+                loading: "Adding images...",
                 success: () => {
-                    return "Company updated successfully";
+                    return "Property updated successfully";
                 },
                 error: () => {
-                    return "Something went wrong. Failed to update company";
+                    return "Something went wrong. Failed to update property";
                 },
             });
+            
+            // console.log(files)
             setIsFileUploadEmpty(true);
         }
     };
+
 
     return (
         <Dialog open={open} onOpenChange={setOpen} modal={true}>
             <DialogTrigger asChild>
                 <Button
-                    variant="outline"
-                    className="w-fit"
+                    variant="ghost"
+                    className="w-fit gap-2 rounded-full"
                     type="button"
                     onClick={() => {
                         setOpen(!open);
                     }}
                 >
-                    Upload business permit
+                    <span>Add photos</span>
+                    <Plus className="h-5 w-5" />
                 </Button>
             </DialogTrigger>
             <DialogContent
-                className=""
+                className="mt-11"
                 onInteractOutside={(e) => {
                     e.preventDefault();
                 }}
             >
                 <DialogHeader>
-                    <DialogTitle>Upload your file here</DialogTitle>
-                    <DialogDescription>
-                        Upload your business permit here.
-                    </DialogDescription>
+                    <DialogTitle>Property photos upload</DialogTitle>
+                    <DialogDescription>Upload your property photos here. Maximum of 5 images, 6MB per image</DialogDescription>
                 </DialogHeader>
 
                 <div>
                     <Dashboard uppy={uppy} hideUploadButton />
                     <Button className="mt-3" type="button" onClick={handleUpload} disabled={isFileUploadEmpty}>
-                        Upload file
+                        Upload images
                     </Button>
                 </div>
             </DialogContent>
         </Dialog>
     );
 }
+
+export default PhotoUploader;

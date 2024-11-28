@@ -130,7 +130,7 @@ function DocumentsPage({ params }: { params: { propertyId: string } }) {
                     </div>
                 </DialogContent>
             </Dialog>
-            <div></div>
+            <div>xx</div>
         </div>
     );
 }
