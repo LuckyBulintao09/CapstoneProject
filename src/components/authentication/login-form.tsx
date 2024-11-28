@@ -1,5 +1,5 @@
 'use client';
-
+import { createClient } from '@/utils/supabase/client';
 import React from 'react';
 import Image from 'next/image';
 import Link from 'next/link';
@@ -22,7 +22,7 @@ import { useRouter } from 'next/navigation';
 import { toast } from 'sonner';
 import { LoginWithPassword } from '@/app/(authentication)/login/actions';
 import { getErrorMessage } from '@/lib/handle-error';
-
+const supabase = createClient();
 function LoginForm() {
     const queryString = typeof window !== "undefined" ? window?.location.search : "";
     const urlSearchParams = new URLSearchParams(queryString);
