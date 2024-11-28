@@ -48,7 +48,7 @@ const ReviewsUnderCompany: React.FC<ReviewsUnderCompanyProps> = ({
 
 	return (
 		<div>
-			<div className='grid grid-cols-1 lg:grid-cols-3 md:grid-cols-2 sm:grid-cols-1 gap-4'>
+			<div className='grid grid-cols-1 lg:grid-cols-3 md:grid-cols-2 sm:grid-cols-1 gap-4 pb-12'>
 				{loading ? (
 					<div className='col-span-3 flex justify-center items-center h-32'>
 						<Loader className='h-10 w-10 animate-spin text-sky-500' />
@@ -57,10 +57,13 @@ const ReviewsUnderCompany: React.FC<ReviewsUnderCompanyProps> = ({
 					reviews.map((review) => (
 						<Card
 							key={review.id}
-							className='relative shadow-lg rounded-lg border-gray-200 bg-white dark:bg-gray-800 dark:border-gray-700'
+							className='relative shadow-sm rounded-lg border-gray-200 bg-white dark:bg-gray-800 dark:border-gray-700'
 						>
 							<div className='absolute top-2 right-4'>
-								<Dropdown unitId={review.property.property_id} reviewId={review.id} />
+								<Dropdown
+									unitId={review.property.property_id}
+									reviewId={review.id}
+								/>
 							</div>
 							<CardHeader className='flex items-start border-b border-gray-200 dark:border-gray-700 py-3'>
 								<div className='flex items-center space-x-3'>
