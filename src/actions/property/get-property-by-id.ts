@@ -57,3 +57,37 @@ export const getPropertyDescription = async (propertyId: string) => {
         throw error;
     }
 }
+
+export const getPropertyLocation = async (propertyId: string) => {
+    const supabase = createClient();
+    try {
+        const { data, error } = await supabase.rpc("get_property_location", { p_id: propertyId });
+
+        if (error) {
+            throw error;
+        }
+
+        return data
+    } catch (error: any) {
+        console.error("Error fetching location:", error);
+        throw error;
+    }
+}
+
+export const getPropertyAddress = async (propertyId: string) => {
+    const supabase = createClient();
+    try {
+        const { data, error } = await supabase
+            .from("property")
+            .select(`address`).eq("id", propertyId).single();
+
+        if (error) {
+            throw error;
+        }
+
+        return data
+    } catch (error: any) {
+        console.error("Error fetching location:", error);
+        throw error;
+    }
+}

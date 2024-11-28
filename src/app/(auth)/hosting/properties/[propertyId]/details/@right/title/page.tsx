@@ -1,7 +1,7 @@
 
 import React from "react";
 
-import PropertyTitleForm from "./_components/PropertyTItleForm";
+import PropertyTitleForm from "./_components/PropertyTitleForm";
 
 import { getPropertyTitle } from "@/actions/property/get-property-by-id";
 

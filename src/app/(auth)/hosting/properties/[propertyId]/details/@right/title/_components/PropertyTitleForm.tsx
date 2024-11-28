@@ -22,8 +22,14 @@ function PropertyTitleForm({ title, propertyId }: { title: string, propertyId: s
         mode: "onChange",
     });
 
-    function onSubmit(values: PropertyTitleData) {
+    React.useEffect(() => {
+        // Resetting form values whenever the description prop changes
+        propertiesTitleForm.reset({
+            property_title: title,
+        });
+    }, [title, propertiesTitleForm]);
 
+    function onSubmit(values: PropertyTitleData) {
         console.log(title, "title");
     }
 
