@@ -1,6 +1,6 @@
 import { createClient } from "@/utils/supabase/client";
 import { format } from "date-fns";
-import { sendMessageAfterReservation } from "../chat/sendMessageAfterReservation";.
+import { sendMessageAfterReservation } from "../chat/sendMessageAfterReservation";
 
 const supabase = createClient();
 

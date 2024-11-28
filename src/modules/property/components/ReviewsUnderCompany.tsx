@@ -183,7 +183,7 @@ const Dropdown: React.FC<{ unitId: number; reviewId: number }> = ({
 							href={`/property/room/${unitId}`}
 							className='block px-4 py-2 text-sm text-sky-600 hover:text-sky-800 transition-colors duration-200'
 						>
-							View Unit
+							View Property
 						</Link>
 					</div>
 
