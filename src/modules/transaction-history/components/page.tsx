@@ -15,7 +15,8 @@ const getData = async (userId: string): Promise<Transaction[]> => {
     id,
 		user_id,
 		service_option,
-		appointment_date, 
+		appointment_date,
+		payment_option, 
 		transaction_status,  
 		unit:unit_id(
 			id,

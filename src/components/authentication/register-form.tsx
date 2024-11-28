@@ -63,7 +63,7 @@ function RegisterForm() {
               control={registerForm.control}
               name="email"
               render={({ field }) => (
-                <FormItem className="grid grid-cols-3 gap-2 place-items-baseline space-y-0">
+                <FormItem className="grid grid-cols-3 gap-2 place-items-end space-y-0">
                   <FormLabel htmlFor="email" className="col-span-1 text-right w-full">
                     Email:
                   </FormLabel>
@@ -78,7 +78,7 @@ function RegisterForm() {
                       {...field}
                     />
                   </FormControl>
-                  <FormMessage />
+                  <FormMessage className="col-span-full" />
                 </FormItem>
               )}
             />

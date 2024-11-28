@@ -9,12 +9,11 @@ import { Badge } from '@/components/ui/badge';
 import { Star, XCircle } from 'lucide-react';
 import AddReviewModal from './AddReviewModal';
 import {
-  fetchReviewData,
-  deleteReview,
-  cancelTransaction,
-} from "@/actions/transaction/column";
-import { cancel_onsiteNotification } from "@/actions/notification/notification";
-
+	fetchReviewData,
+	deleteReview,
+	cancelTransaction,
+} from '@/actions/transaction/column';
+import { cancel_onsiteNotification } from '@/actions/notification/notification';
 
 interface Review {
 	id: number;
@@ -50,21 +49,20 @@ const TransactionActionsCell = ({ row }: { row: Row<Transaction> }) => {
 	const handleDeleteReview = async () => {
 		if (!reviewData) return;
 
-    const success = await deleteReview(reviewData.id);
-    if (success) {
-      setReviewData(null);
-    }
-  };
+		const success = await deleteReview(reviewData.id);
+		if (success) {
+			setReviewData(null);
+		}
+	};
 
-  const handleCancel = async () => {
-    const success = await cancelTransaction(row.original.id, unitId);
+	const handleCancel = async () => {
+		const success = await cancelTransaction(row.original.id, unitId);
 
-    if (success) {
-      await cancel_onsiteNotification(unitId, row.original.user_id);
-    window.location.reload();
-    }
-  };
-
+		if (success) {
+			await cancel_onsiteNotification(unitId, row.original.user_id);
+			window.location.reload();
+		}
+	};
 
 	return (
 		<div className='flex flex-row gap-3'>
@@ -74,7 +72,7 @@ const TransactionActionsCell = ({ row }: { row: Row<Transaction> }) => {
 					{reviewData ? (
 						<div className='flex gap-3 w-[150px]'>
 							<Button
-								className='flex-1 flex justify-center px-2 py-1 text-xs'
+								className='flex-1 flex justify-center px-2 py-1 text-xs bg-gray-700 hover:bg-gray-800'
 								size='sm'
 								onClick={() => setIsModalOpen(true)}
 							>
@@ -83,11 +81,11 @@ const TransactionActionsCell = ({ row }: { row: Row<Transaction> }) => {
 						</div>
 					) : (
 						<Button
-							className='dark:text-amber-400 w-[150px] flex justify-center text-xs'
+							className='w-[150px] flex justify-center text-xs'
 							size='sm'
 							onClick={() => setIsModalOpen(true)}
 						>
-							<Star className='h-4 w-4 mr-2' />
+							{/* <Star className='h-4 w-4 mr-2' /> */}
 							Add Review
 						</Button>
 					)}
