@@ -174,7 +174,7 @@ async function PropertyDetailsPage({ params }: { params: { propertyId: string } 
                     ></Link>
                     <div>
                         <div className="pt-2 overflow-clip text-[1rem] tracking-normal leading-5 text-ellipsis font-normal whitespace-pre-line text-muted-foreground">
-                            <div>{"3 documents submitted"}</div>
+                            <div>{property[0].business_permit ? "Business permit added" : "No documents added"}</div>
                         </div>
                     </div>
                 </div>
@@ -197,7 +197,8 @@ async function PropertyDetailsPage({ params }: { params: { propertyId: string } 
 
             <div className="absolute left-[calc(44px+32px)] right-[64px] mx-auto my-0 bottom-[40px] w-max z-[3] ">
                 <Link
-                    href={`/hosting/properties/${params.propertyId}/view-your-space`}
+                    // href={`/hosting/properties/${params.propertyId}/view-your-space`}
+                    href={`/property/${params.propertyId}`}
                     className={cn(
                         buttonVariants({ variant: "default" }),
                         "rounded-full space-x-2"

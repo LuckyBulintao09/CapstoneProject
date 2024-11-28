@@ -22,7 +22,7 @@ async function PropertiesUnitsPage({ params }: { params: { propertyId: string } 
                     </Link>
                     {units?.length > 0 ? (
                         units.map((unit) => (
-                            <div key={unit.id} className="flex items-center shadow-xl border rounded-lg p-4 gap-4">
+                            <div key={unit.id} className="flex items-center shadow-xl border rounded-lg p-4 gap-4 relative">
                                 <Link
                                     href={`/hosting/properties/17/units/edit-unit/${unit?.id}`}
                                     className="left-0 right-0 p-0 m-0 absolute bg-transparent top-0 bottom-0 z-[2] outline-none"
