@@ -166,7 +166,7 @@ export function SpecificListing({ id }: SpecificListingProps) {
 			}
 		};
 		loadUserAndProperty();
-		console.log(property)
+		console.log(property);
 	}, [id, isFavourite]);
 
 	const sortedUnits = useMemo(() => {
@@ -297,7 +297,12 @@ export function SpecificListing({ id }: SpecificListingProps) {
 		);
 	};
 
-	const handleOpenBookingModal = (unit_id: number, availableSpots: number, unitPrice: number, unitTitle: string) => {
+	const handleOpenBookingModal = (
+		unit_id: number,
+		availableSpots: number,
+		unitPrice: number,
+		unitTitle: string
+	) => {
 		setIsBookingModalOpen(true);
 		setSelectedUnit(unit_id);
 		setAvailableSpots(availableSpots);
@@ -354,11 +359,15 @@ export function SpecificListing({ id }: SpecificListingProps) {
 	}
 	if (!property) return <div>No property found.</div>;
 
-	const { title, address, structure, description, company:{
-		account: {
-			id: accountId
-		}
-	} } = property;
+	const {
+		title,
+		address,
+		structure,
+		description,
+		company: {
+			account: { id: accountId },
+		},
+	} = property;
 
 	return (
 		<div className='px-32 md:px-24 sm:px-20 xs:px-10 dark:bg-secondary'>
@@ -690,6 +699,32 @@ export function SpecificListing({ id }: SpecificListingProps) {
 						{directions && <DirectionsRenderer directions={directions} />}
 					</GoogleMap>
 				</Card>
+			</div>
+
+			{/* HOUSE RULES */}
+			<div
+				className='flex flex-col border-t border-gray-300 pt-8 pb-16'
+				id='houserules'
+			>
+				<div className='flex items-center justify-between pb-4'>
+					<h4 className='text-2xl font-semibold tracking-tight'>House Rules</h4>
+				</div>
+
+				{/* Dummy House Rules Content */}
+				<ul className='list-disc pl-5 space-y-3'>
+					<li>
+						<span className='font-medium'>No Smoking: </span> Smoking is
+						strictly prohibited inside the property.
+					</li>
+					<li>
+						<span className='font-medium'>No Pets: </span> Pets are not allowed
+						without prior permission.
+					</li>
+					<li>
+						<span className='font-medium'>Quiet Hours: </span>Quiet hours are
+						from 10 PM to 7 AM to respect neighbors.
+					</li>
+				</ul>
 			</div>
 
 			{isLoginModalOpen && (

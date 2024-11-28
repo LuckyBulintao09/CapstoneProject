@@ -123,6 +123,7 @@ const config: Config = {
 				'caret-blink': 'caret-blink 1.25s ease-out infinite',
 			},
 			screens: {
+				xxs: '375px',
 				xs: '340px',
 				sm: '640px',
 				md: '768px',
@@ -135,7 +136,7 @@ const config: Config = {
 				airBnbDesktop: '950px',
 				airBnbTablet: '742px',
 				airBnbMobile: '425px',
-                airBnbBigDesktop: "1440px",
+				airBnbBigDesktop: '1440px',
 			},
 			gridTemplateColumns: {
 				'16': 'repeat(16, minmax(0, 1fr))',
