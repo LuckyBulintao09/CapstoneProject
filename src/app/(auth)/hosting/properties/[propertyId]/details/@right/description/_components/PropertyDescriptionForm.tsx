@@ -60,7 +60,6 @@ function PropertyDescriptionForm({description, params}: {description: string, pa
                                             id="property_description"
                                             autoCapitalize="none"
                                             autoCorrect="off"
-                                            autoFocus
                                             rows={16}
                                             className="w-full text-[1rem] leading-5 font-normal resize-none border-none bg-transparent p-0 outline-none focus:ring-0 focus:outline-none active:ring-0 active:outline-none"
                                             placeholder="Describe your place"
