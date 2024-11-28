@@ -29,3 +29,15 @@ export async function updateUnit(unitId: string, propertyId: string, values: any
         redirect(`/hosting/properties/${propertyId}/details/units`);
     
 }
+
+export const toggleIsReserved = async (unitId: string, isReserved: boolean) => {
+    const supabase = createClient();
+
+    const { data, error } = await supabase.from("unit").update({ isReserved: isReserved }).eq("id", unitId).select();
+
+    if (error?.code) {
+        throw error;
+    }
+
+    return data;
+}

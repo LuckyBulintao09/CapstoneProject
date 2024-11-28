@@ -61,16 +61,16 @@ function AddUnitsForm({amenities, unitId, propertyId}: {amenities?: any, unitId:
     //     value: amenity.id
     // }));
 
-    function onSubmit(values: UnitData) {
+    async function onSubmit(values: UnitData) {
         if (!isPending) {
             startTransition(() => {
                 toast.promise(updateUnit(unitId, propertyId, values), {
                     loading: "Adding unit in...",
-                    success: () => {
-                        return "Unit added successfully";
+                    success: (values) => {
+                        return "Unit added successfully" + values;
                     },
                     error: (error) => {
-                        return error.message || "Invalid login credentials";
+                        return error.message;
                     },
                 });
             });
@@ -170,9 +170,11 @@ function AddUnitsForm({amenities, unitId, propertyId}: {amenities?: any, unitId:
                                                     <Minus size={16} strokeWidth={2} aria-hidden="true" />
                                                 </AriaButton>
                                                 <Input
+                                                    {...field}
                                                     id="occupants"
                                                     className="w-full grow bg-background px-3 py-2 text-center tabular-nums text-foreground focus:outline-none"
-                                                    {...field}
+                                                    value={field.value}
+                                                    onChange={field.onChange}
                                                     {...unitForm.register("occupants", {
                                                         valueAsNumber: true,
                                                         setValueAs: (val) => (val === "" ? undefined : parseInt(val, 10)),
@@ -212,9 +214,11 @@ function AddUnitsForm({amenities, unitId, propertyId}: {amenities?: any, unitId:
                                                     <Minus size={16} strokeWidth={2} aria-hidden="true" />
                                                 </AriaButton>
                                                 <Input
+                                                    {...field}
                                                     id="bedrooms"
                                                     className="w-full grow bg-background px-3 py-2 text-center tabular-nums text-foreground focus:outline-none"
-                                                    {...field}
+                                                    value={field.value}
+                                                    onChange={field.onChange}
                                                     {...unitForm.register("bedrooms", {
                                                         valueAsNumber: true,
                                                         setValueAs: (val) => (val === "" ? undefined : parseInt(val, 10)),
@@ -254,9 +258,11 @@ function AddUnitsForm({amenities, unitId, propertyId}: {amenities?: any, unitId:
                                                     <Minus size={16} strokeWidth={2} aria-hidden="true" />
                                                 </AriaButton>
                                                 <Input
+                                                    {...field}
                                                     id="beds"
                                                     className="w-full grow bg-background px-3 py-2 text-center tabular-nums text-foreground focus:outline-none"
-                                                    {...field}
+                                                    value={field.value}
+                                                    onChange={field.onChange}
                                                     {...unitForm.register("beds", {
                                                         valueAsNumber: true,
                                                         setValueAs: (val) => (val === "" ? undefined : parseInt(val, 10)),
