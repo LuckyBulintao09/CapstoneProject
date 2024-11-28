@@ -38,6 +38,7 @@ export async function expirePropertiesFunction() {
       } properties.`
     );
 
+
     return {
       expiredCount: expiredProperties ? expiredProperties.length : 0,
       clearedCount: clearedProperties ? clearedProperties.length : 0,
