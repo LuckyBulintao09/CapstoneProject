@@ -8,13 +8,14 @@ import { Card } from "@/components/ui/card";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { createClient } from "@/utils/supabase/client";
 import { BadgeCheck } from "lucide-react";
-import { Dialog, DialogContent, DialogFooter, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
+import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { PaperAirplaneIcon } from "@heroicons/react/24/solid";
 import { PlusCircleIcon } from "lucide-react";
 import { toast } from "sonner";
 import sendImage from "@/actions/chat/sendImage";
+import imageCompression from "browser-image-compression";
 
 const supabase = createClient();
 
@@ -27,7 +28,9 @@ const Inbox = ({ receiver_id, company_name }) => {
   const [selectedFile, setSelectedFile] = useState(null);
   const [loading, setLoading] = useState(false);
   const [modalOpen, setModalOpen] = useState(false);
-  const [expandedImage, setExpandedImage] = useState(null); 
+  const [expandedImage, setExpandedImage] = useState(null);
+  const [pendingMessages, setPendingMessages] = useState([]);
+  const [imageLoading, setImageLoading] = useState({}); 
   const messagesEndRef = useRef(null);
 
   const receiverNameMemo = useMemo(() => receiverName, [receiverName]);
@@ -92,29 +95,68 @@ const Inbox = ({ receiver_id, company_name }) => {
 
   const sendMessageHandler = useCallback(async (e) => {
     e.preventDefault();
-    await sendMessage({
-      userId: user.id,
-      receiverId: receiver_id,
-      conversationId,
-      messageContent,
-      setMessages,
-    });
+    const tempMessage = {
+      id: `temp-${Date.now()}`,
+      content: messageContent,
+      sender_id: user.id,
+      receiver_id,
+      status: "sending",
+    };
+
+    setPendingMessages((prev) => [...prev, tempMessage]);
     setMessageContent("");
+
+    try {
+      await sendMessage({
+        userId: user.id,
+        receiverId: receiver_id,
+        conversationId,
+        messageContent,
+        setMessages,
+      });
+
+      setPendingMessages((prev) => prev.filter((msg) => msg.id !== tempMessage.id));
+    } catch (error) {
+      toast.error("Failed to send the message.");
+      setPendingMessages((prev) =>
+        prev.map((msg) => (msg.id === tempMessage.id ? { ...msg, status: "error" } : msg))
+      );
+    }
   }, [user, receiver_id, conversationId, messageContent]);
 
-  const handleFileChange = (event) => {
+  const handleFileChange = async (event) => {
     const file = event.target.files ? event.target.files[0] : null;
     if (!file) {
       toast.error("Please choose a file to upload");
       return;
     }
+  
     const allowedTypes = ["image/jpeg", "image/png", "image/gif", "image/webp"];
     if (!allowedTypes.includes(file.type)) {
       toast.error("Please upload a valid image file (JPEG, PNG, GIF, or WEBP).");
       event.target.value = "";
       return;
     }
-    setSelectedFile(file);
+  
+    const maxSize = 2.5 * 1024 * 1024;
+  
+    try {
+      let fileToUpload = file;
+  
+      // Compress the file if it's 2.5MB or larger
+      if (file.size >= maxSize) {
+        const options = {
+          maxSizeMB: 1.5, 
+          maxWidthOrHeight: 800, 
+          useWebWorker: true,
+        };
+        toast.info("Image upload is too large. Compressing...");
+        fileToUpload = await imageCompression(file, options);
+      }
+      setSelectedFile(fileToUpload);
+    } catch (error) {
+      toast.error("Error compressing image");
+    }
   };
 
   const submitImageHandler = useCallback(async (e) => {
@@ -133,6 +175,15 @@ const Inbox = ({ receiver_id, company_name }) => {
       }
     }
   }, [selectedFile, user, receiver_id, conversationId]);
+
+  const handleImageLoad = (id) => {
+    setImageLoading((prev) => ({ ...prev, [id]: false }));
+  };
+
+  const handleImageError = (id) => {
+    toast.error("Failed to load image.");
+    setImageLoading((prev) => ({ ...prev, [id]: false }));
+  };
 
   return (
     <Card className="w-full h-full bg-transparent">
@@ -156,43 +207,52 @@ const Inbox = ({ receiver_id, company_name }) => {
           </Card>
         )}
 
-<ScrollArea className="flex-1 p-4 rounded-lg mb-4 bg-transparent">
-  {messages.length === 0 ? (
-    <p className="text-center text-muted-foreground">No conversation selected.</p>
-  ) : (
-    messages.map((msg) => {
-      const isSystemGenerated = msg.system_generated === true;
-      const messageClasses = isSystemGenerated
-        ? "mx-auto italic text-center p-3 rounded-md shadow-md border border-dashed border-gray-400"
-        : msg.sender_id === user.id
-          ? "ml-auto bg-primary text-primary-foreground"
-          : "mr-auto bg-gray-300 text-gray-800";
+        <ScrollArea className="flex-1 p-4 rounded-lg mb-4 bg-transparent">
+          {messages.map((msg) => {
+            const isSystemGenerated = msg.system_generated === true;
+            const messageClasses = isSystemGenerated
+              ? "mx-auto italic text-center p-3 rounded-md shadow-md border border-dashed border-gray-400"
+              : msg.sender_id === user.id
+              ? "ml-auto bg-primary text-primary-foreground"
+              : "mr-auto bg-gray-300 text-gray-800";
 
-      return (
-        <div key={msg.id} className={`mb-2 max-w-xs p-2 rounded-lg text-sm break-words ${messageClasses}`}>
-          {msg.content.startsWith("http") ? (
-            <img 
-              src={msg.content} 
-              alt="sent image" 
-              className="rounded-md cursor-pointer" 
-              onClick={() => setExpandedImage(msg.content)} 
-            />
-          ) : (
-            <p>{msg.content}</p>
-          )}
-          <small className="block text-xs mt-1">
-            {new Date(msg.created_at).toLocaleTimeString()}
-          </small>
-        </div>
-      );
-    })
-  )}
-  <div ref={messagesEndRef} />
-</ScrollArea>
+            return (
+              <div key={msg.id} className={`mb-2 max-w-xs p-2 rounded-lg text-sm break-words ${messageClasses}`}>
+                {msg.content.startsWith("http") ? (
+                  <>
+                   {imageLoading[msg.id] !== false && <p>Loading image...</p>}
+                    <img
+                      src={msg.content}
+                      alt="sent image"
+                      className="rounded-md cursor-pointer"
+                      onLoad={() => handleImageLoad(msg.id)}
+                      onError={() => handleImageError(msg.id)}
+                      onClick={() => setExpandedImage(msg.content)}
+                      style={{ display: imageLoading[msg.id] !== false ? "none" : "block" }}
+                    />
+                  </>
+                ) : (
+                  <p>{msg.content}</p>
+                )}
+                <small className="block text-xs mt-1">
+                  {new Date(msg.created_at).toLocaleTimeString()}
+                </small>
+              </div>
+            );
+          })}
+          {pendingMessages.map((msg) => (
+            <div
+              key={msg.id}
+              className="mb-2 max-w-xs p-2 rounded-lg text-sm break-words ml-auto bg-transparent border text-gray-600"
+            >
+              <p>
+                {msg.status === "sending" ? "Sending..." : "Failed to send"}
+              </p>
+            </div>
+          ))}
+          <div ref={messagesEndRef} />
+        </ScrollArea>
 
-
-
-    
         {expandedImage && (
           <Dialog open={!!expandedImage} onOpenChange={() => setExpandedImage(null)}>
             <DialogContent>
@@ -210,11 +270,12 @@ const Inbox = ({ receiver_id, company_name }) => {
             </DialogTrigger>
             <DialogContent className="sm:max-w-[425px]">
               <DialogHeader>
-                <DialogTitle >Send an image</DialogTitle>
+                <DialogTitle>Send an image</DialogTitle>
               </DialogHeader>
+              <DialogDescription>Images over 2.5MB will automatically be compressed.</DialogDescription>
               <div className="grid gap-4 py-4">
                 <div className="grid items-center">
-                  <Input id="file-input" type="file" className="col-span-3 rounded-full bg-secondary " onChange={handleFileChange} />
+                  <Input id="file-input" type="file" className="col-span-3 rounded-full bg-secondary" onChange={handleFileChange} />
                 </div>
               </div>
               <DialogFooter>

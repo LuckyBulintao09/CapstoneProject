@@ -47,7 +47,7 @@ export default function RootLayout({
 							google_maps_api_key={process.env.NEXT_PUBLIC_GOOGLE_MAPS_API_KEY!}
 						>
 							<TooltipProvider>
-								<Toaster position='bottom-right' richColors />
+								<Toaster position='bottom-right' richColors  expand={true} />
 								<div>{children}</div>
 							</TooltipProvider>
 						</GoogleMapsProvider>
