@@ -20,8 +20,8 @@ const generateMessage = async (currentUserId, currentReceiverId, propertyId, own
     .eq('id', propertyId)
     .single();
 
-  const unitName = unitDetails.data.title;
-  const unitPrice = unitDetails.data.price;
+  const unitName = unitDetails.data?.title;
+  const unitPrice = unitDetails.data?.price;
   const messageTemplate = ` ${inputValue}`;
 
   const conversationId = await checkConversation(currentUserId, currentReceiverId, ownerName, ownerLastname);
