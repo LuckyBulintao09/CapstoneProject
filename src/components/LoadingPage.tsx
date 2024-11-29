@@ -1,10 +1,11 @@
 import React from 'react';
 import ResponsiveLayout from './ResponsiveLayout';
+import { cn } from '@/lib/utils';
 
-const LoadingPage = () => {
+const LoadingPage = ({className}: {className?: string}) => {
 	return (
 		<ResponsiveLayout>
-			<div className='flex flex-col justify-center items-center h-screen text-center'>
+			<div className={cn('flex flex-col justify-center items-center h-screen text-center', className)}>
 				<h1 className='text-xl font-bold mb-4'>Loading . . .</h1>
 				<div className='loader'></div>
 				<style jsx>{`

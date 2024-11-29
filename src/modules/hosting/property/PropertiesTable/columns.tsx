@@ -184,7 +184,7 @@ export const columns: ColumnDef<any>[] = [
                 // </DropdownMenu>
                 <Link 
                     href={`/hosting/properties/${propertyId}/details/photos`}
-                    className={cn(buttonVariants({ variant: "ghost", size: "sm" }), "flex items-center justify-center gap-2 px-1 rounded-full")}
+                    className={cn(buttonVariants({ variant: "ghost", size: "sm" }), "flex items-center justify-center gap-2 px-5 rounded-full")}
                 >
                     Go to property
                     <ChevronRight className="size-4" />

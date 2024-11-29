@@ -3,7 +3,7 @@
 import { createClient } from "@/utils/supabase/server";
 import { redirect } from "next/navigation";
 
-export async function removeUnitById(id: string) {
+export async function removeUnitById(id: string, propertyId: string) {
     const supabase = createClient();
 
     const { error } = await supabase.from("unit").delete().eq("id", id);
@@ -12,5 +12,5 @@ export async function removeUnitById(id: string) {
         throw error;
     }
 
-    redirect("/hosting/unit");
+    redirect(`/hosting/properties/${propertyId}/details/units`);
 }

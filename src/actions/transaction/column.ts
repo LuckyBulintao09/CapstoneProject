@@ -57,6 +57,7 @@ export const cancelTransaction = async (transactionId: number, unitId: number) =
       .from("unit")
       .select(`
         property:property_id (
+        title,
           company:company_id (
             owner:owner_id (
               email
@@ -73,7 +74,7 @@ export const cancelTransaction = async (transactionId: number, unitId: number) =
 
     const email = data.property.company.owner.email;
     const subject = "Transaction Cancelled";
-    const message = "A transaction for your unit has been cancelled.";
+    const message = `A transaction for your unit in ${data.property.title} has been cancelled.`;
     await notifyProprietor({email, subject, message});
 
     console.log("Email sent to:", email);
