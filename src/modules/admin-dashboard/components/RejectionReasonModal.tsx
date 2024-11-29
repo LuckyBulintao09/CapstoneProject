@@ -10,6 +10,7 @@ import {
   Button,
   Textarea,
 } from "@nextui-org/react";
+import { toast } from "sonner";
 
 interface RejectionReasonModalProps {
   isOpen: boolean;
@@ -26,7 +27,7 @@ const RejectionReasonModal: React.FC<RejectionReasonModalProps> = ({
 
   const handleReasonSubmit = () => {
     if (!rejectionReason.trim()) {
-      alert("Please enter a rejection reason.");
+      toast.error("Please enter a rejection reason.");
       return;
     }
     onSubmit(rejectionReason.trim());
