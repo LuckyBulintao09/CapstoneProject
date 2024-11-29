@@ -232,12 +232,12 @@ function TopNavigation() {
 										</DropdownMenuLabel>
 										<DropdownMenuSeparator />
 										<DropdownMenuGroup>
-											{/* <DropdownMenuItem
+											<DropdownMenuItem
 												asChild
 												className='py-2 px-3 rounded-none font-[500]'
 											>
-												<Link href={`/hosting/profile`}>Profile</Link>
-											</DropdownMenuItem> */}
+												<Link href={`/client/profile`}>Profile</Link>
+											</DropdownMenuItem>
 											<DropdownMenuItem
 												asChild
 												className='py-2 px-3 rounded-none font-[500]'
