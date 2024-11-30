@@ -7,10 +7,9 @@ const spiels = {
 	ADMIN_MODAL_HEADER: 'New Proprietors Approval',
 
 	// Home
-	CTA_LABEL: 'Call to Action',
+	CTA_LABEL: 'Got any queries?',
 	CTA_DESCRIPTION: [
-		'Stay in the loop with UniHomes! Sign up with your email to receive the latest updates.',
-		'Don’t miss out — join our community today!',
+		'Enter your email and our customer support team will get back to you as soon as we can.',
 	],
 	FOOTER: '© 2024 UniHomes',
 	HERO_BADGE: 'New Release',
@@ -107,7 +106,7 @@ const spiels = {
 	BUTTON_SIGN_IN: 'Sign In',
 	BUTTON_SIGN_UP: 'Sign Up',
 	BUTTON_SUBMIT: 'Submit',
-	BUTTON_SUBSCRIBE: 'Subscribe',
+	BUTTON_SUBSCRIBE: 'Send Email',
 	BUTTON_VIEW: 'View',
 	BUTTON_VIEW_ALL: 'View all',
 	BUTTON_SHOW_LISTINGS: 'Show Listings',
