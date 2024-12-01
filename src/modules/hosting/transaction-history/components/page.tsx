@@ -69,7 +69,8 @@ const TransactionDashboard = () => {
   const updateTransactionStatus = async (
     id: number,
     newStatus: string,
-    unitId: number
+    unitId: number,
+    reason?: string
   ) => {
     try {
       const { data: receiver_id, error: receiverIdError } = await supabase

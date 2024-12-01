@@ -1,12 +1,19 @@
 "use client";
 import { ColumnDef } from "@tanstack/react-table";
 import { DataTableColumnHeader } from "@/components/table/data-column-header";
-import { format, parseISO } from "date-fns";
+import { format, parseISO, set } from "date-fns";
 import { Badge } from "@/components/ui/badge";
 import ToggleSwitch from "./toggleSwitch";
 import { createClient } from "@/utils/supabase/client";
 import { CheckCircle2, XCircleIcon } from "lucide-react";
 import React from "react";
+import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger, DropdownMenuSeparator, DropdownMenuLabel } from "@/components/ui/dropdown-menu";
+import { Button } from "@/components/ui/button";
+import { MoreHorizontal } from "lucide-react";
+import RejectionTransactionModal from "./cancellationModal";
+import { toast } from "sonner";
+import { cancel_lessorNotification } from "@/actions/notification/notification";
+
 
 const supabase = createClient();
 
@@ -28,6 +35,7 @@ export type Transaction = {
     firstname: string;
     lastname: string;
   };
+  property_title: string;
 };
 
 export const columns = (
@@ -39,9 +47,9 @@ export const columns = (
   ) => Promise<void>
 ): ColumnDef<Transaction>[] => [
   {
-    accessorKey: "id",
+    accessorKey: "property_title",
     header: ({ column }) => (
-      <DataTableColumnHeader column={column} title="ID" />
+      <DataTableColumnHeader column={column} title="Property" />
     ),
   },
   {
@@ -142,17 +150,67 @@ export const columns = (
     cell: ({ row }) => {
       const transactionStatus = row.getValue("transaction_status") as string;
 
-      return transactionStatus === "pending" ? (
-        <ToggleSwitch
-          transactionId={row.original.id}
-          unitId={row.original.unit.id}
-          onStatusChange={(id, newStatus, unitId, cancelOthers) =>
-            updateTransactionStatus(id, newStatus, unitId, cancelOthers)
-          }
+      const [isModalOpen, setIsModalOpen] = React.useState(false);
+
+      const handleCancel = async (reason: string) => {
+        try {
+          await supabase
+            .from("transaction")
+            .update({ transaction_status: "cancelled", cancellation_reason: reason })
+            .eq("id", row.original.id);
+          
+          await supabase
+            .from("unit")
+            .update({ isReserved: false })
+            .eq("id", row.original.unit.id);
+
+          // Optionally update the table data or refetch
+          toast.success("Transaction cancelled successfully.");
+          await cancel_lessorNotification(row.original.user_id, row.original.unit.id, reason);
+          window.location.reload();
+        } catch (error) {
+          console.error(error);
+          toast.error("Failed to cancel the transaction.");
+        }
+      };
+
+      return (transactionStatus === "pending" || (transactionStatus === "reserved" && row.getValue("service_option") === "Room Reservation" && !row.getValue("isPaid"))) ? (
+        <>
+        <DropdownMenu>
+          <DropdownMenuTrigger asChild>
+            <Button variant="ghost" className="h-8 w-8 p-0">
+              <span className="sr-only">Open menu</span>
+              <MoreHorizontal className="h-4 w-4" />
+            </Button>
+          </DropdownMenuTrigger>
+          <DropdownMenuContent align="end">
+            <DropdownMenuSeparator />
+            {transactionStatus === "pending" && (
+              <>
+                <DropdownMenuItem onSelect={() => updateTransactionStatus(row.original.id, "reserved", row.original.unit.id, false)}>
+                  Reserve
+                </DropdownMenuItem>
+                <DropdownMenuItem onSelect={() => updateTransactionStatus(row.original.id, "visited", row.original.unit.id, false)}>
+                  Visited
+                </DropdownMenuItem>
+              </>
+            )}
+            <DropdownMenuItem onSelect={() => setIsModalOpen(true)}>
+              Cancel
+            </DropdownMenuItem>
+          </DropdownMenuContent>
+        </DropdownMenu>
+        <RejectionTransactionModal
+          isOpen={isModalOpen}
+          onClose={() => setIsModalOpen(false)}
+          onSubmit={handleCancel}
         />
+        </>
       ) : (
         <span />
       );
+
     },
   },
 ];
+

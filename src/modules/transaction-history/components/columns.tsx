@@ -173,7 +173,7 @@ export const columns: ColumnDef<Transaction>[] = [
 	},
 	{
 		id: 'payment_option',
-		accessorFn: (row) => row.unit?.payment_option,
+		accessorFn: (row) => row?.payment_option,
 		header: ({ column }) => (
 			<DataTableColumnHeader column={column} title='Payment Option' />
 		),
