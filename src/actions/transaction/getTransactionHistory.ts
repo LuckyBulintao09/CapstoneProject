@@ -62,7 +62,7 @@ export const getTransactionHistory = async (userId: string) => {
         transaction_status, 
         isPaid, 
         unit:unit_id (
-          id, title, unit_code
+          id, title, unit_code, property:property_id (title)
         ),
         account:user_id (
           firstname, 
@@ -71,6 +71,7 @@ export const getTransactionHistory = async (userId: string) => {
       `
       )
       .in("unit_id", unitIds);
+    console.log(transactions);
 
     if (transactionsError || !transactions?.length) {
       console.error(
@@ -83,6 +84,7 @@ export const getTransactionHistory = async (userId: string) => {
     return transactions.map((transaction) => ({
       ...transaction,
       unit_title: transaction.unit.title,
+      property_title: transaction.unit.property.title,
       client_name: `${transaction.account.firstname} ${transaction.account.lastname}`,
     }));
   } catch (error: any) {

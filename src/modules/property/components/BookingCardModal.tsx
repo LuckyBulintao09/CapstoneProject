@@ -188,7 +188,11 @@ export const BookingCardModal: React.FC<BookingCardProps> = ({
 										setDate(selectedDate);
 										setIsCalendarOpen(false);
 									}}
-									disabled={(date) => date < today}
+									disabled={(date) =>
+										selectedService === 'Room Reservation'
+											? date > new Date(Date.now() + 3 * 24 * 60 * 60 * 1000)
+											: date < today
+									}
 									className='rounded-md border shadow bg-white'
 								/>
 							</div>

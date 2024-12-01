@@ -33,15 +33,12 @@ function EditCompanyForm({ companyId, company }: { companyId: string, company: a
         },
     });
 
-    const removeHtmlTags = (html: string) => {
-        return html.replace(/<[^>]*>/g, ''); // This regex removes all HTML tags
-    };
 
     // Handle form submission
     async function onSubmit(values: CompanySchemaTypes) {
         const formData = new FormData();
         formData.append("company_name", values.company_name);
-        formData.append("about", removeHtmlTags(values.about));
+        formData.append("about", values.about);
 
         if (logo) {
             formData.append("logo", logo);
@@ -61,7 +58,7 @@ function EditCompanyForm({ companyId, company }: { companyId: string, company: a
             .from('company')
             .update({
                 company_name: values.company_name,
-                about: removeHtmlTags(values.about),
+                about: values.about,
             })
             .eq('id', companyId)
             .eq('owner_id', user?.id)

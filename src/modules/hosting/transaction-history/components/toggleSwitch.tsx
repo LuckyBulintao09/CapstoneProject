@@ -1,6 +1,7 @@
 import { useState } from "react";
 import { CheckIcon, XMarkIcon, HomeIcon } from "@heroicons/react/24/solid";
 import { Button } from "@nextui-org/react";
+import RejectionTransactionModal from "./cancellationModal";
 
 interface ToggleSwitchProps {
   transactionId: number;
@@ -8,7 +9,8 @@ interface ToggleSwitchProps {
   onStatusChange: (
     id: number,
     newStatus: string,
-    unitId: number
+    unitId: number,
+    reason?: string
   ) => Promise<void>;
 }
 
@@ -20,6 +22,8 @@ const ToggleSwitch: React.FC<ToggleSwitchProps> = ({
   const [dragPosition, setDragPosition] = useState(50);
   const [isDragging, setIsDragging] = useState(false);
   const [showActionButtons, setShowActionButtons] = useState(false);
+  const [isModalOpen, setIsModalOpen] = useState(false);
+  const [reason, setReason] = useState("");
 
   const handleDrag = (e: React.MouseEvent) => {
     if (!isDragging) return;
@@ -36,9 +40,16 @@ const ToggleSwitch: React.FC<ToggleSwitchProps> = ({
     if (dragPosition < 25) {
       setShowActionButtons(true);
     } else if (dragPosition > 75) {
-      await onStatusChange(transactionId, "cancelled", unitId);
+      setIsModalOpen(true);
     }
     setDragPosition(50);
+  };
+
+  const handleCancel = async () => {
+    if (!reason) return;
+    await onStatusChange(transactionId, "cancelled", unitId, reason);
+    setIsModalOpen(false);
+    setReason("");
   };
 
   return (
@@ -86,8 +97,20 @@ const ToggleSwitch: React.FC<ToggleSwitchProps> = ({
           </Button>
         </div>
       )}
+
+      {isModalOpen && (
+        <RejectionTransactionModal
+          unitId={unitId}
+          onStatusChange={onStatusChange}
+          setIsModalOpen={setIsModalOpen}
+          handleCancel={handleCancel}
+          setReason={setReason}
+          reason={reason}
+        />
+      )}
     </>
   );
 };
 
 export default ToggleSwitch;
+
