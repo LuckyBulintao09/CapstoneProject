@@ -9,6 +9,10 @@ import { User } from '@supabase/supabase-js';
 import Image from 'next/image';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
+import { AiOutlineUserSwitch } from 'react-icons/ai';
+import { BiBuildingHouse } from 'react-icons/bi';
+import { BsBuildingGear } from 'react-icons/bs';
+import { IoAnalyticsOutline } from 'react-icons/io5';
 
 import {
 	DropdownMenu,
@@ -38,23 +42,16 @@ import { cn } from '@/lib/utils';
 import { useMediaQuery } from '@/hooks/use-media-query';
 
 import {
-	Briefcase,
-	Building2,
-	ChevronDown,
-	Home,
-	LibraryBig,
-	Lightbulb,
 	Menu,
 	MessageCircleMore,
-	Scroll,
-	Settings,
-	UserCircle2,
 	X,
-	LogOut
+	LogOut,
+	LayoutDashboard,
 } from 'lucide-react';
 import { NotificationPopover } from '@/components/navbar/NotificationPopover';
 import { ModeToggle } from '@/components/mode-toggle';
 import { logout } from '@/app/auth/login/actions';
+import { IconExchange } from '@tabler/icons-react';
 
 function TopNavigation() {
 	/*
@@ -128,7 +125,7 @@ function TopNavigation() {
 										'hover:after:w-0'
 									)}
 								>
-									Home
+									Dashboard
 								</Link>
 							</li>
 							<li>
@@ -144,7 +141,7 @@ function TopNavigation() {
 										'hover:after:w-0'
 									)}
 								>
-									Listings
+									Properties
 								</Link>
 							</li>
 							<li>
@@ -162,6 +159,36 @@ function TopNavigation() {
 								</Link>
 							</li>
 							<li>
+								<Link
+									href='/hosting/transaction_history'
+									className={cn(
+										buttonVariants({ variant: 'ghost' }),
+										'rounded-full relative',
+										"after:content-[''] after:absolute after:left-1/2 after:-translate-x-1/2 after:bottom-0 after:h-[2px] after:bg-current after:rounded-full after:transition-all after:duration-200",
+										pathname === '/hosting/transaction_history'
+											? 'after:w-8'
+											: 'after:w-0',
+										'hover:after:w-0'
+									)}
+								>
+									Transactions
+								</Link>
+							</li>
+							<li>
+								<Link
+									href='/test'
+									className={cn(
+										buttonVariants({ variant: 'ghost' }),
+										'rounded-full relative',
+										"after:content-[''] after:absolute after:left-1/2 after:-translate-x-1/2 after:bottom-0 after:h-[2px] after:bg-current after:rounded-full after:transition-all after:duration-200",
+										pathname === '/test' ? 'after:w-8' : 'after:w-0',
+										'hover:after:w-0'
+									)}
+								>
+									Insights
+								</Link>
+							</li>
+							{/* <li>
 								<DropdownMenu modal={false}>
 									<DropdownMenuTrigger asChild>
 										<Button
@@ -177,7 +204,7 @@ function TopNavigation() {
 									<DropdownMenuContent
 										side='bottom'
 										align='start'
-										className='border-none border-0 w-full min-w-[200px] px-0 py-5'
+										className='border-none z-[999] border-0 w-full min-w-[200px] px-0 py-5'
 									>
 										<DropdownMenuGroup>
 											<DropdownMenuItem
@@ -187,7 +214,9 @@ function TopNavigation() {
 												<Link href={`/hosting/properties`}>Properties</Link>
 											</DropdownMenuItem>
 											<DropdownMenuItem className='py-2 px-3 rounded-none font-[500]'>
-											<Link href={`/hosting/transaction_history`}>Reservations</Link>
+												<Link href={`/hosting/transaction_history`}>
+													Reservations
+												</Link>
 											</DropdownMenuItem>
 											<DropdownMenuItem className='py-2 px-3 rounded-none font-[500]'>
 												Insights
@@ -195,7 +224,7 @@ function TopNavigation() {
 										</DropdownMenuGroup>
 									</DropdownMenuContent>
 								</DropdownMenu>
-							</li>
+							</li> */}
 						</ul>
 
 						<div className='flex flex-nowrap items-center justify-end gap-5'>
@@ -205,7 +234,7 @@ function TopNavigation() {
 							{user ? (
 								<DropdownMenu modal={false}>
 									<DropdownMenuTrigger className='rounded-full'>
-										<Avatar className='w-11 h-11 select-none'>
+										<Avatar className='w-9 h-9 select-none'>
 											<AvatarImage src='' />
 											<AvatarFallback className='text-base leading-none font-normal bg-primary text-white dark:text-foreground'>
 												{user?.user_metadata.firstname.charAt(0).toUpperCase()}
@@ -232,36 +261,33 @@ function TopNavigation() {
 										</DropdownMenuLabel>
 										<DropdownMenuSeparator />
 										<DropdownMenuGroup>
-											{/* <DropdownMenuItem
-												asChild
-												className='py-2 px-3 rounded-none font-[500]'
-											>
-												<Link href={`/hosting/profile`}>Profile</Link>
-											</DropdownMenuItem> */}
 											<DropdownMenuItem
-												asChild
-												className='py-2 px-3 rounded-none font-[500]'
+												onClick={() => {
+													window.location.href = '/hosting/company';
+												}}
 											>
-												<Link href={`/hosting/company`}>Company</Link>
+												<BsBuildingGear className='mr-2 h-4 w-4' />
+												<span>Manage Company</span>
 											</DropdownMenuItem>
-											{/* <DropdownMenuItem className='py-2 px-3 rounded-none font-[500]'>
-												Settings
-											</DropdownMenuItem> */}
+											<DropdownMenuItem
+												onClick={() => {
+													window.location.href = '/';
+												}}
+											>
+												<AiOutlineUserSwitch className='mr-2 h-4 w-4' />
+												<span>Switch to Client View</span>
+											</DropdownMenuItem>
 										</DropdownMenuGroup>
+
 										<DropdownMenuSeparator />
 										<DropdownMenuItem
-											asChild
-											className='py-2 px-3 rounded-none font-[500]'
+											onClick={async () => {
+												await logout();
+												window.location.href = '/';
+											}}
 										>
-											<Link href={`/client/listings`}>Switch to renting</Link>
-										</DropdownMenuItem>
-										<DropdownMenuItem className='py-2 px-3 rounded-none font-[500]'
-										onClick={async () => {
-											await logout();
-											window.location.href = '/';
-										}}
-										>
-										<span>Logout</span>
+											<LogOut className='mr-2 h-4 w-4' />
+											<span>Log out</span>
 										</DropdownMenuItem>
 									</DropdownMenuContent>
 								</DropdownMenu>
@@ -291,24 +317,37 @@ function TopNavigation() {
 					</>
 				) : (
 					// mobile view
-					<div className='flex flex-nowrap items-center justify-end'>
+					<div className='flex flex-nowrap items-center justify-end gap-2'>
+						<>
+							<ModeToggle />
+							<NotificationPopover />
+							<Separator
+								orientation='vertical'
+								className='ml-2 mr-1 bg-gray-300'
+							/>
+						</>
+
 						<Sheet open={open} onOpenChange={setOpen} modal={false}>
 							<SheetTrigger asChild>
-								<Button variant='ghost' size='icon' className='[&_svg]:size-6'>
+								<Button
+									variant='ghost'
+									size='icon'
+									className='[&_svg]:size-6 hover:bg-transparent'
+								>
 									{open ? <X /> : <Menu />}
 								</Button>
 							</SheetTrigger>
 							<SheetContent
-								className='h-[calc(100vh-80px)] mt-[calc(80px-12px)] py-0 bg-white'
+								className={`h-[calc(100vh-80px)] mt-[calc(80px-12px)] py-0 bg-white dark:bg-background ${
+									open ? '' : ''
+								}`}
 								side='top'
 							>
 								<ScrollArea className='h-[calc(100vh-80px)]'>
 									<SheetClose className='sr-only'>Close</SheetClose>
 									<SheetHeader className='sr-only'>
 										<SheetTitle>Navigation menu</SheetTitle>
-										<SheetDescription>
-											Mobile navigation menu.
-										</SheetDescription>
+										<SheetDescription>Mobile navigation menu.</SheetDescription>
 									</SheetHeader>
 									<div className='grid gap-11 py-7'>
 										{/* menu */}
@@ -316,13 +355,13 @@ function TopNavigation() {
 											<li className='mb-2'>MENU</li>
 											<li>
 												<Link
-													href={`/`}
+													href={`/hosting`}
 													className={cn(
 														buttonVariants({ variant: 'ghost' }),
-														'w-full justify-start rounded-none px-0 gap-2'
+														'w-full justify-start rounded-lg px-0 gap-2 hover:rounded-lg hover:p-1 transition-all duration-300'
 													)}
 												>
-													<Home /> Home
+													<LayoutDashboard /> Dashboard
 												</Link>
 											</li>
 											<li>
@@ -330,11 +369,11 @@ function TopNavigation() {
 													href={`/hosting/properties`}
 													className={cn(
 														buttonVariants({ variant: 'ghost' }),
-														'w-full justify-start rounded-none px-0 gap-2'
+														'w-full justify-start rounded-lg px-0 gap-2 hover:rounded-lg hover:p-1 transition-all duration-300'
 													)}
 												>
-													<Scroll />
-													Listings
+													<BiBuildingHouse />
+													Properties
 												</Link>
 											</li>
 											<li>
@@ -342,7 +381,7 @@ function TopNavigation() {
 													href={`/chat/inbox`}
 													className={cn(
 														buttonVariants({ variant: 'ghost' }),
-														'w-full justify-start rounded-none px-0 gap-2'
+														'w-full justify-start rounded-lg px-0 gap-2 hover:rounded-lg hover:p-1 transition-all duration-300'
 													)}
 												>
 													<MessageCircleMore />
@@ -351,26 +390,14 @@ function TopNavigation() {
 											</li>
 											<li>
 												<Link
-													href={`/hosting/property`}
-													className={cn(
-														buttonVariants({ variant: 'ghost' }),
-														'w-full justify-start rounded-none px-0 gap-2'
-													)}
-												>
-													<LibraryBig />
-													Properties
-												</Link>
-											</li>
-											<li>
-												<Link
 													href={`/hosting/transaction_history`}
 													className={cn(
 														buttonVariants({ variant: 'ghost' }),
-														'w-full justify-start rounded-none px-0 gap-2'
+														'w-full justify-start rounded-lg px-0 gap-2 hover:rounded-lg hover:p-1 transition-all duration-300'
 													)}
 												>
-													<Briefcase />
-													Reservations
+													<IconExchange />
+													Transactions
 												</Link>
 											</li>
 											<li>
@@ -378,11 +405,11 @@ function TopNavigation() {
 													href={`/test`}
 													className={cn(
 														buttonVariants({ variant: 'ghost' }),
-														'w-full justify-start rounded-none px-0 gap-2'
+														'w-full justify-start rounded-lg px-0 gap-2 hover:rounded-lg hover:p-1 transition-all duration-300'
 													)}
 												>
-													<Lightbulb />
-													Insigts
+													<IoAnalyticsOutline />
+													Insights
 												</Link>
 											</li>
 										</ul>
@@ -406,11 +433,23 @@ function TopNavigation() {
 													href={`/hosting/company`}
 													className={cn(
 														buttonVariants({ variant: 'ghost' }),
-														'w-full justify-start rounded-none px-0 gap-2'
+														'w-full justify-start rounded-lg px-0 gap-2 hover:rounded-lg hover:p-1 transition-all duration-300'
 													)}
 												>
-													<Building2 />
+													<BsBuildingGear />
 													Manage Company
+												</Link>
+											</li>
+											<li>
+												<Link
+													href={`/`}
+													className={cn(
+														buttonVariants({ variant: 'ghost' }),
+														'w-full justify-start rounded-lg px-0 gap-2 hover:rounded-lg hover:p-1 transition-all duration-300'
+													)}
+												>
+													<AiOutlineUserSwitch />
+													Switch to Client View
 												</Link>
 											</li>
 											{/* <li>
