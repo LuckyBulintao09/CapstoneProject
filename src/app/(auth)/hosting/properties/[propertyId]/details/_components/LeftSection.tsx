@@ -9,7 +9,7 @@ import { buttonVariants } from "@/components/ui/button";
 
 import { cn } from "@/lib/utils";
 
-import { Eye } from "lucide-react";
+import { Check, Eye, X } from "lucide-react";
 
 import MapLocation from "../@right/_components/MapLocation";
 import { usePathname } from "next/navigation";
@@ -20,7 +20,12 @@ function LeftSection({ property, units, location, propertyId }: any) {
         <>
             <div>
                 {/* add some onclick effect */}
-                <div className={cn("border-2 rounded-lg relative p-[22px]", pathname === `/hosting/properties/${propertyId}/details/photos` ? "border-primary shadow-xl" : " border-accent")}>
+                <div
+                    className={cn(
+                        "border-2 rounded-lg relative p-[22px]",
+                        pathname === `/hosting/properties/${propertyId}/details/photos` ? "border-primary shadow-xl" : " border-accent"
+                    )}
+                >
                     <span className="text-[1rem] leading-5 tracking-normal font-[500]">Photo gallery</span>
                     <Link
                         href={`/hosting/properties/${propertyId}/details/photos`}
@@ -29,8 +34,8 @@ function LeftSection({ property, units, location, propertyId }: any) {
                     <div>
                         <div className="pt-2 overflow-clip text-ellipsis whitespace-pre-line text-muted-foreground">
                             <div className="-mt-1 flex items-center gap-6">
-                                {property?.property_image && property.property_image.length > 0
-                                    ? `${property.property_image?.length} photos`
+                                {property?.property_image && property?.property_image.length > 0
+                                    ? `${property?.property_image?.length} photos`
                                     : "You have 0 photos for this property right now, consider uploading some."}
                             </div>
                         </div>
@@ -42,8 +47,8 @@ function LeftSection({ property, units, location, propertyId }: any) {
                                         <picture>
                                             <source
                                                 srcSet={
-                                                    property?.property_image && property.property_image.length > 0
-                                                        ? property.property_image[0]
+                                                    property?.property_image && property?.property_image.length > 0
+                                                        ? property?.property_image[0]
                                                         : "/placeholderImage.webp"
                                                 }
                                                 media="(max-width: 0px)"
@@ -51,7 +56,7 @@ function LeftSection({ property, units, location, propertyId }: any) {
                                             lamao
                                             <Image
                                                 src={
-                                                    property?.property_image && property.property_image.length > 0
+                                                    property?.property_image && property?.property_image.length > 0
                                                         ? property.property_image[0]
                                                         : "/placeholderImage.webp"
                                                 }
@@ -71,16 +76,16 @@ function LeftSection({ property, units, location, propertyId }: any) {
                                         <picture>
                                             <source
                                                 srcSet={
-                                                    property?.property_image && property.property_image.length > 0
-                                                        ? property.property_image[0]
+                                                    property?.property_image && property?.property_image.length > 0
+                                                        ? property?.property_image[0]
                                                         : "/placeholderImage.webp"
                                                 }
                                                 media="(max-width: 0px)"
                                             />
                                             <Image
                                                 src={
-                                                    property?.property_image && property.property_image.length > 0
-                                                        ? property.property_image[0]
+                                                    property?.property_image && property?.property_image.length > 0
+                                                        ? property?.property_image[0]
                                                         : "/placeholderImage.webp"
                                                 }
                                                 alt={property.title}
@@ -99,16 +104,16 @@ function LeftSection({ property, units, location, propertyId }: any) {
                                         <picture>
                                             <source
                                                 srcSet={
-                                                    property?.property_image && property.property_image.length > 0
-                                                        ? property.property_image[property.property_image.length - 1]
+                                                    property?.property_image && property?.property_image.length > 0
+                                                        ? property?.property_image[property?.property_image.length - 1]
                                                         : "/placeholderImage.webp"
                                                 }
                                                 media="(max-width: 0px)"
                                             />
                                             <Image
                                                 src={
-                                                    property?.property_image && property.property_image.length > 0
-                                                        ? property.property_image[property.property_image.length - 1]
+                                                    property?.property_image && property?.property_image.length > 0
+                                                        ? property?.property_image[property?.property_image.length - 1]
                                                         : "/placeholderImage.webp"
                                                 }
                                                 alt={property.title || "Thumbnail"}
@@ -126,7 +131,12 @@ function LeftSection({ property, units, location, propertyId }: any) {
             </div>
 
             <div>
-                <div className={cn("border-2 rounded-lg relative p-[22px]", pathname === `/hosting/properties/${propertyId}/details/title` ? "border-primary shadow-xl" : " border-accent")}>
+                <div
+                    className={cn(
+                        "border-2 rounded-lg relative p-[22px]",
+                        pathname === `/hosting/properties/${propertyId}/details/title` ? "border-primary shadow-xl" : " border-accent"
+                    )}
+                >
                     <span className="text-[1rem] leading-5 tracking-normal font-[500]">Title</span>
                     <Link
                         href={`/hosting/properties/${propertyId}/details/title`}
@@ -134,14 +144,19 @@ function LeftSection({ property, units, location, propertyId }: any) {
                     ></Link>
                     <div>
                         <div className="pt-2 overflow-clip tracking-normal leading-5 text-ellipsis font-normal whitespace-pre-line text-muted-foreground">
-                            <div className="text-[1.375rem] -tracking-[0.01375rem] font-[500] leading-[1.625rem]">{property.title}</div>
+                            <div className="text-[1.375rem] -tracking-[0.01375rem] font-[500] leading-[1.625rem]">{property?.title}</div>
                         </div>
                     </div>
                 </div>
             </div>
 
             <div>
-                <div className={cn("border-2 rounded-lg relative p-[22px]", pathname === `/hosting/properties/${propertyId}/details/property-type` ? "border-primary shadow-xl" : " border-accent")}>
+                <div
+                    className={cn(
+                        "border-2 rounded-lg relative p-[22px]",
+                        pathname === `/hosting/properties/${propertyId}/details/property-type` ? "border-primary shadow-xl" : " border-accent"
+                    )}
+                >
                     <span className="text-[1rem] leading-5 tracking-normal font-[500]">Property type</span>
                     <Link
                         href={`/hosting/properties/${propertyId}/details/property-type`}
@@ -156,7 +171,12 @@ function LeftSection({ property, units, location, propertyId }: any) {
             </div>
 
             <div>
-                <div className={cn("border-2 rounded-lg relative p-[22px]", pathname === `/hosting/properties/${propertyId}/details/description` ? "border-primary shadow-xl" : " border-accent")}>
+                <div
+                    className={cn(
+                        "border-2 rounded-lg relative p-[22px]",
+                        pathname === `/hosting/properties/${propertyId}/details/description` ? "border-primary shadow-xl" : " border-accent"
+                    )}
+                >
                     <span className="text-[1rem] leading-5 tracking-normal font-[500]">Description</span>
                     <Link
                         href={`/hosting/properties/${propertyId}/details/description`}
@@ -164,14 +184,19 @@ function LeftSection({ property, units, location, propertyId }: any) {
                     ></Link>
                     <div>
                         <div className="pt-2 overflow-clip text-[1rem] tracking-normal leading-5 text-ellipsis font-normal whitespace-pre-line text-muted-foreground">
-                            <div>{property.description}</div>
+                            <div>{property?.description}</div>
                         </div>
                     </div>
                 </div>
             </div>
 
             <div>
-                <div className={cn("border-2 rounded-lg relative p-[22px]", pathname === `/hosting/properties/${propertyId}/details/location` ? "border-primary shadow-xl" : " border-accent")}>
+                <div
+                    className={cn(
+                        "border-2 rounded-lg relative p-[22px]",
+                        pathname === `/hosting/properties/${propertyId}/details/location` ? "border-primary shadow-xl" : " border-accent"
+                    )}
+                >
                     <span className="text-[1rem] leading-5 tracking-normal font-[500]">Location</span>
                     <Link
                         href={`/hosting/properties/${propertyId}/details/location`}
@@ -179,7 +204,7 @@ function LeftSection({ property, units, location, propertyId }: any) {
                     ></Link>
                     <div>
                         <div className="pt-2 overflow-clip text-[1rem] tracking-normal leading-5 text-ellipsis font-normal whitespace-pre-line text-muted-foreground">
-                            <div>{property.address}</div>
+                            <div>{property?.address}</div>
                         </div>
                         <div className="flex flex-row items-center justify-center relative mt-2">
                             <MapLocation location={location} />
@@ -189,7 +214,12 @@ function LeftSection({ property, units, location, propertyId }: any) {
             </div>
 
             <div>
-                <div className={cn("border-2 rounded-lg relative p-[22px]", pathname === `/hosting/properties/${propertyId}/details/documents` ? "border-primary shadow-xl" : " border-accent")}>
+                <div
+                    className={cn(
+                        "border-2 rounded-lg relative p-[22px]",
+                        pathname === `/hosting/properties/${propertyId}/details/documents` ? "border-primary shadow-xl" : " border-accent"
+                    )}
+                >
                     <span className="text-[1rem] leading-5 tracking-normal font-[500]">Documents</span>
                     <Link
                         href={`/hosting/properties/${propertyId}/details/documents`}
@@ -197,14 +227,38 @@ function LeftSection({ property, units, location, propertyId }: any) {
                     ></Link>
                     <div>
                         <div className="pt-2 overflow-clip text-[1rem] tracking-normal leading-5 text-ellipsis font-normal whitespace-pre-line text-muted-foreground">
-                            <div>{property.business_permit ? "Business permit added" : "No documents added"}</div>
+                            <div className="grow space-y-2">
+                                <ul className="list-none text-sm text-muted-foreground">
+                                    <li className="flex gap-1 items-center">
+                                        {property?.business_permit ? (
+                                            <Check className="shrink-0 text-success w-5 h-5" />
+                                        ) : (
+                                            <X className="shrink-0 text-danger w-5 h-5" />
+                                        )}
+                                        <span>Business permit</span>
+                                    </li>
+                                    <li className="flex gap-1 items-center">
+                                        {property?.fire_inspection ? (
+                                            <Check className="shrink-0 text-success w-5 h-5" />
+                                        ) : (
+                                            <X className="shrink-0 text-danger w-5 h-5" />
+                                        )}
+                                        <span>Fire safety permit</span>
+                                    </li>
+                                </ul>
+                            </div>
                         </div>
                     </div>
                 </div>
             </div>
 
             <div>
-                <div className={cn("border-2 rounded-lg relative p-[22px]", pathname === `/hosting/properties/${propertyId}/details/units` ? "border-primary shadow-xl" : " border-accent")}>
+                <div
+                    className={cn(
+                        "border-2 rounded-lg relative p-[22px]",
+                        pathname === `/hosting/properties/${propertyId}/details/units` ? "border-primary shadow-xl" : " border-accent"
+                    )}
+                >
                     <span className="text-[1rem] leading-5 tracking-normal font-[500]">Units</span>
                     <Link
                         href={`/hosting/properties/${propertyId}/details/units`}
@@ -212,7 +266,7 @@ function LeftSection({ property, units, location, propertyId }: any) {
                     ></Link>
                     <div>
                         <div className="pt-2 overflow-clip text-[1rem] tracking-normal leading-5 text-ellipsis font-normal whitespace-pre-line text-muted-foreground">
-                            <div>{`${units.length} units added`}</div>
+                            <div>{`${units?.length} units added`}</div>
                         </div>
                     </div>
                 </div>
