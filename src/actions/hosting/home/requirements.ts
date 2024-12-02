@@ -2,11 +2,12 @@
 
 import { createClient } from "@/utils/supabase/server";
 
-const supabase = createClient();
+
 
 export const getRequirements = async (
     userId: string
 ) => {
+  const supabase = createClient();
     const { data: company_ids, error: companyIdsError } = await supabase
       .from("company")
       .select("id")

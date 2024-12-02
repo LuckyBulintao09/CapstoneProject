@@ -1,7 +1,8 @@
+"use server";
 import { createClient } from "@/utils/supabase/client"
-const supabase = createClient()
 
 export const getAllPropertyUnderSpecificCompany = async (id: number) => {
+    const supabase = createClient()
     let { data, error } = await supabase
         .from('property')
         .select('id, title,address')
@@ -14,6 +15,7 @@ export const getAllPropertyUnderSpecificCompany = async (id: number) => {
     }
 
 export const getAllPropertyUnderSpecificCompanyRPC = async (id: number) => {
+    const supabase = createClient()
     const { data, error } = await supabase
         .rpc('get_all_properties_under_company', {c_id: id})
     if (error) {

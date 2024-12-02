@@ -1,9 +1,11 @@
+"use server";
 import { createClient } from "@/utils/supabase/client";
 import { toast } from "sonner";
 
-const supabase = createClient();
+
 
 export const getUserSession = async () => {
+  const supabase = createClient();
   try {
     const { data, error } = await supabase.auth.getSession();
     if (error) {
@@ -18,6 +20,7 @@ export const getUserSession = async () => {
 };
 
 export const fetchGovId = async (userId: string) => {
+  const supabase = createClient();
   try {
     const { data, error } = await supabase
       .from("account")
@@ -45,6 +48,7 @@ export const fetchGovId = async (userId: string) => {
 };
 
 export const uploadGovernmentId = async (file: File, userId: string) => {
+  const supabase = createClient();
   try {
     const fileExt = file.name.split(".").pop();
     const fileName = `government-id-${Date.now()}.${fileExt}`;
