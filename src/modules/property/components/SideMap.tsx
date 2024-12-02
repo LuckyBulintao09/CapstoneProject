@@ -194,21 +194,25 @@ const SideMap: React.FC<SideReviewsProps> = ({
 							<p className='text-sm font-semibold dark:text-gray-100'>
 								Nearby landmarks
 							</p>
-							{landmarkDirections.slice(0, 3).map((landmark, index) => (
-								<div
-									key={index}
-									className='flex justify-between items-center mt-1 dark:text-gray-300'
-								>
-									<p className='text-xs'>{landmark.name}</p>
-									<p className='text-xs'>
-										{landmark.directions
-											? `${landmark.directions.distance?.text || ''} (${
-													landmark.directions.duration?.text || ''
-											  })`
-											: 'N/A'}
-									</p>
-								</div>
-							))}
+							{landmarkDirections
+								.sort((a, b) => a.distance - b.distance)
+								.slice(0, 3)
+								.map((landmark, index) => (
+									<div
+										key={index}
+										className='flex justify-between items-center mt-1 dark:text-gray-300'
+									>
+										<p className='text-xs'>{landmark.name}</p>
+										<p className='text-xs'>
+											{landmark.directions
+												? `${landmark.directions.distance?.text || ''} (${
+														landmark.directions.duration?.text || ''
+												  })`
+												: 'N/A'}
+										</p>
+									</div>
+								))}
+
 							{landmarks.length > 4 && (
 								<Popover>
 									<PopoverTrigger asChild>
@@ -224,21 +228,29 @@ const SideMap: React.FC<SideReviewsProps> = ({
 										<p className='text-sm font-semibold dark:text-neutral-800'>
 											Nearby landmarks
 										</p>
-										{landmarkDirections.map((landmark, index) => (
-											<div
-												key={index}
-												className='flex justify-between items-center dark:text-neutral-700'
-											>
-												<p className='text-xs'>{landmark.name}</p>
-												<p className='text-xs text-right'>
-													{landmark.directions
-														? `${landmark.directions.distance?.text || ''} (${
-																landmark.directions.duration?.text || ''
-														  })`
-														: 'N/A'}
-												</p>
-											</div>
-										))}
+										{landmarkDirections
+											.sort((a, b) => {
+												const distanceA =
+													a.directions?.distance?.value || Infinity;
+												const distanceB =
+													b.directions?.distance?.value || Infinity;
+												return distanceA - distanceB;
+											})
+											.map((landmark, index) => (
+												<div
+													key={index}
+													className='flex justify-between items-center dark:text-neutral-700'
+												>
+													<p className='text-xs'>{landmark.name}</p>
+													<p className='text-xs text-right'>
+														{landmark.directions
+															? `${landmark.directions.distance?.text || ''} (${
+																	landmark.directions.duration?.text || ''
+															  })`
+															: 'N/A'}
+													</p>
+												</div>
+											))}
 									</PopoverContent>
 								</Popover>
 							)}
