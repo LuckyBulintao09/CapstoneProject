@@ -10,9 +10,9 @@ const Sidebars = ({ activeItem, onItemClick }) => {
   }, []);
 
   return (
-    <section className="w-full p-4">
+    <section className="w-full pr-4">
       <div className="flex justify-center items-center py-4 md:hidden ">
-        <div className="relative flex rounded-full bg-black p-1  w-full max-w-lg ">
+        <div className="relative flex rounded-full bg-primary p-1  w-full max-w-lg ">
           <button
             onClick={() => onItemClick("account")}
             className={`${
@@ -39,7 +39,7 @@ const Sidebars = ({ activeItem, onItemClick }) => {
           onClick={() => onItemClick("account")}
           className={`flex items-center gap-2 p-2 rounded-md cursor-pointer text-sm md:text-base lg:text-md ${
             activeItem === "account"
-              ? "bg-black text-white"
+              ? "bg-primary text-white"
               : "hover:black hover:bg-opacity-30"
           }`}
         >
@@ -50,7 +50,7 @@ const Sidebars = ({ activeItem, onItemClick }) => {
           onClick={() => onItemClick("hosting-verification")}
           className={`flex items-center gap-2 p-2 rounded-md cursor-pointer text-sm md:text-base lg:text-md ${
             activeItem === "hosting-verification"
-              ? "bg-black text-white"
+              ? "bg-primary text-white"
               : "hover:bg-gray-700 hover:bg-opacity-30"
           }`}
         >

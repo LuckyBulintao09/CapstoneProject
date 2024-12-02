@@ -19,6 +19,8 @@ import {
 	DropdownMenuSeparator,
 	DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu';
+import { AiOutlineUserSwitch } from 'react-icons/ai';
+
 import {
 	Sheet,
 	SheetClose,
@@ -39,7 +41,6 @@ import { useMediaQuery } from '@/hooks/use-media-query';
 
 import {
 	Home,
-	LayoutDashboard,
 	LogOut,
 	Menu,
 	MessageCircleMore,
@@ -242,19 +243,48 @@ function NavigationBar() {
 												}}
 											>
 												<IconExchange className='mr-2 h-4 w-4' />
-												<span>Transaction History</span>
+												<span>Transactions</span>
 											</DropdownMenuItem>
 										</DropdownMenuGroup>
 										<DropdownMenuSeparator />
 										<DropdownMenuGroup>
 											<DropdownMenuItem
+												onClick={async () => {
+													const supabase = createClient();
+													const { data, error } = await supabase
+														.from('account')
+														.select('approved_government')
+														.eq('id', user.id)
+														.single();
+
+													if (error) {
+														console.error(
+															'Error fetching approval status:',
+															error
+														);
+														return;
+													}
+
+													if (data?.approved_government) {
+														window.location.href = '/hosting';
+													} else {
+														window.location.href =
+															'/client/profile';
+													}
+												}}
+											>
+												<AiOutlineUserSwitch className='mr-2 h-4 w-4' />
+												<span>Switch to Hosting View</span>
+											</DropdownMenuItem>
+
+											{/* <DropdownMenuItem
 												onClick={() => {
 													window.location.href = '/hosting';
 												}}
 											>
-												<LayoutDashboard className='mr-2 h-4 w-4' />
-												<span>My Lessor Dashboard</span>
-											</DropdownMenuItem>
+												<AiOutlineUserSwitch className='mr-2 h-4 w-4' />
+												<span>Switch to Hosting View</span>
+											</DropdownMenuItem> */}
 										</DropdownMenuGroup>
 										<DropdownMenuSeparator />
 										<DropdownMenuItem
@@ -324,10 +354,7 @@ function NavigationBar() {
 									<SheetClose className='sr-only'>Close</SheetClose>
 									<SheetHeader className='sr-only'>
 										<SheetTitle>Navigation menu</SheetTitle>
-										<SheetDescription>
-											This action cannot be undone. This will permanently delete
-											your account and remove your data from our servers.
-										</SheetDescription>
+										<SheetDescription>Mobile navigation menu.</SheetDescription>
 									</SheetHeader>
 									<div className='grid gap-8 py-7'>
 										{/* menu */}
@@ -424,7 +451,7 @@ function NavigationBar() {
 															)}
 														>
 															<IconExchange />
-															Transaction History
+															Transactions
 														</Link>
 													</li>
 													<li>
@@ -435,8 +462,8 @@ function NavigationBar() {
 																'w-full justify-start rounded-lg px-0 gap-2 hover:rounded-lg hover:p-1 transition-all duration-300'
 															)}
 														>
-															<LayoutDashboard />
-															My Lessor Dashboard
+															<AiOutlineUserSwitch />
+															Switch to Hosting
 														</Link>
 													</li>
 												</ul>

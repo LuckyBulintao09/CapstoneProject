@@ -34,11 +34,11 @@ function GenerateBreadcrumbs({segments}: {segments: string[]}) {
                     <React.Fragment key={index}>
                         {index > 0 && <BreadcrumbSeparator />}
                         {index === breadCrumbs.length - 1 ? (
-                            <BreadcrumbPage>{crumb.label}</BreadcrumbPage>
+                            <BreadcrumbPage className="text-primary dark:text-blue-300 font-semibold">{crumb.label}</BreadcrumbPage>
                         ) : (
                             <BreadcrumbItem>
                                 <BreadcrumbLink asChild>
-                                    <Link href={crumb.href} className={cn(buttonVariants({ variant: "link" }), "px-0 py-0")}>{crumb.label}</Link>
+                                    <Link href={crumb.href} className={cn(buttonVariants({ variant: "link" }), "px-0 py-0 text-gray-600 font-normal")}>{crumb.label}</Link>
                                 </BreadcrumbLink>
                             </BreadcrumbItem>
                         )}
