@@ -23,14 +23,13 @@ import { FileDown, Trash } from "lucide-react";
 
 import { downloadBusinessPermit, removeBusinessPermit } from "@/actions/property/propertyDocuments";
 import { cn } from "@/lib/utils";
+import Link from "next/link";
 
 function BusinessPermitContent({ businessPermit, propertyId, userId }: { businessPermit: string; propertyId: string; userId: string }) {
 
     const [isPending, startTransition] = React.useTransition();
 
     const router = useRouter();
-
-    console.log(businessPermit, "here");
 
     return (
         <Card className="bg-background flex items-center justify-between">
@@ -42,14 +41,14 @@ function BusinessPermitContent({ businessPermit, propertyId, userId }: { busines
                 <div className="flex items-center gap-2">
                     <Image
                         src={
-                            businessPermit.split("/").pop().split(".").pop() === "jpb" ||
-                            businessPermit.split("/").pop().split(".").pop() === "jpeg" ||
-                            businessPermit.split("/").pop().split(".").pop() === "png"
+                            businessPermit?.split("/").pop().split(".").pop() === "jpg" ||
+                            businessPermit?.split("/").pop().split(".").pop() === "jpeg" ||
+                            businessPermit?.split("/").pop().split(".").pop() === "png"
                                 ? "/documents/image-document-svgrepo-com.svg"
-                                : businessPermit.split("/").pop().split(".").pop() === "docx" ||
-                                  businessPermit.split("/").pop().split(".").pop() === "doc"
+                                : businessPermit?.split("/").pop().split(".").pop() === "docx" ||
+                                  businessPermit?.split("/").pop().split(".").pop() === "doc"
                                 ? "/documents/word-document-svgrepo-com.svg"
-                                : businessPermit.split("/").pop().split(".").pop() === "pdf"
+                                : businessPermit?.split("/").pop().split(".").pop() === "pdf"
                                 ? "/documents/pdf-document-svgrepo-com.svg"
                                 : "/documents/attachment-document-svgrepo-com.svg"
                         }
@@ -60,25 +59,24 @@ function BusinessPermitContent({ businessPermit, propertyId, userId }: { busines
                     />
                     <div className="flex flex-col">
                         <p className="text-sm font-[500] truncate w-[300px]">
-                            {businessPermit ? <span>{businessPermit.split("/").pop()}</span> : <span>No business permit uploaded.</span>}
+                            {businessPermit ? <span>{businessPermit?.split("/").pop()}</span> : <span>No business permit uploaded.</span>}
                         </p>
                         {/* <p className="text-sm font-[500] truncate w-[300px] text-muted-foreground">1 kb</p>  */}
                     </div>
                 </div>
             </CardContent>
             <CardFooter className="gap-2 px-5 py-3">
-                <Button
-                    variant="ghost"
-                    size="icon"
-                    className="h-7 w-7"
-                    onClick={async () => {
-                        await startTransition(async () => {
-                            await downloadBusinessPermit(userId, propertyId, businessPermit);
-                            router.refresh();
-                        });
-                        async () => {};
-                    }}
-                    disabled={isPending || !businessPermit}
+                <Link
+                    className={cn(buttonVariants({ variant: "ghost", size: "icon" }), "h-7 w-7")}
+                    // onClick={async () => {
+                    //     await startTransition(async () => {
+                    //         await downloadBusinessPermit(userId, propertyId, businessPermit);
+                    //         router.refresh();
+                    //     });
+                    //     async () => {};
+                    // }}
+                    href={businessPermit || "/hosting/properties"}
+                    target="_blank"
                 >
                     {isPending ? (
                         <svg
@@ -100,7 +98,7 @@ function BusinessPermitContent({ businessPermit, propertyId, userId }: { busines
                     ) : (
                         <FileDown className="h-4 w-4" />
                     )}
-                </Button>
+                </Link>
 
                 <AlertDialog>
                     <AlertDialogTrigger asChild>
