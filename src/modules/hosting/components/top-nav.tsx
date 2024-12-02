@@ -176,7 +176,7 @@ function TopNavigation() {
 							</li>
 							<li>
 								<Link
-									href='/test'
+									href='/hosting/insights'
 									className={cn(
 										buttonVariants({ variant: 'ghost' }),
 										'rounded-full relative',
