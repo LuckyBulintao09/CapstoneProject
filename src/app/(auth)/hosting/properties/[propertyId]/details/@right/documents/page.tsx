@@ -22,6 +22,7 @@ async function DocumentsPage({ params }: { params: { propertyId: string } }) {
     const user = await getAuthenticatedUser();
     const businessPermit = await getBusinessPermit(params.propertyId);
     const fireInspection = await getFireInspection(params.propertyId);
+    console.log((businessPermit && fireInspection));
 
     return (
         <section className="flex flex-col h-[calc(100vh-68px)] w-full px-6 airBnbDesktop:overflow-x-hidden airBnbDesktop:overflow-y-auto airBnbTablet:px-10 min-[1128px]:px-20 airBnbBigDesktop:px-0">
@@ -47,7 +48,7 @@ async function DocumentsPage({ params }: { params: { propertyId: string } }) {
                             <span>Manage your property&apos;s documents here.</span>
                             <div className="rounded-lg border border-border px-4 py-3">
                                 <div className="flex gap-3">
-                                    {businessPermit && fireInspection ? (
+                                    {(businessPermit.business_permit && fireInspection.fire_inspection) ? (
                                         <CircleCheck className="mt-0.5 shrink-0 text-success w-5 h-5" strokeWidth={2} aria-hidden="true" />
                                     ) : (
                                         <CircleAlert className="mt-0.5 shrink-0 text-danger w-5 h-5" strokeWidth={2} aria-hidden="true" />
@@ -56,7 +57,7 @@ async function DocumentsPage({ params }: { params: { propertyId: string } }) {
                                         <p className="text-sm font-medium">For your property to be approved, you must include the following:</p>
                                         <ul className="list-none text-sm text-muted-foreground">
                                             <li className="flex gap-1 items-center">
-                                                {businessPermit ? (
+                                                {businessPermit.business_permit ? (
                                                     <Check className="shrink-0 text-success w-5 h-5" />
                                                 ) : (
                                                     <X className="shrink-0 text-danger w-5 h-5" />
@@ -64,7 +65,7 @@ async function DocumentsPage({ params }: { params: { propertyId: string } }) {
                                                 <span>Business permit</span>
                                             </li>
                                             <li className="flex gap-1 items-center">
-                                                {fireInspection ? (
+                                                {fireInspection.fire_inspection ? (
                                                     <Check className="shrink-0 text-success w-5 h-5" />
                                                 ) : (
                                                     <X className="shrink-0 text-danger w-5 h-5" />
@@ -84,7 +85,7 @@ async function DocumentsPage({ params }: { params: { propertyId: string } }) {
                         </div>
                         <div className="flex flex-col gap-2">
                             <FireInstpectionUploder propertyId={params.propertyId} userId={user?.id} />
-                            <FireInspectionContent fireInspection={fireInspection} />
+                            <FireInspectionContent fireInspection={fireInspection?.fire_inspection} userId={user?.id} propertyId={params.propertyId} />
                         </div>
                     </div>
                 </div>

@@ -1,7 +1,9 @@
+"use server"
+
 import { createClient } from "@/utils/supabase/client";
-const supabase = createClient();
 
 export const getAllUnitUnderProperty = async (propertyId: string) => {
+    const supabase = createClient();
     const propertyIdNumber = Number(propertyId);
     const { data, error } = await supabase
         .from("unit")

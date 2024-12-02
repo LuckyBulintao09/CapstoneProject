@@ -1,9 +1,10 @@
 "use server"
 import { createClient } from "@/utils/supabase/server";
 
-const supabase = createClient();
 
 export const getArrivingSoon = async () => {
+    
+const supabase = createClient();
     const endDate = new Date();
     endDate.setDate(endDate.getDate() + 3);
 

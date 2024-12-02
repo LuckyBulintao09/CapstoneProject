@@ -150,19 +150,6 @@ const Banner: React.FC<BannerProps> = ({
 								</div>
 							)}
 						</div>
-
-						{/* <Button
-							variant='outline'
-							className=''
-							onClick={handleSendMessage}
-							disabled={isLoading}
-							aria-label='Message the owner'
-						>
-							<span className='flex flex-row items-center gap-1'>
-								{isLoading ? 'Sending...' : spiels.BUTTON_MESSAGE}
-							</span>
-						</Button> */}
-
 						<Button
 							variant='outline'
 							className='bg-primary text-gray-100 border-white hover:bg-[#0b317a] hover:text-white rounded-lg px-4 py-2 transition duration-200 ease-in-out w-full md:w-auto'
