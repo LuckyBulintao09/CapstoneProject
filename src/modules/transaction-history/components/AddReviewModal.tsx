@@ -111,7 +111,7 @@ const AddReviewModal = ({
 
   const handleSubmit = async () => {
     if (!rating || !reviewText || !userId || !unit_id) {
-      alert("Please provide a rating, review, and ensure you're logged in.");
+      toast.error("Please provide a rating, review, and ensure you're logged in.");
       return;
     }
 
@@ -149,7 +149,7 @@ const AddReviewModal = ({
       window.location.reload();
       onClose();
     } else {
-      alert("Failed to save review. Please try again.");
+      toast.error("Failed to save review.");
     }
   };
 

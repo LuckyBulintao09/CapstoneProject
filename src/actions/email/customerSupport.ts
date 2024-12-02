@@ -3,21 +3,21 @@ import { Resend } from 'resend';
 
 const resend = new Resend(process.env.NEXT_PUBLIC_RESEND_API_KEY);
 
-interface NotifyProprietorParams {
-  subject: string;
-  message: string;
+interface CustomerSupportParams {
   email: string;
 }
 
-export async function notifyProprietor({ email, subject, message }: NotifyProprietorParams) {
+export async function CustomerSupport({ email }: CustomerSupportParams) {
   try {
+    const message = `${email} has requested customer support`;
+
     const htmlContent = `
       <!DOCTYPE html>
       <html lang="en">
         <head>
           <meta charset="UTF-8" />
           <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-          <title>${subject}</title>
+          <title>Customer Support Request</title>
           <style>
             body {
               font-family: Arial, sans-serif;
@@ -38,40 +38,25 @@ export async function notifyProprietor({ email, subject, message }: NotifyPropri
             .header {
               font-size: 24px;
               font-weight: bold;
-              color: #4CAF50;
-              margin-bottom: 20px;
-              text-align: center;
+              margin-bottom: 10px;
             }
             .message {
               font-size: 16px;
               margin: 20px 0;
-              color: #555;
             }
             .footer {
               font-size: 14px;
               color: #666;
-              text-align: center;
               margin-top: 20px;
-              border-top: 1px solid #ddd;
-              padding-top: 10px;
-            }
-            a {
-              color: #4CAF50;
-              text-decoration: none;
             }
           </style>
         </head>
         <body>
           <div class="container">
-            <div class="header">${subject}</div>
+            <div class="header">Customer Support Request</div>
             <div class="message">
-              ${message}
-            </div>
-            <div class="footer">
-              <p>Thank you for using Unihomes.</p>
-              <p>
-                Need help? <a href="mailto:unihomes2024@gmail.com">Contact Support</a>
-              </p>
+              Hello,<br /><br />
+              ${message}.
             </div>
           </div>
         </body>
@@ -81,11 +66,9 @@ export async function notifyProprietor({ email, subject, message }: NotifyPropri
     const { data, error } = await resend.emails.send({
       from: 'Unihomes <noreply@unihomes.site>',
       to: email,
-      subject: subject,
-      html: htmlContent, // Raw HTML for the email content
+      subject: 'Unihomes Customer Support Request',
+      html: htmlContent, 
     });
-
-    console.log("Email sent");
 
     if (error) {
       throw new Error(JSON.stringify(error));
@@ -93,6 +76,7 @@ export async function notifyProprietor({ email, subject, message }: NotifyPropri
 
     return data;
   } catch (error) {
+    console.error(error);
     throw new Error(`Failed to send email: ${error}`);
   }
 }

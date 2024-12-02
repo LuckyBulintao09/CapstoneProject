@@ -79,7 +79,7 @@ export const confirm_onsiteNotification = async (
     
     const { data, error } = await supabase
       .from("notifications")
-      .insert({ receiver_id: receiver_id, text: `Your Onsite Visit is confirmed and reserved for ${property_title[0].title} - ${property_id[0].title}` });
+      .insert({ receiver_id: receiver_id, text: `Your Onsite Visit is confirmed for ${property_title[0].title} - ${property_id[0].title}` });
     if (error) throw error;
 }
 
@@ -111,7 +111,8 @@ export const cancelled_onsiteNotification = async (
 
 export const cancel_lessorNotification = async (
   receiver_id: string,
-  unit_id: number
+  unit_id: number,
+  reason?: string
 ) => {
   const { data: UnitData, error: UnitDataError } = await supabase
     .from('unit')
@@ -125,10 +126,19 @@ export const cancel_lessorNotification = async (
     .eq("id", UnitData.property_id)
     .single()
 
-  const { data, error } = await supabase
-    .from("notifications")
-    .insert({ receiver_id: receiver_id, text: `Proprietor has cancelled your Onsite Visit for ${PropertyData.title} - ${UnitData.title}` });
-  if (error) throw error;
+  if(reason){
+    const { data, error } = await supabase
+      .from("notifications")
+      .insert({ receiver_id: receiver_id, text: `Proprietor has cancelled your Onsite Visit for ${PropertyData.title} - ${UnitData.title} because "${reason}"` });
+    if (error) throw error;
+  }else{
+    const { data, error } = await supabase
+      .from("notifications")
+      .insert({ receiver_id: receiver_id, text: `Proprietor has cancelled your Onsite Visit for ${PropertyData.title} - ${UnitData.title}` });
+    if (error) throw error;
+  }
+
+
 }
 
 //ADMIN

@@ -1,7 +1,7 @@
 import { createClient } from "@/utils/supabase/client";
 import { format } from "date-fns";
 import { sendMessageAfterReservation } from "../chat/sendMessageAfterReservation";
-
+import { notifyProprietor } from "../email/notifyProprietor";
 const supabase = createClient();
 
 export const fetchUserData = async () => {
@@ -104,5 +104,25 @@ export const createReservation = async (
   // await checkReservationConflict(userId);
 
   await sendMessageAfterReservation(unitId, userId);
+ 
+  const { data, error } = await supabase
+      .from("unit")
+      .select(`
+        property:property_id (
+          title,
+          company:company_id (
+            owner:owner_id (
+              email
+            )
+          )
+        )
+      `)
+      .eq("id", unitId)
+      .single();
+      const email = data.property.company.owner.email;
+      const propertyName = data.property.title
+      const subject = `New ${selectedService} Reservation`;
+      const message = `A new ${selectedService} service has been made for your unit in "${propertyName}".`;
+  await notifyProprietor({email, subject, message});
   return { success: true };
 };

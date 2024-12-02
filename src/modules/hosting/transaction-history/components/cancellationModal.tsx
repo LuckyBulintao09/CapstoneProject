@@ -18,7 +18,7 @@ interface RejectionReasonModalProps {
   onSubmit: (reason: string) => void;
 }
 
-const RejectionReasonModal: React.FC<RejectionReasonModalProps> = ({
+const RejectionTransactionModal: React.FC<RejectionReasonModalProps> = ({
   isOpen,
   onClose,
   onSubmit,
@@ -27,7 +27,7 @@ const RejectionReasonModal: React.FC<RejectionReasonModalProps> = ({
 
   const handleReasonSubmit = () => {
     if (!rejectionReason.trim()) {
-      toast.error("Please enter a rejection reason.");
+      toast.error("Please enter a cancellation reason.");
       return;
     }
     onSubmit(rejectionReason.trim());
@@ -41,13 +41,13 @@ const RejectionReasonModal: React.FC<RejectionReasonModalProps> = ({
         {(onCloseModal) => (
           <>
             <ModalHeader className="flex flex-col gap-1">
-              Enter Rejection Reason
+              Enter Cancellation Reason
             </ModalHeader>
             <ModalBody>
               <Textarea
-                label="Rejection Reason"
+                label="Cancellation Reason"
                 variant="bordered"
-                placeholder="Enter reason for rejection"
+                placeholder="Enter reason for cancellation"
                 disableAnimation
                 disableAutosize
                 value={rejectionReason}
@@ -73,4 +73,4 @@ const RejectionReasonModal: React.FC<RejectionReasonModalProps> = ({
   );
 };
 
-export default RejectionReasonModal;
+export default RejectionTransactionModal;

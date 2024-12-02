@@ -16,7 +16,7 @@ export default function BranchListings({
 	address,
 	created_at,
 	ispropertyboosted,
-	thumbnail_url,
+	property_image,
 	average_ratings,
 	property_title,
 	company_name,
@@ -127,9 +127,9 @@ export default function BranchListings({
 					header={
 						<div className='relative'>
 							<div className='bg-gray-200 w-full h-[170px] rounded-lg overflow-hidden flex items-center justify-center'>
-								{thumbnail_url && thumbnail_url.trim() !== '' ? (
+								{property_image && property_image.trim() !== '' ? (
 									<img
-										src={thumbnail_url}
+										src={property_image}
 										alt='Thumbnail'
 										className='w-full h-full object-cover cursor-pointer'
 										onClick={handleClick}

@@ -188,7 +188,11 @@ export const BookingCardModal: React.FC<BookingCardProps> = ({
 										setDate(selectedDate);
 										setIsCalendarOpen(false);
 									}}
-									disabled={(date) => date < today}
+									disabled={(date) =>
+										selectedService === 'Room Reservation'
+											? date > new Date(Date.now() + 3 * 24 * 60 * 60 * 1000)
+											: date < today
+									}
 									className='rounded-md border shadow bg-white'
 								/>
 							</div>
@@ -292,9 +296,13 @@ export const BookingCardModal: React.FC<BookingCardProps> = ({
 										<span>1-month Deposit:</span>
 										<span>₱{unitPrice}</span>
 									</li>
+									<li className='flex justify-between'>
+										<span>3% Reservation Fee:</span>
+										<span>₱{unitPrice*.03}</span>
+									</li>
 									<li className='flex justify-between font-semibold'>
 										<span>Total:</span>
-										<span>₱{unitPrice * 2}</span>
+										<span>₱{(unitPrice * 2)+ (unitPrice*.03)}</span>
 									</li>
 								</ul>
 								<div className='mt-2 text-xs text-gray-500 dark:text-gray-400'>

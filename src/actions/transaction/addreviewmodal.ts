@@ -1,5 +1,6 @@
 import { profanityList } from "../../../profanityList/profanityList";
 import { createClient } from "@/utils/supabase/client";
+import { toast } from "sonner"; // assuming you're using the `sonner` library for toast notifications
 
 const supabase = createClient();
 
@@ -11,18 +12,17 @@ export const getSessionUserId = async (): Promise<string | null> => {
   return session?.user?.id || null;
 };
 
-const censorProfanity = (comment: string): string => {
-  let censoredComment = comment;
+const detectProfanity = (comment: string): string[] => {
+  const profaneWordsFound: string[] = [];
 
   for (const profaneWord of profanityList) {
-    const regex = new RegExp(profaneWord, "gi");
-    censoredComment = censoredComment.replace(
-      regex,
-      "*".repeat(profaneWord.length)
-    );
+    const regex = new RegExp(`\\b${profaneWord}\\b`, "gi");
+    if (regex.test(comment)) {
+      profaneWordsFound.push(profaneWord);
+    }
   }
 
-  return censoredComment;
+  return profaneWordsFound;
 };
 
 export const addReview = async (
@@ -35,14 +35,19 @@ export const addReview = async (
   valueForMoney: number
 ) => {
   try {
-    const sanitizedComment = censorProfanity(comment);
+    const profaneWords = detectProfanity(comment);
+
+    if (profaneWords.length > 0) {
+      toast.error(`Profane words detected: ${profaneWords.join(", ")}`);
+      return false;
+    }
 
     const { error } = await supabase.from("ratings_review").insert([
       {
         unit_id: unitId,
         user_id: userId,
         ratings: rating,
-        comment: sanitizedComment,
+        comment: comment, 
         isReported: false,
         location: location,
         cleanliness: cleanliness,
@@ -70,13 +75,18 @@ export const updateReview = async (
   valueForMoney: number
 ) => {
   try {
-    const sanitizedComment = censorProfanity(comment);
+    const profaneWords = detectProfanity(comment);
+
+    if (profaneWords.length > 0) {
+      toast.error(`Profane words detected: ${profaneWords.join(", ")}`);
+      return false;
+    }
 
     const { error } = await supabase
       .from("ratings_review")
       .update({
         ratings: rating,
-        comment: sanitizedComment,
+        comment: comment, 
         location: location,
         cleanliness: cleanliness,
         value_for_money: valueForMoney,
@@ -93,6 +103,7 @@ export const updateReview = async (
     return false;
   }
 };
+
 export const fetchReviewData = async (unitId: string, userId: string) => {
   try {
     const { data, error } = await supabase
@@ -100,7 +111,7 @@ export const fetchReviewData = async (unitId: string, userId: string) => {
       .select("*")
       .eq("unit_id", unitId)
       .eq("user_id", userId)
-      .single(); // Fetch a single review
+      .single(); 
 
     if (error) {
       console.error("Error fetching review data:", error);

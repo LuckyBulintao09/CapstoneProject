@@ -56,6 +56,7 @@ export default function RootLayout({
 										closeButton: "absolute cursor-pointer bg-background text-foreground border border-black hover:bg-black hover:text-foreground dark:bg-black dark:hover:bg-foreground dark:hover:text-black "
 									},
 								}}
+								expand
 								/>
 								<div>{children}</div>
 							</TooltipProvider>
