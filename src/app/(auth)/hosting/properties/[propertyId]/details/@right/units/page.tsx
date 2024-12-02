@@ -53,8 +53,8 @@ async function PropertiesUnitsPage({ params }: { params: { propertyId: string } 
                                     ></Link>
                                     <div className="flex-shrink-0">
                                         <Image
-                                            src={unit.thumbnail_url || "/placeholder-image.png"}
-                                            alt={unit.title || "Unit Thumbnail"}
+                                            src={unit.thumbnail_url ? unit.thumbnail_url : "/placeholderImage.webp"}
+                                            alt={unit.title}
                                             width={64}
                                             height={64}
                                             className="rounded object-cover aspect-square"

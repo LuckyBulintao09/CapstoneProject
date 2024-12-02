@@ -7,7 +7,7 @@ export const getPropertyById = async (propertyId: string) => {
 
     try {
         // const { data, error } = await supabase.rpc("get_property_by_id", { p_id: propertyId });
-        const { data, error } = await supabase.from("property").select(`*`).eq("id", propertyId);
+        const { data, error } = await supabase.from("property").select(`*`).eq("id", propertyId).single();
 
         if (error) {
             throw error;

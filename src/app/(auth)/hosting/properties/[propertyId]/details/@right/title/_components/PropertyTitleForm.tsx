@@ -10,9 +10,10 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { PropertyTitleData, propertyTitleSchema } from "@/lib/schemas/propertySchemaV2";
 import { toast } from "sonner";
 import { updatePropertyTitle } from "@/actions/property/update-property";
+import { useRouter } from "next/navigation";
 
 function PropertyTitleForm({ title, propertyId }: { title: string, propertyId: string}) {
-
+    const router = useRouter();
     const [isPending, startTransition] = React.useTransition();
 
     const propertiesTitleForm = useForm<PropertyTitleData>({
@@ -36,7 +37,8 @@ function PropertyTitleForm({ title, propertyId }: { title: string, propertyId: s
                 toast.promise(updatePropertyTitle(propertyId, values.property_title), {
                     loading: "Saving changes...",
                     success: (values) => {
-                        return "Title updated successfully" + values;
+                        router.refresh();
+                        return "Title updated successfully";
                     },
                     error: (error) => {
                         return error.message;

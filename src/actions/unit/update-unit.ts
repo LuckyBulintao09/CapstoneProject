@@ -14,9 +14,9 @@ export async function updateUnit(unitId: string, propertyId: string, values: any
             title: values.title,
             price: values.price,
             privacy_type: values.privacy_type,
-            bedrooms: values.unit_bedrooms,
-            beds: values.unit_beds,
-            occupants: values.unit_occupants,
+            bedrooms: values.bedrooms,
+            beds: values.beds,
+            occupants: values.occupants,
             room_size: values.room_size,
         })
         .eq("id", unitId)

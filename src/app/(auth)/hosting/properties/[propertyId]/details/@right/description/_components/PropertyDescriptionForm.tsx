@@ -11,8 +11,11 @@ import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { PropertyDescriptionData, propertyDescriptionSchema } from "@/lib/schemas/propertySchemaV2";
 import { updatePropertyDescription } from "@/actions/property/update-property";
+import { useRouter } from "next/navigation";
+import { X } from "lucide-react";
 
 function PropertyDescriptionForm({description, propertyId}: {description: string, propertyId: string }) {
+    const router = useRouter();
     const [isPending, startTransition] = React.useTransition();
 
     const propertiesDescriptionForm = useForm<PropertyDescriptionData>({
@@ -35,8 +38,9 @@ function PropertyDescriptionForm({description, propertyId}: {description: string
             startTransition(() => {
                 toast.promise(updatePropertyDescription(propertyId, values.property_description), {
                     loading: "Saving changes...",
-                    success: (values) => {
-                        return "Description updated successfully" + values;
+                    success: () => {
+                        router.refresh();
+                        return "Description updated successfully";
                     },
                     error: (error) => {
                         return error.message;
