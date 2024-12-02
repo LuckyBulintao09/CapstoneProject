@@ -19,18 +19,20 @@ export function NewProprietorsTab() {
     setNewProprietorsCount(count);
   };
   return (
-    <Card className="h-full bg-white dark:bg-secondary">
-      <CardHeader>
-        <CardTitle>{spiels.ADMIN_CARD_HEADER}</CardTitle>
-        <CardDescription>
-          Upcoming {newProprietorsCount} proprietors waiting for approval
-        </CardDescription>
-      </CardHeader>
-      <CardContent className="flex flex-col h-[500px]">
-        <div className="overflow-y-auto">
-          <NewLessorsDashboard onCountUpdate={handleCountUpdate} />
-        </div>
-      </CardContent>
-    </Card>
-  );
+		<Card className='h-full bg-white dark:bg-secondary'>
+			<CardHeader>
+				<CardTitle>{spiels.ADMIN_CARD_HEADER}</CardTitle>
+				<CardDescription>
+					Upcoming {newProprietorsCount}{' '}
+					{newProprietorsCount === 1 ? 'proprietor' : 'proprietors'} waiting for
+					approval
+				</CardDescription>
+			</CardHeader>
+			<CardContent className='flex flex-col h-[500px]'>
+				<div className='overflow-y-auto'>
+					<NewLessorsDashboard onCountUpdate={handleCountUpdate} />
+				</div>
+			</CardContent>
+		</Card>
+	);
 }

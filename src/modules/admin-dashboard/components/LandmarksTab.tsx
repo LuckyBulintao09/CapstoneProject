@@ -91,13 +91,13 @@ const LandmarksTab = () => {
           Double-click on the map to add a new landmark.
         </CardDescription>
       </CardHeader>
-      <CardContent className="flex flex-col h-[700px]">
+      <CardContent className="flex flex-col">
         <SearchLocation
           searchTerm={searchTerm}
           setSearchTerm={setSearchTerm}
           setCenter={setCenter}
         />
-        <div className="overflow-hidden rounded-lg border border-gray-200 mt-4">
+        <div className="overflow-hidden rounded-lg border border-gray-200">
           <GoogleMap
             mapContainerStyle={mapContainerStyle}
             center={center}

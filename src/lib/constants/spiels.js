@@ -239,12 +239,12 @@ const spiels = {
 	],
 	//MODALS
 	MODAL_APPROVE: 'Confirm Approval',
-	MODAL_APPROVE_HEADER: 'Are you sure you want to approve this lessor?',
+	MODAL_APPROVE_HEADER: 'Are you sure you want to approve this proprietor?',
 	MODAL_APPROVE_COMPANY_HEADER:
-		'Are you sure you want to approve this company?',
+		'Are you sure you want to approve this property?',
 	MODAL_REJECT: 'Confirm Rejection',
-	MODAL_REJECTION_HEADER: 'Are you sure you want to reject this lessor?',
-	MODAL_REJECT_COMPANY_HEADER: 'Are you sure you want to reject this company?',
+	MODAL_REJECTION_HEADER: 'Are you sure you want to reject this proprietor?',
+	MODAL_REJECT_PROPERTY_HEADER: 'Are you sure you want to reject this property?',
 	MODAL_KEEP: 'Confirm Keep',
 	MODAL_REMOVE: 'Confirm Remove',
 	MODAL_KEEP_HEADER: 'Are you sure you want to keep this review?',

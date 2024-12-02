@@ -8,17 +8,17 @@ import {
 import { Button } from '@/components/ui/button';
 import spiels from '@/lib/constants/spiels';
 
-interface ApproveConfirmationModalProps {
+interface ApprovePropertyModalProps {
 	isOpen: boolean;
 	onClose: () => void;
 	handleApprove: () => void;
 }
 
-const ApproveCompanyModal = ({
+const ApprovePropertyModal = ({
 	isOpen,
 	onClose,
 	handleApprove,
-}: ApproveConfirmationModalProps) => {
+}: ApprovePropertyModalProps) => {
 	return (
 		<Dialog open={isOpen} onOpenChange={onClose}>
 			<DialogContent className='bg-white dark:bg-secondary'>
@@ -37,4 +37,4 @@ const ApproveCompanyModal = ({
 	);
 };
 
-export default ApproveCompanyModal;
+export default ApprovePropertyModal;
