@@ -22,6 +22,7 @@ import {
 	HeartIcon as HeartOutline,
 } from '@heroicons/react/24/outline';
 import { HeartIcon as HeartSolid } from '@heroicons/react/24/solid';
+import { addAnalytics } from '@/actions/analytics/propertyAnalytics';
 import {
 	Card,
 	CardDescription,
@@ -159,7 +160,7 @@ export function SpecificListing({ id }: SpecificListingProps) {
 					0
 				);
 				setTotalOccupants(occupantsCount);
-
+				await addAnalytics(property?.id, property?.company_id);
 				setLoading(false);
 			} catch (err) {
 				setError(true);

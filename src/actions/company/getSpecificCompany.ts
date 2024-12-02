@@ -1,5 +1,6 @@
 import { createClient } from "@/utils/supabase/client";
-
+import { addAnalytics} from "../analytics/companyVisit";
+import { getAnalytics } from "../analytics/getCompanyAnalytics";
 const supabase = createClient();
 
 export const getSpecificCompany = async (id: number) => {
@@ -25,5 +26,7 @@ export const getSpecificCompany = async (id: number) => {
         throw ownerError;
     }
 
+    await addAnalytics(id);
+    // await getAnalytics(id);
     return { company, owner };
 };
