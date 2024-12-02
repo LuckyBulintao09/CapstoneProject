@@ -20,7 +20,7 @@ export const getRequirements = async (
       .or(
         "structure.is.null,address.is.null,location.is.null,description.is.null,business_permit.is.null,fire_inspection.is.null"
       )
-      .eq("company_id", company_ids.id);
+      .eq("company_id", company_ids?.id);
   
     if (error) {
       console.error("Error fetching requirements:", error);

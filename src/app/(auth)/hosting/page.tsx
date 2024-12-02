@@ -65,7 +65,7 @@ async function LessorPage() {
                 </div>
                 <div className="w-full shadow mt-8 rounded-lg border p-5">
                     <div className="flex overflow-x-scroll pb-4 gap-4">
-                    {requirements.map((requirement) => {
+                    {requirements?.map((requirement) => {
                         let statusText = "";
                         let alertColor = "";
 
