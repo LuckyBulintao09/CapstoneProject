@@ -84,6 +84,7 @@ function PropertyLocationForm({propertyId, location, address}: {propertyId: stri
                 toast.promise(updatePropertyLocation(propertyId, values.property_address, values.property_location), {
                     loading: "Saving changes...",
                     success: () => {
+                        router.refresh();
                         return "Description updated successfully";
                     },
                     error: (error) => {

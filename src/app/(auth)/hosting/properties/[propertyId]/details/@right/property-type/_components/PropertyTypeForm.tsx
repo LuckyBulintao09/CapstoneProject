@@ -11,8 +11,10 @@ import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { PropertyTypeData, propertyTypeSchema } from "@/lib/schemas/propertySchemaV2";
 import { updatePropertyType } from "@/actions/property/update-property";
+import { useRouter } from "next/navigation";
 
 function PropertyTypeForm({propertyType, propertyId} : {propertyType: any, propertyId: string}) {
+    const router = useRouter();
     const [isPending, startTransition] = React.useTransition();
 
     const propertiesTypeForm = useForm<PropertyTypeData>({
@@ -28,8 +30,9 @@ function PropertyTypeForm({propertyType, propertyId} : {propertyType: any, prope
             startTransition(() => {
                 toast.promise(updatePropertyType(propertyId, values.property_type), {
                     loading: "Saving changes...",
-                    success: (values) => {
-                        return "Property type updated successfully" + values;
+                    success: () => {
+                        router.refresh();
+                        return "Property type updated successfully";
                     },
                     error: (error) => {
                         return error.message;

@@ -13,12 +13,17 @@ import { toast } from "sonner";
 import { Button } from "@/components/ui/button";
 import { Dialog, DialogClose, DialogContent, DialogDescription, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
 
-import { addPropertyImages } from "@/actions/property/addPropertyImages";
+import { addPropertyImages } from "@/actions/property/propertyImage";
 import { Plus } from "lucide-react";
 
-function PhotoUploader({ userId, propertyId }: { userId: string; propertyId: string }) {
+import { useRouter } from "next/navigation";
+import { cn } from "@/lib/utils";
+
+function PhotoUploader({ userId, propertyId, photoBucketFileCount }: { userId: string; propertyId: string, photoBucketFileCount: number }) {
     const [open, setOpen] = React.useState<boolean>(false);
     const [isFileUploadEmpty, setIsFileUploadEmpty] = React.useState<boolean>(true);
+
+    const router = useRouter();
 
     const onBeforeRequest = async (req: any) => {
         const supabase = createClient();
@@ -30,7 +35,7 @@ function PhotoUploader({ userId, propertyId }: { userId: string; propertyId: str
         new Uppy({
             restrictions: {
                 maxNumberOfFiles: 5,
-                allowedFileTypes: ["image/jpg", "image/jpeg", "image/png", "image/webp", ".webp"],
+                allowedFileTypes: ["image/jpg", "image/jpeg", "image/png"],
                 maxFileSize: 6 * 1024 * 1024,
             },
         }).use(Tus, {
@@ -47,7 +52,7 @@ function PhotoUploader({ userId, propertyId }: { userId: string; propertyId: str
     );
 
     uppy.on("file-added", (file) => {
-        setIsFileUploadEmpty(false);
+        setIsFileUploadEmpty(photoBucketFileCount >= 5 ? true : false);
         file.meta = {
             ...file.meta,
             bucketName: "unihomes image storage",
@@ -84,6 +89,7 @@ function PhotoUploader({ userId, propertyId }: { userId: string; propertyId: str
             toast.promise(addPropertyImages(uploadedFiles, propertyId), {
                 loading: "Adding images...",
                 success: () => {
+                    router.refresh();
                     return "Property updated successfully";
                 },
                 error: () => {
@@ -95,6 +101,11 @@ function PhotoUploader({ userId, propertyId }: { userId: string; propertyId: str
             setIsFileUploadEmpty(true);
         }
     };
+
+    uppy.on("upload-success", (file) => {
+        uppy.removeFile(file.id);
+    })
+
 
 
     return (
@@ -113,19 +124,43 @@ function PhotoUploader({ userId, propertyId }: { userId: string; propertyId: str
                 </Button>
             </DialogTrigger>
             <DialogContent
-                className="mt-11"
+                className="z-[999] transform translate-x-[-50%] translate-y-[-50%]"
                 onInteractOutside={(e) => {
                     e.preventDefault();
                 }}
             >
                 <DialogHeader>
                     <DialogTitle>Property photos upload</DialogTitle>
-                    <DialogDescription>Upload your property photos here. Maximum of 5 images, 6MB per image</DialogDescription>
+                    <DialogDescription asChild>
+                        <>
+                            {photoBucketFileCount >= 5 ? (
+                                <p className="text-danger">
+                                    Unable to upload more images. You have reached the maximum number of images, please remove some to be able to
+                                    upload more.
+                                </p>
+                            ) : (
+                                <div className="grow space-y-2">
+                                    <p className="">Upload your business permit here.</p>
+                                    <ul className="list-inside list-disc text-sm text-muted-foreground">
+                                        <li>Up to 5 images allowed.</li>
+                                        <li>Allowed image types: .jpg, .jpeg, .png.</li>
+                                        <li>Minimum file size of 6 mb per image.</li>
+                                    </ul>
+                                </div>
+                            )}
+                        </>
+                    </DialogDescription>
                 </DialogHeader>
 
                 <div>
-                    <Dashboard uppy={uppy} hideUploadButton />
-                    <Button className="mt-3" type="button" onClick={handleUpload} disabled={isFileUploadEmpty}>
+                    <Dashboard uppy={uppy} hideUploadButton className={cn({ hidden: photoBucketFileCount >= 5 })} />
+                    <Button
+                        className="mt-3"
+                        type="button"
+                        onClick={handleUpload}
+                        disabled={isFileUploadEmpty && (photoBucketFileCount >= 5 ? true : isFileUploadEmpty)}
+                        size="sm"
+                    >
                         Upload images
                     </Button>
                 </div>

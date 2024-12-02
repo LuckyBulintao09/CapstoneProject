@@ -47,7 +47,16 @@ export default function RootLayout({
 							google_maps_api_key={process.env.NEXT_PUBLIC_GOOGLE_MAPS_API_KEY!}
 						>
 							<TooltipProvider>
-								<Toaster position='bottom-right' richColors />
+								<Toaster 
+								position='top-right' 
+								closeButton
+								richColors
+								toastOptions={{
+									classNames: {
+										closeButton: "absolute cursor-pointer bg-background text-foreground border border-black hover:bg-black hover:text-foreground dark:bg-black dark:hover:bg-foreground dark:hover:text-black "
+									},
+								}}
+								/>
 								<div>{children}</div>
 							</TooltipProvider>
 						</GoogleMapsProvider>
