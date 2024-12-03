@@ -406,7 +406,7 @@ function EditUnitDetailsForm({ unit, unitId, propertyId }: {unit: any, unitId: s
                     <div className="flex items-center justify-start gap-4">
                         <Link
                             href={`/hosting/properties/${propertyId}/details/units`}
-                            onClick={async () => await removeUnitById(unitId, propertyId)}
+                            // onClick={async () => await removeUnitById(unitId, propertyId)}
                             // disabled={unitForm.formState.isSubmitting || isPending}
                             className={cn(buttonVariants({ variant: "outline", className: "w-fit" }))}
                         >

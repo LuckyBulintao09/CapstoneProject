@@ -1,13 +1,13 @@
 "use client";
 
-import { startTransition, useRef, useState, useTransition } from "react";
+import React, { startTransition, useRef, useState, useTransition } from "react";
 
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
 import { z } from "zod";
 import { UnitData, unitSchema } from "@/lib/schemas/unitSchema";
 
-import { Form, FormControl, FormDescription, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form";
+import { Form as ShadForm, FormControl, FormDescription, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
 import { buttonVariants, Button } from "@/components/ui/button";
 import { Label } from "@/components/ui/label";
@@ -27,10 +27,21 @@ import { CircleX, ChevronDown, ChevronUp, Minus, Plus } from "lucide-react";
 import { removeUnitById } from "@/actions/unit/removeUnitById";
 import { updateUnit } from "@/actions/unit/update-unit";
 
-function AddUnitsForm({amenities, unitId, propertyId}: {amenities?: any, unitId: string, propertyId: string}) {
-    
+import Uppy from "@uppy/core";
+import { Dashboard } from "@uppy/react";
+import Tus from "@uppy/tus";
+import Form from "@uppy/form";
+import "@uppy/core/dist/style.min.css";
+import "@uppy/dashboard/dist/style.min.css";
+
+import { createClient } from "@/utils/supabase/client";
+
+function AddUnitsForm({ amenities, unitId, propertyId, userId }: { amenities?: any; unitId: string; propertyId: string; userId: string }) {
+    const [isFileUploadEmpty, setIsFileUploadEmpty] = React.useState<boolean>(true);
+    const [uploadedFiles, setUploadedFiles] = useState<any[]>([]);
     const [isPending, startTransition] = useTransition();
     const router = useRouter();
+
     const unitForm = useForm<UnitData>({
         resolver: zodResolver(unitSchema),
         defaultValues: {
@@ -47,6 +58,64 @@ function AddUnitsForm({amenities, unitId, propertyId}: {amenities?: any, unitId:
         mode: "onBlur",
     });
 
+    // set user authentication headers for image upload
+    const onBeforeRequest = async (req: any) => {
+        const supabase = createClient();
+        const { data } = await supabase.auth.getSession();
+        req.setHeader("Authorization", `Bearer ${data.session?.access_token}`);
+    };
+    const [uppy] = React.useState(() =>
+        new Uppy({
+            restrictions: {
+                maxNumberOfFiles: 5,
+                allowedFileTypes: ["image/jpg", "image/jpeg", "image/png"],
+                maxFileSize: 6 * 1024 * 1024,
+            },
+            autoProceed: true,
+        }).use(Tus, {
+            endpoint: `${process.env.NEXT_PUBLIC_SUPABASE_URL}/storage/v1/upload/resumable`,
+            onBeforeRequest, // set header authorization
+            retryDelays: [0, 3000, 5000, 10000, 20000],
+            headers: {
+                "x-upsert": "true",
+            },
+            allowedMetaFields: ["bucketName", "objectName", "contentType", "cacheControl"],
+            removeFingerprintOnSuccess: true,
+            chunkSize: 6 * 1024 * 1024,
+        })
+    );
+
+    uppy.on("file-added", (file) => {
+        file.meta = {
+            ...file.meta,
+            bucketName: "unihomes image storage",
+            objectName: `property/${userId}/${propertyId}/${unitId}/unit_image/${file.name}`,
+            contentType: file.type,
+            cacheControl: 3600,
+        };
+    });
+
+    uppy.on("upload-success", (file, response) => {
+        const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL;
+        const bucketName = file.meta.bucketName;
+        const objectName = file.meta.objectName;
+
+        const fileUrl = `${supabaseUrl}/storage/v1/object/public/${bucketName}/${objectName}`;
+
+        console.log("Upload successful:", response, "File URL:", fileUrl);
+
+        setUploadedFiles((prevImages) => {
+            const alreadyUploaded = prevImages.some((url) => url === fileUrl);
+
+            if (alreadyUploaded) {
+                return prevImages;
+            }
+
+            return [...prevImages, fileUrl];
+        });
+    });
+    
+
     const inputRef = useRef<HTMLInputElement>(null);
 
     const handleClearInput = (fieldName: keyof UnitData) => {
@@ -56,31 +125,30 @@ function AddUnitsForm({amenities, unitId, propertyId}: {amenities?: any, unitId:
         }
     };
 
-    // const formattedAmenities = amenities.map((amenity) => ({
-    //     label: amenity.amenity_name,
-    //     value: amenity.id
-    // }));
-
     async function onSubmit(values: UnitData) {
         if (!isPending) {
             startTransition(() => {
-                toast.promise(updateUnit(unitId, propertyId, values), {
+                toast.promise(updateUnit(unitId, propertyId, values, uploadedFiles), {
                     loading: "Adding unit in...",
-                    success: (values) => {
-                        return "Unit added successfully" + values;
+                    success: () => {
+                        return "Unit added successfully";
                     },
                     error: (error) => {
-                        console.log(error.message)
+                        console.log(error.message);
                         return error.message;
                     },
                 });
             });
         }
-        // console.log(values.amenities);
+        console.log(uploadedFiles, "uploaded files onclick");
     }
+
     return (
-        <Form {...unitForm}>
+        <ShadForm {...unitForm}>
             <form onSubmit={unitForm.handleSubmit(onSubmit)} className="space-y-8 pb-11 bg-background max-w-6xl mx-auto">
+                
+                <Dashboard uppy={uppy} hideUploadButton className="col-span-3" />
+
                 <div className="grid grid-cols-16 gap-4">
                     <FormField
                         control={unitForm.control}
@@ -384,23 +452,22 @@ function AddUnitsForm({amenities, unitId, propertyId}: {amenities?: any, unitId:
                                 <FormControl>
                                     <MultipleSelector
                                         {...field}
-                                        defaultOptions={amenities.map(({id, amenity_name}: {id: string, amenity_name: string}) => (
-                                            { value: id.toString(), label: amenity_name }
-                                        ))}
+                                        defaultOptions={amenities.map(({ id, amenity_name }: { id: string; amenity_name: string }) => ({
+                                            value: id.toString(),
+                                            label: amenity_name,
+                                        }))}
                                         placeholder="Select amenities"
                                         emptyIndicator={<p className="text-center text-sm">No results found</p>}
                                         onChange={(selectedOptions) => {
-                                            field.onChange(selectedOptions.map(option => ({ value: option.value, label: option.label })));
+                                            field.onChange(selectedOptions.map((option) => ({ value: option.value, label: option.label })));
                                         }}
                                         value={field.value as Option[]}
                                         onSearch={(searchTerm) => {
                                             // Add the search logic here (e.g., filtering or API call)
-                                            const filteredAmenities = amenities.filter(amenity =>
+                                            const filteredAmenities = amenities.filter((amenity) =>
                                                 amenity.amenity_name.toLowerCase().includes(searchTerm.toLowerCase())
                                             );
-                                            return filteredAmenities.map(({id, amenity_name}) => (
-                                                { value: id.toString(), label: amenity_name }
-                                            ));
+                                            return filteredAmenities.map(({ id, amenity_name }) => ({ value: id.toString(), label: amenity_name }));
                                         }}
                                     />
                                 </FormControl>
@@ -425,11 +492,13 @@ function AddUnitsForm({amenities, unitId, propertyId}: {amenities?: any, unitId:
                     <Button type="submit" disabled={unitForm.formState.isSubmitting || isPending}>
                         Submit
                     </Button>
+                    <Button onClick={() => console.log(uploadedFiles, "uploadedFiles")} type="button">
+                        Test uploads
+                    </Button>
                 </div>
             </form>
-        </Form>
+        </ShadForm>
     );
 }
 
 export default AddUnitsForm;
-

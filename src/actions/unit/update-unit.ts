@@ -1,10 +1,10 @@
 "use server";
 
-import { CreateUnitType } from "@/lib/schemas/propertySchema";
 import { createClient } from "@/utils/supabase/server"
 import { redirect } from "next/navigation";
+import { addUnitImages } from "./unitImage";
 
-export async function updateUnit(unitId: string, propertyId: string, values: any) {
+export async function updateUnit(unitId: string, propertyId: string, values: any, fileUrls: any) {
     const supabase = createClient();
 
     const { data: unitData, error:unitError } = await supabase
@@ -27,7 +27,8 @@ export async function updateUnit(unitId: string, propertyId: string, values: any
         }
 
         await insertAmenities(values.amenities, unitId);
-        
+        await addUnitImages(fileUrls, unitId);
+        console.log(fileUrls, "fileUrls in update unit action");
         redirect(`/hosting/properties/${propertyId}/details/units`);
     
 }
