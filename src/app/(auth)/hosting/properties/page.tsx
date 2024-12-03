@@ -35,12 +35,12 @@ async function PropertyPage() {
     const properties = await getPropertiesByUserCompany(companies);
 
     return (
-        <PropertyViewModeProvider>
-            <div className="container mx-auto pb-16">
-                <Properties data={properties} />
-            </div>
-        </PropertyViewModeProvider>
-    );
+			<PropertyViewModeProvider>
+				<div className='px-32 md:px-24 sm:px-20 xs:px-10 mx-auto pb-16'>
+					<Properties data={properties} />
+				</div>
+			</PropertyViewModeProvider>
+		);
 }
 
 export default PropertyPage;

@@ -5,6 +5,7 @@ import tempValues from '@/lib/constants/tempValues';
 import React, { useState } from 'react';
 import { FavoritesBreadcrumbSection } from '@/components/breadcrumb/FavoritesBreadcrumbSection';
 import { Search } from 'lucide-react';
+import CustomBreadcrumbs from '@/modules/hosting/components/CustomBreadcrumbs';
 
 interface Amenity {
 	amenity_name: string;
@@ -30,9 +31,9 @@ export default function FavoritesScreen() {
 	);
 
 	return (
-		<div className='px-32 md:px-24 sm:px-20 xs:px-10 h-full relative mb-8 bg-background dark:bg-secondary flex flex-col min-h-screen'>
-			<FavoritesBreadcrumbSection />
-			<div className='flex justify-between items-center mt-4'>
+		<div className='px-32 md:px-24 sm:px-20 xs:px-10 h-full p-5 bg-background dark:bg-secondary flex flex-col min-h-screen'>
+			<CustomBreadcrumbs />
+			<div className='flex justify-between items-center mt-1'>
 				<div>
 					<h1 className='font-semibold text-3xl dark:text-white'>Favorites</h1>
 				</div>

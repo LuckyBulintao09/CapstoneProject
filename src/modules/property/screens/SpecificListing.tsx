@@ -373,7 +373,8 @@ export function SpecificListing({ id }: SpecificListingProps) {
 	return (
 		<div className='px-32 md:px-24 sm:px-20 xs:px-10 dark:bg-secondary'>
 			{/* paki fix breadcrumbs */}
-			<BreadcrumbSection propertyName={title} />
+			<div className='pb-1' />
+			<BreadcrumbSection propertyName={title}/>
 			<div className='flex justify-between items-center mt-4'>
 				<div>
 					<h1 className='font-semibold text-3xl dark:text-white'>{title}</h1>

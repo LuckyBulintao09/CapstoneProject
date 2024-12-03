@@ -1,46 +1,49 @@
 "use server";
+
 import { createClient } from "@/utils/supabase/server";
+import { subDays } from "date-fns";
+
 const supabase = createClient();
 
-export const getAnalytics = async () => {
+export const getAnalytics = async (days: number) => {
   try {
-
     const { data: userData, error: userError } = await supabase.auth.getUser();
     if (userError) throw new Error(`Error fetching user data: ${userError.message}`);
-    
+
     const userId = userData?.user?.id;
     if (!userId) throw new Error("User ID not found");
 
-    console.log("User ID:", userId);
-
- 
     const { data: companyData, error: companyError } = await supabase
       .from("company")
       .select("id")
       .eq("owner_id", userId)
       .single();
 
-    if (companyError) {
-      if (companyError.code === "PGRST116" || companyError.message.includes("No rows found")) {
-        console.log("No company found for the user.");
-        return 0;  
-      }
-      throw new Error(`Error fetching the company: ${companyError.message}`);
-    }
+    if (companyError) throw new Error(`Error fetching the company: ${companyError.message}`);
 
-    console.log("User's company ID:", companyData.id);
+    const startDate = subDays(new Date(), days);
 
-    const { count: analyticsCount, error: analyticsError } = await supabase
+    const { data: analyticsData, error: analyticsError } = await supabase
       .from("companyAnalytics")
-      .select("*", { count: "exact", head: true }) 
-      .eq("company_id", companyData.id);
+      .select("created_at")
+      .eq("company_id", companyData.id)
+      .gte("created_at", startDate.toISOString()) 
+      .order("created_at", { ascending: true });
 
-    if (analyticsError) throw new Error(`Error fetching analytics count: ${analyticsError.message}`);
+    if (analyticsError) throw new Error(`Error fetching analytics data: ${analyticsError.message}`);
 
-    console.log("Analytics count:", analyticsCount);
-    return analyticsCount || 0;
+    const analyticsArray = analyticsData.map(entry => ({
+      company_id: companyData.id,
+      created_at: entry.created_at
+    }));
+
+    return {
+      analyticsArray,
+      count: analyticsArray.length,
+      company_id: companyData.id
+    };
   } catch (error) {
     console.error(error.message);
-    return 0;  
+    return { analyticsArray: [], count: 0, company_id: null };
   }
 };

@@ -267,11 +267,9 @@ function TopNavigation() {
 												}}
 											>
 												<BsBuildingGear className='mr-2 h-4 w-4' />
-												<span>Manage Company</span>
-												asChild
-												className='py-2 px-3 rounded-none font-[500]'
-											>
-												<Link href={`/client/profile`}>Profile</Link>
+												<Link href={`/client/profile`}>
+													Manage Company Profile
+												</Link>
 											</DropdownMenuItem>
 											<DropdownMenuItem
 												onClick={() => {
