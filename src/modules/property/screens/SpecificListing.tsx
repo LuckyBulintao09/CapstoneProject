@@ -160,7 +160,7 @@ export function SpecificListing({ id }: SpecificListingProps) {
 					0
 				);
 				setTotalOccupants(occupantsCount);
-				await addAnalytics(property?.id, property?.company_id);
+				await addAnalytics(property?.id, property?.company_id,property?.title);
 				setLoading(false);
 			} catch (err) {
 				setError(true);
