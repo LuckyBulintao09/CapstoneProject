@@ -60,22 +60,22 @@ export const columns: ColumnDef<any>[] = [
                 return (
                     <div className="flex flex-row items-center">
                         <div className="flex relative">
-                            {thumbnail ? (
+                            {thumbnail[0] ? (
                                 <Image
-                                src={thumbnail[0]}
-                                alt="property image"
-                                width={64}
-                                height={64}
-                                className="rounded-xl h-[64px] w-[64px] min-h-[64px] min-w-[64px] object-cover overflow-clip"
-                            />
+									src={thumbnail[0]}
+									alt={`${property_name} thumbnail image`}
+									width={64}
+									height={64}
+									className="rounded-xl h-[64px] w-[64px] min-h-[64px] min-w-[64px] object-cover overflow-clip"
+								/>
                             ) : (
                                 <Image
-                                src={`/placeholderImage.webp`}
-                                alt="property image"
-                                width={64}
-                                height={64}
-                                className="rounded-xl h-[64px] w-[64px] min-h-[64px] min-w-[64px] object-cover overflow-clip"
-                            />
+									src={`/placeholderImage.webp`}
+									alt="property image"
+									width={64}
+									height={64}
+									className="rounded-xl h-[64px] w-[64px] min-h-[64px] min-w-[64px] object-cover overflow-clip"
+								/>
                             )}
                         </div>
                         <span className="ml-7">{property_name}</span>
@@ -85,10 +85,10 @@ export const columns: ColumnDef<any>[] = [
             return (
                 <div className="flex flex-col">
                     <div className="relative">
-                        {thumbnail ? (
+                        {thumbnail[0] ? (
                             <Image
                                 src={thumbnail[0]}
-                                alt={property_name}
+                                alt={`${property_name} thumbnail image`}
                                 width={1524}
                                 height={2032}
                                 className="rounded-xl object-cover overflow-clip aspect-[20/19] mb-3 select-none"
