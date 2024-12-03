@@ -1,23 +1,24 @@
-import React from 'react';
-import { getAnalytics } from '@/actions/analytics/getCompanyAnalytics';
+import React from "react";
+import AnalyticsPage from "./screens/companyAnalytics";
+import BookingRate from "./screens/BookingRate";
+import PropertyAnalytics from "./screens/propertyAnalytics";
 
-export default async function Page() {
-  const companyAnalytics = await getAnalytics();
-
+function Page() {
   return (
-    <>
-    <div>
-      <h1>Insights</h1>
-      <h2>Company visits: {companyAnalytics}</h2>
+    <div className="flex flex-row space-y-6">
+      <div className="flex space-x-6"> 
+        <div className="flex-1">
+          <AnalyticsPage />
+        </div>
+        <div className="flex-1">
+          <BookingRate />
+        </div>
+      </div>
+      <div>
+      <PropertyAnalytics />
+      </div>
     </div>
-     <div>
-     <h2>Property visits:not fetched yet  </h2>
-
-   </div>
-   <div>
-     <h2>Booking Rate per day:not fetched yet </h2>
-   </div>
-   <p>Will design later, fetch only</p>
-   </>
   );
 }
+
+export default Page;
