@@ -110,6 +110,10 @@ export function DataTableViewOptions<TData>({
 							columnHeader = 'Business Permit';
 						} else if (column.id === 'payment_option') {
 							columnHeader = 'Payment Option';
+						} else if (column.id === 'dueDate') {
+							columnHeader = 'Due Date';
+						} else if (column.id === 'createdAt') {
+							columnHeader = 'Date';
 						}
 
 						return (

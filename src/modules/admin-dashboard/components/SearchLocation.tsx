@@ -1,7 +1,7 @@
 // components/SearchLocation.tsx
 import React, { useRef, useEffect, useState } from "react";
-import { Input } from "@nextui-org/react";
 import { useMapsLibrary } from "@vis.gl/react-google-maps";
+import { Input } from "@/components/ui/input";
 
 interface SearchLocationProps {
   searchTerm: string;
@@ -51,19 +51,20 @@ const SearchLocation: React.FC<SearchLocationProps> = ({
   }, [places, setCenter, setSearchTerm]);
 
   return (
-    <div className="w-full mb-4">
-      <Input
-        ref={inputRef}
-        clearable
-        underlined
-        fullWidth
-        label="Search Location"
-        value={searchTerm}
-        onChange={(e) => setSearchTerm(e.target.value)}
-        placeholder="Search for a place"
-      />
-    </div>
-  );
+		<div className='w-full mb-4 rounded-lg'>
+			<Input
+				ref={inputRef}
+				clearable
+				underlined
+				fullWidth
+				label='Location'
+				value={searchTerm}
+				onChange={(e) => setSearchTerm(e.target.value)}
+				placeholder='Enter a location'
+        className="rounded-lg"
+			/>
+		</div>
+	);
 };
 
 export default SearchLocation;

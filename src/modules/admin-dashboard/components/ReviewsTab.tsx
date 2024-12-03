@@ -24,8 +24,11 @@ export function ReviewsTab() {
 				<CardHeader>
 					<CardTitle>Reported Reviews</CardTitle>
 					<CardDescription>
-						Upcoming {newReportedReviewsCount} reported reviews needed to be
-						resolved
+						Upcoming {newReportedReviewsCount}{' '}
+						{newReportedReviewsCount === 1
+							? 'reported review'
+							: 'reported reviews'}{' '}
+						needed to be resolved
 					</CardDescription>
 				</CardHeader>
 				<CardContent className='flex flex-col h-[500px]'>
