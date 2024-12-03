@@ -9,12 +9,14 @@ export const unitSchema = z.object({
     beds: z.number().min(1).max(14, { message: "Are you sure you have that many beds." }),
     outside_view: z.boolean().default(false),
     room_size: z.number().min(1).max(9999, { message: "Please enter a valid room size." }),
-    // amenities: z.array(
-    //     z.object({
-    //         id: z.string(),
-    //         amenity_name: z.string(),
-    //     })
-    // ),
+    amenities: z.array(
+        z.object({
+            value: z.string(),
+            label: z.string(),
+        })
+    ),
 });
+
+
 
 export type UnitData = z.infer<typeof unitSchema>;

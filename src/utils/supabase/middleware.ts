@@ -26,7 +26,7 @@ export async function updateSession(request: NextRequest) {
     // issues with users being randomly logged out.
     
     const authPaths = ['/register', '/login', '/forgot-password', '/reset-password'];
-    const protectedPaths = ['/hosting']
+    const protectedPaths = [/^\/hosting(\/.*)?$/,]; //regex for /hosting/**/*
 
     const {data: { user }} = await supabase.auth.getUser();
 
@@ -39,7 +39,8 @@ export async function updateSession(request: NextRequest) {
         }
         return supabaseResponse;
     } else {
-        if (protectedPaths.includes(url.pathname)) {
+        const isProtected = protectedPaths.some((regex) => regex.test(url.pathname));
+        if (isProtected) {
             return NextResponse.redirect(new URL(`/login?redirectedFrom=${redirectedFrom || url.pathname}`, request.url));
         }
         return supabaseResponse;

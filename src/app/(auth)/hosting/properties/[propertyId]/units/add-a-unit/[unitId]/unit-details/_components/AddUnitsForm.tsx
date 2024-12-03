@@ -28,9 +28,9 @@ import { removeUnitById } from "@/actions/unit/removeUnitById";
 import { updateUnit } from "@/actions/unit/update-unit";
 
 function AddUnitsForm({amenities, unitId, propertyId}: {amenities?: any, unitId: string, propertyId: string}) {
+    
     const [isPending, startTransition] = useTransition();
     const router = useRouter();
-
     const unitForm = useForm<UnitData>({
         resolver: zodResolver(unitSchema),
         defaultValues: {
@@ -42,7 +42,7 @@ function AddUnitsForm({amenities, unitId, propertyId}: {amenities?: any, unitId:
             beds: 1,
             outside_view: false,
             room_size: 0,
-            // amenities: [],
+            amenities: [],
         },
         mode: "onBlur",
     });
@@ -70,11 +70,13 @@ function AddUnitsForm({amenities, unitId, propertyId}: {amenities?: any, unitId:
                         return "Unit added successfully" + values;
                     },
                     error: (error) => {
+                        console.log(error.message)
                         return error.message;
                     },
                 });
             });
         }
+        // console.log(values.amenities);
     }
     return (
         <Form {...unitForm}>
@@ -150,12 +152,12 @@ function AddUnitsForm({amenities, unitId, propertyId}: {amenities?: any, unitId:
                     />
                 </div>
 
-                <div className="grid grid-cols-3 gap-4">
+                <div className="grid grid-cols-16 gap-4">
                     <FormField
                         control={unitForm.control}
                         name="occupants"
                         render={({ field }) => (
-                            <FormItem>
+                            <FormItem className="col-span-3">
                                 <AriaLabel htmlFor="occupants" className="text-sm font-medium text-foreground">
                                     Occupants
                                 </AriaLabel>
@@ -199,7 +201,7 @@ function AddUnitsForm({amenities, unitId, propertyId}: {amenities?: any, unitId:
                         control={unitForm.control}
                         name="bedrooms"
                         render={({ field }) => (
-                            <FormItem>
+                            <FormItem className="col-span-3">
                                 <AriaLabel htmlFor="bedrooms" className="text-sm font-medium text-foreground">
                                     Bedrooms
                                 </AriaLabel>
@@ -243,7 +245,7 @@ function AddUnitsForm({amenities, unitId, propertyId}: {amenities?: any, unitId:
                         control={unitForm.control}
                         name="beds"
                         render={({ field }) => (
-                            <FormItem>
+                            <FormItem className="col-span-3">
                                 <AriaLabel htmlFor="beds" className="text-sm font-medium text-foreground">
                                     Beds
                                 </AriaLabel>
@@ -282,7 +284,42 @@ function AddUnitsForm({amenities, unitId, propertyId}: {amenities?: any, unitId:
                             </FormItem>
                         )}
                     />
+                    <FormField
+                        control={unitForm.control}
+                        name="privacy_type"
+                        render={({ field }) => (
+                            <FormItem className="col-span-7">
+                                <FormLabel htmlFor="privacy_type">Property type</FormLabel>
+                                <div className={cn({ "[&_svg]:text-destructive/80": unitForm.formState.errors.privacy_type })}>
+                                    <SelectNative
+                                        id="privacy_type"
+                                        defaultValue=""
+                                        className={cn({
+                                            "border-destructive/80 text-destructive focus-visible:border-destructive/80 focus-visible:ring-destructive/20":
+                                                unitForm.formState.errors.privacy_type,
+                                        })}
+                                        value={field.value}
+                                        onChange={field.onChange}
+                                    >
+                                        <option value="" disabled>
+                                            Property type
+                                        </option>
+                                        <option value="private room">Private room</option>
+                                        <option value="shared room">Shared room</option>
+                                        <option value="Whole place">Whole place</option>
+                                    </SelectNative>
+                                </div>
+                                {unitForm.formState.errors.privacy_type ? (
+                                    <FormMessage />
+                                ) : (
+                                    <FormDescription>What describes your unit best?</FormDescription>
+                                )}
+                            </FormItem>
+                        )}
+                    />
+                </div>
 
+                <div className="grid grid-cols-3 gap-4">
                     <FormField
                         control={unitForm.control}
                         name="room_size"
@@ -311,9 +348,6 @@ function AddUnitsForm({amenities, unitId, propertyId}: {amenities?: any, unitId:
                             </FormItem>
                         )}
                     />
-                </div>
-
-                <div className="grid grid-cols-3">
                     <FormField
                         control={unitForm.control}
                         name="outside_view"
@@ -341,37 +375,6 @@ function AddUnitsForm({amenities, unitId, propertyId}: {amenities?: any, unitId:
 
                     <FormField
                         control={unitForm.control}
-                        name="privacy_type"
-                        render={({ field }) => (
-                            <FormItem>
-                                <FormLabel htmlFor="privacy_type">Property type</FormLabel>
-                                <div className={cn({"[&_svg]:text-destructive/80":unitForm.formState.errors.privacy_type})}>
-                                    <SelectNative
-                                        id="privacy_type"
-                                        defaultValue=""
-                                        className={cn({"border-destructive/80 text-destructive focus-visible:border-destructive/80 focus-visible:ring-destructive/20": unitForm.formState.errors.privacy_type})}
-                                        value={field.value}
-                                        onChange={field.onChange}
-                                    >
-                                        <option value="" disabled>
-                                            Property type
-                                        </option>
-                                        <option value="private room">Private room</option>
-                                        <option value="shared room">Shared room</option>
-                                        <option value="Whole place">Whole place</option>
-                                    </SelectNative>
-                                </div>
-                                {unitForm.formState.errors.privacy_type ? (
-                                    <FormMessage />
-                                ) : (
-                                    <FormDescription>What describes your unit best?</FormDescription>
-                                )}
-                            </FormItem>
-                        )}
-                    />
-
-                    {/* <FormField
-                        control={unitForm.control}
                         name="amenities"
                         render={({ field }) => (
                             <FormItem>
@@ -381,12 +384,24 @@ function AddUnitsForm({amenities, unitId, propertyId}: {amenities?: any, unitId:
                                 <FormControl>
                                     <MultipleSelector
                                         {...field}
-                                        defaultOptions={formattedAmenities}
+                                        defaultOptions={amenities.map(({id, amenity_name}: {id: string, amenity_name: string}) => (
+                                            { value: id.toString(), label: amenity_name }
+                                        ))}
                                         placeholder="Select amenities"
                                         emptyIndicator={<p className="text-center text-sm">No results found</p>}
-                                        onChange={field.onChange}
-                                        value={field.value}
-                    
+                                        onChange={(selectedOptions) => {
+                                            field.onChange(selectedOptions.map(option => ({ value: option.value, label: option.label })));
+                                        }}
+                                        value={field.value as Option[]}
+                                        onSearch={(searchTerm) => {
+                                            // Add the search logic here (e.g., filtering or API call)
+                                            const filteredAmenities = amenities.filter(amenity =>
+                                                amenity.amenity_name.toLowerCase().includes(searchTerm.toLowerCase())
+                                            );
+                                            return filteredAmenities.map(({id, amenity_name}) => (
+                                                { value: id.toString(), label: amenity_name }
+                                            ));
+                                        }}
                                     />
                                 </FormControl>
                                 {unitForm.formState.errors.amenities ? (
@@ -396,7 +411,7 @@ function AddUnitsForm({amenities, unitId, propertyId}: {amenities?: any, unitId:
                                 )}
                             </FormItem>
                         )}
-                    /> */}
+                    />
                 </div>
                 <div className="flex items-center justify-start gap-4">
                     <Link
@@ -407,7 +422,9 @@ function AddUnitsForm({amenities, unitId, propertyId}: {amenities?: any, unitId:
                     >
                         Back
                     </Link>
-                    <Button type="submit" disabled={unitForm.formState.isSubmitting || isPending}>Submit</Button>
+                    <Button type="submit" disabled={unitForm.formState.isSubmitting || isPending}>
+                        Submit
+                    </Button>
                 </div>
             </form>
         </Form>

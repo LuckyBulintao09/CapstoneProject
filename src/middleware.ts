@@ -3,17 +3,7 @@ import { updateSession } from "./utils/supabase/middleware";
 
 export async function middleware(request: NextRequest) {    
 
-    await updateSession(request);
-
-    const url = request.nextUrl;
-    
-    // Check if the path is /details and not already /photos
-    // if (url.pathname.includes('/details') && !url.pathname.includes('/photos')) {
-    //     const propertyId = url.pathname.split('/')[3];
-    //     return NextResponse.redirect(new URL(`/hosting/properties/${propertyId}/details/photos`, url.origin));
-    // }
-
-    return NextResponse.next();
+    return await updateSession(request)
 }
 
 export const config = {
