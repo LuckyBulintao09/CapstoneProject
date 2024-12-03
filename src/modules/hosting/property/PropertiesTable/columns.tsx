@@ -60,7 +60,7 @@ export const columns: ColumnDef<any>[] = [
                 return (
                     <div className="flex flex-row items-center">
                         <div className="flex relative">
-                            {thumbnail[0] ? (
+                            {thumbnail ? (
                                 <Image
                                 src={thumbnail[0]}
                                 alt="property image"
@@ -85,7 +85,7 @@ export const columns: ColumnDef<any>[] = [
             return (
                 <div className="flex flex-col">
                     <div className="relative">
-                        {thumbnail[0] ? (
+                        {thumbnail ? (
                             <Image
                                 src={thumbnail[0]}
                                 alt={property_name}
