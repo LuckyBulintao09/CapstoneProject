@@ -6,6 +6,7 @@ import { columns as generateColumns, Transaction } from "./columns";
 import { createClient } from "@/utils/supabase/client";
 import { getTransactionHistory } from "@/actions/transaction/getTransactionHistory";
 import { cancel_lessorNotification, cancelled_onsiteNotification, confirm_onsiteNotification } from "@/actions/notification/notification";
+import CustomBreadcrumbs from "../../components/CustomBreadcrumbs";
 
 const supabase = createClient();
 
@@ -148,25 +149,27 @@ const TransactionDashboard = () => {
   };
 
   return (
-    <div className="p-5 bg-white dark:bg-secondary h-full">
-      <div className="mt-4 mb-4">
-        <h1 className="font-semibold xs:text-xl sm:text-2xl md:text-3xl text-left dark:text-white">
-          Transaction History
-        </h1>
-      </div>
-      <div className="col-span-full">
-        {error ? (
-          <p className="text-red-500">{error}</p>
-        ) : (
-          <DataTable
-            columns={generateColumns(updateTransactionStatus)}
-            data={data}
-            loading={loading}
-          />
-        )}
-      </div>
-    </div>
-  );
+		<div className='px-32 md:px-24 sm:px-20 xs:px-10 p-5 bg-background dark:bg-secondary h-screen'>
+			{/* <HostingTransactionBreadcrumb active='Transactions' /> */}
+      <CustomBreadcrumbs />
+			<div className='mt-1 mb-4'>
+				<h1 className='font-semibold xs:text-xl sm:text-2xl md:text-3xl text-left dark:text-white'>
+					Transaction History
+				</h1>
+			</div>
+			<div className='col-span-full'>
+				{error ? (
+					<p className='text-red-500'>{error}</p>
+				) : (
+					<DataTable
+						columns={generateColumns(updateTransactionStatus)}
+						data={data}
+						loading={loading}
+					/>
+				)}
+			</div>
+		</div>
+	);
 };
 
 export default TransactionDashboard;

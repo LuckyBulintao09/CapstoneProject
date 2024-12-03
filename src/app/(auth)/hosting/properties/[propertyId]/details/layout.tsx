@@ -22,7 +22,7 @@ function EditPropertyLayout({ children, right, params }: { children: React.React
         <main className="grow min-h-[100px]">
             <div className="h-[calc(100%-65px)] airBnbDesktop:flex my-0 mx-auto airBnbTablet:h-full">
                 <section className="hidden airBnbDesktop:flex-col h-[calc(100vh-70px)] w-full airBnbDesktop:grow airBnbDesktop:ml-10 airBnbDesktop:border-r airBnbDesktop:flex min-[1128px]:ml-20 airBnbBigDesktop:w-[calc(76px+344px+64px)] airBnbBigDesktop:flex-none">
-                    <div className="ml-[calc(32px+40px)]">
+                    <div className="ml-[calc(32px+40px)] mt-4">
                         <CustomBreadcrumbs />
                     </div>
                     <header className="flex items-center justify-between h-12 airBnbDesktop:h-auto airBnbDesktop:justify-start airBnbDesktop:mb-6 airBnbDesktop:pl-0">
@@ -32,7 +32,7 @@ function EditPropertyLayout({ children, right, params }: { children: React.React
                             </Link>
                         </div>
                         <h1 className="text-[1em]">
-                            <span className="pl-8 py-1 text-[2rem] leading-9 tracking-[-0.04rem]">Listing editor</span>
+                            <span className="pl-8 py-1 text-[2rem] font-semibold">Listing editor</span>
                         </h1>
                     </header>
 

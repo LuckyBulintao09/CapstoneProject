@@ -7,7 +7,7 @@ import Image from 'next/image';
 export function BusinessLogo({ image }: { image: string }) {
 	return (
 		<>
-			<Card className='h-[150px] w-[150px] border-none'>
+			<Card className='h-[150px] w-[150px] border-none bg-transparent shadow-none'>
 				<CardContent className='flex items-center justify-center p-0 h-full w-full'>
 					{image ? (
 						<Image

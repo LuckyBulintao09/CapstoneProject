@@ -4,6 +4,9 @@ import React, { useState, useEffect } from 'react';
 import { DataTable } from '@/components/table/data-table';
 import { columns, Transaction } from './columns';
 import { createClient } from '../../../utils/supabase/client';
+import { BreadcrumbSection } from '@/components/breadcrumb/BreadrumbSection';
+import { TransactionBreadcrumb } from '@/components/breadcrumb/TransactionBreadcrumb';
+import CustomBreadcrumbs from '@/modules/hosting/components/CustomBreadcrumbs';
 
 const supabase = createClient();
 
@@ -85,8 +88,10 @@ const TransactionDashboard = () => {
 	}, [userId]);
 
 	return (
-		<div className='p-5 bg-background dark:bg-secondary h-screen'>
-			<div className='mt-4 mb-4'>
+		<div className='px-32 md:px-24 sm:px-20 xs:px-10 p-5 bg-background dark:bg-secondary h-screen'>
+			{/* <TransactionBreadcrumb active="Transactions" /> */}
+			<CustomBreadcrumbs />
+			<div className='mt-1 mb-4'>
 				<h1 className='font-semibold xs:text-xl sm:text-2xl md:text-3xl text-left dark:text-white'>
 					Transaction History
 				</h1>
