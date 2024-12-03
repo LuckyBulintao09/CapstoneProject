@@ -2,7 +2,7 @@
 import { createClient } from "@/utils/supabase/server";
 const supabase = createClient();
 
-export const addAnalytics = async (propertyId: any, companyId: any) => {
+export const addAnalytics = async (propertyId: any, companyId: any, title: any) => {
     try {
         const { data: userData, error: userError } = await supabase.auth.getUser();
         if (userError) {
@@ -39,6 +39,7 @@ export const addAnalytics = async (propertyId: any, companyId: any) => {
             .insert({
                 company_id: companyId,
                 property_id: propertyId,
+                title: title,
                 user_id: userId 
             });
 

@@ -129,7 +129,7 @@ const ReviewsUnderCompany: React.FC<ReviewsUnderCompanyProps> = ({
 							No reviews available for this company.
 						</p>
 						<p className='text-sm text-gray-500'>
-							No reviews yet, but you can be the first to share your thoughts!
+							No reviews yet
 						</p>
 					</div>
 				)}
