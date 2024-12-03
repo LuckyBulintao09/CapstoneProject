@@ -34,20 +34,15 @@ function GenerateBreadcrumbs({ segments }: { segments: string[] }) {
 		'edit-company': 'Edit Company',
 	};
 
-	const breadCrumbs = segments.filter(segment => isNaN(Number(segment))).map((segment, index) => {
-		const label =
-			specialCases[segment] ||
-			segment.charAt(0).toUpperCase() + segment.slice(1).replace(/-/g, ' ');
-		return {
-			label,
-			href: `/${segments.slice(0, index + 1).join('/')}`,
-		};
-	});
+	const breadCrumbs = segments.map((segment, index) => ({
+		label:
+			segment.charAt(0).toUpperCase() + segment.slice(1).replace(/-/g, ' '),
+		href: `/${segments.slice(0, index + 1).join('/')}`,
+	}));
 
 	return (
 		<>
 			{breadCrumbs.length > 1 &&
-			
 				breadCrumbs.map(
 					(
 						crumb: { label: string; href: string },
@@ -66,7 +61,7 @@ function GenerateBreadcrumbs({ segments }: { segments: string[] }) {
 											href={crumb.href}
 											className={cn(
 												buttonVariants({ variant: 'link' }),
-												'p-0 text-gray-600 font-normal'
+												'px-0 py-0 text-gray-600 font-normal'
 											)}
 										>
 											{crumb.label}
