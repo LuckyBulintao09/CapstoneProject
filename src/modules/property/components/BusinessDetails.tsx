@@ -108,7 +108,8 @@ export function BusinessDetails({
 						</CardDescription>
 					</CardHeader>
 					<CardContent className='space-y-2 dark:text-white'>
-						<div className='space-y-1'>{about}</div>
+						<div className='space-y-1' dangerouslySetInnerHTML={{ __html: about }}
+							/>
 					</CardContent>
 				</Card>
 			</TabsContent>

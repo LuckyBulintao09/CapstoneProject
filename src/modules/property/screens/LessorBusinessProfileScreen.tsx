@@ -30,17 +30,6 @@ const LessorBusinessProfileScreen = async ({
 											<MapPin className='mr-1' height={18} width={18} />
 											{data.company?.address}
 										</p>
-										<p className='flex items-center text-foreground text-sm md:text-md lg:text-lg ml-4'>
-											Joined UniHomes since{' '}
-											{new Date(data.company?.created_at).toLocaleDateString(
-												'en-US',
-												{
-													year: 'numeric',
-													month: 'long',
-													day: 'numeric',
-												}
-											)}
-										</p>
 									</div>
 								</div>
 							</div>
