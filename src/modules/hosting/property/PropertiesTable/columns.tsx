@@ -50,7 +50,7 @@ export const columns: ColumnDef<any>[] = [
         header: "Property",
         cell: ({ row }) => {
             const property_name = row.original.title;
-            const thumbnail = row.original.thumbnail_url;
+            const thumbnail = row.original.property_image;
             const address = row.getValue<string>("address");
             const propertyId = row.getValue<string>("id")
 
@@ -60,9 +60,9 @@ export const columns: ColumnDef<any>[] = [
                 return (
                     <div className="flex flex-row items-center">
                         <div className="flex relative">
-                            {thumbnail ? (
+                            {thumbnail[0] ? (
                                 <Image
-                                src={thumbnail}
+                                src={thumbnail[0]}
                                 alt="property image"
                                 width={64}
                                 height={64}
@@ -85,9 +85,9 @@ export const columns: ColumnDef<any>[] = [
             return (
                 <div className="flex flex-col">
                     <div className="relative">
-                        {thumbnail ? (
+                        {thumbnail[0] ? (
                             <Image
-                                src={thumbnail}
+                                src={thumbnail[0]}
                                 alt={property_name}
                                 width={1524}
                                 height={2032}

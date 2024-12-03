@@ -1,11 +1,12 @@
 import CustomBreadcrumbs from "@/modules/hosting/components/CustomBreadcrumbs";
 import AddUnitsForm from "./_components/AddUnitsForm";
 import { getAllAmenities } from "@/actions/amenety/getAllAmenities";
+import TestAmenitiesForm from "./_components/testAmenitiesForm";
 
 async function UnitDetailsPage({params}: {params: {propertyId: string, unitId: string}}) {
     const amenities = await getAllAmenities();
     return (
-        <div className="bg-background h-full py-11 ">
+        <div className="bg-background py-11 ">
             <div className="w-full flex flex-col items-start justify-center max-w-6xl mx-auto">
                 <CustomBreadcrumbs />
                 <div className="mb-8 max-w-[623px]">
@@ -13,6 +14,7 @@ async function UnitDetailsPage({params}: {params: {propertyId: string, unitId: s
                 </div>
             </div>
             <AddUnitsForm amenities={amenities} unitId={params.unitId} propertyId={params.propertyId} />
+            {/* <TestAmenitiesForm amenities={amenities} /> */}
         </div>
     );
 }

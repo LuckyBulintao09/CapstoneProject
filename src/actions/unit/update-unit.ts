@@ -7,7 +7,7 @@ import { redirect } from "next/navigation";
 export async function updateUnit(unitId: string, propertyId: string, values: any) {
     const supabase = createClient();
 
-    const { data, error } = await supabase
+    const { data: unitData, error:unitError } = await supabase
         .from("unit")
         .update({
             property_id: propertyId,
@@ -22,12 +22,32 @@ export async function updateUnit(unitId: string, propertyId: string, values: any
         .eq("id", unitId)
         .select();
     
-        if (error?.code) {
-            throw error;
+        if (unitError?.code) {
+            throw unitError;
         }
+
+        await insertAmenities(values.amenities, unitId);
         
         redirect(`/hosting/properties/${propertyId}/details/units`);
     
+}
+
+const insertAmenities = async (data: {value: string, label: string}[], unitId: string) => {
+    const supabase = createClient();
+
+    const amenities_insert = data.map(({value}: {value: string}) => ({
+        unit_id: unitId,
+        amenity_id: value
+    }))
+
+    const { data: unitAmenitiesData, error:unitAmenitiesError } = await supabase
+        .from("unit_amenities")
+        .insert(amenities_insert)
+        .select();
+
+    if (unitAmenitiesError?.code) {
+        throw unitAmenitiesData;
+    }
 }
 
 export const toggleIsReserved = async (unitId: string, isReserved: boolean) => {
