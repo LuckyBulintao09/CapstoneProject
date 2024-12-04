@@ -1,7 +1,7 @@
 "use server";
 
 import { createClient } from "@/utils/supabase/server"
-import { redirect } from "next/navigation";
+import { permanentRedirect, redirect } from "next/navigation";
 import { addUnitImages } from "./unitImage";
 
 export async function updateUnit(unitId: string, propertyId: string, values: any, fileUrls: any) {
@@ -57,11 +57,20 @@ export async function createDuplicateUnit(propertyId: string, values: any, fileU
         }
 
         for (const unit of data) {
+            const updatedTitle = `${values.title}-${unit.id}`;
+
+            // Update the unit title with the unit ID
+            await supabase
+                .from("unit")
+                .update({ title: updatedTitle })
+                .eq("id", unit.id);
+
+            // Insert amenities and images
             await insertAmenities(values.amenities, unit.id);
             await addUnitImages(fileUrls, unit.id);
         }
 
-        redirect(`/hosting/properties/${propertyId}/details/units`);  
+        permanentRedirect(`/hosting/properties/${propertyId}/details/units`);  
     } catch (error: any) {
         console.log(error);
         throw error;

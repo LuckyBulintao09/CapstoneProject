@@ -3,17 +3,16 @@ import React from "react";
 import Image from "next/image";
 import Link from "next/link";
 
-import { getAllUnitUnderProperty } from "@/actions/unit/getAllUnitUnderProperty";
-
 import { Button, buttonVariants } from "@/components/ui/button";
 
 import { Plus, ArrowLeft, Frown } from "lucide-react";
 
 import { cn } from "@/lib/utils";
 import NumberOfUnits from "./_components/NumberOfUnits";
+import UnitList from "./_components/UnitList";
 
 async function PropertiesUnitsPage({ params }: { params: { propertyId: string } }) {
-    const units = await getAllUnitUnderProperty(params.propertyId);
+
 
     return (
         <section className="flex flex-col h-[calc(100vh-68px)] w-full px-6 airBnbDesktop:overflow-x-hidden airBnbDesktop:overflow-y-auto airBnbTablet:px-10 min-[1128px]:px-20 airBnbBigDesktop:px-0">
@@ -38,43 +37,7 @@ async function PropertiesUnitsPage({ params }: { params: { propertyId: string } 
             <div className="flex justify-center grow py-6 airBnbDesktop:pt-0 airBnbDesktop:pb-10">
                 <div className="airBnbDesktop:mx-auto airairBnbBigDesktop:w-[608px] min-[1128px]:w-[512px] airBnbDesktop:w-[464px]">
                     <div className="flex flex-col justify-center gap-4">
-                        {units?.length > 0 ? (
-                            units.map((unit) => (
-                                <div key={unit.id} className="flex items-center shadow-xl border rounded-lg p-4 gap-4 relative">
-                                    <Link
-                                        href={`/hosting/properties/${params.propertyId}/units/edit-unit/${unit?.id}`}
-                                        className="left-0 right-0 p-0 m-0 absolute bg-transparent top-0 bottom-0 z-[2] outline-none"
-                                    ></Link>
-                                    <div className="flex-shrink-0">
-                                        {unit.unit_image && unit.unit_image[0] ? (
-                                            <Image
-                                                src={unit.unit_image[0]}
-                                                alt={unit.title}
-                                                width={64}
-                                                height={64}
-                                                className="rounded object-cover aspect-square"
-                                            />
-                                        ) : (
-                                            <Image
-                                                src={"/placeholderImage.webp"}
-                                                alt={unit.title}
-                                                width={64}
-                                                height={64}
-                                                className="rounded object-cover aspect-square"
-                                            />
-                                        )}
-                                    </div>
-                                    <div>
-                                        <span className="text-[1rem] leading-5 tracking-normal font-[500]">{unit.title || "Untitled Unit"}</span>
-                                    </div>
-                                </div>
-                            ))
-                        ) : (
-                            <div className="flex flex-col items-center justify-center h-[calc(100vh-68px-104px-40px)] gap-4">
-                                <Frown className="h-32 w-32 text-muted-foreground opacity-85" strokeWidth={1}/>
-                                <p className="text-center text-muted-foreground">No units available for this property.</p>
-                            </div>
-                        )}
+                        <UnitList propertyId={params.propertyId} />
                     </div>
                 </div>
             </div>
