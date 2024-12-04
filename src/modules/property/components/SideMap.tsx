@@ -178,7 +178,7 @@ const SideMap: React.FC<SideReviewsProps> = ({
 							{locationAverage.toFixed(1)} {ratingDescription}
 						</p>
 						<p className='text-sm pt-0 mt-0 dark:text-gray-300'>
-							Location Rating Score
+							Location Review Score
 						</p>
 						<span className='text-sm pt-0 mt-0 dark:text-gray-300'>
 							Distance from the center:

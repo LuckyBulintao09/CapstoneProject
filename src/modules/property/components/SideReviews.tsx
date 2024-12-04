@@ -81,7 +81,7 @@ const SideReviews: React.FC<SideReviewsProps> = ({
 							{overallRating.toFixed(1)} {ratingDescription}
 						</p>
 						<p className='text-md pt-0 mt-0 dark:text-gray-300'>
-							Overall Rating Score
+							Overall Review Score
 						</p>
 					</CardDescription>
 				</CardHeader>
