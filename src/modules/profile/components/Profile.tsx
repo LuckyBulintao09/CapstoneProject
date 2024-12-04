@@ -1,28 +1,12 @@
-import { PencilIcon, PencilSquareIcon } from '@heroicons/react/24/solid';
+import { PencilSquareIcon } from '@heroicons/react/24/solid';
 import { createClient } from '../../../utils/supabase/client';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { toast } from 'sonner';
 import {
-	Modal,
-	ModalContent,
-	ModalHeader,
-	ModalBody,
-	ModalFooter,
 	useDisclosure,
-	DatePicker,
 } from '@nextui-org/react';
 import React, { useEffect, useRef, useState } from 'react';
-import { parseDate } from '@internationalized/date';
 import LoadingPage from '@/components/LoadingPage';
-import {
-	Dialog,
-	DialogContent,
-	DialogDescription,
-	DialogFooter,
-	DialogHeader,
-	DialogTitle,
-	DialogTrigger,
-} from '@/components/ui/dialog';
 import { Label } from '@/components/ui/label';
 import { handleResetPassword } from '@/actions/user/updatePassword';
 import { handleDeleteAccount } from '@/actions/user/deleteAccount';

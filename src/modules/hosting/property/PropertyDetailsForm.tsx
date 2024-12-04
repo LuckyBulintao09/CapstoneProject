@@ -167,7 +167,7 @@ function PropertyDetails({ companies, propertyId }: { companies: CompanyData; pr
                     render={({ field }) => (
                         <FormItem>
                             <FormLabel className="flex justify-between items-center w-full" htmlFor="location">
-                                Pinpooint location
+                                Pinpoint Location
                                 <Switch checked={enableMap} onCheckedChange={setEnableMap} />
                             </FormLabel>
                             <FormControl>
@@ -185,7 +185,7 @@ function PropertyDetails({ companies, propertyId }: { companies: CompanyData; pr
                     )}
                 />
                 <div className="flex justify-end gap-2">
-                    <Link href={`/hosting/property`} className={cn(buttonVariants({ variant: "outline" }))}>
+                    <Link href={`/hosting/properties`} className={cn(buttonVariants({ variant: "outline" }))}>
                         Cancel
                     </Link>
                     <Button

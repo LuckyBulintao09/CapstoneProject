@@ -60,7 +60,7 @@ export const columns: ColumnDef<any>[] = [
                 return (
                     <div className="flex flex-row items-center">
                         <div className="flex relative">
-                            {thumbnail[0] ? (
+                            {thumbnail && thumbnail[0] ? (
                                 <Image
 									src={thumbnail[0]}
 									alt={`${property_name} thumbnail image`}
@@ -83,44 +83,46 @@ export const columns: ColumnDef<any>[] = [
                 );
             }
             return (
-                <div className="flex flex-col">
-                    <div className="relative">
-                        {thumbnail[0] ? (
-                            <Image
-                                src={thumbnail[0]}
-                                alt={`${property_name} thumbnail image`}
-                                width={1524}
-                                height={2032}
-                                className="rounded-xl object-cover overflow-clip aspect-[20/19] mb-3 select-none"
-                            />
-                        ) : (
-                            <Image
-                                src={`/placeholderImage.webp`}
-                                alt={`property image`}
-                                width={1524}
-                                height={2032}
-                                className="rounded-xl object-cover overflow-clip aspect-[20/19] mb-3 select-none"
-                            />
-                        )}
-                        <div className="absolute top-0 right-0 mt-3 mr-3">
-                            <Link
-                                href={`/hosting/properties/${propertyId}/details/photos`}
-                                className={cn(
-                                    buttonVariants({ variant: "default", size: "sm" }),
-                                    "flex items-center justify-center gap-2 rounded-full text-primary-foreground"
-                                )}
-                            >
-                                Go to property
-                                <ChevronRight className="size-4" />
-                            </Link>
-                        </div>
-                    </div>
-                    <div className="flex flex-col text-left ">
-                        <span className="text-clip break-all">{property_name}</span>
-                        <span className="text-muted-foreground text-nowrap text-ellipsis overflow-hidden">{address}</span>
-                    </div>
-                </div>
-            );
+							<div className='flex flex-col'>
+								<div className='relative'>
+									{thumbnail && thumbnail[0] ? (
+										<Image
+											src={thumbnail[0]}
+											alt={`${property_name} thumbnail image`}
+											width={1524}
+											height={2032}
+											className='rounded-xl object-cover overflow-clip aspect-[20/19] mb-3 select-none'
+										/>
+									) : (
+										<Image
+											src={`/placeholderImage.webp`}
+											alt={`property image`}
+											width={1524}
+											height={2032}
+											className='rounded-xl object-cover overflow-clip aspect-[20/19] mb-3 select-none'
+										/>
+									)}
+									<div className='absolute top-0 right-0 mt-3 mr-3'>
+										<Link
+											href={`/hosting/properties/${propertyId}/details/photos`}
+											className={cn(
+												buttonVariants({ variant: 'default', size: 'sm' }),
+												'flex items-center justify-center gap-2 rounded-full text-primary-foreground'
+											)}
+										>
+											Go to property
+											<ChevronRight className='size-4' />
+										</Link>
+									</div>
+								</div>
+								<div className='flex flex-col text-left '>
+									<span className='text-clip break-all'>{property_name}</span>
+									<span className='text-muted-foreground text-nowrap text-ellipsis overflow-hidden'>
+										{address}
+									</span>
+								</div>
+							</div>
+						);
         }
     },
     {
