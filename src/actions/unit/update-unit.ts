@@ -33,6 +33,43 @@ export async function updateUnit(unitId: string, propertyId: string, values: any
     
 }
 
+export async function createDuplicateUnit(propertyId: string, values: any, fileUrls: any,  numberOfUnits: number) {
+    const supabase = createClient();
+
+    const unitsToInsert = Array(numberOfUnits).fill({
+        property_id: propertyId,
+        price: values.price,
+        title: values.title,
+        privacy_type: values.privacy_type,
+        bedrooms: values.bedrooms,
+        beds: values.beds,
+        occupants: values.occupants,
+        unit_image: values.unit_image,
+        outside_view: values.outside_view,
+        room_size: values.room_size,
+    });
+
+    try {
+        const {data, error} = await supabase
+            .from("unit")
+            .insert(unitsToInsert).select();
+        if (error?.code) {
+            throw error;
+        }
+
+        for (const unit of data) {
+            await insertAmenities(values.amenities, unit.id);
+            await addUnitImages(fileUrls, unit.id);
+        }
+        
+        redirect(`/hosting/properties/${propertyId}/details/units`);
+        
+    } catch (error: any) {
+        console.log(error);
+        throw error;
+    }
+}
+
 const insertAmenities = async (data: {value: string, label: string}[], unitId: string) => {
     const supabase = createClient();
 
