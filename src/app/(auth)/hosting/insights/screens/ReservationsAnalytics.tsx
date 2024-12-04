@@ -138,17 +138,16 @@ const ReservationsAnalytics = () => {
 	return (
 		<>
 			<div className='mb-4 flex items-center space-x-4'>
-				{/* Property Dropdown */}
 				<Select value={selectedProperty} onValueChange={setSelectedProperty}>
 					<SelectTrigger
 						id='property-selector'
-						className='border-gray-300 bg-transparent w-48 rounded-md text-sm text-gray-700 focus:ring-offset-0 focus:ring-0 hover:font-semibold transition-all duration-300'
+						className='border-gray-300 dark:text-gray-300 bg-transparent w-48 rounded-md text-sm text-gray-700 focus:ring-offset-0 focus:ring-0 hover:font-semibold transition-all duration-300'
 					>
 						<SelectValue placeholder='Select Property' />
 					</SelectTrigger>
 					<SelectContent
 						position='popper'
-						className='text-sm bg-white border-gray-300'
+						className='text-sm bg-white dark:bg-secondary border-gray-300'
 					>
 						<SelectItem value='default' className='text-sm'>
 							Property 1
@@ -163,13 +162,13 @@ const ReservationsAnalytics = () => {
 				<Select value={selectedProperty} onValueChange={setSelectedProperty}>
 					<SelectTrigger
 						id='property-selector'
-						className='border-gray-300 bg-transparent w-48 rounded-md text-sm text-gray-700 focus:ring-offset-0 focus:ring-0 hover:font-semibold transition-all duration-300'
+						className='border-gray-300   dark:text-gray-300  bg-transparent w-48 rounded-md text-sm text-gray-700 focus:ring-offset-0 focus:ring-0 hover:font-semibold transition-all duration-300'
 					>
 						<SelectValue placeholder='Select Property' />
 					</SelectTrigger>
 					<SelectContent
 						position='popper'
-						className='text-sm bg-white border-gray-300'
+						className='text-sm bg-white dark:bg-secondary border-gray-300'
 					>
 						<SelectItem value='default' className='text-sm'>
 							All Time
@@ -230,8 +229,10 @@ const ReservationsAnalytics = () => {
 			<div className='grid grid-cols-1 xl:grid-cols-10 gap-0 xl:gap-4'>
 				<div className='col-span-4 grid grid-rows-3 gap-4'>
 					<div className='grid grid-cols-2 gap-4'>
-						<Card className='bg-white rounded-lg border-gray-300'>
-							<p className='p-4 text-xs text-gray-500'>Total Reservations</p>
+						<Card className='bg-white dark:bg-secondary rounded-lg border-gray-300'>
+							<p className='p-4 text-xs text-gray-500 dark:text-gray-300'>
+								Total Reservations
+							</p>
 							<CardHeader className='p-1 flex justify-center items-center text-center'>
 								<CardTitle className='text-4xl font-bold'>45</CardTitle>
 							</CardHeader>
@@ -241,8 +242,8 @@ const ReservationsAnalytics = () => {
 							</CardContent>
 						</Card>
 
-						<Card className='bg-white rounded-lg border-gray-300'>
-							<p className='p-4 text-xs text-gray-500'>
+						<Card className='bg-white dark:bg-secondary rounded-lg border-gray-300'>
+							<p className='p-4 text-xs text-gray-500 dark:text-gray-300'>
 								Total Company Page Visits
 							</p>
 							<CardHeader className='p-1 flex justify-center items-center text-center'>
@@ -255,8 +256,8 @@ const ReservationsAnalytics = () => {
 						</Card>
 					</div>
 					<div className='row-span-2 rounded-lg'>
-						<Card className='bg-white rounded-lg border-gray-300 row-span-2 mb-4 xl:mb-0'>
-							<p className='p-4 text-xs text-gray-500'>
+						<Card className='bg-white dark:bg-secondary rounded-lg border-gray-300 row-span-2 mb-4 xl:mb-0'>
+							<p className='p-4 text-xs text-gray-500 dark:text-gray-300'>
 								On-Site vs Room Reservations
 							</p>
 							<CardContent>
@@ -269,8 +270,8 @@ const ReservationsAnalytics = () => {
 					</div>
 				</div>
 				<div className='col-span-6 rounded-lg'>
-					<Card className='bg-white rounded-lg border-gray-300 h-[470px]'>
-						<p className='p-4 text-xs text-gray-500'>
+					<Card className='bg-white dark:bg-secondary rounded-lg border-gray-300 h-[470px]'>
+						<p className='p-4 text-xs text-gray-500 dark:text-gray-300'>
 							Total Reservations Across All Properties
 						</p>
 

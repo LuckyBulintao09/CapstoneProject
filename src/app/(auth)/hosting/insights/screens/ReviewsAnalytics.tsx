@@ -93,13 +93,13 @@ const ReviewsAnalytics = () => {
 				<Select value={selectedProperty} onValueChange={setSelectedProperty}>
 					<SelectTrigger
 						id='property-selector'
-						className='border-gray-300 bg-transparent w-48 rounded-md text-sm text-gray-700 focus:ring-offset-0 focus:ring-0 hover:font-semibold transition-all duration-300'
+						className='border-gray-300 dark:text-gray-300 bg-transparent w-48 rounded-md text-sm text-gray-700 focus:ring-offset-0 focus:ring-0 hover:font-semibold transition-all duration-300'
 					>
 						<SelectValue placeholder='Select Property' />
 					</SelectTrigger>
 					<SelectContent
 						position='popper'
-						className='text-sm bg-white border-gray-300'
+						className='text-sm bg-white dark:bg-secondary border-gray-300'
 					>
 						<SelectItem value='default' className='text-sm'>
 							Property 1
@@ -114,13 +114,13 @@ const ReviewsAnalytics = () => {
 				<Select value={selectedProperty} onValueChange={setSelectedProperty}>
 					<SelectTrigger
 						id='property-selector'
-						className='border-gray-300 bg-transparent w-48 rounded-md text-sm text-gray-700 focus:ring-offset-0 focus:ring-0 hover:font-semibold transition-all duration-300'
+						className='border-gray-300  dark:text-gray-300 bg-transparent w-48 rounded-md text-sm text-gray-700 focus:ring-offset-0 focus:ring-0 hover:font-semibold transition-all duration-300'
 					>
 						<SelectValue placeholder='Select Property' />
 					</SelectTrigger>
 					<SelectContent
 						position='popper'
-						className='text-sm bg-white border-gray-300'
+						className='text-sm bg-white dark:bg-secondary border-gray-300'
 					>
 						<SelectItem value='default' className='text-sm'>
 							All Time
@@ -138,8 +138,10 @@ const ReviewsAnalytics = () => {
 				</Select>
 			</div>
 			<div className='grid grid-cols-1 xl:grid-cols-2 gap-4 pb-14'>
-				<Card className='bg-white rounded-lg border-gray-300'>
-					<p className='p-4 text-xs text-gray-500'>Overall Review Ratings</p>
+				<Card className='bg-white dark:bg-secondary rounded-lg border-gray-300'>
+					<p className='p-4 text-xs text-gray-500 dark:text-gray-300'>
+						Overall Review Ratings
+					</p>
 					<CardContent className='flex justify-center items-center'>
 						<div style={{ width: '400px', height: '400px' }}>
 							<PolarArea data={data} />
@@ -148,8 +150,8 @@ const ReviewsAnalytics = () => {
 				</Card>
 
 				<div className='grid grid-rows-3 gap-4'>
-					<Card className='bg-white rounded-lg border-gray-300'>
-						<p className='p-4 text-xs text-gray-500'>
+					<Card className='bg-white dark:bg-secondary rounded-lg border-gray-300'>
+						<p className='p-4 text-xs text-gray-500 dark:text-gray-300'>
 							Overall Rating and Reviews
 						</p>
 						<CardContent className='grid grid-cols-2 pt-3'>
@@ -177,8 +179,10 @@ const ReviewsAnalytics = () => {
 					</Card>
 
 					{/* Reviews List */}
-					<Card className='row-span-2 bg-white rounded-lg border-gray-300'>
-						<p className='p-4 text-xs text-gray-500'>Overall Unit Reviews</p>
+					<Card className='row-span-2 bg-white dark:bg-secondary rounded-lg border-gray-300'>
+						<p className='p-4 text-xs text-gray-500 dark:text-gray-300'>
+							Overall Unit Reviews
+						</p>
 						<CardContent className='overflow-y-auto max-h-[250px]'>
 							<Reviews />
 						</CardContent>
