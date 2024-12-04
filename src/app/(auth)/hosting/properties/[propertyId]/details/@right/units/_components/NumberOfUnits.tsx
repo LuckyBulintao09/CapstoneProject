@@ -18,27 +18,13 @@ import { Button as ShadBtn, buttonVariants } from "@/components/ui/button";
 import { Button, Group, Input, Label, NumberField } from "react-aria-components";
 
 import { cn } from "@/lib/utils";
-import { z } from "zod";
-import Link from "next/link";
 
-const unitSchema = z.object({
-    numberOfUnits: z.number().min(1, { message: "At least 1 unit is required." }).max(10, { message: "You can add up to 10 units only." }),
-});
+import Link from "next/link";
 
 function NumberOfUnits({ propertyId }: { propertyId: string }) {
     const [value, setValue] = React.useState(1);
     const [error, setError] = React.useState<string | null>(null);
 
-    const handleSubmit = () => {
-        const validation = unitSchema.safeParse({ numberOfUnits: value });
-        if (!validation.success) {
-            setError(validation.error.errors[0].message);
-        } else {
-            setError(null);
-            console.log("Valid number of units:", value);
-            // Proceed with the logic to create units
-        }
-    };
     return (
         <Dialog>
             <DialogTrigger asChild>
@@ -53,7 +39,7 @@ function NumberOfUnits({ propertyId }: { propertyId: string }) {
                     <DialogDescription>This will create an arbitrary amount of units with a minimum of 1 and a maximum of 10.</DialogDescription>
                 </DialogHeader>
 
-                <NumberField value={value} onChange={setValue} minValue={1} maxValue={10}>
+                <NumberField value={value} onChange={setValue} minValue={1} maxValue={10} autoFocus={false}>
                     <div className="space-y-2">
                         <Label className="text-sm font-medium text-foreground">Number of units.</Label>
                         <Group className="relative inline-flex h-9 w-full items-center overflow-hidden whitespace-nowrap rounded-lg border border-input text-sm shadow-sm shadow-black/5 transition-shadow data-[focus-within]:border-ring data-[disabled]:opacity-50 data-[focus-within]:outline-none data-[focus-within]:ring-[3px] data-[focus-within]:ring-ring/20">

@@ -36,6 +36,18 @@ export async function updateUnit(unitId: string, propertyId: string, values: any
 export async function createDuplicateUnit(propertyId: string, values: any, fileUrls: any,  numberOfUnits: number) {
     const supabase = createClient();
 
+    if (typeof numberOfUnits !== 'number' || isNaN(numberOfUnits)) {
+        throw new Error('numberOfUnits must be a valid number.');
+    }
+
+    if (numberOfUnits < 1 || numberOfUnits > 10) {
+        throw new Error('numberOfUnits must be between 1 and 10 inclusive.');
+    }
+
+    if (/[^0-9]/.test(String(numberOfUnits))) {
+        throw new Error('numberOfUnits cannot contain special characters.');
+    }
+
     const unitsToInsert = Array(numberOfUnits).fill({
         property_id: propertyId,
         price: values.price,

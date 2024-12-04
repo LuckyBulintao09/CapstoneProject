@@ -3,8 +3,6 @@ import AddUnitsForm from "./_components/AddUnitsForm";
 import { getAllAmenities } from "@/actions/amenety/getAllAmenities";
 import { getAuthenticatedUser } from "@/utils/supabase/server";
 
-import TestAmenitiesForm from "./_components/testAmenitiesForm";
-
 async function UnitDetailsPage({params}: {params: {propertyId: string, unitId: string}}) {
     const amenities = await getAllAmenities();
     const user = await getAuthenticatedUser();
@@ -17,7 +15,6 @@ async function UnitDetailsPage({params}: {params: {propertyId: string, unitId: s
                 </div>
             </div>
             <AddUnitsForm amenities={amenities} unitId={params.unitId} propertyId={params.propertyId} userId={user?.id} />
-            {/* <TestAmenitiesForm amenities={amenities} /> */}
         </div>
     );
 }
