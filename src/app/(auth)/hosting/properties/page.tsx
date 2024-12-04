@@ -20,6 +20,8 @@ async function getPropertiesByUserCompany(companies: any) {
     }
 }
 
+export const revalidate = 0;
+
 async function PropertyPage() {
     const user = await getAuthenticatedUser();
 
