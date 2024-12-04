@@ -30,15 +30,15 @@ export async function addUnitImages(fileUrls: any, unitId: string) {
         });
 
         if (error?.code) {
-            throw error;
+            throw error.details;
         }
 
         console.log("Unit images added", data);
 
         return data;
     } catch (error: any) {
-        console.log(error);
-        return error;
+        console.log(error.message, "error");
+        throw error.message;
     }
 }
 

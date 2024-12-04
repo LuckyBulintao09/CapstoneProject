@@ -19,7 +19,7 @@ import { Plus } from "lucide-react";
 import { useRouter } from "next/navigation";
 import { cn } from "@/lib/utils";
 
-function PhotoUploader({ userId, propertyId, photoBucketFileCount }: { userId: string; propertyId: string, photoBucketFileCount: number }) {
+function PhotoUploader({ userId, propertyId, photoBucketFileCount }: { userId: string; propertyId: string; photoBucketFileCount: number }) {
     const [open, setOpen] = React.useState<boolean>(false);
     const [isFileUploadEmpty, setIsFileUploadEmpty] = React.useState<boolean>(true);
 
@@ -96,7 +96,7 @@ function PhotoUploader({ userId, propertyId, photoBucketFileCount }: { userId: s
                     return "Something went wrong. Failed to update property";
                 },
             });
-            
+
             // console.log(files)
             setIsFileUploadEmpty(true);
         }
@@ -104,79 +104,67 @@ function PhotoUploader({ userId, propertyId, photoBucketFileCount }: { userId: s
 
     uppy.on("upload-success", (file) => {
         uppy.removeFile(file.id);
-    })
-
-
+    });
 
     return (
-			<Dialog open={open} onOpenChange={setOpen} modal={true}>
-				<DialogTrigger asChild>
-					<Button
-						variant='link'
-						className='w-fit gap-1 hover:bg-transparent'
-						type='button'
-						onClick={() => {
-							setOpen(!open);
-						}}
-					>
-						<span className='hover:underline dark:text-blue-300'>
-							Add photos
-						</span>
-						<Plus className='h-4 w-4 hover:underline dark:text-blue-300' />
-					</Button>
-				</DialogTrigger>
-				<DialogContent
-					className='z-[999] transform translate-x-[-50%] translate-y-[-50%]'
-					onInteractOutside={(e) => {
-						e.preventDefault();
-					}}
-				>
-					<DialogHeader>
-						<DialogTitle>Property photos upload</DialogTitle>
-						<DialogDescription asChild>
-							<>
-								{photoBucketFileCount >= 5 ? (
-									<p className='text-danger'>
-										Unable to upload more images. You have reached the maximum
-										number of images, please remove some to be able to upload
-										more.
-									</p>
-								) : (
-									<div className='grow space-y-2'>
-										<p className=''>Upload your business permit here.</p>
-										<ul className='list-inside list-disc text-sm text-muted-foreground'>
-											<li>Up to 5 images allowed.</li>
-											<li>Allowed image types: .jpg, .jpeg, .png.</li>
-											<li>Minimum file size of 6 mb per image.</li>
-										</ul>
-									</div>
-								)}
-							</>
-						</DialogDescription>
-					</DialogHeader>
+        <Dialog open={open} onOpenChange={setOpen} modal={true}>
+            <DialogTrigger asChild>
+                <Button
+                    className="w-fit gap-1 rounded-full"
+                    type="button"
+                    variant="ghost"
+                    onClick={() => {
+                        setOpen(!open);
+                    }}
+                >
+                    <span>Add photos</span>
+                    <Plus className="h-4 w-4" />
+                </Button>
+            </DialogTrigger>
+            <DialogContent
+                className="z-[999] transform translate-x-[-50%] translate-y-[-50%]"
+                onInteractOutside={(e) => {
+                    e.preventDefault();
+                }}
+            >
+                <DialogHeader>
+                    <DialogTitle>Property photos upload</DialogTitle>
+                    <DialogDescription asChild>
+                        <>
+                            {photoBucketFileCount >= 5 ? (
+                                <p className="text-danger">
+                                    Unable to upload more images. You have reached the maximum number of images, please remove some to be able to
+                                    upload more.
+                                </p>
+                            ) : (
+                                <div className="grow space-y-2">
+                                    <p className="">Upload your business permit here.</p>
+                                    <ul className="list-inside list-disc text-sm text-muted-foreground">
+                                        <li>Up to 5 images allowed.</li>
+                                        <li>Allowed image types: .jpg, .jpeg, .png.</li>
+                                        <li>Minimum file size of 6 mb per image.</li>
+                                    </ul>
+                                </div>
+                            )}
+                        </>
+                    </DialogDescription>
+                </DialogHeader>
 
-					<div>
-						<Dashboard
-							uppy={uppy}
-							hideUploadButton
-							className={cn({ hidden: photoBucketFileCount >= 5 })}
-						/>
-						<Button
-							className='mt-3'
-							type='button'
-							onClick={handleUpload}
-							disabled={
-								isFileUploadEmpty &&
-								(photoBucketFileCount >= 5 ? true : isFileUploadEmpty)
-							}
-							size='sm'
-						>
-							Upload images
-						</Button>
-					</div>
-				</DialogContent>
-			</Dialog>
-		);
+                <div>
+                    <Dashboard uppy={uppy} hideUploadButton className={cn({ hidden: photoBucketFileCount >= 5 })} />
+                    <Button
+                        className="mt-3"
+                        type="button"
+                        onClick={handleUpload}
+                        disabled={isFileUploadEmpty && (photoBucketFileCount >= 5 ? true : isFileUploadEmpty)}
+                        size="sm"
+                    >
+                        Upload images
+                    </Button>
+                </div>
+            </DialogContent>
+        </Dialog>
+    );
 }
 
 export default PhotoUploader;

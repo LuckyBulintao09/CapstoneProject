@@ -63,7 +63,7 @@ function NumberOfUnits({ propertyId }: { propertyId: string }) {
                             >
                                 <Minus size={16} strokeWidth={2} aria-hidden="true" />
                             </Button>
-                            <Input className="w-full grow bg-background px-3 py-2 text-center tabular-nums text-foreground focus:outline-none" />
+                            <Input className="w-full grow bg-background px-3 py-2 text-center tabular-nums text-foreground focus:outline-none" autoFocus={false} />
                             <Button
                                 slot="increment"
                                 className="-me-px flex aspect-square h-[inherit] items-center justify-center rounded-e-lg border border-input bg-background text-sm text-muted-foreground/80 transition-shadow hover:bg-accent hover:text-foreground disabled:pointer-events-none disabled:cursor-not-allowed disabled:opacity-50"
@@ -73,6 +73,7 @@ function NumberOfUnits({ propertyId }: { propertyId: string }) {
                         </Group>
                     </div>
                 </NumberField>
+                {error && <p className="text-sm text-red-500">{error}</p>}
 
                 <DialogFooter className="sm:justify-start">
                     <Link
