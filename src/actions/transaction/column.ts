@@ -44,11 +44,11 @@ export const deleteReview = async (reviewId: number) => {
   }
 };
 
-export const cancelTransaction = async (transactionId: number, unitId: number) => {
+export const cancelTransaction = async (transactionId: number, unitId: number, reason: string | null = null) => {
   try {
     const { error: transactionError } = await supabase
       .from("transaction")
-      .update({ transaction_status: "cancelled" })
+      .update({ transaction_status: "cancelled", cancellation_reason: reason })
       .match({ id: transactionId });
 
     if (transactionError) throw new Error("Error cancelling transaction");

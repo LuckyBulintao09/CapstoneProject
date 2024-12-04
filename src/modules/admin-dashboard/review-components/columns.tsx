@@ -103,12 +103,6 @@ export const columns = (
 	handleReviewUpdate: (id: number) => void
 ): ColumnDef<ReportedReviews>[] => [
 	{
-		accessorKey: 'id',
-		header: ({ column }) => (
-			<DataTableColumnHeader column={column} title='ID' className='font-bold' />
-		),
-	},
-	{
 		accessorKey: 'name',
 		header: ({ column }) => (
 			<DataTableColumnHeader column={column} title='Name' />
