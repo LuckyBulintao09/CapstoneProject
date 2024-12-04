@@ -17,7 +17,7 @@ export const unitSchema = z.object({
           required_error: "Please select at least one amenity.",
         })
     ).min(1, "At least one amenity must be selected."),
-    image: z.array(z.string({ required_error: "Please add at least one image." })).min(1, "At least one image must be added."),
+    image: z.array(z.string({ required_error: "Please add at least one image." })).min(1, "At least one image must be added.").nonempty({ message: "Please add at least one image." }),
 });
 
 

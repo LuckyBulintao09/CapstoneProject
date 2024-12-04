@@ -7,7 +7,7 @@ import { getAllUnitUnderProperty } from "@/actions/unit/getAllUnitUnderProperty"
 
 import { Button, buttonVariants } from "@/components/ui/button";
 
-import { Plus, ArrowLeft } from "lucide-react";
+import { Plus, ArrowLeft, Frown } from "lucide-react";
 
 import { cn } from "@/lib/utils";
 import NumberOfUnits from "./_components/NumberOfUnits";
@@ -70,7 +70,10 @@ async function PropertiesUnitsPage({ params }: { params: { propertyId: string } 
                                 </div>
                             ))
                         ) : (
-                            <p className="text-center text-gray-500">No units available for this property.</p>
+                            <div className="flex flex-col items-center justify-center h-[calc(100vh-68px-104px-40px)] gap-4">
+                                <Frown className="h-32 w-32 text-muted-foreground opacity-85" strokeWidth={1}/>
+                                <p className="text-center text-muted-foreground">No units available for this property.</p>
+                            </div>
                         )}
                     </div>
                 </div>

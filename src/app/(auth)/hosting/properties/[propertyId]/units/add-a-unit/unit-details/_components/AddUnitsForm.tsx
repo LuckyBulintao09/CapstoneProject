@@ -39,12 +39,14 @@ import { createClient } from "@/utils/supabase/client";
 
 function AddUnitsForm({ amenities, unitId, propertyId, userId }: { amenities?: any; unitId: string; propertyId: string; userId: string }) {
     const [isFileUploadEmpty, setIsFileUploadEmpty] = React.useState<boolean>(true);
-    const [uploadedFiles, setUploadedFiles] = useState<any[]>([]);
+
     const [isPending, startTransition] = useTransition();
 
     const searchParams = useSearchParams();
   
     const numberOfUnits = searchParams.get('numberOfUnits');
+
+    const inputRef = useRef<HTMLInputElement>(null);
 
     const unitForm = useForm<UnitData>({
         resolver: zodResolver(unitSchema),
@@ -63,12 +65,19 @@ function AddUnitsForm({ amenities, unitId, propertyId, userId }: { amenities?: a
         mode: "onBlur",
     });
 
-    // set user authentication headers for image upload
+    const handleClearInput = (fieldName: keyof UnitData) => {
+        unitForm.setValue(fieldName, "");
+        if (inputRef.current) {
+            inputRef.current.focus();
+        }
+    };
+
     const onBeforeRequest = async (req: any) => {
         const supabase = createClient();
         const { data } = await supabase.auth.getSession();
         req.setHeader("Authorization", `Bearer ${data.session?.access_token}`);
     };
+
     const [uppy] = React.useState(() =>
         new Uppy({
             restrictions: {
@@ -76,7 +85,7 @@ function AddUnitsForm({ amenities, unitId, propertyId, userId }: { amenities?: a
                 allowedFileTypes: ["image/jpg", "image/jpeg", "image/png"],
                 maxFileSize: 6 * 1024 * 1024,
             },
-            autoProceed: true,
+            // autoProceed: true,
         }).use(Tus, {
             endpoint: `${process.env.NEXT_PUBLIC_SUPABASE_URL}/storage/v1/upload/resumable`,
             onBeforeRequest, // set header authorization
@@ -94,94 +103,72 @@ function AddUnitsForm({ amenities, unitId, propertyId, userId }: { amenities?: a
         file.meta = {
             ...file.meta,
             bucketName: "unihomes image storage",
-            objectName: `property/${userId}/${propertyId}/${unitId}/unit_image/${file.name}`,
             contentType: file.type,
             cacheControl: 3600,
         };
+        unitForm.setValue("image", [...unitForm.getValues("image"), file.name]);
+        console.log(unitForm.getValues("image"));
     });
 
-    uppy.on("upload-success", (file, response) => {
-        const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL;
-        const bucketName = file.meta.bucketName;
-        const objectName = file.meta.objectName;
-
-        const fileUrl = `${supabaseUrl}/storage/v1/object/public/${bucketName}/${objectName}`;
-
-        console.log("Upload successful:", response, "File URL:", fileUrl);
-
-        setUploadedFiles((prevImages) => {
-            const alreadyUploaded = prevImages.some((url) => url === fileUrl);
-
-            if (alreadyUploaded) {
-                return prevImages;
-            }
-
-            return [...prevImages, fileUrl];
-        });
-    });
-
-    uppy.on("file-removed", (file) => {
-        const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL;
-        const bucketName = file.meta.bucketName;
-        const objectName = file.meta.objectName;
-    
-        const fileUrl = `${supabaseUrl}/storage/v1/object/public/${bucketName}/${objectName}`;
-        setUploadedFiles((prevImages) =>
-            prevImages.filter((url) => url !== fileUrl)
-        );
-    });
-    
-
-    const inputRef = useRef<HTMLInputElement>(null);
-    const isFirstMount = React.useRef(true);
-
-    const handleClearInput = (fieldName: keyof UnitData) => {
-        unitForm.setValue(fieldName, "");
-        if (inputRef.current) {
-            inputRef.current.focus();
-        }
-    };
-
-    React.useEffect(() => {
-        unitForm.setValue("image", uploadedFiles);
-        // unitForm.trigger("image");
-    }, [uploadedFiles, unitForm]);
+    console.log(unitForm.getValues("image"));
 
     async function onSubmit(values: UnitData) {
         if (!isPending) {
-            startTransition(() => {
-                toast.promise(createDuplicateUnit(propertyId, values, uploadedFiles, Number(numberOfUnits)), {
-                    loading: "Adding unit in...",
-                    success: () => {
-                        return "Unit added successfully";
-                    },
-                    error: (error) => {
-                        console.log(error.message);
-                        return error.message;
-                    },
-                });
+            startTransition(async () => {
+                if (uppy.getFiles().length > 0) {
+                    const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL;
+                    const bucketName = "unihomes image storage";
+
+                    const uploadedFiles: string[] = [];
+
+                    const uploadFiles = uppy.getFiles().map(async (file) => {
+                        const objectName = `property/${userId}/${propertyId}/unit/unit_image/${file.name}`;
+                        const fileUrl = `${supabaseUrl}/storage/v1/object/public/${bucketName}/${objectName}`;
+                        uppy.setFileMeta(file.id, {
+                            objectName,
+                        });
+
+                        uploadedFiles.push(fileUrl);
+
+                        await uppy.upload();
+                    });
+
+                    await Promise.all(uploadFiles);
+
+                    console.log("Uploaded file URLs:", uploadedFiles);
+
+                    toast.promise(createDuplicateUnit(propertyId, values, uploadedFiles, Number(numberOfUnits)), {
+                        loading: "Adding unit...",
+                        success: () => {
+                            return "Unit added successfully";
+                        },
+                        error: (error) => {
+                            console.log(error.message);
+                            return error.message;
+                        },
+                    });
+                } 
             });
         }
-        console.log(uploadedFiles, "uploaded files onclick");
     }
 
     return (
         <ShadForm {...unitForm}>
             <form onSubmit={unitForm.handleSubmit(onSubmit)} className="space-y-8 pb-11 bg-background max-w-6xl mx-auto">
             <FormField
-                        control={unitForm.control}
-                        name="image"
-                        render={({ field }) => (
-                            <FormItem className="col-span-12">
-                                <FormLabel htmlFor="title">Images</FormLabel>
-                                <FormControl>
-                                    <Dashboard uppy={uppy} hideUploadButton className="col-span-3" />
-                                </FormControl>
-                                {unitForm.formState.errors.image ? <FormMessage /> : <FormDescription>Add images.</FormDescription>}
-                            </FormItem>
-                        )}
-                    />
-                
+                control={unitForm.control}
+                name="image"
+                render={({ field }) => (
+                    <FormItem className="col-span-12">
+                        <FormLabel htmlFor="title">Images</FormLabel>
+                        <FormControl>
+                            <Dashboard uppy={uppy} hideUploadButton className="col-span-3" />
+                        </FormControl>
+                        {unitForm.formState.errors.image ? <FormMessage /> : <FormDescription>Add images.</FormDescription>}
+                    </FormItem>
+                )}
+            />
+
 
                 <div className="grid grid-cols-16 gap-4">
                     <FormField
@@ -540,3 +527,33 @@ function AddUnitsForm({ amenities, unitId, propertyId, userId }: { amenities?: a
 }
 
 export default AddUnitsForm;
+    // uppy.on("upload-success", (file, response) => {
+    //     const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL;
+    //     const bucketName = file.meta.bucketName;
+    //     const objectName = file.meta.objectName;
+
+    //     const fileUrl = `${supabaseUrl}/storage/v1/object/public/${bucketName}/${objectName}`;
+
+    //     console.log("Upload successful:", response, "File URL:", fileUrl);
+
+    //     setUploadedFiles((prevImages) => {
+    //         const alreadyUploaded = prevImages.some((url) => url === fileUrl);
+
+    //         if (alreadyUploaded) {
+    //             return prevImages;
+    //         }
+
+    //         return [...prevImages, fileUrl];
+    //     });
+    // });
+
+    // uppy.on("file-removed", (file) => {
+    //     const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL;
+    //     const bucketName = file.meta.bucketName;
+    //     const objectName = file.meta.objectName;
+    
+    //     const fileUrl = `${supabaseUrl}/storage/v1/object/public/${bucketName}/${objectName}`;
+    //     setUploadedFiles((prevImages) =>
+    //         prevImages.filter((url) => url !== fileUrl)
+    //     );
+    // });

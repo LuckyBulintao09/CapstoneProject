@@ -44,7 +44,6 @@ export async function createDuplicateUnit(propertyId: string, values: any, fileU
         bedrooms: values.bedrooms,
         beds: values.beds,
         occupants: values.occupants,
-        unit_image: values.unit_image,
         outside_view: values.outside_view,
         room_size: values.room_size,
     });
@@ -61,9 +60,8 @@ export async function createDuplicateUnit(propertyId: string, values: any, fileU
             await insertAmenities(values.amenities, unit.id);
             await addUnitImages(fileUrls, unit.id);
         }
-        
-        redirect(`/hosting/properties/${propertyId}/details/units`);
-        
+
+        redirect(`/hosting/properties/${propertyId}/details/units`);  
     } catch (error: any) {
         console.log(error);
         throw error;

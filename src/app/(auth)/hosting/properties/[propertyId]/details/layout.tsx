@@ -78,7 +78,7 @@ function EditPropertyLayout({ children, right, params }: { children: React.React
                                 </Link>
                             </div> */}
                             <div className="grow overflow-hidden">
-                                <ScrollArea className="h-[calc(100vh-68px-64px-48px)] w-full">
+                                <ScrollArea className="h-[calc(100vh-68px-64px-40px-48px)] w-full">
                                     <div className="flex flex-col gap-4 pr-16 pl-[calc(44px+32px)] pt-4 airBnbDesktop:pb-32">{children} </div>
                                 </ScrollArea>
                             </div>
