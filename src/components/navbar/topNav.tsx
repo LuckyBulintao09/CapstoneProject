@@ -87,31 +87,32 @@ function NavigationBar() {
 			authListener?.subscription.unsubscribe();
 		};
 	}, []);
-React.useEffect(() => {
-	const { auth } = createClient();
 
-	const fetchUserData = async () => {
-		const { data } = await auth.getSession();
-		if (data.session) {
-			const userId = data.session.user.id;
+	React.useEffect(() => {
+		const { auth } = createClient();
 
-			// Fetch profile_url from the Supabase database
-			const { data: profileData, error } = await createClient()
-				.from('account')
-				.select('profile_url')
-				.eq('id', userId)
-				.single();
+		const fetchUserData = async () => {
+			const { data } = await auth.getSession();
+			if (data.session) {
+				const userId = data.session.user.id;
 
-			if (profileData && !error) {
-				setProfileUrl(profileData.profile_url);
+				// Fetch profile_url from the Supabase database
+				const { data: profileData, error } = await createClient()
+					.from('account')
+					.select('profile_url')
+					.eq('id', userId)
+					.single();
+
+				if (profileData && !error) {
+					setProfileUrl(profileData.profile_url);
+				}
+
+				setUser(data.session.user);
 			}
+		};
 
-			setUser(data.session.user);
-		}
-	};
-
-	fetchUserData();
-}, []);
+		fetchUserData();
+	}, []);
 
 	// for scrolling while mobile
 	React.useEffect(() => {

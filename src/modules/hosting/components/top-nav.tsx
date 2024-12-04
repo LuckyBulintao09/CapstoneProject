@@ -59,6 +59,8 @@ function TopNavigation() {
     */
 	const [user, setUser] = React.useState<User | null>(null);
 	const [open, setOpen] = React.useState<boolean>(false);
+	const [profileUrl, setProfileUrl] = React.useState<string | null>(null);
+
 	const isDesktop = useMediaQuery('(min-width: 950px)');
 
 	const pathname = usePathname();
@@ -83,6 +85,32 @@ function TopNavigation() {
 		return () => {
 			authListener?.subscription.unsubscribe();
 		};
+	}, []);
+
+	React.useEffect(() => {
+		const { auth } = createClient();
+
+		const fetchUserData = async () => {
+			const { data } = await auth.getSession();
+			if (data.session) {
+				const userId = data.session.user.id;
+
+				// Fetch profile_url from the Supabase database
+				const { data: profileData, error } = await createClient()
+					.from('account')
+					.select('profile_url')
+					.eq('id', userId)
+					.single();
+
+				if (profileData && !error) {
+					setProfileUrl(profileData.profile_url);
+				}
+
+				setUser(data.session.user);
+			}
+		};
+
+		fetchUserData();
 	}, []);
 
 	// for scrolling while mobile
@@ -235,7 +263,7 @@ function TopNavigation() {
 								<DropdownMenu modal={false}>
 									<DropdownMenuTrigger className='rounded-full'>
 										<Avatar className='w-9 h-9 select-none'>
-											<AvatarImage src='' />
+											<AvatarImage src={profileUrl || ''} alt='User Avatar' />
 											<AvatarFallback className='text-base leading-none font-normal bg-primary text-white dark:text-foreground'>
 												{user?.user_metadata.firstname.charAt(0).toUpperCase()}
 												{user?.user_metadata.lastname.charAt(0).toUpperCase()}
