@@ -280,7 +280,7 @@ function NavigationBar() {
 													const supabase = createClient();
 													const { data, error } = await supabase
 														.from('account')
-														.select('approved_government')
+														.select('role')
 														.eq('id', user.id)
 														.single();
 
@@ -292,7 +292,7 @@ function NavigationBar() {
 														return;
 													}
 
-													if (data?.approved_government) {
+													if (data?.role === 'Proprietor') {
 														window.location.href = '/hosting';
 													} else {
 														window.location.href = '/client/profile';

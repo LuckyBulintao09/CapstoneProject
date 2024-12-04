@@ -1,7 +1,7 @@
 'use client';
 
 import { useState, useEffect } from 'react';
-import { format, isWithinInterval, parseISO } from 'date-fns';
+import { format, isWithinInterval, parseISO, set } from 'date-fns';
 import { ColumnDef, Row } from '@tanstack/react-table';
 import { Button } from '@/components/ui/button';
 import { DataTableColumnHeader } from '@/components/table/data-column-header';
@@ -14,6 +14,8 @@ import {
 	cancelTransaction,
 } from '@/actions/transaction/column';
 import { cancel_onsiteNotification } from '@/actions/notification/notification';
+import RejectionTransactionModal from '@/modules/hosting/transaction-history/components/cancellationModal';
+import { toast } from 'sonner';
 
 interface Review {
 	id: number;
@@ -32,6 +34,7 @@ const capitalizeFirstLetter = (string: string): string => {
 
 const TransactionActionsCell = ({ row }: { row: Row<Transaction> }) => {
 	const [isModalOpen, setIsModalOpen] = useState(false);
+	const [isCancelModalOpen, setIsCancelModalOpen] = useState(false);
 	const [reviewData, setReviewData] = useState<Review | null>(null);
 	const transactionStatus = row.getValue('transaction_status') as string;
 	const unitId = row.original.unit?.id;
@@ -52,14 +55,16 @@ const TransactionActionsCell = ({ row }: { row: Row<Transaction> }) => {
 		const success = await deleteReview(reviewData.id);
 		if (success) {
 			setReviewData(null);
+			toast.success('Review deleted successfully!');
 		}
 	};
 
-	const handleCancel = async () => {
-		const success = await cancelTransaction(row.original.id, unitId);
+	const handleCancel = async ( reason: string) => {
+		const success = await cancelTransaction(row.original.id, unitId, reason);
 
 		if (success) {
-			await cancel_onsiteNotification(unitId, row.original.user_id);
+			await cancel_onsiteNotification(unitId, row.original.user_id, reason);
+			toast.success('Transaction cancelled successfully!');
 			window.location.reload();
 		}
 	};
@@ -103,11 +108,17 @@ const TransactionActionsCell = ({ row }: { row: Row<Transaction> }) => {
 				<Button
 					className='bg-destructive hover:bg-destructive text-white flex justify-center w-[150px] text-xs'
 					size='sm'
-					onClick={handleCancel}
+					onClick={() => setIsCancelModalOpen(true)}
 				>
 					Cancel
 				</Button>
 			)}
+
+			<RejectionTransactionModal
+			isOpen={isCancelModalOpen}
+			onClose={() => setIsCancelModalOpen(false)}
+			onSubmit={handleCancel}
+			/>
 		</div>
 	);
 };

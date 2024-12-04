@@ -40,7 +40,8 @@ export const onsiteNotification = async (
 
 export const cancel_onsiteNotification = async (
     unitID : number,
-    senderID: string
+    senderID: string,
+    reason?: string
   ) => {
     const {data: property_id, error: propertyIdError} = await supabase
       .from("unit")
@@ -57,9 +58,13 @@ export const cancel_onsiteNotification = async (
       .select("owner_id")
       .eq("id", property_title[0].company_id)
     
+    let text = `Transaction: Onsite Visit Cancelled for ${property_title[0].title} - ${property_id[0].title}`;
+    if (reason) {
+      text += ` because "${reason}"`;
+    }
     const { data, error } = await supabase
       .from("notifications")
-      .insert({ receiver_id: receiver_id[0].owner_id, text: `Transaction: Onsite Visit Cancelled for ${property_title[0].title} - ${property_id[0].title}` });
+      .insert({ receiver_id: receiver_id[0].owner_id, text });
     if (error) throw error;
 }
 

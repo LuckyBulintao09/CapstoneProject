@@ -475,177 +475,188 @@ export function SpecificListing({ id }: SpecificListingProps) {
 
 				<div className='flex flex-col gap-4 overflow-x-auto'>
 					{/* MAP UNITS HERE */}
-					{sortedUnits.map((unit) => (
-						<Card
-							key={unit.id}
-							className='bg-white overflow-x-auto min-w-auto dark:bg-secondary border border-gray-300 shadow-md
-							'
-						>
-							<CardHeader>
-								<CardTitle className='text-lg'>
-									{/* Redirect to the modal for this specific unit */}
-									<TooltipProvider>
-										<Tooltip>
-											<TooltipTrigger asChild>
-												<Button
-													onClick={() => handleOpenUnitGallery(unit.unit_image)}
-													className='text-primary dark:text-blue-300 underline text-md font-semibold pl-0'
-													variant='link'
-												>
-													{unit.title}
-												</Button>
-											</TooltipTrigger>
-											<TooltipContent side='top'>
-												<p className='font-normal'>
-													Click to view the unit gallery
-												</p>
-											</TooltipContent>
-										</Tooltip>
-									</TooltipProvider>
-								</CardTitle>
-
-								<CardDescription className=''>
-									<table className='w-full table-auto'>
-										<thead>
-											<tr className='border-b dark:text-gray-100'>
-												<th className='px-4 py-2 text-center'>Details</th>
-												<th className='px-4 py-2 text-center'>
-													Current Number of Occupants
-												</th>
-												<th className='px-4 py-2 text-center'>Price</th>
-												<th className='px-4 py-2 text-center'>Action</th>
-											</tr>
-										</thead>
-										<tbody>
-											<tr className='border-b'>
-												<td className='pl-4 py-2 border-r border-gray-300 w-[480px] dark:text-gray-200'>
-													<div className='flex items-center'>
-														<Shield className='mr-2' size={16} />
-														<span>Privacy Type: {unit.privacy_type}</span>
-													</div>
-													<div className='flex items-center'>
-														<House className='mr-2' size={16} />
-														<span>
-															{unit.bedrooms}{' '}
-															{unit.bedrooms === 1 ? 'room' : 'rooms'}
-														</span>
-													</div>
-													<div className='flex items-center'>
-														<Bed className='mr-2' size={16} />
-														<span>
-															{unit.beds} {unit.beds === 1 ? 'bed' : 'beds'}
-														</span>
-													</div>
-													<div className='flex items-center'>
-														<Users2 className='mr-2' size={16} />
-														<span>
-															For: {unit.occupants}{' '}
-															{unit.occupants === 1 ? 'guest' : 'guests'}
-														</span>
-													</div>
-													<div className='flex items-center'>
-														<Axis3D className='mr-2' size={16} />
-														<span>
-															Room size:{' '}
-															{unit.room_size > 0
-																? `${unit.room_size} m²`
-																: 'N/A'}
-														</span>
-													</div>
-													<div className='flex items-center'>
-														<Glasses className='mr-2' size={16} />
-														<span>
-															{unit.outside_view
-																? 'With Outdoor View'
-																: 'No Outdoor View'}
-														</span>
-													</div>
-													<div className='border-t border-gray-300 my-3' />
-													<div className='grid lg:grid-cols-2 sm:grid-cols-1'>
-														{unit.amenities && unit.amenities.length > 0 && (
-															<div className='grid lg:grid-cols-2 sm:grid-cols-1'>
-																{unit.amenities.map((amenity, index) => (
-																	<div
-																		key={index}
-																		className='flex items-center'
-																	>
-																		<Check
-																			className='mr-2 text-green-600'
-																			size={12}
-																		/>
-																		<span>{amenity}</span>
-																	</div>
-																))}
-															</div>
-														)}
-													</div>
-												</td>
-
-												<td className='px-4 py-2 border-r border-gray-300 max-w-[10px] text-center'>
-													<TooltipProvider>
-														<Tooltip>
-															<TooltipTrigger asChild>
-																<div className='flex justify-center items-center space-x-1 cursor-pointer'>
-																	{Array.from(
-																		{ length: unit.occupants },
-																		(_, i) =>
-																			i < unit.current_occupants ? (
-																				<UserCheck2
-																					key={i}
-																					className='text-primary dark:text-blue-300'
-																				/>
-																			) : (
-																				<User2
-																					key={i}
-																					className='text-gray-500 dark:text-gray-200'
-																				/>
-																			)
-																	)}
-																</div>
-															</TooltipTrigger>
-															<TooltipContent>
-																<p>
-																	{unit.current_occupants} occupant
-																	{unit.current_occupants !== 1
-																		? 's'
-																		: ''} —{' '}
-																	{unit.occupants - unit.current_occupants} spot
-																	{unit.occupants - unit.current_occupants !== 1
-																		? 's'
-																		: ''}{' '}
-																	available
-																</p>
-															</TooltipContent>
-														</Tooltip>
-													</TooltipProvider>
-												</td>
-
-												<td className='px-4 py-2 border-r border-gray-300 text-center dark:text-gray-200'>
-													P{unit.price}/month
-												</td>
-
-												<td className='py-2 border-r border-gray-300 text-center dark:text-gray-200 px-4'>
+					{sortedUnits.length > 0 ? (
+						sortedUnits.map((unit) => (
+							<Card
+								key={unit.id}
+								className='bg-white overflow-x-auto min-w-auto dark:bg-secondary border border-gray-300 shadow-md
+								'
+							>
+								<CardHeader>
+									<CardTitle className='text-lg'>
+										{/* Redirect to the modal for this specific unit */}
+										<TooltipProvider>
+											<Tooltip>
+												<TooltipTrigger asChild>
 													<Button
-														className='text-white px-4 py-2 rounded'
-														onClick={() =>
-															handleOpenBookingModal(
-																unit.id,
-																unit.occupants - unit.current_occupants,
-																unit.price,
-																unit.title
-															)
-														}
+														onClick={() => handleOpenUnitGallery(unit.unit_image)}
+														className='text-primary dark:text-blue-300 underline text-md font-semibold pl-0'
+														variant='link'
 													>
-														Book Now
+														{unit.title}
 													</Button>
-												</td>
-											</tr>
-										</tbody>
-									</table>
-								</CardDescription>
-							</CardHeader>
-						</Card>
-					))}
+												</TooltipTrigger>
+												<TooltipContent side='top'>
+													<p className='font-normal'>
+														Click to view the unit gallery
+													</p>
+												</TooltipContent>
+											</Tooltip>
+										</TooltipProvider>
+									</CardTitle>
+
+									<CardDescription className=''>
+										<table className='w-full table-auto'>
+											<thead>
+												<tr className='border-b dark:text-gray-100'>
+													<th className='px-4 py-2 text-center'>Details</th>
+													<th className='px-4 py-2 text-center'>
+														Current Number of Occupants
+													</th>
+													<th className='px-4 py-2 text-center'>Price</th>
+													<th className='px-4 py-2 text-center'>Action</th>
+												</tr>
+											</thead>
+											<tbody>
+												<tr className='border-b'>
+													<td className='pl-4 py-2 border-r border-gray-300 w-[480px] dark:text-gray-200'>
+														<div className='flex items-center'>
+															<Shield className='mr-2' size={16} />
+															<span>Privacy Type: {unit.privacy_type}</span>
+														</div>
+														<div className='flex items-center'>
+															<House className='mr-2' size={16} />
+															<span>
+																{unit.bedrooms}{' '}
+																{unit.bedrooms === 1 ? 'room' : 'rooms'}
+															</span>
+														</div>
+														<div className='flex items-center'>
+															<Bed className='mr-2' size={16} />
+															<span>
+																{unit.beds} {unit.beds === 1 ? 'bed' : 'beds'}
+															</span>
+														</div>
+														<div className='flex items-center'>
+															<Users2 className='mr-2' size={16} />
+															<span>
+																For: {unit.occupants}{' '}
+																{unit.occupants === 1 ? 'guest' : 'guests'}
+															</span>
+														</div>
+														<div className='flex items-center'>
+															<Axis3D className='mr-2' size={16} />
+															<span>
+																Room size:{' '}
+																{unit.room_size > 0
+																	? `${unit.room_size} m²`
+																	: 'N/A'}
+															</span>
+														</div>
+														<div className='flex items-center'>
+															<Glasses className='mr-2' size={16} />
+															<span>
+																{unit.outside_view
+																	? 'With Outdoor View'
+																	: 'No Outdoor View'}
+															</span>
+														</div>
+														<div className='border-t border-gray-300 my-3' />
+														<div className='grid lg:grid-cols-2 sm:grid-cols-1'>
+															{unit.amenities && unit.amenities.length > 0 && (
+																<div className='grid lg:grid-cols-2 sm:grid-cols-1'>
+																	{unit.amenities.map((amenity, index) => (
+																		<div
+																			key={index}
+																			className='flex items-center'
+																		>
+																			<Check
+																				className='mr-2 text-green-600'
+																				size={12}
+																			/>
+																			<span>{amenity}</span>
+																		</div>
+																	))}
+																</div>
+															)}
+														</div>
+													</td>
+
+													<td className='px-4 py-2 border-r border-gray-300 max-w-[10px] text-center'>
+														<TooltipProvider>
+															<Tooltip>
+																<TooltipTrigger asChild>
+																	<div className='flex justify-center items-center space-x-1 cursor-pointer'>
+																		{Array.from(
+																			{ length: unit.occupants },
+																			(_, i) =>
+																				i < unit.current_occupants ? (
+																					<UserCheck2
+																						key={i}
+																						className='text-primary dark:text-blue-300'
+																					/>
+																				) : (
+																					<User2
+																						key={i}
+																						className='text-gray-500 dark:text-gray-200'
+																					/>
+																				)
+																		)}
+																	</div>
+																</TooltipTrigger>
+																<TooltipContent>
+																	<p>
+																		{unit.current_occupants} occupant
+																		{unit.current_occupants !== 1
+																			? 's'
+																			: ''} —{' '}
+																		{unit.occupants - unit.current_occupants} spot
+																		{unit.occupants - unit.current_occupants !== 1
+																			? 's'
+																			: ''}{' '}
+																		available
+																	</p>
+																</TooltipContent>
+															</Tooltip>
+														</TooltipProvider>
+													</td>
+
+													<td className='px-4 py-2 border-r border-gray-300 text-center dark:text-gray-200'>
+														P{unit.price}/month
+													</td>
+
+													<td className='py-2 border-r border-gray-300 text-center dark:text-gray-200 px-4'>
+														<Button
+															className='text-white px-4 py-2 rounded'
+															disabled={userId === null}
+															onClick={() =>
+																userId !== null
+																	? handleOpenBookingModal(
+																			unit.id,
+																			unit.occupants - unit.current_occupants,
+																			unit.price,
+																			unit.title
+																	  )
+																	: toast.error('Please log in first')
+															}
+														>
+															Book Now
+														</Button>
+													</td>
+												</tr>
+											</tbody>
+										</table>
+									</CardDescription>
+								</CardHeader>
+							</Card>
+						))
+					) : (
+						<div className='bg-backgroubd dark:bg-secondary p-4 rounded-lg shadow-md'>
+							<p className='text-center text-lg font-semibold text-gray-700 dark:text-gray-300'>
+								No available units
+							</p>
+						</div>
+					)}
 				</div>
 			</div>
 

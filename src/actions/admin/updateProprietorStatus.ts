@@ -6,7 +6,8 @@ import { sendEmail } from "../email/updateProprietorMessage";
 export const updateProprietorStatus = async (
   proprietorId: string,
   status: boolean,
-  reason?: string
+  reason?: string,
+  role?: string
 ) => {
   const supabase = createClient();
 
@@ -29,6 +30,10 @@ export const updateProprietorStatus = async (
 
     if (!status && reason) {
       updates.decline_reason = reason;
+    }
+
+    if (status && role) {
+      updates.role = role;
     }
 
     const { error } = await supabase

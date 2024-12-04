@@ -43,7 +43,7 @@ const NewProprietorsActionsCell = ({
     setLoading(true);
     setIsApproved(true);
 
-    const result = await updateProprietorStatus(row.original.id, true);
+    const result = await updateProprietorStatus(row.original.id, true, null,"Proprietor");
     if (result) {
       toast.success("Client approved successfully!");
       onProprietorUpdate(row.original.id);
@@ -148,12 +148,6 @@ const GovernmentIDViewActionCell = ({ row }: { row: Row<NewProprietors> }) => {
 export const columns = (
   handleProprietorUpdate: (id: string) => void
 ): ColumnDef<NewProprietors>[] => [
-  {
-    accessorKey: "id",
-    header: ({ column }) => (
-      <DataTableColumnHeader column={column} title="ID" className="font-bold" />
-    ),
-  },
   {
     accessorKey: "proprietor_name",
     header: ({ column }) => (
