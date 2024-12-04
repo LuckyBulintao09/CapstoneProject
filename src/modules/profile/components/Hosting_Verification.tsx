@@ -6,7 +6,6 @@ import {
 	CardTitle,
 } from '@/components/ui/card';
 import { Button } from '@nextui-org/react';
-import { UserIcon } from '@heroicons/react/24/solid';
 import spiels from '@/lib/constants/spiels';
 import {
 	getUserSession,
@@ -116,7 +115,7 @@ const HostingVerification: React.FC = () => {
 						? 'border-red-700 dark:border-red-300'
 						: govIdUrl
 						? 'border-yellow-700'
-						: 'border-black'
+						: 'border-black dark:border-white'
 				}`}
 			>
 				<Terminal className='h-4 w-4' />
@@ -128,7 +127,7 @@ const HostingVerification: React.FC = () => {
 							? 'text-red-700 dark:text-red-300'
 							: govIdUrl
 							? 'text-yellow-700'
-							: 'text-black'
+							: 'text-black dark:text-white'
 					}`}
 				>
 					{isApproved
