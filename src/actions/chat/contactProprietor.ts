@@ -1,7 +1,6 @@
-"use server";
-import { createClient } from "@/utils/supabase/server";
+"use client";
+import { createClient } from "@/utils/supabase/client";
 import { checkConversation } from "./checkConversation";
-import { sendSystemMessage } from "./systemGeneratedMessage";
 const supabase = createClient();
 
 export async function contactProprietor(proprietorId: string) {

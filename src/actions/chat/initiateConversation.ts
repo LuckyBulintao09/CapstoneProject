@@ -1,5 +1,5 @@
-"use server";
-import { createClient } from '@/utils/supabase/server';
+"use client";
+import { createClient } from '@/utils/supabase/client';
 import { checkConversation } from './checkConversation';
 import { sendMessage } from './sendMessage';
 import { sendSystemMessage } from './systemGeneratedMessage';
