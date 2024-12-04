@@ -4,7 +4,7 @@ import React, { startTransition, useRef, useState, useTransition } from "react";
 
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
-import { z } from "zod";
+import { number, z } from "zod";
 import { UnitData, unitSchema } from "@/lib/schemas/unitSchema";
 
 import { Form as ShadForm, FormControl, FormDescription, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form";
@@ -18,6 +18,7 @@ import { toast } from "sonner";
 import MultipleSelector, { Option } from "@/components/ui/multiple-selector";
 
 import { useRouter } from "next/navigation";
+import { useSearchParams } from 'next/navigation';
 
 import { cn } from "@/lib/utils";
 
@@ -25,7 +26,7 @@ import Link from "next/link";
 
 import { CircleX, ChevronDown, ChevronUp, Minus, Plus } from "lucide-react";
 import { removeUnitById } from "@/actions/unit/removeUnitById";
-import { updateUnit } from "@/actions/unit/update-unit";
+import { createDuplicateUnit, updateUnit } from "@/actions/unit/update-unit";
 
 import Uppy from "@uppy/core";
 import { Dashboard } from "@uppy/react";
@@ -40,7 +41,10 @@ function AddUnitsForm({ amenities, unitId, propertyId, userId }: { amenities?: a
     const [isFileUploadEmpty, setIsFileUploadEmpty] = React.useState<boolean>(true);
     const [uploadedFiles, setUploadedFiles] = useState<any[]>([]);
     const [isPending, startTransition] = useTransition();
-    const router = useRouter();
+
+    const searchParams = useSearchParams();
+  
+    const numberOfUnits = searchParams.get('numberOfUnits');
 
     const unitForm = useForm<UnitData>({
         resolver: zodResolver(unitSchema),
@@ -129,6 +133,7 @@ function AddUnitsForm({ amenities, unitId, propertyId, userId }: { amenities?: a
     
 
     const inputRef = useRef<HTMLInputElement>(null);
+    const isFirstMount = React.useRef(true);
 
     const handleClearInput = (fieldName: keyof UnitData) => {
         unitForm.setValue(fieldName, "");
@@ -139,13 +144,13 @@ function AddUnitsForm({ amenities, unitId, propertyId, userId }: { amenities?: a
 
     React.useEffect(() => {
         unitForm.setValue("image", uploadedFiles);
-        unitForm.trigger("image");
+        // unitForm.trigger("image");
     }, [uploadedFiles, unitForm]);
 
     async function onSubmit(values: UnitData) {
         if (!isPending) {
             startTransition(() => {
-                toast.promise(updateUnit(unitId, propertyId, values, uploadedFiles), {
+                toast.promise(createDuplicateUnit(propertyId, values, uploadedFiles, Number(numberOfUnits)), {
                     loading: "Adding unit in...",
                     success: () => {
                         return "Unit added successfully";

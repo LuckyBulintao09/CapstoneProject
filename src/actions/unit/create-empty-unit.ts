@@ -17,3 +17,4 @@ export async function createEmptyUnit(propertyId) {
     redirect(`/hosting/properties/${propertyId}/units/add-a-unit/${data.id}/unit-details`);
 
 }
+
