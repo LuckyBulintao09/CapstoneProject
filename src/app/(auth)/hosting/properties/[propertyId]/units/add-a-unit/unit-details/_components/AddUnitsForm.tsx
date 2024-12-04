@@ -18,7 +18,7 @@ import { toast } from "sonner";
 import MultipleSelector, { Option } from "@/components/ui/multiple-selector";
 
 import { useRouter } from "next/navigation";
-import { useSearchParams } from 'next/navigation';
+import { useSearchParams } from "next/navigation";
 
 import { cn } from "@/lib/utils";
 
@@ -43,8 +43,8 @@ function AddUnitsForm({ amenities, unitId, propertyId, userId }: { amenities?: a
     const [isPending, startTransition] = useTransition();
 
     const searchParams = useSearchParams();
-  
-    const numberOfUnits = searchParams.get('numberOfUnits');
+
+    const numberOfUnits = searchParams.get("numberOfUnits");
 
     const inputRef = useRef<HTMLInputElement>(null);
 
@@ -113,6 +113,13 @@ function AddUnitsForm({ amenities, unitId, propertyId, userId }: { amenities?: a
     console.log(unitForm.getValues("image"));
 
     async function onSubmit(values: UnitData) {
+        const numberOfUnitsParsed = Number(numberOfUnits);
+
+        if (isNaN(numberOfUnitsParsed) || numberOfUnitsParsed < 1 || numberOfUnitsParsed > 10 || /[^0-9]/.test(numberOfUnits)) {
+            toast.error("Invalid number of units.");
+            return;
+        }
+
         if (!isPending) {
             startTransition(async () => {
                 if (uppy.getFiles().length > 0) {
@@ -147,7 +154,7 @@ function AddUnitsForm({ amenities, unitId, propertyId, userId }: { amenities?: a
                             return error.message;
                         },
                     });
-                } 
+                }
             });
         }
     }
@@ -155,20 +162,19 @@ function AddUnitsForm({ amenities, unitId, propertyId, userId }: { amenities?: a
     return (
         <ShadForm {...unitForm}>
             <form onSubmit={unitForm.handleSubmit(onSubmit)} className="space-y-8 pb-11 bg-background max-w-6xl mx-auto">
-            <FormField
-                control={unitForm.control}
-                name="image"
-                render={({ field }) => (
-                    <FormItem className="col-span-12">
-                        <FormLabel htmlFor="title">Images</FormLabel>
-                        <FormControl>
-                            <Dashboard uppy={uppy} hideUploadButton className="col-span-3" />
-                        </FormControl>
-                        {unitForm.formState.errors.image ? <FormMessage /> : <FormDescription>Add images.</FormDescription>}
-                    </FormItem>
-                )}
-            />
-
+                <FormField
+                    control={unitForm.control}
+                    name="image"
+                    render={({ field }) => (
+                        <FormItem className="col-span-12">
+                            <FormLabel htmlFor="title">Images</FormLabel>
+                            <FormControl>
+                                <Dashboard uppy={uppy} hideUploadButton className="col-span-3" />
+                            </FormControl>
+                            {unitForm.formState.errors.image ? <FormMessage /> : <FormDescription>Add images.</FormDescription>}
+                        </FormItem>
+                    )}
+                />
 
                 <div className="grid grid-cols-16 gap-4">
                     <FormField
@@ -508,8 +514,6 @@ function AddUnitsForm({ amenities, unitId, propertyId, userId }: { amenities?: a
                 <div className="flex items-center justify-start gap-4">
                     <Link
                         href={`/hosting/properties/${propertyId}/details/units`}
-                        onClick={async () => await removeUnitById(unitId, propertyId)}
-                        // disabled={unitForm.formState.isSubmitting || isPending}
                         className={cn(buttonVariants({ variant: "outline", className: "w-fit" }))}
                     >
                         Back
@@ -527,33 +531,3 @@ function AddUnitsForm({ amenities, unitId, propertyId, userId }: { amenities?: a
 }
 
 export default AddUnitsForm;
-    // uppy.on("upload-success", (file, response) => {
-    //     const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL;
-    //     const bucketName = file.meta.bucketName;
-    //     const objectName = file.meta.objectName;
-
-    //     const fileUrl = `${supabaseUrl}/storage/v1/object/public/${bucketName}/${objectName}`;
-
-    //     console.log("Upload successful:", response, "File URL:", fileUrl);
-
-    //     setUploadedFiles((prevImages) => {
-    //         const alreadyUploaded = prevImages.some((url) => url === fileUrl);
-
-    //         if (alreadyUploaded) {
-    //             return prevImages;
-    //         }
-
-    //         return [...prevImages, fileUrl];
-    //     });
-    // });
-
-    // uppy.on("file-removed", (file) => {
-    //     const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL;
-    //     const bucketName = file.meta.bucketName;
-    //     const objectName = file.meta.objectName;
-    
-    //     const fileUrl = `${supabaseUrl}/storage/v1/object/public/${bucketName}/${objectName}`;
-    //     setUploadedFiles((prevImages) =>
-    //         prevImages.filter((url) => url !== fileUrl)
-    //     );
-    // });

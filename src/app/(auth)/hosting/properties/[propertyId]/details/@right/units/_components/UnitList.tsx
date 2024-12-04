@@ -126,7 +126,6 @@ export default function UnitList({ propertyId }: { propertyId: string }) {
             </div>
         );
     }
-    console.log(unitsData);
 
     return (
         <>
@@ -146,22 +145,25 @@ export default function UnitList({ propertyId }: { propertyId: string }) {
                         key={unit.id}
                         className="relative flex w-full items-start gap-2 rounded-lg border border-input p-4 shadow-sm shadow-black/5 has-[[data-state=checked]]:border-ring"
                     >
-                        <Switch
-                            id="set_isReserved"
-                            className="order-1 h-4 w-6 [&_span]:size-3 [&_span]:data-[state=checked]:translate-x-2 rtl:[&_span]:data-[state=checked]:-translate-x-2"
-                            aria-describedby="set_isReserved-description"
-                            checked={unit.isReserved}
-                            onCheckedChange={async (checked) => {
-                                setUnitsData((current) => {
-                                    return current.map((u) => (u.id === unit.id ? { ...u, isReserved: checked } : u));
-                                });
-                                startTransition(async () => {
-                                    await toggleIsReserved(unit.id, checked);
-                                    fetchUnits();
-                                });
-                            }}
-                            disabled={isPending}
-                        />
+                        <div className="order-1 flex items-center gap-2">
+                            <span className="text-xs text-muted-foreground">Reserve unit</span>
+                            <Switch
+                                id="set_isReserved"
+                                className="h-4 w-6 [&_span]:size-3 [&_span]:data-[state=checked]:translate-x-2 rtl:[&_span]:data-[state=checked]:-translate-x-2"
+                                aria-describedby="set_isReserved-description"
+                                checked={unit.isReserved}
+                                onCheckedChange={async (checked) => {
+                                    setUnitsData((current) => {
+                                        return current.map((u) => (u.id === unit.id ? { ...u, isReserved: checked } : u));
+                                    });
+                                    startTransition(async () => {
+                                        await toggleIsReserved(unit.id, checked);
+                                    });
+                                }}
+                                disabled={isPending}
+                            />
+                        </div>
+
                         <div className="flex grow items-center gap-3">
                             <div className="flex-shrink-0">
                                 {unit.unit_image && unit.unit_image[0] ? (
@@ -191,7 +193,13 @@ export default function UnitList({ propertyId }: { propertyId: string }) {
                                         Private Type: {unit.privacy_type}
                                     </p>
                                     <p id="set_isReserved-description" className="text-xs text-muted-foreground">
-                                        Price: ₱{new Intl.NumberFormat('en-PH', { style: 'decimal', minimumFractionDigits: 2, maximumFractionDigits: 2 }).format(unit.price)} (PHP)
+                                        Price: ₱
+                                        {new Intl.NumberFormat("en-PH", {
+                                            style: "decimal",
+                                            minimumFractionDigits: 2,
+                                            maximumFractionDigits: 2,
+                                        }).format(unit.price)}{" "}
+                                        (PHP)
                                     </p>
                                     <Link
                                         href={`/hosting/properties/${propertyId}/units/edit-unit/${unit?.id}`}

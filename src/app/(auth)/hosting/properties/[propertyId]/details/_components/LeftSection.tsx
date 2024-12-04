@@ -184,7 +184,9 @@ function LeftSection({ property, units, location, propertyId }: any) {
                     ></Link>
                     <div>
                         <div className="pt-2 overflow-clip text-[1rem] tracking-normal leading-5 text-ellipsis font-normal whitespace-pre-line text-muted-foreground">
-                            <div>{property?.description}</div>
+                            <div>
+                                <p className="break-words w-[464px]">{property?.description}</p>
+                            </div>
                         </div>
                     </div>
                 </div>

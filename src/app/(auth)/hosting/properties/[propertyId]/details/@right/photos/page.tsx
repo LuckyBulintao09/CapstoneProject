@@ -54,7 +54,7 @@ async function PhotosPage({ params }: { params: { propertyId: string } }) {
 					</div>
 					{/* <div className=' border-b border-gray-300 '></div> */}
 				</header>
-				<div className=' px-6 airBnbDesktop:px-0 min-[1128px]:px-0 py-6 pt-0 grow overflow-y-auto airBnbDesktop:pb-10 '>
+				<div className=' px-6 airBnbDesktop:px-0 min-[1128px]:px-0 py-6 pt-0 grow overflow-y-visible airBnbDesktop:pb-10 '>
 					<div className='airBnbDesktop:mx-auto airBnbBigDesktop:w-[800px] min-[1128px]:w-[512px] airBnbDesktop:w-[464px]'>
 						<div className='font-normal'>
 							<div className='text-base leading-5 tracking-normal my-4 lg:mt-0'>
