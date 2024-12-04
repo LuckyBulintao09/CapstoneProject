@@ -1,10 +1,12 @@
 "use client";
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState, useTransition } from "react";
 import Image from "next/image";
 import Link from "next/link";
 import { getAllUnitUnderProperty, getUnitsCount } from "@/actions/unit/getAllUnitUnderProperty";
 import { Frown } from "lucide-react";
-import { Button } from "@/components/ui/button";
+import { Button, buttonVariants } from "@/components/ui/button";
+import { Label } from "@/components/ui/label";
+import { Switch } from "@/components/ui/switch";
 
 import { Spinner } from "@/components/ui/spinner";
 import { createClient } from "@/utils/supabase/client";
@@ -13,6 +15,8 @@ import { useRouter } from "next/navigation";
 
 import Fuse from "fuse.js";
 import { Input } from "@/components/ui/input";
+import { cn } from "@/lib/utils";
+import { toggleIsReserved } from "@/actions/unit/update-unit";
 
 export default function UnitList({ propertyId }: { propertyId: string }) {
     const supabase = createClient();
@@ -27,6 +31,8 @@ export default function UnitList({ propertyId }: { propertyId: string }) {
 
     const [searchTerm, setSearchTerm] = useState("");
     const [filteredUnits, setFilteredUnits] = useState([]);
+
+    const [isPending, startTransition] = useTransition();
 
     // Initialize Fuse.js with memoization to avoid re-creating it on every render
     const fuse = React.useMemo(() => {
@@ -114,9 +120,13 @@ export default function UnitList({ propertyId }: { propertyId: string }) {
     const isLoadMoreDisabled = unitsData.length >= totalUnits || loading;
 
     if (isInitialLoading) {
-        return <div className="h-[calc(100vh-68px-104px-40px)] flex items-center justify-center"><Spinner className="bg-primary dark:bg-primary h-16 w-16" /></div>;
+        return (
+            <div className="h-[calc(100vh-68px-104px-40px)] flex items-center justify-center">
+                <Spinner className="bg-primary dark:bg-primary h-16 w-16" />
+            </div>
+        );
     }
-    console.log(unitsData)
+    console.log(unitsData);
 
     return (
         <>
@@ -129,36 +139,68 @@ export default function UnitList({ propertyId }: { propertyId: string }) {
                     className="px-4 py-2 border rounded w-full max-w-md"
                 />
             </div>
+
             {filteredUnits?.length > 0 ? (
                 filteredUnits.map((unit) => (
-                    <div key={unit.id} className="flex items-center shadow-xl border rounded-lg p-4 gap-4 relative">
-                        <Link
-                            href={`/hosting/properties/${propertyId}/units/edit-unit/${unit?.id}`}
-                            className="left-0 right-0 p-0 m-0 absolute bg-transparent top-0 bottom-0 z-[2] outline-none"
-                        ></Link>
-                        <div className="flex-shrink-0">
-                            {unit.unit_image && unit.unit_image[0] ? (
-                                <Image
-                                    src={unit.unit_image[0]}
-                                    alt={unit.title}
-                                    width={64}
-                                    height={64}
-                                    className="rounded object-cover aspect-square"
-                                />
-                            ) : (
-                                <Image
-                                    src={"/placeholderImage.webp"}
-                                    alt={unit.title}
-                                    width={64}
-                                    height={64}
-                                    className="rounded object-cover aspect-square"
-                                />
-                            )}
-                        </div>
-                        <div>
-                            <span className="text-[1rem] leading-5 tracking-normal font-[500]">
-                                {unit.title || "Untitled Unit"}
-                            </span>
+                    <div
+                        key={unit.id}
+                        className="relative flex w-full items-start gap-2 rounded-lg border border-input p-4 shadow-sm shadow-black/5 has-[[data-state=checked]]:border-ring"
+                    >
+                        <Switch
+                            id="set_isReserved"
+                            className="order-1 h-4 w-6 [&_span]:size-3 [&_span]:data-[state=checked]:translate-x-2 rtl:[&_span]:data-[state=checked]:-translate-x-2"
+                            aria-describedby="set_isReserved-description"
+                            checked={unit.isReserved}
+                            onCheckedChange={async (checked) => {
+                                setUnitsData((current) => {
+                                    return current.map((u) => (u.id === unit.id ? { ...u, isReserved: checked } : u));
+                                });
+                                startTransition(async () => {
+                                    await toggleIsReserved(unit.id, checked);
+                                    fetchUnits();
+                                });
+                            }}
+                            disabled={isPending}
+                        />
+                        <div className="flex grow items-center gap-3">
+                            <div className="flex-shrink-0">
+                                {unit.unit_image && unit.unit_image[0] ? (
+                                    <Image
+                                        src={unit.unit_image[0]}
+                                        alt={unit.title}
+                                        width={64}
+                                        height={64}
+                                        className="rounded object-cover aspect-square"
+                                    />
+                                ) : (
+                                    <Image
+                                        src={"/placeholderImage.webp"}
+                                        alt={unit.title}
+                                        width={64}
+                                        height={64}
+                                        className="rounded object-cover aspect-square"
+                                    />
+                                )}
+                            </div>
+                            <div className="grid grow gap-2">
+                                <Label htmlFor="set_isReserved">
+                                    {unit.title} <span className="text-xs font-normal leading-[inherit] text-muted-foreground"></span>
+                                </Label>
+                                <div>
+                                    <p id="set_isReserved-description" className="text-xs text-muted-foreground">
+                                        Private Type: {unit.privacy_type}
+                                    </p>
+                                    <p id="set_isReserved-description" className="text-xs text-muted-foreground">
+                                        Price: ₱{new Intl.NumberFormat('en-PH', { style: 'decimal', minimumFractionDigits: 2, maximumFractionDigits: 2 }).format(unit.price)} (PHP)
+                                    </p>
+                                    <Link
+                                        href={`/hosting/properties/${propertyId}/units/edit-unit/${unit?.id}`}
+                                        className={cn(buttonVariants({ variant: "link" }), "p-0 block text-xs h-fit w-fit m-0")}
+                                    >
+                                        Go to unit
+                                    </Link>
+                                </div>
+                            </div>
                         </div>
                     </div>
                 ))
