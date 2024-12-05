@@ -33,7 +33,7 @@ function PropertyViewModeProvider({ children }: { children: React.ReactNode }) {
         }
     }, [viewMode]);
 
-    if (isLoading) return <Skeleton className="h-screen w-screen" />; // Render nothing while loading
+    if (isLoading) return <Skeleton className="h-screen w-full" />; // Render nothing while loading
 
 
     return <PropertyViewModeContext.Provider value={{ viewMode, setViewMode }}>{children}</PropertyViewModeContext.Provider>;

@@ -42,12 +42,15 @@ import { getAllUnitUnderProperty } from "@/actions/unit/getAllUnitUnderProperty"
 
 import Image from "next/image";
 import { cn } from "@/lib/utils";
+import { DataTableColumnHeader } from "./data-table-column-header";
 
 export const columns: ColumnDef<any>[] = [
     {
         accessorKey: "property",
         accessorFn: (row) => `${row.title}`,
-        header: "Property",
+        header: ({ column }) => (
+            <DataTableColumnHeader column={column} title="Property" />
+        ),
         cell: ({ row }) => {
             const property_name = row.original.title;
             const thumbnail = row.original.property_image;
@@ -125,7 +128,9 @@ export const columns: ColumnDef<any>[] = [
     },
     {
         accessorKey: "address",
-        header: "Address",
+        header: ({ column }) => (
+            <DataTableColumnHeader column={column} title="Address" />
+        ),
         cell: ({ row }) => {
             const address = row.getValue<string>("address");
 
@@ -139,7 +144,9 @@ export const columns: ColumnDef<any>[] = [
     },
 	{
         accessorKey: "isApproved",
-        header: "Status",
+        header: ({ column }) => (
+            <DataTableColumnHeader column={column} title="Status" />
+        ),
         cell: ({ row }) => {
             const status = row.getValue<string>("isApproved");
 

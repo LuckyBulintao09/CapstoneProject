@@ -21,6 +21,7 @@ import { useMediaQuery } from "@/hooks/use-media-query";
 import { fuzzyFilter } from "./fuzzy-filters";
 
 import PropertiesHeader from "../PropertiesHeader";
+import { DataTablePagination } from "./data-table-pagination";
 
 interface DataTableProps<TData, TValue> {
     columns: ColumnDef<TData, TValue>[];
@@ -56,7 +57,7 @@ function PropertiesTable<TData, TValue>({ columns, data }: DataTableProps<TData,
     const isDesktop = useMediaQuery("(min-width: 748px)");
 
     return (
-        <div className="h-[calc(100vh-80px)]">
+        <div className="h-full pb-11">
             <PropertiesHeader table={propertiesTable} />
             <div className="rounded-md border">
                 <Table>
@@ -98,6 +99,7 @@ function PropertiesTable<TData, TValue>({ columns, data }: DataTableProps<TData,
                     </TableBody>
                 </Table>
             </div>
+            <DataTablePagination table={propertiesTable} />
         </div>
     );
 }
