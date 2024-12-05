@@ -3,7 +3,6 @@ import React, { useState, useEffect } from 'react';
 import { Line } from 'react-chartjs-2'; 
 import { Chart as ChartJS, LineElement, CategoryScale, LinearScale, Tooltip, Legend } from 'chart.js';
 
-// Registering necessary chart elements
 ChartJS.register(LineElement, CategoryScale, LinearScale, Tooltip, Legend);
 
 import getPropertyComparison from '@/actions/analytics/propertyComparison';

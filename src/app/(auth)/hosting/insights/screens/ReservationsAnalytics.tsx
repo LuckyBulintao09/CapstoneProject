@@ -87,7 +87,6 @@ const ReservationsAnalytics = () => {
     fetchData();
   }, []); 
 
-
   useEffect(() => {
     if (selectedProperty !== 'default' && date !== 'default') {
       fetchAnalytics(); 
@@ -99,7 +98,7 @@ const ReservationsAnalytics = () => {
     datasets: [
       {
         label: 'Reservations',
-        data: reservationAnalyticsData ? [reservationAnalyticsData.onSiteVisitsCount, reservationAnalyticsData.roomReservationsCount] : [0, 0], // Use reservation analytics data if available
+        data: reservationAnalyticsData ? [reservationAnalyticsData.onSiteVisitsCount, reservationAnalyticsData.roomReservationsCount] : [0, 0], 
         backgroundColor: ['#4CAF50', '#2196F3'],
         borderWidth: 1,
       },
@@ -179,7 +178,7 @@ const ReservationsAnalytics = () => {
               <p className="p-4 text-xs text-gray-500 dark:text-gray-300">Total Reservations</p>
               <CardHeader className="p-1 flex justify-center items-center text-center">
                 <CardTitle className="text-4xl font-bold">
-                  {reservationAnalyticsData?.count || '--'}
+                  {loading ? "Recalculating..." : (reservationAnalyticsData?.count || 'no data')}
                 </CardTitle>
               </CardHeader>
             </Card>
@@ -187,7 +186,9 @@ const ReservationsAnalytics = () => {
             <Card className="bg-white dark:bg-secondary rounded-lg border-gray-300">
               <p className="p-4 text-xs text-gray-500 dark:text-gray-300">Total Company Page Visits</p>
               <CardHeader className="p-1 flex justify-center items-center text-center">
-                <CardTitle className="text-4xl font-bold">{companyAnalyticsData?.count || '--'}</CardTitle>
+                <CardTitle className="text-4xl font-bold">
+                  {loading ? "Recalculating..." : (companyAnalyticsData?.count || 'no data')}
+                </CardTitle>
               </CardHeader>
             </Card>
           </div>
@@ -195,17 +196,17 @@ const ReservationsAnalytics = () => {
             <Card className="bg-white dark:bg-secondary rounded-lg border-gray-300 row-span-2 mb-4 xl:mb-0">
               <p className="p-4 text-xs text-gray-500 dark:text-gray-300">On-Site vs Room Reservations</p>
               <CardContent>
-                <Bar data={data} />
+                {loading ? "Recalculating..." : <Bar data={data} />}
               </CardContent>
             </Card>
           </div>
         </div>
         <div className="col-span-6 rounded-lg">
-          <Card className="bg-white dark:bg-secondary rounded-lg border-gray-300 h-[470px] justify-center">
+          <Card className="bg-white dark:bg-secondary rounded-lg border-gray-300 h-[470px] justify-center h-full">
             <p className="p-4 text-m text-gray-500 dark:text-gray-300">Total Reservations Across All Properties</p>
 
-            <CardContent>
-              {isAnalyticsFetched && <ComparisonBetweenProperty dateRange={date} />}
+            <CardContent className='w-full bg-transparent'>
+              {loading ? "Recalculating..." : (isAnalyticsFetched && <ComparisonBetweenProperty dateRange={date} />)}
             </CardContent>
           </Card>
         </div>
