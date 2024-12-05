@@ -13,13 +13,15 @@ import { toast } from "sonner";
 import { Button } from "@/components/ui/button";
 import { Dialog, DialogClose, DialogContent, DialogDescription, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
 
-import { addPropertyImages } from "@/actions/property/propertyImage";
+import { addUnitImages } from "@/actions/unit/unitImage";
+
 import { Plus } from "lucide-react";
 
 import { useRouter } from "next/navigation";
+
 import { cn } from "@/lib/utils";
 
-function PhotoUploader({ userId, propertyId, photoBucketFileCount }: { userId: string; propertyId: string; photoBucketFileCount: number }) {
+function UnitPhotoUploader({ userId, propertyId, unitId, photoBucketFileCount }: { userId: string; propertyId: string; unitId: string; photoBucketFileCount: number }) {
     const [open, setOpen] = React.useState<boolean>(false);
     const [isFileUploadEmpty, setIsFileUploadEmpty] = React.useState<boolean>(true);
 
@@ -73,7 +75,7 @@ function PhotoUploader({ userId, propertyId, photoBucketFileCount }: { userId: s
             const uploadedFiles: string[] = [];
 
             const uploadFiles = uppy.getFiles().map(async (file, index) => {
-                const objectName = `property/${userId}/${propertyId}/property_image/${file.name}`;
+                const objectName = `property/${userId}/${propertyId}/unit/unit_image/${file.name}`;
                 const fileUrl = `${supabaseUrl}/storage/v1/object/public/${bucketName}/${objectName}`;
                 uppy.setFileMeta(file.id, {
                     objectName,
@@ -86,14 +88,14 @@ function PhotoUploader({ userId, propertyId, photoBucketFileCount }: { userId: s
 
             await Promise.all(uploadFiles);
 
-            toast.promise(addPropertyImages(uploadedFiles, propertyId), {
+            toast.promise(addUnitImages(uploadedFiles, unitId), {
                 loading: "Adding images...",
                 success: () => {
                     router.refresh();
-                    return "Property updated successfully";
+                    return "Unit updated successfully";
                 },
                 error: () => {
-                    return "Something went wrong. Failed to update property";
+                    return "Something went wrong. Failed to update unit";
                 },
             });
 
@@ -128,7 +130,7 @@ function PhotoUploader({ userId, propertyId, photoBucketFileCount }: { userId: s
                 }}
             >
                 <DialogHeader>
-                    <DialogTitle>Property photos upload</DialogTitle>
+                    <DialogTitle>Unit photos upload</DialogTitle>
                     <DialogDescription asChild>
                         <>
                             {photoBucketFileCount >= 5 ? (
@@ -138,7 +140,7 @@ function PhotoUploader({ userId, propertyId, photoBucketFileCount }: { userId: s
                                 </p>
                             ) : (
                                 <div className="grow space-y-2">
-                                    <p className="">Upload your property photos here.</p>
+                                    <p className="">Upload your unit photos here.</p>
                                     <ul className="list-inside list-disc text-sm text-muted-foreground">
                                         <li>Up to 5 images allowed.</li>
                                         <li>Allowed image types: .jpg, .jpeg, .png.</li>
@@ -167,4 +169,4 @@ function PhotoUploader({ userId, propertyId, photoBucketFileCount }: { userId: s
     );
 }
 
-export default PhotoUploader;
+export default UnitPhotoUploader;

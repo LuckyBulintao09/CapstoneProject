@@ -110,6 +110,8 @@ function PropertyAmenityForm({ propertyId, amenities }: { propertyId: string, am
                                                 body: "pl-3",
                                             },
                                         }}
+                                        inlineTags={false}
+                                        inputFieldPosition="top"
                                     />
                                 </FormControl>
                                 <FormMessage />

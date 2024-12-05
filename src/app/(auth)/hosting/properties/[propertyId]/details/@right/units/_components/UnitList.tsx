@@ -202,7 +202,7 @@ export default function UnitList({ propertyId }: { propertyId: string }) {
                                         (PHP)
                                     </p>
                                     <Link
-                                        href={`/hosting/properties/${propertyId}/units/edit-unit/${unit?.id}`}
+                                        href={`/hosting/properties/${propertyId}/units/${unit?.id}/unit-details/photos`}
                                         className={cn(buttonVariants({ variant: "link" }), "p-0 block text-xs h-fit w-fit m-0")}
                                     >
                                         Go to unit

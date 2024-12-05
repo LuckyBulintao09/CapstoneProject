@@ -1,7 +1,9 @@
 import { z } from "zod";
 
 export const propertyTitleSchema = z.object({
-    property_title: z.string().min(1, { message: "Please enter a title." }).max(52),
+    property_title: z.string().min(1, { message: "Please enter a title." }).max(52, { message: "Title cannot exceed 52 characters." }).regex(/^[a-zA-Z0-9.,'(): -]*$/, {
+        message: "Title can only include letters, numbers, commas, dots, apostrophes, and parentheses.",
+    }),
 });
 
 export const propertyTypeSchema = z.object({

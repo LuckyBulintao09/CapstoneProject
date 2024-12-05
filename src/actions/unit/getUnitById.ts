@@ -8,7 +8,7 @@ export async function getUnitById(unitId: string) {
     try {
         const { data, error } = await supabase
             .from("unit")
-            .select(`*`).eq("id", unitId);
+            .select(`*`).eq("id", unitId).single();
 
         if (error) {
             throw error;
@@ -20,3 +20,52 @@ export async function getUnitById(unitId: string) {
         throw error;
     }
 }
+
+
+export const getUnitTitle = async (unitId: string) => {
+    const supabase = createClient();
+    try {
+        const { data, error } = await supabase.from("unit").select(`title`).eq("id", unitId).single();
+
+        if (error) {
+            throw error;
+        }
+
+        return data;
+    } catch (error: any) {
+        console.error("Error fetching title:", error);
+        throw error;
+    }
+};
+
+export const getUnitTypeDetails = async (unitId: string) => {
+    const supabase = createClient();
+    try {
+        const { data, error } = await supabase.from("unit").select(`privacy_type, room_size`).eq("id", unitId).single();
+
+        if (error) {
+            throw error;
+        }
+
+        return data;
+    } catch (error: any) {
+        console.error("Error fetching addtional unit details:", error);
+        throw error;
+    }
+};
+
+export const getUnitSpecifications = async (unitId: string) => {
+    const supabase = createClient();
+    try {
+        const { data, error } = await supabase.from("unit").select(`occupants, bedrooms, beds`).eq("id", unitId).single();
+
+        if (error) {
+            throw error;
+        }
+
+        return data;
+    } catch (error: any) {
+        console.error("Error fetching addtional unit details:", error);
+        throw error;
+    }
+};

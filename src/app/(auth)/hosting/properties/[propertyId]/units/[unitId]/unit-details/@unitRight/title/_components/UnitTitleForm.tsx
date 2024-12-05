@@ -7,34 +7,35 @@ import { Form, FormControl, FormDescription, FormField, FormItem, FormLabel, For
 
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { PropertyTitleData, propertyTitleSchema } from "@/lib/schemas/propertySchemaV2";
+import { UnitTitleData, unitTitleSchema } from "@/lib/schemas/editUnitSchema";
 import { toast } from "sonner";
 import { updatePropertyTitle } from "@/actions/property/update-property";
 import { useRouter } from "next/navigation";
+import { updateUnitTitle } from "@/actions/unit/update-unit";
 
-function PropertyTitleForm({ title, propertyId }: { title: string, propertyId: string}) {
+function UnitTitleForm({ title, unitId }: { title: string, unitId: string}) {
     const router = useRouter();
     const [isPending, startTransition] = React.useTransition();
 
-    const propertiesTitleForm = useForm<PropertyTitleData>({
-        resolver: zodResolver(propertyTitleSchema),
+    const unitTitleForm = useForm<UnitTitleData>({
+        resolver: zodResolver(unitTitleSchema),
         defaultValues: {
-            property_title: title,
+            unit_title: title,
         },
         mode: "onChange",
     });
 
     React.useEffect(() => {
         // Resetting form values whenever the description prop changes
-        propertiesTitleForm.reset({
-            property_title: title,
+        unitTitleForm.reset({
+            unit_title: title,
         });
-    }, [title, propertiesTitleForm]);
+    }, [title, unitTitleForm]);
 
-    function onSubmit(values: PropertyTitleData) {
+    function onSubmit(values: UnitTitleData) {
         if (!isPending) {
             startTransition(() => {
-                toast.promise(updatePropertyTitle(propertyId, values.property_title), {
+                toast.promise(updateUnitTitle(unitId, values.unit_title), {
                     loading: "Saving changes...",
                     success: (values) => {
                         router.refresh();
@@ -49,28 +50,28 @@ function PropertyTitleForm({ title, propertyId }: { title: string, propertyId: s
     }
 
     return (
-        <Form {...propertiesTitleForm}>
-            <form onSubmit={propertiesTitleForm.handleSubmit(onSubmit)} className="">
+        <Form {...unitTitleForm}>
+            <form onSubmit={unitTitleForm.handleSubmit(onSubmit)} className="">
                 {" "}
                 <FormField
-                    control={propertiesTitleForm.control}
-                    name="property_title"
+                    control={unitTitleForm.control}
+                    name="unit_title"
                     render={({ field }) => (
                         <FormItem className="space-y-0 w-full">
-                            <FormLabel htmlFor="property_title" className="sr-only">
+                            <FormLabel htmlFor="unit_title" className="sr-only">
                                 Property title
                             </FormLabel>
                             <div className="flex flex-col items-center justify-center">
-                                <FormMessage className="text-center" />
+                                <FormMessage />
                                 <div className="text-muted-foreground text-sm font-medium">
-                                    {propertiesTitleForm.watch("property_title", "").length <= 52
-                                        ? `${52 - propertiesTitleForm.watch("property_title", "").length} characters remaining`
-                                        : `${propertiesTitleForm.watch("property_title", "").length - 52} characters over the limit`}
+                                    {unitTitleForm.watch("unit_title", "").length <= 52
+                                        ? `${52 - unitTitleForm.watch("unit_title", "").length} characters remaining`
+                                        : `${unitTitleForm.watch("unit_title", "").length - 52} characters over the limit`}
                                 </div>
                                 <FormControl>
                                     <div className="mt-2">
                                         <textarea
-                                            id="property_title"
+                                            id="unit_title"
                                             autoCapitalize="none"
                                             autoCorrect="off"
                                             rows={4}
@@ -89,10 +90,10 @@ function PropertyTitleForm({ title, propertyId }: { title: string, propertyId: s
                     type="submit"
                     className="w-full"
                     disabled={
-                        isPending || propertiesTitleForm.formState.isSubmitting || propertiesTitleForm.formState.errors.property_title !== undefined
+                        isPending || unitTitleForm.formState.isSubmitting || unitTitleForm.formState.errors.unit_title !== undefined
                     }
                 >
-                    {(isPending || propertiesTitleForm.formState.isSubmitting) && (
+                    {(isPending || unitTitleForm.formState.isSubmitting) && (
                         <svg
                             aria-hidden="true"
                             className="size-6 mr-2 fill-accent animate-spin-fade dark:text-accent-foreground text-primary"
@@ -117,4 +118,4 @@ function PropertyTitleForm({ title, propertyId }: { title: string, propertyId: s
     );
 }
 
-export default PropertyTitleForm;
+export default UnitTitleForm;

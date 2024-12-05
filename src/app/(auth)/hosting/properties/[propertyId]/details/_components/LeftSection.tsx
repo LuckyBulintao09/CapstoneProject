@@ -12,6 +12,7 @@ import { cn } from "@/lib/utils";
 import { Check, Eye, X } from "lucide-react";
 
 import MapLocation from "../@right/_components/MapLocation";
+
 import { usePathname } from "next/navigation";
 
 function LeftSection({ property, units, location, propertyId }: any) {
