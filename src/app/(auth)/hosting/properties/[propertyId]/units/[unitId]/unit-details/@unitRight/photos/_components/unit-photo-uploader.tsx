@@ -22,6 +22,7 @@ import { useRouter } from "next/navigation";
 import { cn } from "@/lib/utils";
 
 function UnitPhotoUploader({ userId, propertyId, unitId, photoBucketFileCount }: { userId: string; propertyId: string; unitId: string; photoBucketFileCount: number }) {
+    console.log(photoBucketFileCount)
     const [open, setOpen] = React.useState<boolean>(false);
     const [isFileUploadEmpty, setIsFileUploadEmpty] = React.useState<boolean>(true);
 
