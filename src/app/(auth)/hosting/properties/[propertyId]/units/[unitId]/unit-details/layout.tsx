@@ -12,8 +12,7 @@ import { cn } from "@/lib/utils";
 
 import { ScrollArea } from "@/components/ui/scroll-area";
 
-
-function EditPropertyLayout({ children, right }: { children: React.ReactNode; right: React.ReactNode;}) {
+function UnitDetailsLayout({ children, unitRight, params }: { children: React.ReactNode; unitRight: React.ReactNode; params: { propertyId: string; unitId: string } }) {
     return (
         <main className="grow min-h-[100px]">
             <div className="h-[calc(100%-65px)] airBnbDesktop:flex my-0 mx-auto airBnbTablet:h-full">
@@ -23,12 +22,12 @@ function EditPropertyLayout({ children, right }: { children: React.ReactNode; ri
                     </div>
                     <header className="flex items-center justify-between h-12 airBnbDesktop:h-auto airBnbDesktop:justify-start airBnbDesktop:mb-6 airBnbDesktop:pl-0">
                         <div className="flex ">
-                            <Link href={`/hosting/properties`} className={cn(buttonVariants({ variant: "ghost", size: "icon" }), "rounded-full")}>
+                            <Link href={`/hosting/properties/${params.propertyId}/details/units`} className={cn(buttonVariants({ variant: "ghost", size: "icon" }), "rounded-full")}>
                                 <ArrowLeft className="h-5 w-5" />
                             </Link>
                         </div>
                         <h1 className="text-[1em]">
-                            <span className="pl-8 py-1 text-[2rem] font-semibold">Listing editor</span>
+                            <span className="pl-8 py-1 text-[2rem] font-semibold">Unit editor</span>
                         </h1>
                     </header>
 
@@ -43,11 +42,11 @@ function EditPropertyLayout({ children, right }: { children: React.ReactNode; ri
                     </div>
                 </section>
                 <div className="h-full grow airBnbDesktop:flex airBnbDesktop:overflow-hidden airbnbDesktop:grow-0 airBnbDesktop:shrink-0 airBnbDesktop:basis-auto airBnbDesktop:w-[544px] min-[1128px]:w-[627px] airBnbBigDesktop:grow">
-                    <section className="relative grow h-full">{right}</section>
+                    <section className="relative grow h-full">{unitRight}</section>
                 </div>
             </div>
         </main>
     );
 }
 
-export default EditPropertyLayout;
+export default UnitDetailsLayout;

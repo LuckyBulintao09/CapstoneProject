@@ -42,12 +42,30 @@ export async function addUnitImages(fileUrls: any, unitId: string) {
     }
 }
 
-export async function removeImageFromProperty(propertyId: string, imageUrl: string, userId: string) {
+export async function countUnitImageStorageBucket(userId: string, propertyId: string) {
+    const supabase = createClient();
+    try {
+        const { data: unit_images, error: unit_images_error } = await supabase.storage
+            .from("unihomes image storage")
+            .list(`property/${userId}/${propertyId}/unit/unit_image`);
+
+        if (unit_images_error) {
+            console.error("Error listing files:", unit_images_error.message);
+            return;
+        }
+
+        return unit_images.length - 1;
+    } catch (property_images_error) {
+        console.error("Unexpected error:", property_images_error);
+    }
+}
+
+export async function removeImageFromUnit(propertyId: string, unitId: string, imageUrl: string, userId: string) {
     const supabase = createClient();
 
     try {
-        const { data: dbData, error: dbError } = await supabase.rpc("remove_property_image", {
-            property_id: propertyId,
+        const { data: dbData, error: dbError } = await supabase.rpc("remove_unit_image", {
+            unit_id: unitId,
             image_to_remove: imageUrl,
         });
 
@@ -58,7 +76,7 @@ export async function removeImageFromProperty(propertyId: string, imageUrl: stri
 
         const { data: storageData, error: storageError } = await supabase.storage
             .from('unihomes image storage')
-            .remove([`property/${userId}/${propertyId}/property_image/${imageUrl.split('/').pop()}`]);
+            .remove([`property/${userId}/${propertyId}/unit/unit_image/${imageUrl.split('/').pop()}`]);
 
         if (storageError) {
             console.error("Error removing image from storage bucket:", storageError);

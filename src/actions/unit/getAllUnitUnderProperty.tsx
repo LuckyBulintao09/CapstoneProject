@@ -22,6 +22,25 @@ export const getAllUnitUnderProperty = async (propertyId: string, offset: number
 
 };
 
+export const getAllUnitsUnderProperty2 = async (propertyId: string) => {
+    const supabase = createClient();
+    const propertyIdNumber = Number(propertyId);
+    try {
+        const { data, error } = await supabase
+        .from("unit")
+        .select("*")
+        .eq("property_id", propertyIdNumber)
+        .order("created_at", { ascending: false });
+
+    if (error) throw error;
+
+    return data;
+    } catch (error: any) {
+        throw error;
+    }
+
+};
+
 export const getUnitsCount = async (propertyId: string) => {
     const supabase = createClient();
     const propertyIdNumber = Number(propertyId);
