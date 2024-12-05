@@ -432,7 +432,7 @@ function TopNavigation() {
 											</li>
 											<li>
 												<Link
-													href={`/test`}
+													href={`/hosting/insights`}
 													className={cn(
 														buttonVariants({ variant: 'ghost' }),
 														'w-full justify-start rounded-lg px-0 gap-2 hover:rounded-lg hover:p-1 transition-all duration-300'
