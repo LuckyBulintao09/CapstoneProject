@@ -165,8 +165,8 @@ export default function Listings() {
 	};
 
 	useEffect(() => {
+		setListingLoading(true);
 		const fetchData = async () => {
-			setListingLoading(true);
 			await handleDeviceLocation();
 			await fetchFilteredListings();
 
@@ -175,6 +175,7 @@ export default function Listings() {
 		};
 
 		fetchData();
+		setListingLoading(false);
 	}, [
 		deviceLocation,
 		selectedLocation,

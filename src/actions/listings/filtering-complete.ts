@@ -143,10 +143,15 @@ export const get_allProperties = async (
 
     // Price filters
     if (minPrice || maxPrice) {
-        query = query.or([
-            minPrice && `minimum_price.gte.${minPrice}`,
-            maxPrice && `maximum_price.lte.${maxPrice}`,
-        ].filter(Boolean).join(","));
+        if (minPrice && maxPrice) {
+            query = query.or(
+                `minimum_price.gte.${minPrice},maximum_price.lte.${maxPrice}`
+            );
+        } else if (minPrice) {
+            query = query.gte('minimum_price', minPrice);
+        } else if (maxPrice) {
+            query = query.lte('maximum_price', maxPrice);
+        }
     }
 
     // Beds and rooms
