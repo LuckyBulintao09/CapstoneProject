@@ -81,6 +81,36 @@ const PropertyModal: React.FC<PropertyModalProps> = ({
     if (propertyImageUrls?.length) fetchImages();
   }, [propertyImageUrls]);
 
+  const renderDocument = (url: string | null) => {
+    if (!url) {
+      return <p>No document available</p>;
+    }
+
+    const cleanedUrl = url.split("?")[0];
+    const fileExtension = cleanedUrl.split(".").pop()?.toLowerCase();
+    if (fileExtension === "pdf") {
+      return (
+        <iframe
+          src={url}
+          width="100%"
+          height="400px"
+          style={{ border: "none" }}
+        />
+      );
+    }
+    if (["jpg", "jpeg", "png", "gif", "webp"].includes(fileExtension || "")) {
+      return (
+        <img
+          src={url}
+          alt="Document"
+          className="w-full max-h-[400px] object-contain rounded-lg shadow-md cursor-pointer"
+          onClick={() => setZoomImageUrl(url)}
+        />
+      );
+    }
+    return <p>Unsupported document type</p>;
+  };
+
   return (
     <>
       <Modal isOpen={isOpen} onClose={onClose} size="4xl">
@@ -92,12 +122,7 @@ const PropertyModal: React.FC<PropertyModalProps> = ({
                 <div className="mb-6">
                   <h3 className="text-lg font-medium mb-2">Business Permit</h3>
                   {businessPermitUrl ? (
-                    <img
-                      src={businessPermitUrl}
-                      alt="Business Permit"
-                      className="w-full max-h-[400px] object-contain rounded-lg shadow-md cursor-pointer"
-                      onClick={() => setZoomImageUrl(businessPermitUrl)}
-                    />
+                    renderDocument(businessPermitUrl)
                   ) : (
                     <p className="text-center text-gray-600">
                       No business permit available.
@@ -108,12 +133,7 @@ const PropertyModal: React.FC<PropertyModalProps> = ({
                 <div className="mb-6">
                   <h3 className="text-lg font-medium mb-2">Fire Inspection</h3>
                   {fireInspectionUrl ? (
-                    <img
-                      src={fireInspectionUrl}
-                      alt="Fire Inspection"
-                      className="w-full max-h-[400px] object-contain rounded-lg shadow-md cursor-pointer"
-                      onClick={() => setZoomImageUrl(fireInspectionUrl)}
-                    />
+                    renderDocument(fireInspectionUrl)
                   ) : (
                     <p className="text-center text-gray-600">
                       No fire inspection document available.
