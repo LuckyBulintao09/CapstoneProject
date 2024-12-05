@@ -9,18 +9,29 @@ import { SelectNative } from "@/components/ui/select-native";
 
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
+
 import { PropertyTypeData, propertyTypeSchema } from "@/lib/schemas/propertySchemaV2";
+
 import { updatePropertyType } from "@/actions/property/update-property";
+
 import { useRouter } from "next/navigation";
 
-function PropertyTypeForm({propertyType, propertyId} : {propertyType: any, propertyId: string}) {
+import { Tag, TagInput } from "emblor";
+
+function PropertyTypeForm({propertyType, propertyId, propertyHouseRules} : {propertyType: any, propertyId: string, propertyHouseRules: any}) {
     const router = useRouter();
     const [isPending, startTransition] = React.useTransition();
+    const [tags, setTags] = React.useState<Tag[]>([]);
+    const [activeTagIndex, setActiveTagIndex] = React.useState<number | null>(null);
 
     const propertiesTypeForm = useForm<PropertyTypeData>({
         resolver: zodResolver(propertyTypeSchema),
         defaultValues: {
             property_type: propertyType,
+            house_rules: propertyHouseRules.map(({ id, rule }: { id: number; rule: string }) => ({
+                id: id.toString(),
+                text: rule,
+            })),
         },
         mode: "onChange",
     });
@@ -28,7 +39,7 @@ function PropertyTypeForm({propertyType, propertyId} : {propertyType: any, prope
     async function onSubmit(values: PropertyTypeData) {
         if (!isPending) {
             startTransition(() => {
-                toast.promise(updatePropertyType(propertyId, values.property_type), {
+                toast.promise(updatePropertyType(propertyId, values), {
                     loading: "Saving changes...",
                     success: () => {
                         router.refresh();
@@ -41,9 +52,18 @@ function PropertyTypeForm({propertyType, propertyId} : {propertyType: any, prope
             });
         }
     }
+
+    React.useEffect(() => {
+        const initialTags = propertiesTypeForm.getValues("house_rules").map(({ id, text }: { id: string; text: string }) => ({
+            id,
+            text,
+        }));
+        setTags(initialTags);
+    }, [propertiesTypeForm]);
+    
     return (
         <Form {...propertiesTypeForm}>
-            <form onSubmit={propertiesTypeForm.handleSubmit(onSubmit)} className="space-y-4">
+            <form onSubmit={propertiesTypeForm.handleSubmit(onSubmit)} className="flex flex-col gap-11">
                 <FormField
                     control={propertiesTypeForm.control}
                     name="property_type"
@@ -72,11 +92,58 @@ function PropertyTypeForm({propertyType, propertyId} : {propertyType: any, prope
                         </FormItem>
                     )}
                 />
+
+                <FormField
+                    control={propertiesTypeForm.control}
+                    name="house_rules"
+                    render={({ field }) => (
+                        <FormItem className="flex flex-col items-start">
+                            <FormLabel className="text-left" htmlFor="house_rules">
+                                House rules
+                            </FormLabel>
+                            <FormControl className="w-full">
+                                <TagInput
+                                    id="house_rules"
+                                    {...field}
+                                    placeholder="Enter house rules"
+                                    tags={tags}
+                                    setTags={(newTags) => {
+                                        setTags(newTags);
+                                        propertiesTypeForm.setValue("house_rules", newTags as [Tag, ...Tag[]]);
+                                    }}
+                                    styleClasses={{
+                                        tagList: {
+                                            container: "gap-1 max-h-[94px] overflow-y-auto rounded-md",
+                                        },
+                                        input: "rounded-lg transition-shadow placeholder:text-muted-foreground/70 focus-visible:border-ring focus-visible:outline-none focus-visible:ring-[3px] focus-visible:ring-ring/20",
+                                        tag: {
+                                            body: "relative h-7 bg-background border border-input hover:bg-background rounded-md font-medium text-xs ps-2 pe-7",
+                                            closeButton:
+                                                "absolute -inset-y-px -end-px p-0 rounded-s-none rounded-e-lg flex size-7 transition-colors outline-0 focus-visible:outline focus-visible:outline-2 focus-visible:outline-ring/70 text-muted-foreground/80 hover:text-foreground",
+                                        },
+                                    }}
+                                    clearAllButton
+                                    setActiveTagIndex={setActiveTagIndex}
+                                    activeTagIndex={activeTagIndex}
+                                    inlineTags={false}
+                                    inputFieldPosition="top"
+                                />
+                            </FormControl>
+                            {propertiesTypeForm.formState.errors.house_rules ? (
+                                <FormMessage />
+                            ) : (
+                                <FormDescription>
+                                    Enter house rules here. Type a rule then press enter when you're done. You can do this any number of times.
+                                </FormDescription>
+                            )}
+                        </FormItem>
+                    )}
+                />
                 <Button
                     type="submit"
                     className="w-full"
                     disabled={
-                        isPending || propertiesTypeForm.formState.isSubmitting || propertiesTypeForm.formState.errors.property_type !== undefined
+                        isPending || propertiesTypeForm.formState.isSubmitting || propertiesTypeForm.formState.errors.property_type !== undefined || propertiesTypeForm.formState.errors.house_rules !== undefined
                     }
                 >
                     {(isPending || propertiesTypeForm.formState.isSubmitting) && (

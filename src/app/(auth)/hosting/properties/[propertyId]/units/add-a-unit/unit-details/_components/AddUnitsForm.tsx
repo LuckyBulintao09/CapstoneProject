@@ -32,7 +32,7 @@ import { createDuplicateUnit, updateUnit } from "@/actions/unit/update-unit";
 import Uppy from "@uppy/core";
 import { Dashboard } from "@uppy/react";
 import Tus from "@uppy/tus";
-import Form from "@uppy/form";
+
 import "@uppy/core/dist/style.min.css";
 import "@uppy/dashboard/dist/style.min.css";
 

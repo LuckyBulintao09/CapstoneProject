@@ -25,3 +25,28 @@ export const getUserCompaniesById = async (userId : string) => {
 
     }
 };
+
+
+export const getUserCompanyId = async (userId : string) => {
+
+    const supabase = createClient();
+
+    try {
+        const { data, error } = await supabase
+
+            .from("company").select('id').eq('owner_id', userId).single();
+
+        if (error?.code) {
+
+            return error;
+
+        }
+
+        return data;
+
+    } catch (error: any) {
+
+        return error;
+
+    }
+};

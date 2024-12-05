@@ -166,7 +166,7 @@ export default function UnitList({ propertyId }: { propertyId: string }) {
 
                         <div className="flex grow items-center gap-3">
                             <div className="flex-shrink-0">
-                                {unit.unit_image && unit.unit_image[0] ? (
+                                {((unit.unit_image && unit.unit_image[0]) || (unit.unit_image)) ? (
                                     <Image
                                         src={unit.unit_image[0]}
                                         alt={unit.title}

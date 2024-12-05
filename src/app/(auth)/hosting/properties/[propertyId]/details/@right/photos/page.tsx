@@ -20,7 +20,6 @@ import { Skeleton } from "@/components/ui/skeleton";
 
 async function PhotosPage({ params }: { params: { propertyId: string } }) {
     const property = await getPropertyById(params.propertyId);
-    
     const user = await getAuthenticatedUser();
     const photoBucketFileCount = await countPropertyImageStorageBucket(user.id, params.propertyId);
 

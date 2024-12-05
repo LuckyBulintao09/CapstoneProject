@@ -84,7 +84,7 @@ function PhotoUploader({ userId, propertyId, photoBucketFileCount }: { userId: s
                 await uppy.upload();
             });
 
-            await Promise.all(uploadFiles);
+            await Promise.all(uploadedFiles);
 
             toast.promise(addPropertyImages(uploadedFiles, propertyId), {
                 loading: "Adding images...",

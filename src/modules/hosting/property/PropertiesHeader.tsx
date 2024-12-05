@@ -20,6 +20,7 @@ import { PropertyViewModeContext } from "./PropertyViewModeProvider";
 import { Table } from "@tanstack/react-table";
 import Link from "next/link";
 import CustomBreadcrumbs from "../components/CustomBreadcrumbs";
+import { createProperty } from "@/actions/property/create-property";
 
 interface HeaderToolbarData<TData> {
     table: Table<TData>;
@@ -113,15 +114,20 @@ function PropertiesHeader<TData>({ table }: HeaderToolbarData<TData>) {
 								<StretchHorizontal className='w-4 h-auto' />
 							)}
 						</Button>
-						<Link
-							href={'/hosting/properties/host-a-property'}
+						<Button
+							// href={'/hosting/properties/host-a-property'}
+							onClick={async () => {
+								await createProperty();
+							}}
+							variant="outline"
+							size="icon"
 							className={cn(
-								buttonVariants({ size: 'icon', variant: 'outline' }),
+								// buttonVariants({ size: 'icon', variant: 'outline' }),
 								'rounded-full'
 							)}
 						>
 							<Plus className='w-5 h-auto' />
-						</Link>
+						</Button>
 					</div>
 				</div>
 			</div>

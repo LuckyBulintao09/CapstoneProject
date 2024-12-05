@@ -11,9 +11,10 @@ import { ArrowLeft } from "lucide-react";
 import { cn } from "@/lib/utils";
 
 import { ScrollArea } from "@/components/ui/scroll-area";
+import DeleteProperty from "./_components/DeleteProperty";
 
 
-function EditPropertyLayout({ children, right }: { children: React.ReactNode; right: React.ReactNode;}) {
+function EditPropertyLayout({ children, right, params }: { children: React.ReactNode; right: React.ReactNode; params: { propertyId: string } }) {
     return (
         <main className="grow min-h-[100px]">
             <div className="h-[calc(100%-65px)] airBnbDesktop:flex my-0 mx-auto airBnbTablet:h-full">

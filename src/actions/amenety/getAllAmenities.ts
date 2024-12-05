@@ -15,8 +15,6 @@ export const getAllAmenities = async () => {
             return error
         }
 
-        console.log(data)
-
         return data
 
     } catch (error: any) {
