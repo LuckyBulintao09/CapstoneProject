@@ -12,7 +12,6 @@ export const getUserSession = async () => {
       toast.error(`Error fetching session: ${error.message}`);
       return null;
     }
-    console.log(data)
     return data?.user || null;
   } catch {
     toast.error("Unexpected error while fetching user session.");

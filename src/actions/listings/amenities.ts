@@ -43,6 +43,7 @@ export const getSpecificAmenity = async (amenity_name: string[]) => {
             console.error(error);
             return error;
         }
+        console.log(data)
 
         return (data?.map(data => data.id))
     } catch (error: any) {
