@@ -43,6 +43,7 @@ const PropertyListingsDashboard: React.FC<PropertyListingsDashboardProps> = ({
       `)
         .not("business_permit", "is", null)
         .not("fire_inspection", "is", null)
+        .order("isApproved", { ascending: true })
         
 
       if (error) {
