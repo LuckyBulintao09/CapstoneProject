@@ -475,7 +475,7 @@ export default function FilterModal({
 								<PriceSlider
 									step={100}
 									minValue={0}
-									maxValue={30000}
+									maxValue={100000}
 									value={[popUpMinPrice, popUpMaxPrice]}
 									onChange={(value) => {
 										setPopUpMinPrice(value[0]);

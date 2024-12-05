@@ -139,7 +139,7 @@ export const BookingCardModal: React.FC<BookingCardProps> = ({
 	return (
 		<>
 			<Dialog open={isOpen} onOpenChange={onClose}>
-				<DialogContent className='max-w-[80%] lg:max-w-[50%] max-h-[80%] bg-white dark:bg-secondary shadow-lg rounded-lg overflow-y-auto'>
+				<DialogContent className='max-w-[80%] lg:max-w-[50%] max-h-[80%] bg-white dark:bg-secondary shadow-lg rounded-lg overflow-y-auto' style={{ zIndex: 999 }}>
 					<DialogHeader>
 						<DialogTitle>Book Now</DialogTitle>
 						<DialogDescription className='border-b border-gray-300 dark:text-gray-200 pb-2'>

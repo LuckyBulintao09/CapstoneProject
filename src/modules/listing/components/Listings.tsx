@@ -107,7 +107,7 @@ export default function Listings() {
 	const [selectedPrivacyType, setSelectedPrivacyType] = useState([]);
 	const [selectedStructure, setSelectedStructure] = useState([]);
 	const [minPrice, setMinPrice] = useState(0);
-	const [maxPrice, setMaxPrice] = useState(30000);
+	const [maxPrice, setMaxPrice] = useState(100000);
 	const [rooms, setRooms] = useState(0);
 	const [beds, setBeds] = useState(0);
 	const [distanceFilter, setDistanceFilter] = useState<any>(null);
@@ -242,7 +242,7 @@ export default function Listings() {
 											setRooms(0);
 											setBeds(0);
 											setMinPrice(0);
-											setMaxPrice(30000);
+											setMaxPrice(100000);
 											setDistanceFilter(null);
 											setStarFilter(null);
 											setScoreFilter(null);
@@ -336,11 +336,11 @@ export default function Listings() {
 									</Label>
 
 									<div className='space-y-2 mt-2'>
-										<Slider
+										{/* <Slider
 											isDisabled={true}
 											step={100}
 											minValue={0}
-											maxValue={30000}
+											maxValue={100000}
 											value={[minPrice, maxPrice]}
 											onChange={(value) => {
 												setMinPrice(value[0]);
@@ -348,7 +348,7 @@ export default function Listings() {
 											}}
 											formatOptions={{ style: 'currency', currency: 'PHP' }}
 											className='w-full'
-										/>
+										/> */}
 										<div className='flex justify-between items-center w-full'>
 											<div className='flex-1 text-center flex flex-col items-center'>
 												<Label className='block text-xs'>Minimum</Label>

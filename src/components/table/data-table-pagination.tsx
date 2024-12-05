@@ -17,7 +17,7 @@ export function DataTablePagination<TData>({
 }: DataTablePaginationProps<TData>) {
   // Set page size to 8 only once when the table is initialized
   useEffect(() => {
-    table.setPageSize(8); // Set the fixed page size to 8
+    table.setPageSize(5); // Set the fixed page size to 8
   }, [table]); // Ensure this only runs once on initial render
 
   return (
