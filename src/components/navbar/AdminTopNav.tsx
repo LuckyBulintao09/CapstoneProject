@@ -118,7 +118,7 @@ function AdminTopNav() {
 					<>
 						<div className='flex flex-nowrap items-center justify-end gap-5'>
 							<ModeToggle />
-							<NotificationPopover />
+							{/* <NotificationPopover /> */}
 							<Separator orientation='vertical' className='mx-2 bg-gray-300' />
 
 							<div className='flex flex-nowrap items-center justify-end gap-2'>
