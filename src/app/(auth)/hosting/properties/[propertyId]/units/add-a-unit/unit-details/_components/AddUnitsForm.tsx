@@ -9,16 +9,17 @@ import { UnitData, unitSchema } from "@/lib/schemas/unitSchema";
 
 import { Form as ShadForm, FormControl, FormDescription, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
-import { buttonVariants, Button } from "@/components/ui/button";
 import { Label } from "@/components/ui/label";
 import { Switch } from "@/components/ui/switch";
-import { Button as AriaButton, Group, Input as AriaInput, Label as AriaLabel, NumberField } from "react-aria-components";
-import { SelectNative } from "@/components/ui/select-native";
 import { toast } from "sonner";
 import MultipleSelector, { Option } from "@/components/ui/multiple-selector";
+import { SelectNative } from "@/components/ui/select-native";
 
-import { useRouter } from "next/navigation";
-import { useSearchParams } from "next/navigation";
+import { buttonVariants, Button } from "@/components/ui/button";
+
+import { Button as AriaButton, Group, Input as AriaInput, Label as AriaLabel, NumberField } from "react-aria-components";
+
+import { useSearchParams, useRouter } from "next/navigation";
 
 import { cn } from "@/lib/utils";
 
@@ -37,11 +38,18 @@ import "@uppy/dashboard/dist/style.min.css";
 
 import { createClient } from "@/utils/supabase/client";
 
+import { Tag, TagInput } from "emblor";
+import { addUnitImages } from "@/actions/unit/unitImage";
+
 function AddUnitsForm({ amenities, unitId, propertyId, userId }: { amenities?: any; unitId: string; propertyId: string; userId: string }) {
     const [isFileUploadEmpty, setIsFileUploadEmpty] = React.useState<boolean>(true);
 
+    const [tags, setTags] = React.useState<Tag[]>([]);
+    const [activeTagIndex, setActiveTagIndex] = React.useState<number | null>(null);
+
     const [isPending, startTransition] = useTransition();
 
+    const router = useRouter();
     const searchParams = useSearchParams();
 
     const numberOfUnits = searchParams.get("numberOfUnits");
@@ -60,6 +68,7 @@ function AddUnitsForm({ amenities, unitId, propertyId, userId }: { amenities?: a
             outside_view: false,
             room_size: 0,
             amenities: [],
+            additional_amenities: [],
             image: [],
         },
         mode: "onBlur",
@@ -107,57 +116,78 @@ function AddUnitsForm({ amenities, unitId, propertyId, userId }: { amenities?: a
             cacheControl: 3600,
         };
         unitForm.setValue("image", [...unitForm.getValues("image"), file.name]);
-        console.log(unitForm.getValues("image"));
     });
 
-    console.log(unitForm.getValues("image"));
+    uppy.on("file-removed", (file) => {
+        const currentImages = unitForm.getValues("image");
+        const updatedImages = currentImages.filter((imageName) => imageName !== file.name);
+        unitForm.setValue("image", updatedImages);
+    });
 
-    async function onSubmit(values: UnitData) {
+    function onSubmit(values: UnitData) {
+        // console.log(values)
         const numberOfUnitsParsed = Number(numberOfUnits);
 
         if (isNaN(numberOfUnitsParsed) || numberOfUnitsParsed < 1 || numberOfUnitsParsed > 10 || /[^0-9]/.test(numberOfUnits)) {
             toast.error("Invalid number of units.");
-            return;
+            router.push(`/hosting/properties/${propertyId}/details/units`);
         }
 
         if (!isPending) {
             startTransition(async () => {
-                if (uppy.getFiles().length > 0) {
-                    const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL;
-                    const bucketName = "unihomes image storage";
+                toast.promise(createDuplicateUnit(propertyId, values, Number(numberOfUnits)), {
+                    loading: "Adding unit...",
 
-                    const uploadedFiles: string[] = [];
-
-                    const uploadFiles = uppy.getFiles().map(async (file) => {
-                        const objectName = `property/${userId}/${propertyId}/unit/unit_image/${file.name}`;
-                        const fileUrl = `${supabaseUrl}/storage/v1/object/public/${bucketName}/${objectName}`;
-                        uppy.setFileMeta(file.id, {
-                            objectName,
-                        });
-
-                        uploadedFiles.push(fileUrl);
-
-                        await uppy.upload();
-                    });
-
-                    await Promise.all(uploadFiles);
-
-                    console.log("Uploaded file URLs:", uploadedFiles);
-
-                    toast.promise(createDuplicateUnit(propertyId, values, uploadedFiles, Number(numberOfUnits)), {
-                        loading: "Adding unit...",
-                        success: () => {
-                            return "Unit added successfully";
-                        },
-                        error: (error) => {
-                            console.log(error.message);
-                            return error.message;
-                        },
-                    });
-                }
+                    success: async (unitIds) => {
+                        if (uppy.getFiles().length > 0) {
+                            const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL;
+                            const bucketName = "unihomes image storage";
+                            const uploadedFiles: string[] = [];
+                    
+                            // Upload files for all unitIds
+                            const uploadFiles = unitIds.map(async (unitId) => {
+                                const uploadForUnit = uppy.getFiles().map(async (file) => {
+                                    const objectName = `property/${userId}/${propertyId}/unit/${unitId}/unit_image/${file.name}`;
+                                    const fileUrl = `${supabaseUrl}/storage/v1/object/public/${bucketName}/${objectName}`;
+                                    
+                                    // Set the file metadata
+                                    uppy.setFileMeta(file.id, { objectName });
+                    
+                                    // Collect all uploaded file URLs
+                                    uploadedFiles.push(fileUrl);
+                    
+                                    // Upload the file
+                                    await uppy.upload();
+                                });
+                    
+                                // Wait for all uploads to finish for this unit
+                                await Promise.all(uploadForUnit);
+                            });
+                    
+                            // Wait for all file uploads for all units
+                            await Promise.all(uploadFiles);
+                    
+                            // Now, add the uploaded file URLs to all units
+                            await addUnitImages(uploadedFiles, unitIds);
+                    
+                            // Redirect after successfully adding images
+                            router.replace(`/hosting/properties/${propertyId}/details/units`);
+                        }
+                        return "Unit added successfully";
+                    },
+                    error: (error) => {
+                        console.error(error.message);
+                        return "Something went wrong. Failed to create units.";
+                    },
+                });
             });
         }
     }
+
+    React.useEffect(() => {
+        const initialTags = unitForm.getValues("additional_amenities").map(({ id, text }: { id: string; text: string }) => ({ id: id, text: text }));
+        setTags(initialTags);
+    }, [unitForm]);
 
     return (
         <ShadForm {...unitForm}>
@@ -253,20 +283,28 @@ function AddUnitsForm({ amenities, unitId, propertyId, userId }: { amenities?: a
                         name="occupants"
                         render={({ field }) => (
                             <FormItem className="col-span-3">
-                                <AriaLabel htmlFor="occupants" className="text-sm font-medium text-foreground">
+                                <AriaLabel htmlFor="occupants" className="text-sm font-medium text-foreground" id="occupants-label">
                                     Occupants
                                 </AriaLabel>
                                 <FormControl>
-                                    <NumberField defaultValue={field.value} minValue={0} onChange={field.onChange}>
+                                    <NumberField
+                                        id="occupants"
+                                        defaultValue={field.value}
+                                        minValue={0}
+                                        onChange={field.onChange}
+                                        aria-label="Number of occupants"
+                                        aria-labelledby="occupants-label"
+                                    >
                                         <div className="space-y-2">
                                             <Group className="relative inline-flex h-9 w-full items-center overflow-hidden whitespace-nowrap rounded-lg border border-input text-sm shadow-sm shadow-black/5 transition-shadow data-[focus-within]:border-ring data-[disabled]:opacity-50 data-[focus-within]:outline-none data-[focus-within]:ring-[3px] data-[focus-within]:ring-ring/20">
                                                 <AriaButton
+                                                    aria-label="Decrease number of occupants"
                                                     slot="decrement"
                                                     className="-ms-px flex aspect-square h-[inherit] items-center justify-center rounded-s-lg border border-input bg-background text-sm text-muted-foreground/80 transition-shadow hover:bg-accent hover:text-foreground disabled:pointer-events-none disabled:cursor-not-allowed disabled:opacity-50"
                                                 >
                                                     <Minus size={16} strokeWidth={2} aria-hidden="true" />
                                                 </AriaButton>
-                                                <Input
+                                                <AriaInput
                                                     {...field}
                                                     id="occupants"
                                                     className="w-full grow bg-background px-3 py-2 text-center tabular-nums text-foreground focus:outline-none"
@@ -278,6 +316,7 @@ function AddUnitsForm({ amenities, unitId, propertyId, userId }: { amenities?: a
                                                     })}
                                                 />
                                                 <AriaButton
+                                                    aria-label="Increase number of occupants"
                                                     slot="increment"
                                                     className="-me-px flex aspect-square h-[inherit] items-center justify-center rounded-e-lg border border-input bg-background text-sm text-muted-foreground/80 transition-shadow hover:bg-accent hover:text-foreground disabled:pointer-events-none disabled:cursor-not-allowed disabled:opacity-50"
                                                 >
@@ -297,20 +336,27 @@ function AddUnitsForm({ amenities, unitId, propertyId, userId }: { amenities?: a
                         name="bedrooms"
                         render={({ field }) => (
                             <FormItem className="col-span-3">
-                                <AriaLabel htmlFor="bedrooms" className="text-sm font-medium text-foreground">
+                                <AriaLabel htmlFor="bedrooms" id="bedrooms-label" className="text-sm font-medium text-foreground">
                                     Bedrooms
                                 </AriaLabel>
                                 <FormControl>
-                                    <NumberField defaultValue={field.value} minValue={0} onChange={field.onChange}>
+                                    <NumberField
+                                        id="bedrooms"
+                                        defaultValue={field.value}
+                                        minValue={0}
+                                        onChange={field.onChange}
+                                        aria-labelledby="bedrooms-label"
+                                    >
                                         <div className="space-y-2">
                                             <Group className="relative inline-flex h-9 w-full items-center overflow-hidden whitespace-nowrap rounded-lg border border-input text-sm shadow-sm shadow-black/5 transition-shadow data-[focus-within]:border-ring data-[disabled]:opacity-50 data-[focus-within]:outline-none data-[focus-within]:ring-[3px] data-[focus-within]:ring-ring/20">
                                                 <AriaButton
+                                                    aria-label="Decrease number of bedrooms"
                                                     slot="decrement"
                                                     className="-ms-px flex aspect-square h-[inherit] items-center justify-center rounded-s-lg border border-input bg-background text-sm text-muted-foreground/80 transition-shadow hover:bg-accent hover:text-foreground disabled:pointer-events-none disabled:cursor-not-allowed disabled:opacity-50"
                                                 >
                                                     <Minus size={16} strokeWidth={2} aria-hidden="true" />
                                                 </AriaButton>
-                                                <Input
+                                                <AriaInput
                                                     {...field}
                                                     id="bedrooms"
                                                     className="w-full grow bg-background px-3 py-2 text-center tabular-nums text-foreground focus:outline-none"
@@ -322,6 +368,7 @@ function AddUnitsForm({ amenities, unitId, propertyId, userId }: { amenities?: a
                                                     })}
                                                 />
                                                 <AriaButton
+                                                    aria-label="Increase number of bedrooms"
                                                     slot="increment"
                                                     className="-me-px flex aspect-square h-[inherit] items-center justify-center rounded-e-lg border border-input bg-background text-sm text-muted-foreground/80 transition-shadow hover:bg-accent hover:text-foreground disabled:pointer-events-none disabled:cursor-not-allowed disabled:opacity-50"
                                                 >
@@ -341,14 +388,21 @@ function AddUnitsForm({ amenities, unitId, propertyId, userId }: { amenities?: a
                         name="beds"
                         render={({ field }) => (
                             <FormItem className="col-span-3">
-                                <AriaLabel htmlFor="beds" className="text-sm font-medium text-foreground">
+                                <AriaLabel htmlFor="beds" id="beds-label" className="text-sm font-medium text-foreground">
                                     Beds
                                 </AriaLabel>
                                 <FormControl>
-                                    <NumberField defaultValue={field.value} minValue={0} onChange={field.onChange}>
+                                    <NumberField
+                                        id="beds"
+                                        defaultValue={field.value}
+                                        minValue={0}
+                                        onChange={field.onChange}
+                                        aria-labelledby="beds-label"
+                                    >
                                         <div className="space-y-2">
                                             <Group className="relative inline-flex h-9 w-full items-center overflow-hidden whitespace-nowrap rounded-lg border border-input text-sm shadow-sm shadow-black/5 transition-shadow data-[focus-within]:border-ring data-[disabled]:opacity-50 data-[focus-within]:outline-none data-[focus-within]:ring-[3px] data-[focus-within]:ring-ring/20">
                                                 <AriaButton
+                                                    aria-label="Decrease number of beds"
                                                     slot="decrement"
                                                     className="-ms-px flex aspect-square h-[inherit] items-center justify-center rounded-s-lg border border-input bg-background text-sm text-muted-foreground/80 transition-shadow hover:bg-accent hover:text-foreground disabled:pointer-events-none disabled:cursor-not-allowed disabled:opacity-50"
                                                 >
@@ -366,6 +420,7 @@ function AddUnitsForm({ amenities, unitId, propertyId, userId }: { amenities?: a
                                                     })}
                                                 />
                                                 <AriaButton
+                                                    airia-label="Increase number of beds"
                                                     slot="increment"
                                                     className="-me-px flex aspect-square h-[inherit] items-center justify-center rounded-e-lg border border-input bg-background text-sm text-muted-foreground/80 transition-shadow hover:bg-accent hover:text-foreground disabled:pointer-events-none disabled:cursor-not-allowed disabled:opacity-50"
                                                 >
@@ -488,6 +543,7 @@ function AddUnitsForm({ amenities, unitId, propertyId, userId }: { amenities?: a
                                         onChange={(selectedOptions) => {
                                             field.onChange(selectedOptions.map((option) => ({ value: option.value, label: option.label })));
                                         }}
+                                        creatable
                                         value={field.value as Option[]}
                                         onSearch={(searchTerm) => {
                                             // Add the search logic here (e.g., filtering or API call)
@@ -510,10 +566,52 @@ function AddUnitsForm({ amenities, unitId, propertyId, userId }: { amenities?: a
                             </FormItem>
                         )}
                     />
+
+                    <FormField
+                        control={unitForm.control}
+                        name="additional_amenities"
+                        render={({ field }) => (
+                            <FormItem className="flex flex-col items-start">
+                                <FormLabel className="text-left">Additional Ameneties</FormLabel>
+                                <FormControl className="w-full">
+                                    <TagInput
+                                        {...field}
+                                        placeholder="Enter additional ameneties"
+                                        tags={tags}
+                                        setTags={(newTags) => {
+                                            setTags(newTags);
+                                            unitForm.setValue("additional_amenities", newTags as [Tag, ...Tag[]]);
+                                        }}
+                                        styleClasses={{
+                                            tagList: {
+                                                container: "gap-1 max-h-[94px] overflow-y-auto rounded-md",
+                                            },
+                                            input: "rounded-lg transition-shadow placeholder:text-muted-foreground/70 focus-visible:border-ring focus-visible:outline-none focus-visible:ring-[3px] focus-visible:ring-ring/20",
+                                            tag: {
+                                                body: "relative h-7 bg-background border border-input hover:bg-background rounded-md font-medium text-xs ps-2 pe-7",
+                                                closeButton:
+                                                    "absolute -inset-y-px -end-px p-0 rounded-s-none rounded-e-lg flex size-7 transition-colors outline-0 focus-visible:outline focus-visible:outline-2 focus-visible:outline-ring/70 text-muted-foreground/80 hover:text-foreground",
+                                            },
+                                        }}
+                                        clearAllButton
+                                        setActiveTagIndex={setActiveTagIndex}
+                                        activeTagIndex={activeTagIndex}
+                                        inlineTags={false}
+                                        inputFieldPosition="top"
+                                    />
+                                </FormControl>
+                                {unitForm.formState.errors.additional_amenities ? (
+                                    <FormMessage />
+                                ) : (
+                                    <FormDescription>Enter amenity/ amenities</FormDescription>
+                                )}
+                            </FormItem>
+                        )}
+                    />
                 </div>
                 <div className="flex items-center justify-start gap-4">
                     <Link
-                        href={`/hosting/properties/${propertyId}/details/units`}
+                        href={(unitForm.formState.isSubmitting || isPending) ? `` : `/hosting/properties/${propertyId}/details/units`}
                         className={cn(buttonVariants({ variant: "outline", className: "w-fit" }))}
                     >
                         Back
@@ -521,9 +619,6 @@ function AddUnitsForm({ amenities, unitId, propertyId, userId }: { amenities?: a
                     <Button type="submit" disabled={unitForm.formState.isSubmitting || isPending}>
                         Submit
                     </Button>
-                    {/* <Button onClick={() => console.log(uploadedFiles, "uploadedFiles")} type="button">
-                        Test uploads
-                    </Button> */}
                 </div>
             </form>
         </ShadForm>

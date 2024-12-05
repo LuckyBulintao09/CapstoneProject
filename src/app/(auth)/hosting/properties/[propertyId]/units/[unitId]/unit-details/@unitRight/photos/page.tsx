@@ -22,9 +22,8 @@ import UnitPhotoUploader from "./_components/unit-photo-uploader";
 
 async function PhotosPage({ params }: { params: { propertyId: string, unitId: string } }) {
     const unit = await getUnitById(params.unitId);
-    
     const user = await getAuthenticatedUser();
-    const photoBucketFileCount = await countUnitImageStorageBucket(user.id, params.propertyId);
+    const photoBucketFileCount = await countUnitImageStorageBucket(user.id, params.propertyId, params.unitId);
 
     return (
 			<section className='flex flex-col h-[calc(100vh-68px)] w-full px-6 airBnbDesktop:overflow-x-hidden airBnbDesktop:overflow-y-auto airBnbTablet:px-10 min-[1128px]:px-20 airBnbBigDesktop:px-0'>

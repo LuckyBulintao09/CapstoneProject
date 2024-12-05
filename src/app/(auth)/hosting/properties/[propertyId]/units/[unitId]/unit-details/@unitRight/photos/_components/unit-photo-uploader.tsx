@@ -13,7 +13,7 @@ import { toast } from "sonner";
 import { Button } from "@/components/ui/button";
 import { Dialog, DialogClose, DialogContent, DialogDescription, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
 
-import { addUnitImages } from "@/actions/unit/unitImage";
+import { addUnitPhotos } from "@/actions/unit/unitImage";
 
 import { Plus } from "lucide-react";
 
@@ -75,7 +75,7 @@ function UnitPhotoUploader({ userId, propertyId, unitId, photoBucketFileCount }:
             const uploadedFiles: string[] = [];
 
             const uploadFiles = uppy.getFiles().map(async (file, index) => {
-                const objectName = `property/${userId}/${propertyId}/unit/unit_image/${file.name}`;
+                const objectName = `property/${userId}/${propertyId}/unit/${unitId}/unit_image/${file.name}`;
                 const fileUrl = `${supabaseUrl}/storage/v1/object/public/${bucketName}/${objectName}`;
                 uppy.setFileMeta(file.id, {
                     objectName,
@@ -88,7 +88,7 @@ function UnitPhotoUploader({ userId, propertyId, unitId, photoBucketFileCount }:
 
             await Promise.all(uploadFiles);
 
-            toast.promise(addUnitImages(uploadedFiles, unitId), {
+            toast.promise(addUnitPhotos(uploadedFiles, unitId), {
                 loading: "Adding images...",
                 success: () => {
                     router.refresh();

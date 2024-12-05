@@ -20,34 +20,63 @@ export async function countPropertyImageStorageBucket(userId: string, propertyId
     }
 }
 
-export async function addUnitImages(fileUrls: any, unitId: string) {
+export async function addUnitImages(fileUrls: any, unitIds: any) {
     const supabase = createClient();
 
     try {
-        const { data, error } = await supabase.rpc("append_to_unit_images", {
-            unit_id: unitId,
-            new_images: fileUrls,
+        const updatePromises = unitIds.map(async (unitId) => {
+            const { data, error } = await supabase.rpc("append_to_unit_images", {
+                unit_id: unitId,
+                new_images: fileUrls, // Same file URLs for all units
+            });
+
+            if (error) {
+                console.error(`Error updating unit images for unit ID ${unitId}:`, error);
+                throw new Error(error.message || `Failed to update images for unit ID ${unitId}`);
+            }
+
+            return data;
         });
 
-        if (error?.code) {
-            throw error.details;
-        }
+        const results = await Promise.all(updatePromises);
 
-        console.log("Unit images added", data);
+        console.log("Unit images updated successfully:", results);
 
-        return data;
+        return results; // Return the results for further inspection
+
     } catch (error: any) {
         console.log(error.message, "error");
         throw error.message;
     }
 }
 
-export async function countUnitImageStorageBucket(userId: string, propertyId: string) {
+export async function addUnitPhotos(fileUrls: any, unitId: any) {
+    const supabase = createClient();
+
+    try {
+        const { data, error } = await supabase.rpc("append_to_unit_images", {
+            unit_id: unitId,
+            new_images: fileUrls, // Same file URLs for all units
+        });
+
+        if (error?.code) {
+            throw error;
+        }
+
+        return data;
+
+    } catch (error: any) {
+        console.log(error.message, "error");
+        throw error.message;
+    }
+}
+
+export async function countUnitImageStorageBucket(userId: string, propertyId: string, unitId: string) {
     const supabase = createClient();
     try {
         const { data: unit_images, error: unit_images_error } = await supabase.storage
             .from("unihomes image storage")
-            .list(`property/${userId}/${propertyId}/unit/unit_image`);
+            .list(`property/${userId}/${propertyId}/unit/${unitId}/unit_image`);
 
         if (unit_images_error) {
             console.error("Error listing files:", unit_images_error.message);
@@ -76,7 +105,7 @@ export async function removeImageFromUnit(propertyId: string, unitId: string, im
 
         const { data: storageData, error: storageError } = await supabase.storage
             .from('unihomes image storage')
-            .remove([`property/${userId}/${propertyId}/unit/unit_image/${imageUrl.split('/').pop()}`]);
+            .remove([`property/${userId}/${propertyId}/unit/${unitId}/unit_image/${imageUrl.split('/').pop()}`]);
 
         if (storageError) {
             console.error("Error removing image from storage bucket:", storageError);
