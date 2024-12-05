@@ -242,11 +242,11 @@ export const columns = (
 		cell: ({ row }) => <div>{row.original.property_title}</div>,
 	},
 	{
-		accessorKey: 'createdAt',
+		accessorKey: 'updatedAt',
 		header: ({ column }) => (
-			<DataTableColumnHeader column={column} title='Date' />
+			<DataTableColumnHeader column={column} title='Last Update' />
 		),
-		cell: ({ row }) => <div>{row.original.createdAt}</div>,
+		cell: ({ row }) => <div>{row.original.updatedAt}</div>,
 	},
 	{
 		accessorKey: 'dueDate',

@@ -216,17 +216,17 @@ export function DataTableToolbar<TData>({
 										to: undefined,
 									};
 									if (from && to) {
-										table.getColumn('appointment_date')?.setFilterValue({
+										table.getColumn('updatedAt')?.setFilterValue({
 											from: new Date(from),
 											to: new Date(to),
 										});
 									} else if (from || to) {
-										table.getColumn('appointment_date')?.setFilterValue({
+										table.getColumn('updatedAt')?.setFilterValue({
 											from: from ? new Date(from) : undefined,
 											to: to ? new Date(to) : undefined,
 										});
 									} else {
-										table.getColumn('appointment_date')?.setFilterValue({
+										table.getColumn('updatedAt')?.setFilterValue({
 											from: undefined,
 											to: undefined,
 										});

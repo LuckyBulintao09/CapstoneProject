@@ -38,7 +38,8 @@ const PropertyListingsDashboard: React.FC<PropertyListingsDashboardProps> = ({
         created_at,
         isApproved,
         isRejected, 
-        due_date
+        due_date,
+        updated_at
       `)
         .not("business_permit", "is", null)
         .not("fire_inspection", "is", null)
@@ -67,6 +68,9 @@ const PropertyListingsDashboard: React.FC<PropertyListingsDashboardProps> = ({
             : "N/A",
           isApproved: listing.isApproved || false,
           isRejected: listing.isRejected || false,
+          updatedAt: listing.updated_at
+            ? format(new Date(listing.updated_at), "MMMM dd, yyyy")
+            : "",
         })) || []
       );
     } catch (error) {
@@ -143,7 +147,8 @@ const PropertyListingsDashboard: React.FC<PropertyListingsDashboardProps> = ({
           created_at,
           isApproved,
           isRejected, 
-          due_date
+          due_date,
+          updated_at
         `
         )
         .eq("id", propertyId)
