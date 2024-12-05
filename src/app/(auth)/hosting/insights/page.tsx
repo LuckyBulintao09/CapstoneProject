@@ -16,7 +16,7 @@ function Page() {
 
 			<div className='mt-8 mb-4'>
 				<h1 className='font-semibold xs:text-xl sm:text-2xl md:text-3xl text-left dark:text-white'>
-					Review Analytics -------------PUSH KO LATER-----------------
+					Review Analytics 
 				</h1>
 			</div>
 			<ReviewsAnalytics />
