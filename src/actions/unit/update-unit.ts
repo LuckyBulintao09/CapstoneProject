@@ -32,9 +32,9 @@ export async function updateUnit(unitId: string, propertyId: string, values: any
     redirect(`/hosting/properties/${propertyId}/details/units`);
 }
 
-export async function createDuplicateUnit(propertyId: string, values: any, fileUrls: any, numberOfUnits: number) {
+export async function createDuplicateUnit(propertyId: string, values: any, numberOfUnits: number) {
     const supabase = createClient();
-
+    // console.log(values, "action values")
     if (typeof numberOfUnits !== "number" || isNaN(numberOfUnits)) {
         throw new Error("numberOfUnits must be a valid number.");
     }
@@ -65,18 +65,20 @@ export async function createDuplicateUnit(propertyId: string, values: any, fileU
             throw error;
         }
 
+        const unitIds = data.map((unit: any) => unit.id);
+
         for (const unit of data) {
             const updatedTitle = `${values.title}-${unit.id}`;
-
+    
             // Update the unit title with the unit ID
             await supabase.from("unit").update({ title: updatedTitle }).eq("id", unit.id);
-
+    
             // Insert amenities and images
             await insertAmenities(values.amenities, unit.id);
-            await addUnitImages(fileUrls, unit.id);
+            await inserAdditionalAmenities(values.additional_amenities, unit.id);
         }
 
-        permanentRedirect(`/hosting/properties/${propertyId}/details/units`);
+        return unitIds;
     } catch (error: any) {
         console.log(error);
         throw error;
@@ -97,6 +99,29 @@ const insertAmenities = async (data: { value: string; label: string }[], unitId:
         throw unitAmenitiesData;
     }
 };
+
+export async function inserAdditionalAmenities(additional_amenities: {id: any; text: string;}[], unitId: string) {
+    // console.log(additional_amenities, "action additional amenities")
+    const supabase = createClient();
+    try {
+        await supabase.from("unit_additional_amenities").delete().eq("unit_id", unitId);
+
+        const additional_amenities_insert = additional_amenities.map(({ text }: { text: string }) => ({
+            unit_id: unitId,
+            amenity_name: text,
+        }));
+
+        const { error: additionalAmenityError } = await supabase.from("unit_additional_amenities").insert(additional_amenities_insert   );
+
+        if (additionalAmenityError?.code) {
+            throw additionalAmenityError;
+        }
+
+        return { success: true };
+    } catch (error: any) {
+        throw error;
+    }
+}
 
 export const toggleIsReserved = async (unitId: string, isReserved: boolean) => {
     const supabase = createClient();

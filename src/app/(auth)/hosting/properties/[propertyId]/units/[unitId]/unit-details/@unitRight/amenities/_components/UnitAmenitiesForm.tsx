@@ -65,12 +65,7 @@ function UnitAmenitiesForm({ unitId, amenities, allAmenities, additionalAmenitie
                 });
             });
         }
-        // console.log(values)
-
-
-
         console.log(tags, "tags");
-
     }
 
     return (

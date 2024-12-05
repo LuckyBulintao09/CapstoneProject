@@ -66,13 +66,15 @@ export const unitAmenitySchema = z.object({
 
 export const unitPriceSchema = z.object({
     price: z
-    .union([z.string(), z.number()]) // Accept both string and number
+    .union([z.string(), z.number()])
     .transform((value) => {
-        const parsed = typeof value === "string" ? parseFloat(value) : value; // Convert string to number
-        return isNaN(parsed) ? undefined : parsed; // Handle invalid numbers
+        const parsed = typeof value === "string" ? parseFloat(value) : value;
+        return isNaN(parsed) ? undefined : parsed;
     })
     .refine((value) => typeof value === "number" && value >= 1, {
         message: "Price must not be less than 1.",
+    }).refine((value) => typeof value === "number" && value <= 100000, {
+        message: "Price must not exceed 100, 000.",
     }),
 });
 
