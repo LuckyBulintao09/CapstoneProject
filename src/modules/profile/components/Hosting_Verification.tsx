@@ -75,12 +75,12 @@ const HostingVerification: React.FC = () => {
 	useEffect(() => {
 		fetchVerificationData();
 
-		const interval = setInterval(() => {
-			fetchVerificationData();
-		}, 10000);
+		// const interval = setInterval(() => {
+		// 	fetchVerificationData();
+		// }, 10000);
 		
-		return () => clearInterval(interval);
-	}, [prevState]);
+		// return () => clearInterval(interval);
+	}, []);
 
 	const handleFileChange = (event: React.ChangeEvent<HTMLInputElement>) => {
 		const newFile = event.target.files ? event.target.files[0] : null;

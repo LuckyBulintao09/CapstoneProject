@@ -126,6 +126,22 @@ const ProfileSection = () => {
 			const { id, firstname, lastname, address, cp_number, dob } =
 				editProfileData;
 
+			
+			if (firstname.trim() === '' && lastname.trim() === '') {
+				toast.error('Firstname and Lastname cannot be empty');
+				return;
+			}
+
+			if (firstname.trim() === '' || lastname.trim() === '') {
+				toast.error('Firstname and Lastname cannot be empty');
+				return;
+			}
+
+			if (cp_number.length !== 13) {
+				toast.error('Contact number is Invalid.');
+				return;
+			}
+
 			const { error: updateProfileError } = await supabase
 				.from('account')
 				.update({ firstname, lastname, address, cp_number, dob })
@@ -146,7 +162,7 @@ const ProfileSection = () => {
 					);
 				}
 			} else {
-				toast.error(`Failed to update profile: ${updateProfileError.message}`);
+				toast.error(`Failed to update profile, Invalid Inputs.`);
 			}
 		}
 	};
