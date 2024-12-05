@@ -120,6 +120,17 @@ body {
     field-sizing: content;
   }
 
+  .pricing-input input[type="number"] {
+      appearance: textfield; /* Removes default appearance */
+      -moz-appearance: textfield; /* Removes spinners in Firefox */
+  }
+
+  .pricing-input input[type="number"]::-webkit-outer-spin-button,
+  .pricing-input input[type="number"]::-webkit-inner-spin-button {
+      -webkit-appearance: none; /* Removes spinners in WebKit browsers */
+      margin: 0; /* Ensures no extra margin is added */
+  }
+
   ::-webkit-scrollbar {
     width: 5px;
   }

@@ -69,3 +69,19 @@ export const getUnitSpecifications = async (unitId: string) => {
         throw error;
     }
 };
+
+export const getUnitPrice = async (unitId: string) => {
+    const supabase = createClient();
+    try {
+        const { data, error } = await supabase.from("unit").select(`price`).eq("id", unitId).single();
+
+        if (error) {
+            throw error;
+        }
+
+        return data;
+    } catch (error: any) {
+        console.error("Error fetching unit price:", error);
+        throw error;
+    }
+};

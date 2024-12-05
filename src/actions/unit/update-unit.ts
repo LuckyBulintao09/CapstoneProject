@@ -193,3 +193,20 @@ export async function updateUnitAmenities(unitId: string, values: any) {
         throw error;
     }
 }
+
+export async function updateUnitPrice(unitId: string, values: any) {
+    const supabase = createClient();
+    try {
+        const { data, error } = await supabase
+            .from("unit")
+            .update({ price: values.price })
+            .eq("id", unitId);
+        if (error?.code) {
+            throw error;
+        }
+
+        return data;
+    } catch (error: any) {
+        throw error;
+    }
+}

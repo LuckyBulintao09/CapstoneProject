@@ -13,7 +13,7 @@ import { Bed, Box, Check, Eye, LockKeyhole, Ruler, UsersRound, X } from "lucide-
 
 import { usePathname } from "next/navigation";
 
-function UnitLeftSection({ unit, unitId, propertyId, unit_amenities }: any) {
+function UnitLeftSection({ unit, unitId, propertyId, unit_amenities, unit_additional_amenities }: any) {
     const pathname = usePathname();
     return (
         <>
@@ -234,11 +234,57 @@ function UnitLeftSection({ unit, unitId, propertyId, unit_amenities }: any) {
                                         </div>
                                     ))
                                 ) : (
-                                    <div className="flex items-center gap-2">
+                                    <div className="flex items-center gap-1">
                                         <X className="w-4 h-4 text-danger" />
-                                        <span>No amenities</span>
+                                        <span className="text-xs">No amenities</span>
                                     </div>
                                 )}
+
+                                {unit_additional_amenities?.length > 0 ? (
+                                    unit_additional_amenities?.map(({ id, text }: { id: number; text: string }) => (
+                                        <div className="flex items-center gap-1 shrink-0  " key={id}>
+                                            <Check className="w-4 h-4 text-success" />
+                                            <span className="text-xs">{text}</span>
+                                        </div>
+                                    ))
+                                ) : (
+                                    <div className="flex items-center gap-1">
+                                        <X className="w-4 h-4 text-danger" />
+                                        <span className="text-xs">No additional amenities</span>
+                                    </div>
+                                )}
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div>
+                <div
+                    className={cn(
+                        "border-2 rounded-lg relative p-[22px]",
+                        pathname === `/hosting/properties/${propertyId}/units/${unitId}/unit-details/price`
+                            ? "border-primary shadow-xl"
+                            : " border-accent"
+                    )}
+                >
+                    <span className="text-[1rem] leading-5 tracking-normal font-[500]">Unit price</span>
+                    <Link
+                        href={`/hosting/properties/${propertyId}/units/${unitId}/unit-details/price`}
+                        className="left-0 right-0 p-0 m-0 absolute bg-transparent top-0 bottom-0 z-[2] outline-none"
+                    ></Link>
+                    <div>
+                        <div className="pt-2 overflow-clip tracking-normal leading-5 text-ellipsis font-normal whitespace-pre-line text-muted-foreground">
+                            <div className="text-[1.375rem] -tracking-[0.01375rem] font-[500] leading-[1.625rem]">
+                                <span>
+                                    ₱{" "}
+                                    {new Intl.NumberFormat("en-PH", {
+                                        style: "decimal",
+                                        minimumFractionDigits: 2,
+                                        maximumFractionDigits: 2,
+                                    }).format(unit.price)}{" "}
+                                    (PHP)
+                                </span>
                             </div>
                         </div>
                     </div>
