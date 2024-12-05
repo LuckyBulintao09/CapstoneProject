@@ -85,27 +85,13 @@ const ProfileSection = () => {
 		);
 	};
 
-	// const handleConfirmationInputChange = (
-	// 	e: React.ChangeEvent<HTMLInputElement>
-	// ) => {
-	// 	setConfirmationInput(e.target.value);
-	// };
 
-	// const handleDeleteAccountConfirm = async () => {
-	// 	if (
-	// 		confirmationInput === `${profileData?.firstname} ${profileData?.lastname}`
-	// 	) {
-	// 		try {
-	// 			await handleDeleteAccount(profileData?.id);
-	// 			toast.success('Account deleted successfully!');
-	// 			await logout();
-	// 		} catch (error) {
-	// 			toast.error('Failed to delete account: ' + error.message);
-	// 		}
-	// 	} else {
-	// 		toast.error('Please enter the correct confirmation text.');
-	// 	}
-	// };
+	const handleDeleteAccountConfirm = async () => {
+		toast.message('Deleting account...');
+				await handleDeleteAccount(profileData?.id);
+				toast.success('Account deleted successfully!');
+				await logout();
+	};
 	const handleResetPassword = async (e: React.FormEvent) => {
 		e.preventDefault(); 
 
@@ -621,8 +607,7 @@ const ProfileSection = () => {
 					</DialogContent>
 				</Dialog> */}
 
-				{/* Delete Account Dialog */}
-				{/* <Dialog>
+	 			<Dialog>
 					<DialogTrigger asChild>
 						<Button>Delete Account</Button>
 					</DialogTrigger>
@@ -638,7 +623,7 @@ const ProfileSection = () => {
 								{profileData?.lastname}" to proceed.
 							</DialogDescription>
 						</DialogHeader>
-						<div className='grid gap-4 py-4'>
+						{/* <div className='grid gap-4 py-4'>
 							<div className='grid grid-cols-4 items-center gap-4'>
 								<Label htmlFor='confirmationInput' className='text-right'>
 									Enter here:
@@ -646,18 +631,17 @@ const ProfileSection = () => {
 								<Input
 									id='confirmationInput'
 									className='col-span-3'
-									value={confirmationInput}
 									onChange={handleConfirmationInputChange}
 								/>
 							</div>
-						</div>
+						</div> */}
 						<DialogFooter>
 							<Button onClick={handleDeleteAccountConfirm}>
 								Delete Account
 							</Button>
 						</DialogFooter>
 					</DialogContent>
-				</Dialog> */}
+				</Dialog>
 			</section>
 		</>
 	);
