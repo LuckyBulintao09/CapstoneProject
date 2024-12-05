@@ -13,6 +13,16 @@ import { handleDeleteAccount } from '@/actions/user/deleteAccount';
 import { logout } from '@/app/auth/login/actions';
 import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
+import {
+    Dialog,
+    DialogTrigger,
+    DialogContent,
+    DialogHeader,
+    DialogFooter,
+    DialogTitle,
+    DialogDescription,
+	DialogClose
+} from '@/components/ui/dialog'
 
 interface ProfileData {
 	id: string;
@@ -38,7 +48,7 @@ const ProfileSection = () => {
 	const [newPassword, setNewPassword] = useState('');
 	const [confirmPassword, setConfirmPassword] = useState('');
 	const supabase = createClient();
-	const [confirmationInput, setConfirmationInput] = useState<string>('');
+    const [isDeleting, setIsDeleting] = useState(false);
 
 	useEffect(() => {
 		const checkSession = async () => {
@@ -75,27 +85,41 @@ const ProfileSection = () => {
 		);
 	};
 
-	const handleConfirmationInputChange = (
-		e: React.ChangeEvent<HTMLInputElement>
-	) => {
-		setConfirmationInput(e.target.value);
-	};
+	// const handleConfirmationInputChange = (
+	// 	e: React.ChangeEvent<HTMLInputElement>
+	// ) => {
+	// 	setConfirmationInput(e.target.value);
+	// };
 
-	const handleDeleteAccountConfirm = async () => {
-		if (
-			confirmationInput === `${profileData?.firstname} ${profileData?.lastname}`
-		) {
-			try {
-				await handleDeleteAccount(profileData?.id);
-				toast.success('Account deleted successfully!');
-				await logout();
-			} catch (error) {
-				toast.error('Failed to delete account: ' + error.message);
-			}
-		} else {
-			toast.error('Please enter the correct confirmation text.');
-		}
-	};
+	// const handleDeleteAccountConfirm = async () => {
+	// 	if (
+	// 		confirmationInput === `${profileData?.firstname} ${profileData?.lastname}`
+	// 	) {
+	// 		try {
+	// 			await handleDeleteAccount(profileData?.id);
+	// 			toast.success('Account deleted successfully!');
+	// 			await logout();
+	// 		} catch (error) {
+	// 			toast.error('Failed to delete account: ' + error.message);
+	// 		}
+	// 	} else {
+	// 		toast.error('Please enter the correct confirmation text.');
+	// 	}
+	// };
+
+	const handleDeleteAccountDialog = async () => {
+        setIsDeleting(true);
+        try {
+            
+            await handleDeleteAccount(profileData?.id);
+            toast.success('Account deleted successfully.');
+            logout();
+        } catch (error) {
+            toast.error('Failed to delete account. Please try again.');
+        } finally {
+            setIsDeleting(false);
+        }
+    };
 
 	const handleSaveProfile = async () => {
 		if (editProfileData) {
@@ -437,14 +461,44 @@ const ProfileSection = () => {
 						</div>
 					</div>
 				</div>
-				<div className='flex justify-end items-end mt-6 px-6'>
-					<Button
-						onClick={handleDeleteAccountConfirm}
-						className='bg-transparent border border-destructive text-red-700 hover:bg-red-600'
-					>
-						Delete Account
-					</Button>
+
+				{/* Account Deletion Section */}
+				<div className='flex justify-end px-6 py-3'>
+					<Dialog>
+						<DialogTrigger asChild>
+							<Button
+								className='bg-background border border-red-500 text-red-500 hover:border-red-600 hover:text-red-600'
+							>
+								Delete Account
+							</Button>
+						</DialogTrigger>
+						<DialogContent>
+							<DialogHeader>
+								<DialogTitle>Confirm Account Deletion</DialogTitle>
+								<DialogDescription>
+									Are you sure you want to delete your account? This action is irreversible, and you will lose all your data.
+								</DialogDescription>
+							</DialogHeader>
+							<DialogFooter className='flex justify-end'>
+								<DialogClose asChild>
+									<Button
+										variant="outline"
+									>
+										Cancel
+									</Button>
+								</DialogClose>
+								<Button
+									color="red"
+									onClick={handleDeleteAccountDialog}
+									disabled={isDeleting}
+								>
+									{isDeleting ? 'Deleting...' : 'Delete'}
+								</Button>
+							</DialogFooter>
+						</DialogContent>
+					</Dialog>
 				</div>
+
 
 				{/* Profile Edit Modal */}
 				{/* <Modal isOpen={isOpen} onOpenChange={onOpenChange}>

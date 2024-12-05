@@ -16,6 +16,8 @@ import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert';
 import { Terminal } from 'lucide-react';
 import { createClient } from '@/utils/supabase/client';
 import { toast } from 'sonner';
+import LoadingPage from '@/components/LoadingPage';
+import { set } from 'date-fns';
 
 const HostingVerification: React.FC = () => {
 	const [file, setFile] = useState<File | null>(null);
@@ -25,6 +27,8 @@ const HostingVerification: React.FC = () => {
 	const [isRejected, setIsRejected] = useState<boolean>(false);
 	const [declineReason, setDeclineReason] = useState<string | null>(null);
 	const [fileWarning, setFileWarning] = useState<string | null>(null);
+	const [isLoading, setIsLoading] = useState<boolean>(false);
+
 
 	const [prevState, setPrevState] = useState<{
 		govIdUrl: string | null;
@@ -34,6 +38,8 @@ const HostingVerification: React.FC = () => {
 	} | null>(null);
 
 	const fetchVerificationData = async () => {
+		
+		setIsLoading(true);
 		const user = await getUserSession();
 		if (!user) return;
 
@@ -62,6 +68,8 @@ const HostingVerification: React.FC = () => {
 			setDeclineReason(formattedData.declineReason);
 			setPrevState(formattedData);
 		}
+		
+		setIsLoading(false);
 	};
 
 	useEffect(() => {
@@ -70,7 +78,7 @@ const HostingVerification: React.FC = () => {
 		const interval = setInterval(() => {
 			fetchVerificationData();
 		}, 10000);
-
+		
 		return () => clearInterval(interval);
 	}, [prevState]);
 
@@ -129,6 +137,14 @@ const HostingVerification: React.FC = () => {
 	// 		setDeclineReason(null);
 	// 	}
 	// };
+
+	if (isLoading) {
+		return (
+			<div className='flex justify-center items-center h-full'>
+				<LoadingPage />
+			</div>
+		);
+	}
 
 	return (
 		<>

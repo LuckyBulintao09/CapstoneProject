@@ -10,6 +10,7 @@ import { GoogleMap, Marker } from '@react-google-maps/api';
 import { createClient } from '@/utils/supabase/client';
 import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
+import { toast } from 'sonner';
 
 const supabase = createClient();
 
@@ -45,14 +46,14 @@ const LandmarkModal = ({
 
 			if (error) {
 				console.error('Supabase insert error:', error.message);
-				alert('Failed to add landmark. Please try again.');
+				toast.error('Failed to add landmark. Please try again.');
 				return false;
 			}
-
+			toast.success('Landmark added successfully!');
 			return true;
 		} catch (error) {
 			console.error('Unexpected error:', error.message);
-			alert('An unexpected error occurred. Please try again.');
+			toast.error('An unexpected error occurred. Please try again.');
 			return false;
 		}
 	};
@@ -70,7 +71,7 @@ const LandmarkModal = ({
 				onOpenChange(false);
 			}
 		} else {
-			alert('Please provide a name and select a location on the map.');
+			toast.error('Please provide a name and select a location on the map.');
 		}
 	};
 

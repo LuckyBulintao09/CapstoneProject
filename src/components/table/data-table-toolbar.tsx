@@ -176,7 +176,7 @@ export function DataTableToolbar<TData>({
 				/>
 
 				{/* Date Picker - Visible on larger screens */}
-				<div className='hidden lg:block'>
+				{/* <div className='hidden lg:block'>
 					<Popover>
 						<PopoverTrigger asChild>
 							<Button
@@ -236,7 +236,7 @@ export function DataTableToolbar<TData>({
 							/>
 						</PopoverContent>
 					</Popover>
-				</div>
+				</div> */}
 
 				{/* Service Options Filter - Visible on larger screens */}
 				<div className='hidden lg:block'>
