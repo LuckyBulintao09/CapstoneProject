@@ -226,7 +226,9 @@ export default function Listings() {
 									maxPrice < 30000 ||
 									distanceFilter !== null ||
 									starFilter !== null ||
-									scoreFilter !== null) && (
+									scoreFilter !== null ||
+									selectedLocation !== null ||
+									deviceLocation !== null) && (
 									<Button
 										variant='link'
 										className='text-sm h-5 hover:text-blue-500 dark:text-blue-300 dark:hover:text-blue-200 underline px-1'
@@ -241,6 +243,8 @@ export default function Listings() {
 											setDistanceFilter(null);
 											setStarFilter(null);
 											setScoreFilter(null);
+											setSelectedLocation(null);
+											setDeviceLocation(null);
 											setMapKey((prevKey) => prevKey + 1);
 										}}
 									>
