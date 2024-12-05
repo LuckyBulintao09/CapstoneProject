@@ -1,6 +1,7 @@
 import { createClient } from "@/utils/supabase/client";
 import { updateInbox } from "./updateInbox";
 import { toast } from "sonner";
+import { newMessageNotification } from "../notification/notification";
 
 const supabase = createClient();
 
@@ -38,6 +39,8 @@ export const sendMessage = async ({
   }]);
 
   await updateInbox(userId, receiverId, messageContent);
+  const messageContentNotification = "You have a new message."
+  await newMessageNotification(receiverId, messageContentNotification);
 
   if (error) {
     console.error('Error sending message:', error);

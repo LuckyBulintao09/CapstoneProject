@@ -106,7 +106,51 @@ const ProfileSection = () => {
 	// 		toast.error('Please enter the correct confirmation text.');
 	// 	}
 	// };
+	const handleResetPassword = async (e: React.FormEvent) => {
+		e.preventDefault(); 
 
+		const passwordRegex = /^(?=.*[A-Z])(?=.*[!@#$%^&*])(?=.*\d).{8,}$/;
+	
+		if (!newPassword || !confirmPassword) {
+			toast.error('Please fill out both password fields.');
+			return;
+		}
+	
+		if (newPassword !== confirmPassword) {
+			toast.error('Passwords do not match.');
+			return;
+		}
+	
+		if (!passwordRegex.test(newPassword)) {
+			toast.error(
+				'Password must be at least 8 characters long, include at least one uppercase letter, one special character, and one number.'
+			);
+			return;
+		}
+	
+		setIsResetLoading(true);
+	
+		try {
+			const { error } = await supabase.auth.updateUser({
+				password: newPassword,
+			});
+	
+			if (error) {
+				toast.error(`Failed to update password: ${error.message}`);
+			} else {
+				toast.success('Password updated successfully!');
+				setNewPassword('');
+				setConfirmPassword('');
+			}
+		} catch (err) {
+			console.error('Unexpected error:', err);
+			toast.error('An unexpected error occurred. Please try again later.');
+		} finally {
+			setIsResetLoading(false);
+		}
+	};
+	
+	
 	const handleDeleteAccountDialog = async () => {
         setIsDeleting(true);
         try {
@@ -226,24 +270,6 @@ const ProfileSection = () => {
 		);
 	}
 
-	const handleResetPasswordSubmit = async (e: React.FormEvent) => {
-		e.preventDefault();
-		setIsResetLoading(true);
-
-		const result = await handleResetPassword(newPassword, confirmPassword);
-
-		if (result.error) {
-			toast.error(result.error);
-		} else if (result.success) {
-			setNewPassword('');
-			setConfirmPassword('');
-			toast.success(result.success);
-			setIsResetPasswordOpen(false);
-		}
-
-		setIsResetLoading(false);
-	};
-
 	return (
 		<>
 			<section className='w-full p-2 bg-white dark:bg-secondary shadow-md rounded-lg px-4 py-10 border border-gray-300'>
@@ -323,6 +349,7 @@ const ProfileSection = () => {
 										}}
 										pattern="^(?!\s*$)[a-zA-Z\s]+$"
 										title="First name cannot be empty and should only contain letters and spaces."
+										disabled
 									/>
 								</div>
 								<div>
@@ -344,6 +371,7 @@ const ProfileSection = () => {
 											e.currentTarget.value = e.currentTarget.value.replace(/[^a-zA-Z\s]/g, '');
 										}}
 										pattern="^(?!\s*$)[a-zA-Z\s]+$"
+										disabled
 									/>
 								</div>
 							</div>
@@ -413,23 +441,8 @@ const ProfileSection = () => {
 					</div>
 
 					<div className=''>
-						<div>
-							<h1 className='text-lg font-semibold'>Password</h1>
-						</div>
-						<div className='grid gap-1'>
-							<div className=''>
-								<Label
-									htmlFor='current_password'
-									className='font-semibold text-sm text-foreground'
-								>
-									Current Password
-								</Label>
-								<Input
-									type='password'
-									placeholder='Current Password'
-									className='mt-1 w-full rounded-lg border border-gray-300 max-w-xl'
-								/>
-							</div>
+						<h1 className='text-lg font-semibold'>Password</h1>
+						<form onSubmit={handleResetPassword} className='grid gap-1'>
 							<div className=''>
 								<Label
 									htmlFor='new_password'
@@ -440,7 +453,9 @@ const ProfileSection = () => {
 								<Input
 									type='password'
 									placeholder='New Password'
+									id='new_password'
 									value={newPassword}
+									onChange={(e) => setNewPassword(e.target.value)}
 									className='mt-1 w-full rounded-lg border border-gray-300 max-w-xl'
 								/>
 							</div>
@@ -454,28 +469,26 @@ const ProfileSection = () => {
 								<Input
 									type='password'
 									placeholder='Confirm Password'
+									id='confirm_new_password'
 									value={confirmPassword}
+									onChange={(e) => setConfirmPassword(e.target.value)}
 									className='mt-1 w-full rounded-lg border border-gray-300 max-w-xl'
 								/>
 							</div>
-						</div>
-						<div className='flex justify-end gap-2 mt-4'>
-							<Button
-								onClick={() => {
-									setEditProfileData(profileData);
-								}}
-								className='bg-gray-200 text-black hover:bg-gray-300'
-							>
-								Cancel
-							</Button>
-							<Button
-								onClick={handleSaveProfile}
-								className='bg-primary text-white hover:bg-primary-dark'
-							>
-								Update Password
-							</Button>
-						</div>
+							<div className='flex justify-end gap-2 mt-4'>
+								<Button
+									type="submit"
+									disabled={isResetLoading}
+									className={`bg-primary text-white ${
+										isResetLoading ? 'opacity-50 cursor-not-allowed' : 'hover:bg-primary-dark'
+									}`}
+								>
+									{isResetLoading ? 'Updating...' : 'Update Password'}
+								</Button>
+							</div>
+						</form>
 					</div>
+
 				</div>
 
 				{/* Account Deletion Section */}

@@ -212,3 +212,10 @@ export const reject_PropertyNotification = async (
   if (error) throw error;
 }
 
+export const newMessageNotification = async (receiver_id: string,message: string)=>{
+  const { error } = await supabase
+    .from("notifications")
+    .insert({ receiver_id: receiver_id, text: message });
+  if (error) throw error;
+}
+

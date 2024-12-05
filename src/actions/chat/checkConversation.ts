@@ -6,7 +6,7 @@ const supabase = createClient();
 
 export const checkConversation = async (currentUserId: string, currentReceiverId: any) => {
   if (currentUserId === currentReceiverId) {
-    toast.error("You cannot create a conversation with yourself.");
+    toast.info("You cannot create a conversation with yourself.");
     return null;
   }
 
