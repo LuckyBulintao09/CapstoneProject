@@ -129,13 +129,13 @@ export default function UnitList({ propertyId }: { propertyId: string }) {
 
     return (
         <>
-            <div className="flex justify-center my-4">
+            <div className="my-2">
                 <Input
                     type="text"
                     placeholder="Search units by title, price, privacy type, etc..."
                     value={searchTerm}
                     onChange={(e) => handleSearch(e.target.value)}
-                    className="px-4 py-2 border rounded w-full max-w-md"
+                    className="px-4 py-2 border rounded-lg w-full max-w-md"
                 />
             </div>
 

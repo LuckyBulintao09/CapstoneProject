@@ -38,7 +38,7 @@ async function PropertyPage() {
 
     return (
 			<PropertyViewModeProvider>
-				<div className='px-32 md:px-24 sm:px-20 xs:px-10 mx-auto pb-16'>
+				<div className='px-32 md:px-24 sm:px-20 xs:px-10 mx-auto pb-16 h-screen'>
 					<Properties data={properties} />
 				</div>
 			</PropertyViewModeProvider>
