@@ -32,7 +32,7 @@ import { createDuplicateUnit, updateUnit } from "@/actions/unit/update-unit";
 import Uppy from "@uppy/core";
 import { Dashboard } from "@uppy/react";
 import Tus from "@uppy/tus";
-import Form from "@uppy/form";
+
 import "@uppy/core/dist/style.min.css";
 import "@uppy/dashboard/dist/style.min.css";
 
@@ -124,65 +124,69 @@ function AddUnitsForm({ amenities, unitId, propertyId, userId }: { amenities?: a
         unitForm.setValue("image", updatedImages);
     });
 
-    function onSubmit(values: UnitData) {
-        // console.log(values)
+    async function onSubmit(values: UnitData) {
         const numberOfUnitsParsed = Number(numberOfUnits);
-
+    
         if (isNaN(numberOfUnitsParsed) || numberOfUnitsParsed < 1 || numberOfUnitsParsed > 10 || /[^0-9]/.test(numberOfUnits)) {
             toast.error("Invalid number of units.");
             router.push(`/hosting/properties/${propertyId}/details/units`);
+            return;
         }
-
+    
         if (!isPending) {
             startTransition(async () => {
-                toast.promise(createDuplicateUnit(propertyId, values, Number(numberOfUnits)), {
+                toast.promise(createDuplicateUnit(propertyId, values, numberOfUnitsParsed), {
                     loading: "Adding unit...",
-
                     success: async (unitIds) => {
                         if (uppy.getFiles().length > 0) {
                             const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL;
                             const bucketName = "unihomes image storage";
                             const uploadedFiles: string[] = [];
-                    
-                            // Upload files for all unitIds
-                            const uploadFiles = unitIds.map(async (unitId) => {
-                                const uploadForUnit = uppy.getFiles().map(async (file) => {
-                                    const objectName = `property/${userId}/${propertyId}/unit/${unitId}/unit_image/${file.name}`;
-                                    const fileUrl = `${supabaseUrl}/storage/v1/object/public/${bucketName}/${objectName}`;
-                                    
-                                    // Set the file metadata
-                                    uppy.setFileMeta(file.id, { objectName });
-                    
-                                    // Collect all uploaded file URLs
-                                    uploadedFiles.push(fileUrl);
-                    
-                                    // Upload the file
-                                    await uppy.upload();
-                                });
-                    
-                                // Wait for all uploads to finish for this unit
-                                await Promise.all(uploadForUnit);
-                            });
-                    
-                            // Wait for all file uploads for all units
-                            await Promise.all(uploadFiles);
-                    
-                            // Now, add the uploaded file URLs to all units
-                            await addUnitImages(uploadedFiles, unitIds);
-                    
-                            // Redirect after successfully adding images
-                            router.replace(`/hosting/properties/${propertyId}/details/units`);
+                            const supabase = createClient();
+    
+                            try {
+                                // Iterate over unit IDs and files
+                                for (const unitId of unitIds) {
+                                    for (const file of uppy.getFiles()) {
+                                        const objectName = `property/${userId}/${propertyId}/unit/${unitId}/unit_image/${file.name}`;
+    
+                                        // Upload the file to Supabase storage
+                                        const { data, error } = await supabase.storage
+                                            .from(bucketName)
+                                            .upload(objectName, file.data as Blob);
+    
+                                        if (error) {
+                                            console.error("Error uploading file:", error.message);
+                                            throw new Error(`Failed to upload ${file.name}`);
+                                        }
+    
+                                        // Push the public file URL into uploadedFiles
+                                        const fileUrl = `${supabaseUrl}/storage/v1/object/public/${bucketName}/${objectName}`;
+                                        uploadedFiles.push(fileUrl);
+                                    }
+                                }
+    
+                                // Add the uploaded file URLs to all units
+                                await addUnitImages(uploadedFiles, unitIds);
+    
+                                // Redirect after success
+                                router.replace(`/hosting/properties/${propertyId}/details/units`);
+                            } catch (error) {
+                                console.error("Error during file uploads:", error.message);
+                                toast.error("Failed to upload images. Please try again.");
+                            }
                         }
                         return "Unit added successfully";
                     },
                     error: (error) => {
-                        console.error(error.message);
+                        console.error("Error creating units:", error.message);
                         return "Something went wrong. Failed to create units.";
                     },
                 });
             });
         }
     }
+    
 
     React.useEffect(() => {
         const initialTags = unitForm.getValues("additional_amenities").map(({ id, text }: { id: string; text: string }) => ({ id: id, text: text }));

@@ -14,7 +14,7 @@ export async function countPropertyImageStorageBucket(userId: string, propertyId
             return;
         }
 
-        return unit_images.length - 1; //minus 1 cause it includes the folder .emptyFolderPlaceholder
+        return unit_images.length; //minus 1 cause it includes the folder .emptyFolderPlaceholder
     } catch (property_images_error) {
         console.error("Unexpected error:", property_images_error);
     }
@@ -83,7 +83,7 @@ export async function countUnitImageStorageBucket(userId: string, propertyId: st
             return;
         }
 
-        return unit_images.length - 1;
+        return unit_images.length;
     } catch (property_images_error) {
         console.error("Unexpected error:", property_images_error);
     }

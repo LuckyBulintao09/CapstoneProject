@@ -99,3 +99,19 @@ export const getPropertyType = async (propertyId: string) => {
         throw error;
     }
 };
+
+export const getPropertyHouseRules = async (propertyId: string) => {
+    const supabase = createClient();
+    try {
+        const { data, error } = await supabase.from("house_rules").select(`*`).eq("property_id", propertyId);
+
+        if (error) {
+            throw error;
+        }
+        return data;
+    } catch (error: any) {
+        console.error("Error fetching house rules:", error);
+        throw error;
+    }
+};
+

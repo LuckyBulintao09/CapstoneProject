@@ -51,7 +51,7 @@ function PropertyTypeForm({ propertyId }: { propertyId: string }) {
             <Form {...createPropertyType}>
                 <form
                     onSubmit={createPropertyType.handleSubmit(onSubmit)}
-                    className="space-y-6"
+                    className="flex flex-col gap-11"
                 >
                     <FormField
                         control={createPropertyType.control}

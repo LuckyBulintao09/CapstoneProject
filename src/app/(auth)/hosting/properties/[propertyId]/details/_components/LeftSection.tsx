@@ -9,13 +9,14 @@ import { buttonVariants } from "@/components/ui/button";
 
 import { cn } from "@/lib/utils";
 
-import { Check, Eye, X } from "lucide-react";
+import { Check, Eye, TriangleAlert, X } from "lucide-react";
 
 import MapLocation from "../@right/_components/MapLocation";
 
 import { usePathname } from "next/navigation";
+import DeleteProperty from "./DeleteProperty";
 
-function LeftSection({ property, units, location, propertyId }: any) {
+function LeftSection({ property, units, location, propertyId, property_house_rules }: any) {
     const pathname = usePathname();
     return (
         <>
@@ -158,14 +159,35 @@ function LeftSection({ property, units, location, propertyId }: any) {
                         pathname === `/hosting/properties/${propertyId}/details/property-type` ? "border-primary shadow-xl" : " border-accent"
                     )}
                 >
-                    <span className="text-[1rem] leading-5 tracking-normal font-[500]">Property type</span>
+                    <span className="text-[1rem] leading-5 tracking-normal font-[500]">Property type &amp; Property rules</span>
                     <Link
                         href={`/hosting/properties/${propertyId}/details/property-type`}
                         className="left-0 right-0 p-0 m-0 absolute bg-transparent top-0 bottom-0 z-[2] outline-none"
                     ></Link>
                     <div>
                         <div className="pt-2 overflow-clip text-[1rem] tracking-normal leading-5 text-ellipsis font-normal whitespace-pre-line text-muted-foreground">
-                            <div>{property.structure}</div>
+                            <div className="flex flex-col gap-3">
+                                <div>{`${property.structure.charAt(0).toUpperCase()}${property.structure.slice(1)}`}</div>
+                                <div className="flex flex-row flex-wrap w-[464px] gap-2">
+                                    <div className="w-[464px] max-h-[200px] overflow-y-auto rounded-md p-2 z-[4]">
+                                        {property_house_rules?.length > 0 ? (
+                                            <ul className="space-y-2">
+                                                {property_house_rules.map(({ id, rule }: { id: number; rule: string }) => (
+                                                    <li className="flex items-center gap-2" key={id}>
+                                                        <TriangleAlert className="w-4 h-4 text-warning" />
+                                                        <span className="text-sm">{rule}</span>
+                                                    </li>
+                                                ))}
+                                            </ul>
+                                        ) : (
+                                            <div className="flex items-center gap-2">
+                                                <X className="w-4 h-4 text-danger" />
+                                                <span className="text-sm">This property has no house rules</span>
+                                            </div>
+                                        )}
+                                    </div>
+                                </div>
+                            </div>
                         </div>
                     </div>
                 </div>
@@ -273,6 +295,10 @@ function LeftSection({ property, units, location, propertyId }: any) {
                         </div>
                     </div>
                 </div>
+            </div>
+
+            <div>
+                <DeleteProperty propertyId={propertyId} propertyTitle={property?.title} />
             </div>
 
             <div className="absolute left-[calc(44px+32px)] right-[64px] mx-auto my-0 bottom-[40px] w-max z-[3] ">

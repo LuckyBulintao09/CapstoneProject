@@ -33,8 +33,6 @@ export async function addPropertyImages(fileUrls: string[], propertyId: string) 
             return error;
         }
 
-        console.log("Property images added", data);
-
         return data;
     } catch (error: any) {
         console.log(error);

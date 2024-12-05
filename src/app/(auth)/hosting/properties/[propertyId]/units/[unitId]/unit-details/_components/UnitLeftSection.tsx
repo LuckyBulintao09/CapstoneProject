@@ -12,6 +12,7 @@ import { cn } from "@/lib/utils";
 import { Bed, Box, Check, Eye, LockKeyhole, Ruler, UsersRound, X } from "lucide-react";
 
 import { usePathname } from "next/navigation";
+import DeleteUnit from "./DeleteUnit";
 
 function UnitLeftSection({ unit, unitId, propertyId, unit_amenities, unit_additional_amenities }: any) {
     const pathname = usePathname();
@@ -289,6 +290,10 @@ function UnitLeftSection({ unit, unitId, propertyId, unit_amenities, unit_additi
                         </div>
                     </div>
                 </div>
+            </div>
+
+            <div>
+                <DeleteUnit unitId={unitId} unitTitle={unit?.title} propertyId={propertyId} />
             </div>
         </>
     );

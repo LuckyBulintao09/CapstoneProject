@@ -1,13 +1,48 @@
 import { z } from "zod";
 
 export const createPropertySchema = z.object({
-    title: z.string().min(1, { message: "Please name your property." }),
-    company_id: z.string().min(1, { message: "Please select a company." }),
+    title: z
+        .string()
+        .min(1, { message: "Please enter a title." })
+        .max(52, { message: "Title cannot exceed 52 characters." })
+        .regex(/^[a-zA-Z0-9.,'(): -]*$/, {
+            message: "Title can only include letters, numbers, commas, dots, apostrophes, and parentheses.",
+        }),
     address: z.string().min(1, { message: "Please enter an address." }),
-    location: z.object({
-        lat: z.number(),
-        lng: z.number(),
-    }).optional(),
+    location: z
+        .object({
+            lat: z.number(),
+            lng: z.number(),
+        })
+        .optional(),
+    description: z.string().min(1, { message: "Please enter a description." }).max(1000, {message: "Description must contain at most 1000 characters."}),
+    house_rules: z.array(
+        z.object(
+            {
+                id: z.string(),
+                text: z
+                    .string({ message: "Please enter a valid rule." })
+                    .min(1, { message: "House rule name too short. Minimum of 1 character" })
+                    .max(52, { message: "House rule name too long. Max of 52 characters." }),
+            },
+            {
+                message: "House rule object shape is invalid.",
+            }
+        ),
+        {
+            message: "House rule is not an array.", required_error: "Please enter a house rule."
+        }
+    ).nonempty({message: "Please enter a house rule."}),
+    image: z
+        .array(z.string({ required_error: "Please add at least one image." }))
+        .nonempty({ message: "Please add at least one image." }),
+
+    property_type: z.string({ required_error: "Please select a property type." })
+    .refine(
+        (value) => ["dormitory", "condominium", "apartment"].includes(value),
+        { message: "Invalid property type. Please select dormitory, condominium, or apartment." }
+    )
+    
 });
 
 export const createUnitPropertySchema = z.object({
