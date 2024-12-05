@@ -165,14 +165,17 @@ export default function Listings() {
 	};
 
 	useEffect(() => {
+		setListingLoading(true);
 		const fetchData = async () => {
-			setListingLoading(true);
 			await handleDeviceLocation();
 			await fetchFilteredListings();
+
+			await new Promise((resolve) => setTimeout(resolve, 1000));
 			setListingLoading(false);
 		};
 
 		fetchData();
+		setListingLoading(false);
 	}, [
 		deviceLocation,
 		selectedLocation,

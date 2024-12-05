@@ -173,6 +173,12 @@ export const columns = (
     ),
   },
   {
+    accessorKey: "updatedAt",
+    header: ({ column }) => (
+      <DataTableColumnHeader column={column} title="Last Update" />
+    ),
+  },
+  {
     accessorKey: "govIdUrl",
     header: ({ column }) => (
       <DataTableColumnHeader column={column} title="Government ID" />
