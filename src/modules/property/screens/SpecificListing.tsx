@@ -39,6 +39,7 @@ import {
 	fetchPropertyReviews,
 	fetchPropertyFacilities,
 	fetchPropertyUnits,
+	getPropertyHouseRules,
 } from '@/actions/listings/specific-listing';
 import ErrorPage from '@/components/ui/ErrorPage';
 import { Marker, GoogleMap, DirectionsRenderer } from '@react-google-maps/api';
@@ -104,6 +105,7 @@ export function SpecificListing({ id }: SpecificListingProps) {
 	const [totalOccupants, setTotalOccupants] = useState(0);
 	const [landmarks, setLandmarks] = useState([]);
 	const [availableSpots, setAvailableSpots] = useState<number | null>(null);
+	const [houserules, setHouserules] = useState<any>(null);
 
 	//Parameter Filters
 	const searchParams = useSearchParams();
@@ -160,6 +162,7 @@ export function SpecificListing({ id }: SpecificListingProps) {
 					0
 				);
 				setTotalOccupants(occupantsCount);
+				setHouserules(await getPropertyHouseRules(id));
 				await addAnalytics(property?.id, property?.company_id,property?.title);
 				setLoading(false);
 			} catch (err) {
@@ -723,21 +726,18 @@ export function SpecificListing({ id }: SpecificListingProps) {
 					<h4 className='text-2xl font-semibold tracking-tight'>House Rules</h4>
 				</div>
 
-				{/* Dummy House Rules Content */}
-				<ul className='list-disc pl-5 space-y-3'>
-					<li>
-						<span className='font-medium'>No Smoking: </span> Smoking is
-						strictly prohibited inside the property.
-					</li>
-					<li>
-						<span className='font-medium'>No Pets: </span> Pets are not allowed
-						without prior permission.
-					</li>
-					<li>
-						<span className='font-medium'>Quiet Hours: </span>Quiet hours are
-						from 10 PM to 7 AM to respect neighbors.
-					</li>
-				</ul>
+				{houserules?.length > 0 ? (
+					<ul className='list-disc pl-5 space-y-3'>
+						{houserules.map((rule, index) => (
+							<li key={index}>
+								<span className='font-medium'>{rule.title}: </span>
+								{rule.rule}
+							</li>
+						))}
+					</ul>
+				) : (
+					<p className='text-gray-600'>No house rules available.</p>
+				)}
 			</div>
 
 			{isLoginModalOpen && (

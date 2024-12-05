@@ -23,7 +23,9 @@ export const checkExistingReservation = async (userId, unitId) => {
     .select("*")
     .eq("user_id", userId)
     .eq("unit_id", unitId)
-    .in("transaction_status", ["pending", "reserved"]);
+    .eq("isPaid", false)
+    .in("transaction_status", ["pending", "reserved"])
+    .gte("created_at", new Date(Date.now() - 7 * 24 * 60 * 60 * 1000).toISOString());
 
   if (error) {
     console.error("Error checking existing reservation:", error.message);

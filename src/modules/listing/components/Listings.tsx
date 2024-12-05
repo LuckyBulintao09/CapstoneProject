@@ -480,7 +480,7 @@ export default function Listings() {
 
 								{/* Distance Filter Section */}
 								<div className='mt-3'>
-									<Label htmlFor='review_score' className='font-semibold'>
+									<Label htmlFor='review_score' className='font-semibold' disabled={selectedLocation === null || deviceLocation === null}>
 										Distance from Location
 									</Label>
 
@@ -488,6 +488,7 @@ export default function Listings() {
 										<RadioGroup
 											onValueChange={setDistanceFilter}
 											value={distanceFilter}
+											disabled={selectedLocation === null || deviceLocation === null}
 										>
 											{distanceFromLocation.map((item) => (
 												<div
@@ -499,6 +500,7 @@ export default function Listings() {
 														id={item.label}
 														checked={distanceFilter === item.value}
 														className='dark:border-blue-300'
+														disabled={selectedLocation === null || deviceLocation === null}
 													/>
 													<Label
 														htmlFor={item.label}

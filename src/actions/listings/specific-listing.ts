@@ -68,7 +68,6 @@ export const fetchPropertyUnits = async (propertyId: number) => {
     console.error("Error fetching property units:", unitError);
     return null;
   }
-  console.log(units)
   return units
 }
 
@@ -79,6 +78,18 @@ export const fetchPropertyLocation = async (propertyId: number) => {
 
   if (error) {
     console.error("Error fetching property location:", error);
+    return null;
+  }
+  return data
+}
+
+export const getPropertyHouseRules = async (propertyId: number) => {
+  const { data, error } = await supabase
+  .from('house_rules')
+  .select('*')
+  .eq('property_id', propertyId)
+  if (error) {
+    console.error("Error fetching property house rules:", error);
     return null;
   }
   return data

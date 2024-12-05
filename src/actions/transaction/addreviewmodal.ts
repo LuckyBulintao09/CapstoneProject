@@ -32,7 +32,8 @@ export const addReview = async (
   comment: string,
   location: number,
   cleanliness: number,
-  valueForMoney: number
+  valueForMoney: number,
+  transactionId: number
 ) => {
   try {
     const profaneWords = detectProfanity(comment);
@@ -52,6 +53,7 @@ export const addReview = async (
         location: location,
         cleanliness: cleanliness,
         value_for_money: valueForMoney,
+        transaction_id: transactionId
       },
     ]);
 
