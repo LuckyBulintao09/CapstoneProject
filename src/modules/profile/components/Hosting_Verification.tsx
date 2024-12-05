@@ -11,10 +11,11 @@ import {
 	getUserSession,
 	fetchGovId,
 	uploadGovernmentId,
-	cancelVerification,
 } from '@/actions/hosting/hosting';
 import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert';
 import { Terminal } from 'lucide-react';
+import { createClient } from '@/utils/supabase/client';
+import { toast } from 'sonner';
 
 const HostingVerification: React.FC = () => {
 	const [file, setFile] = useState<File | null>(null);
@@ -80,30 +81,54 @@ const HostingVerification: React.FC = () => {
 	};
 
 	const handleSubmit = async () => {
+		const supabase = createClient();
 		if (!file || !userId) {
 			setFileWarning('Please upload a file to proceed.');
 			return;
 		}
 
-		const publicUrl = await uploadGovernmentId(file, userId);
-		if (publicUrl) {
-			setGovIdUrl(publicUrl);
+		const fileExt = file.name.split(".").pop();
+		const fileName = `government-id-${Date.now()}.${fileExt}`;
+		const filePath = `government ID/${fileName}`;
+
+		const { error: uploadError } = await supabase.storage
+			.from("unihomes image storage")
+			.upload(filePath, file);
+		
+		if (uploadError) {
+			toast.error(`Failed to upload government ID: ${uploadError.message}`);
+			return null;
+		}
+
+		const { data: publicUrlData } = supabase.storage
+			.from("unihomes image storage")
+			.getPublicUrl(filePath);
+
+		if (!publicUrlData?.publicUrl) {
+			toast.error("Failed to retrieve public URL for the uploaded file.");
+			return null;
+		}
+
+		const publicUrl = await uploadGovernmentId(publicUrlData.publicUrl, userId);
+		if (publicUrlData.publicUrl) {
+			setGovIdUrl(publicUrlData.publicUrl);
 			setIsRejected(false);
 			setDeclineReason(null);
+			toast.success("Government ID uploaded successfully.");
 		}
 	};
 
-	const handleCancelVerification = async () => {
-		if (!userId) return;
+	// const handleCancelVerification = async () => {
+	// 	if (!userId) return;
 
-		const success = await cancelVerification(userId, govIdUrl);
-		if (success) {
-			setGovIdUrl(null);
-			setIsApproved(false);
-			setIsRejected(false);
-			setDeclineReason(null);
-		}
-	};
+	// 	const success = await cancelVerification(userId, govIdUrl);
+	// 	if (success) {
+	// 		setGovIdUrl(null);
+	// 		setIsApproved(false);
+	// 		setIsRejected(false);
+	// 		setDeclineReason(null);
+	// 	}
+	// };
 
 	return (
 		<>

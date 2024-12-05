@@ -1,5 +1,5 @@
 "use server";
-import { createClient } from "@/utils/supabase/client";
+import { createClient } from "@/utils/supabase/server";
 import { toast } from "sonner";
 
 
@@ -7,12 +7,13 @@ import { toast } from "sonner";
 export const getUserSession = async () => {
   const supabase = createClient();
   try {
-    const { data, error } = await supabase.auth.getSession();
+    const { data, error } = await supabase.auth.getUser();
     if (error) {
       toast.error(`Error fetching session: ${error.message}`);
       return null;
     }
-    return data?.session?.user || null;
+    console.log(data)
+    return data?.user || null;
   } catch {
     toast.error("Unexpected error while fetching user session.");
     return null;
@@ -47,35 +48,35 @@ export const fetchGovId = async (userId: string) => {
   }
 };
 
-export const uploadGovernmentId = async (file: File, userId: string) => {
+export const uploadGovernmentId = async (url: string, userId: string) => {
   const supabase = createClient();
   try {
-    const fileExt = file.name.split(".").pop();
-    const fileName = `government-id-${Date.now()}.${fileExt}`;
-    const filePath = `government ID/${fileName}`;
+    // const fileExt = file.name.split(".").pop();
+    // const fileName = `government-id-${Date.now()}.${fileExt}`;
+    // const filePath = `government ID/${fileName}`;
 
-    const { error: uploadError } = await supabase.storage
-      .from("unihomes image storage")
-      .upload(filePath, file);
+    // const { error: uploadError } = await supabase.storage
+    //   .from("unihomes image storage")
+    //   .upload(filePath, file);
 
-    if (uploadError) {
-      toast.error(`Failed to upload government ID: ${uploadError.message}`);
-      return null;
-    }
+    // if (uploadError) {
+    //   toast.error(`Failed to upload government ID: ${uploadError.message}`);
+    //   return null;
+    // }
 
-    const { data: publicUrlData } = supabase.storage
-      .from("unihomes image storage")
-      .getPublicUrl(filePath);
+    // const { data: publicUrlData } = supabase.storage
+    //   .from("unihomes image storage")
+    //   .getPublicUrl(filePath);
 
-    if (!publicUrlData?.publicUrl) {
-      toast.error("Failed to retrieve public URL for the uploaded file.");
-      return null;
-    }
+    // if (!publicUrlData?.publicUrl) {
+    //   toast.error("Failed to retrieve public URL for the uploaded file.");
+    //   return null;
+    // }
 
     const { error: updateError } = await supabase
       .from("account")
       .update({
-        government_ID_url: publicUrlData.publicUrl,
+        government_ID_url: url,
         rejected_government: false, 
         decline_reason: null, 
       })
@@ -86,44 +87,43 @@ export const uploadGovernmentId = async (file: File, userId: string) => {
       return null;
     }
 
-    return publicUrlData.publicUrl;
   } catch {
     toast.error("Unexpected error during file upload.");
     return null;
   }
 };
 
-export const cancelVerification = async (
-  userId: string,
-  govIdUrl: string | null
-) => {
-  try {
-    const { error: deleteError } = await supabase
-      .from("account")
-      .update({
-        government_ID_url: null,
-        rejected_government: false, 
-        decline_reason: null, 
-      })
-      .eq("id", userId);
+// export const cancelVerification = async (
+//   userId: string,
+//   govIdUrl: string | null
+// ) => {
+//   try {
+//     const { error: deleteError } = await supabase
+//       .from("account")
+//       .update({
+//         government_ID_url: null,
+//         rejected_government: false, 
+//         decline_reason: null, 
+//       })
+//       .eq("id", userId);
 
-    if (deleteError) {
-      toast.error(`Failed to delete government ID: ${deleteError.message}`);
-      return false;
-    }
+//     if (deleteError) {
+//       toast.error(`Failed to delete government ID: ${deleteError.message}`);
+//       return false;
+//     }
 
-    if (govIdUrl) {
-      const fileName = govIdUrl.split("/").pop();
-      if (fileName) {
-        await supabase.storage
-          .from("unihomes image storage")
-          .remove([`government ID/${fileName}`]);
-      }
-    }
+//     if (govIdUrl) {
+//       const fileName = govIdUrl.split("/").pop();
+//       if (fileName) {
+//         await supabase.storage
+//           .from("unihomes image storage")
+//           .remove([`government ID/${fileName}`]);
+//       }
+//     }
 
-    return true;
-  } catch {
-    toast.error("Unexpected error during cancellation.");
-    return false;
-  }
-};
+//     return true;
+//   } catch {
+//     toast.error("Unexpected error during cancellation.");
+//     return false;
+//   }
+// };

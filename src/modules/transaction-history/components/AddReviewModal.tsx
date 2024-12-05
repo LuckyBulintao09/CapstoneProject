@@ -65,6 +65,7 @@ const AddReviewModal = ({
   unit_id,
   reviewData,
   onDelete,
+  transactionId
 }: AddReviewModalProps) => {
   const [rating, setRating] = useState<number>(0);
   const [hoverRating, setHoverRating] = useState<number>(0);
@@ -133,7 +134,8 @@ const AddReviewModal = ({
         reviewText,
         locationRating,
         cleanlinessRating,
-        valueRating
+        valueRating,
+        transactionId
       );
     }
 

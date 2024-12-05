@@ -129,6 +129,15 @@ export const columns = (
         } else {
           setIsPaid(!isPaid);
         }
+
+        const { data: unitData, error: unitError } = await supabase
+          .from("unit")
+          .update({ isReserved: !isPaid })
+          .eq("id", row.original.unit.id);
+        if (unitError) {
+          console.error(unitError);
+        }
+
       };
 
       return (

@@ -53,6 +53,7 @@ export default function ListingHero({
 		});
 	}, [places]);
 
+
 	const handleCurrentLocationClick = () => {
 		console.log(places)
 		if (navigator.geolocation) {

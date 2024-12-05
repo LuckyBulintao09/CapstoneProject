@@ -35,19 +35,19 @@ const SideReviews: React.FC<SideReviewsProps> = ({
 				(sum, review) => sum + review.location,
 				0
 			);
-			setLocationPercentage(averageLocation / propertyReviews.length);
+			setLocationPercentage(Math.round(averageLocation / propertyReviews.length));
 
 			const averageCleanliness = propertyReviews.reduce(
 				(sum, review) => sum + review.cleanliness,
 				0
 			);
-			setCleanlinessPercentage(averageCleanliness / propertyReviews.length);
+			setCleanlinessPercentage(Math.round(averageCleanliness / propertyReviews.length));
 
 			const averageValueForMoney = propertyReviews.reduce(
 				(sum, review) => sum + review.value_for_money,
 				0
 			);
-			setValueForMoneyPercentage(averageValueForMoney / propertyReviews.length);
+			setValueForMoneyPercentage(Math.round(averageValueForMoney / propertyReviews.length));
 		}
 	}, [propertyId]);
 
@@ -67,7 +67,7 @@ const SideReviews: React.FC<SideReviewsProps> = ({
 
 	// Calculate the overall average rating
 	const overallRating =
-		(locationPercentage + cleanlinessPercentage + valueForMoneyPercentage) / 3;
+		Math.round((locationPercentage + cleanlinessPercentage + valueForMoneyPercentage) / 3);
 	const ratingDescription = mapScoreToRating(overallRating);
 
 	const totalReviews = propertyReviews.length;
@@ -78,7 +78,7 @@ const SideReviews: React.FC<SideReviewsProps> = ({
 				<CardHeader className='pb-3'>
 					<CardDescription>
 						<p className='text-lg mb-0 pb-0 font-bold text-primary dark:text-blue-300'>
-							{overallRating.toFixed(1)} {ratingDescription}
+							{overallRating} {ratingDescription}
 						</p>
 						<p className='text-md pt-0 mt-0 dark:text-gray-300'>
 							Overall Review Score
@@ -88,13 +88,13 @@ const SideReviews: React.FC<SideReviewsProps> = ({
 				<CardContent className='text-sm font-normal'>
 					<div className='space-y-2 pl-1'>
 						<Badge className='bg-blue-100 text-blue-800 hover:bg-blue-100 hover:text-blue-900 inline-block max-w-fit rounded-sm px-2 mr-2'>
-							Location: {locationPercentage.toFixed(1)}
+							Location: {locationPercentage}
 						</Badge>
 						<Badge className='bg-blue-100 text-blue-800 hover:bg-blue-100 hover:text-blue-900 inline-block max-w-fit rounded-sm px-2 mr-2'>
-							Cleanliness: {cleanlinessPercentage.toFixed(1)}
+							Cleanliness: {cleanlinessPercentage}
 						</Badge>
 						<Badge className='bg-blue-100 text-blue-800 hover:bg-blue-100 hover:text-blue-900 inline-block max-w-fit rounded-sm px-2'>
-							Value for Money: {valueForMoneyPercentage.toFixed(1)}
+							Value for Money: {valueForMoneyPercentage}
 						</Badge>
 					</div>
 

@@ -271,11 +271,18 @@ const ProfileSection = () => {
 										First Name
 									</Label>
 									<Input
-										id='firstname'
-										name='firstname'
-										className='mt-1 w-full rounded-lg border border-gray-300 max-w-xl'
+										id="firstname"
+										name="firstname"
+										className="mt-1 w-full rounded-lg border border-gray-300 max-w-xl"
 										value={editProfileData?.firstname || ''}
 										onChange={handleInputChange}
+										maxLength={50}
+										minLength={6}
+										onInput={(e) => {
+											e.currentTarget.value = e.currentTarget.value.replace(/[^a-zA-Z\s]/g, '');
+										}}
+										pattern="^(?!\s*$)[a-zA-Z\s]+$"
+										title="First name cannot be empty and should only contain letters and spaces."
 									/>
 								</div>
 								<div>
@@ -291,6 +298,12 @@ const ProfileSection = () => {
 										className='mt-1 w-full rounded-lg border border-gray-300 max-w-xl'
 										value={editProfileData?.lastname || ''}
 										onChange={handleInputChange}
+										maxLength={50}
+										minLength={6}
+										onInput={(e) => {
+											e.currentTarget.value = e.currentTarget.value.replace(/[^a-zA-Z\s]/g, '');
+										}}
+										pattern="^(?!\s*$)[a-zA-Z\s]+$"
 									/>
 								</div>
 							</div>

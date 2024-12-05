@@ -3,13 +3,14 @@ import { notifyProprietor } from "../email/notifyProprietor";
 
 const supabase = createClient();
 
-export const fetchReviewData = async (unitId: number, userId: string) => {
+export const fetchReviewData = async (unitId: number, userId: string, transactionId?: number) => {
   try {
     const { data, error } = await supabase
       .from("ratings_review")
       .select("*")
       .eq("unit_id", unitId)
       .eq("user_id", userId)
+      .eq("transaction_id", transactionId)
       .limit(1)
       .single();
 

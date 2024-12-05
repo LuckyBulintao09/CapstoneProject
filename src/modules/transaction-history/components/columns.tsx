@@ -42,7 +42,7 @@ const TransactionActionsCell = ({ row }: { row: Row<Transaction> }) => {
 	useEffect(() => {
 		const getReviewData = async () => {
 			if (!unitId || !row.original.user_id) return;
-			const review = await fetchReviewData(unitId, row.original.user_id);
+			const review = await fetchReviewData(unitId, row.original.user_id, row.original.id || null);
 			setReviewData(review);
 		};
 
@@ -100,6 +100,7 @@ const TransactionActionsCell = ({ row }: { row: Row<Transaction> }) => {
 						unit_id={unitId}
 						reviewData={reviewData}
 						onDelete={handleDeleteReview}
+						transactionId={row.original.id}
 					/>
 				</>
 			)}

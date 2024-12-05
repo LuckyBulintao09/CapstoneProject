@@ -29,15 +29,6 @@ const SideMap: React.FC<SideReviewsProps> = ({
 	} | null>(null);
 	const [landmarkDirections, setLandmarkDirections] = useState<any[]>([]);
 
-	useEffect(() => {
-		if (propertyReviews.length > 0) {
-			const averageLocation = propertyReviews.reduce(
-				(sum, review) => sum + review.location,
-				0
-			);
-			setLocationAverage(averageLocation / propertyReviews.length);
-		}
-	}, [propertyId, propertyReviews]);
 
 	useEffect(() => {
 		handleAddUserLocation();
@@ -140,21 +131,6 @@ const SideMap: React.FC<SideReviewsProps> = ({
 		setLandmarkDirections(filteredLandmarks);
 	};
 
-	const mapScoreToRating = (averageScore: number): string => {
-		if (averageScore >= 9) return 'Exceptional';
-		if (averageScore >= 8) return 'Wonderful';
-		if (averageScore >= 7) return 'Excellent';
-		if (averageScore >= 6) return 'Good';
-		if (averageScore >= 5) return 'Pleasant';
-		if (averageScore >= 4) return 'Fair';
-		if (averageScore >= 3) return 'Disappointing';
-		if (averageScore >= 2) return 'Poor';
-		if (averageScore >= 1) return 'Very Poor';
-		if (averageScore > 0) return 'Bad';
-		return 'No Reviews';
-	};
-
-	const ratingDescription = mapScoreToRating(locationAverage);
 
 	return (
 		<div>
@@ -174,12 +150,6 @@ const SideMap: React.FC<SideReviewsProps> = ({
 							{directions && <DirectionsRenderer directions={directions} />}
 						</GoogleMap>
 
-						<p className='text-lg mb-0 pb-0 font-bold mt-2 dark:text-gray-100'>
-							{locationAverage.toFixed(1)} {ratingDescription}
-						</p>
-						<p className='text-sm pt-0 mt-0 dark:text-gray-300'>
-							Location Review Score
-						</p>
 						<span className='text-sm pt-0 mt-0 dark:text-gray-300'>
 							Distance from the center:
 							{directions?.routes[0]?.legs[0] ? (

@@ -39,7 +39,10 @@ const PropertyListingsDashboard: React.FC<PropertyListingsDashboardProps> = ({
         isApproved,
         isRejected, 
         due_date
-      `);
+      `)
+        .not("business_permit", "is", null)
+        .not("fire_inspection", "is", null)
+        
 
       if (error) {
         console.error("Error fetching property listings:", error);
