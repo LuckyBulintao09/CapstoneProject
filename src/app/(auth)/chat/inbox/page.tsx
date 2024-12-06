@@ -16,6 +16,7 @@ import { Button } from '@/components/ui/button';
 import { Command, CommandItem, CommandList } from '@/components/ui/command';
 import { DropdownMenu, DropdownMenuTrigger, DropdownMenuContent, DropdownMenuItem, DropdownMenuLabel, DropdownMenuSeparator } from '@/components/ui/dropdown-menu';
 import { toast } from 'sonner';
+import { setAsRead } from '@/actions/chat/setAsRead';
 
 const Inbox = lazy(() => import('./messages/page'));
 const supabase = createClient();
@@ -93,6 +94,7 @@ const Page = () => {
       toast.error('Failed to update conversation.');
     }
   };
+  console.log(conversations);
 
   const filteredConversations = useMemo(() => {
     return showArchived
@@ -102,7 +104,10 @@ const Page = () => {
 
   const conversationList = useMemo(() => {
     return filteredConversations.map((conversation) => (
-      <Card key={conversation.user2} className='m-1 bg-transparent pl-2'>
+      <Card
+        key={conversation.user2}
+        className={`m-1 bg-transparent pl-2 ${conversation.read === false ? 'font-bold' : ''}`}
+      >
         <li className='mb-2 flex items-center justify-between'>
           <div className='flex items-center w-full'>
             <div className='flex-shrink-0 w-10 h-10 flex items-center justify-center bg-secondary rounded-full mr-2'>
@@ -137,10 +142,10 @@ const Page = () => {
                     </Button>
                   </DropdownMenuTrigger>
                   <DropdownMenuContent className="w-40">
-                  <DropdownMenuLabel className='text-xs'>Actions</DropdownMenuLabel>
-                  <DropdownMenuSeparator />
+                    <DropdownMenuLabel className='text-xs'>Actions</DropdownMenuLabel>
+                    <DropdownMenuSeparator />
                     <DropdownMenuItem
-                    className='text-xs'
+                      className='text-xs'
                       onClick={() => toggleArchiveConversation(conversation.user2, conversation.isArchived)}
                     >
                       {conversation.isArchived ? 'Unarchive Conversation' : 'Archive Conversation'}
@@ -160,6 +165,10 @@ const Page = () => {
       </Card>
     ));
   }, [filteredConversations, getInitials, handleSelectConversation]);
+  
+  const setToRead = async () => {
+    await setAsRead()
+  }
 
   return (
     <Card className='bg-transparent m-2'>

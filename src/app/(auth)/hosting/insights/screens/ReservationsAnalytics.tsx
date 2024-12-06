@@ -178,7 +178,10 @@ const ReservationsAnalytics = () => {
               <p className="p-4 text-xs text-gray-500 dark:text-gray-300">Total Reservations</p>
               <CardHeader className="p-1 flex justify-center items-center text-center">
                 <CardTitle className="text-4xl font-bold">
-                  {loading ? "Recalculating..." : (reservationAnalyticsData?.count || 'no data')}
+                 
+                  {loading ?  <p className='text-xs pb-4'>Recalculating...</p> : (reservationAnalyticsData?.count || 'no data')}
+
+             
                 </CardTitle>
               </CardHeader>
             </Card>
@@ -187,7 +190,7 @@ const ReservationsAnalytics = () => {
               <p className="p-4 text-xs text-gray-500 dark:text-gray-300">Total Company Page Visits</p>
               <CardHeader className="p-1 flex justify-center items-center text-center">
                 <CardTitle className="text-4xl font-bold">
-                  {loading ? "Recalculating..." : (companyAnalyticsData?.count || 'no data')}
+                  {loading ? <p className='text-xs pb-4'>Recalculating...</p> : (companyAnalyticsData?.count || 'no data')}
                 </CardTitle>
               </CardHeader>
             </Card>
@@ -196,7 +199,7 @@ const ReservationsAnalytics = () => {
             <Card className="bg-white dark:bg-secondary rounded-lg border-gray-300 row-span-2 mb-4 xl:mb-0">
               <p className="p-4 text-xs text-gray-500 dark:text-gray-300">On-Site vs Room Reservations</p>
               <CardContent>
-                {loading ? "Recalculating..." : <Bar data={data} />}
+                {loading ? <p className='text-xs pb-4'>Recalculating...</p> : <Bar data={data} />}
               </CardContent>
             </Card>
           </div>
@@ -206,7 +209,7 @@ const ReservationsAnalytics = () => {
             <p className="p-4 text-m text-gray-500 dark:text-gray-300">Total Reservations Across All Properties</p>
 
             <CardContent className='w-full bg-transparent'>
-              {loading ? "Recalculating..." : (isAnalyticsFetched && <ComparisonBetweenProperty dateRange={date} />)}
+              {loading ? <p className='text-xs pb-4'>Recalculating...</p> : (isAnalyticsFetched && <ComparisonBetweenProperty dateRange={date} />)}
             </CardContent>
           </Card>
         </div>
