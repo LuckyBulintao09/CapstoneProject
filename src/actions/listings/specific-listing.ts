@@ -14,8 +14,7 @@ export const fetchUser = async () => {
 };
 
 export const fetchProperty = async (
-  propertyId: number,
-  userId: string | null
+  propertyId: number
 ) => {
   const { data: property, error } = await supabase
     .from('property')
@@ -36,6 +35,8 @@ export const fetchProperty = async (
 
   return { property };
 };
+
+  
 
 export const fetchPropertyReviews = async (propertyId: number) => {
       const { data, error } = await supabase
