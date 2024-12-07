@@ -8,9 +8,9 @@ export async function expirePropertiesFunction() {
     // First, handle expired properties where due_date has passed
     const { data: expiredProperties, error: expireError } = await supabase
       .from("property")
-      .update({ isApproved: false }) // Expire properties
+      .update({ isApproved: 'pending' }) // Expire properties
       .lt("due_date", new Date().toISOString()) // Only properties with a past due_date
-      .eq("isApproved", true); // Only update approved properties
+      .eq("isApproved", 'approved'); // Only update approved properties
 
     if (expireError) {
       console.error("Error expiring properties:", expireError.message);
@@ -25,7 +25,7 @@ export async function expirePropertiesFunction() {
     const { data: clearedProperties, error: clearError } = await supabase
       .from("property")
       .update({ due_date: null }) // Clear due_date
-      .eq("isApproved", false); // Only where isApproved is already false
+      .eq("isApproved", 'pending'); // Only where isApproved is already false
 
     if (clearError) {
       console.error("Error clearing due dates:", clearError.message);

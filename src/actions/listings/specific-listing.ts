@@ -1,5 +1,6 @@
 
 import { createClient } from "@/utils/supabase/client";
+import { toast } from "sonner";
 
 const supabase = createClient();
 
@@ -100,8 +101,8 @@ export const fetchFavorite = async (userId: string | null, propertyId: number) =
   const { data, error } = await supabase
     .from("favorites")
     .select("*")
-    .eq("Account_ID", userId)
-    .eq("property_ID", propertyId)
+    .eq("account_id", userId)
+    .eq("property_id", propertyId)
     .single();
 
     favorite = !!data
@@ -125,13 +126,19 @@ export const toggleFavourite = async (
     const { error } = await supabase
       .from("favorites")
       .delete()
-      .eq("Account_ID", userId)
-      .eq("property_ID", propertyId);
+      .eq("account_id", userId)
+      .eq("property_id", propertyId);
+    if (error) {
+      toast.error(error.message);
+    }
     return !error;
   } else {
     const { error } = await supabase
       .from("favorites")
-      .insert({ Account_ID: userId, property_ID: propertyId });
+      .insert({ account_id: userId, property_id: propertyId });
+    if (error) {
+      toast.error(error.message);
+    }
     return !error;
   }
 };

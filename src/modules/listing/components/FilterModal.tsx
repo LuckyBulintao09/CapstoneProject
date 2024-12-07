@@ -20,6 +20,7 @@ import {
 	Marker,
 	MarkerClusterer,
 	StandaloneSearchBox,
+	InfoWindow,
 } from '@react-google-maps/api';
 import { Slider as RadiusSlider } from '@/components/ui/slider';
 import { Card, CardContent } from '@/components/ui/card';
@@ -27,6 +28,7 @@ import { Slider as PriceSlider } from '@nextui-org/slider';
 import { MdOutlineMyLocation } from 'react-icons/md';
 import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group';
 import { toast } from 'sonner';
+import Link from 'next/link';
 
 const householdPrivacyTypes = [
 	{ value: 'Private Room', label: 'Private Room' },
@@ -340,7 +342,32 @@ export default function FilterModal({
 													}}
 													clusterer={clusterer}
 													onClick={() => handleMarkerClick(listing)}
-												/>
+												>
+													{selectedListing?.id === listing.id && (
+														<InfoWindow position={{ lat: listing.latitude, lng: listing.longitude }}>
+															<div className='flex flex-col'>
+																<img
+																	src={listing.property_image}
+																	alt={listing.title}
+																	className='w-full h-48 object-cover'
+																/>
+																<Link href={`/property/${listing.id}`} className='mt-2 font-bold text-lg text-primary underline'>{listing.title}</Link>
+																<div className='flex flex-row items-center mt-1'>
+																	<span className='font-bold mr-1'>Price:</span>
+																	<span className='text-sm'>Starts at {listing.minimum_price}php</span>
+																</div>
+																<div className='mt-1'>
+																	<span className='font-bold mr-1'>Company:</span>
+																	<span>{listing.company_name}</span>
+																</div>
+																<div className='mt-1'>
+																	<span className='font-bold mr-1'>Address:</span>
+																	<span>{listing.address}</span>
+																</div>
+															</div>
+														</InfoWindow>
+													)}
+												</Marker>
 											))}
 										</>
 									)}

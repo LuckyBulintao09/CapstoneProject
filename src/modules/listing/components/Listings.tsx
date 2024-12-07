@@ -27,15 +27,15 @@ import {
 } from '@/components/ui/dropdown-menu';
 
 const householdPrivacyTypes = [
-	{ value: 'Private Room', label: 'Private Room' },
-	{ value: 'Shared Room', label: 'Shared Room' },
-	{ value: 'Whole Place', label: 'Whole Place' },
+	{ value: 'private room', label: 'Private Room' },
+	{ value: 'shared poom', label: 'Shared Room' },
+	{ value: 'whole place', label: 'Whole Place' },
 ];
 
 const propertyStructureOptions = [
-	{ value: 'Dormitory', label: 'Dormitory' },
-	{ value: 'Apartment', label: 'Apartment' },
-	{ value: 'Condominium', label: 'Condominium' },
+	{ value: 'dormitory', label: 'Dormitory' },
+	{ value: 'apartment', label: 'Apartment' },
+	{ value: 'condominium', label: 'Condominium' },
 ];
 
 const propertyRating = [
@@ -95,7 +95,7 @@ export default function Listings() {
 	const decrement = (value, setter) => setter(value > 0 ? value - 1 : 0);
 
 	//Map and Location Filter
-	const [deviceLocation, setDeviceLocation] = useContext(MapContext);
+	const { deviceLocation, setDeviceLocation, searchGlobalTerm } = useContext(MapContext);
 	const [position, setPosition] = useState({ lat: 16.42, lng: 120.599 });
 	const [selectedLocation, setSelectedLocation] = useState(deviceLocation);
 	const [radius, setRadius] = useState([250]);
@@ -114,7 +114,7 @@ export default function Listings() {
 	const [starFilter, setStarFilter] = useState<number>(null);
 	const [scoreFilter, setScoreFilter] = useState<number>(null);
 
-	const handleAutoComplete = async () => {};
+	
 
 	const handleDeviceLocation = async () => {
 		if (deviceLocation) {
@@ -122,6 +122,28 @@ export default function Listings() {
 			setPosition(deviceLocation);
 			setMapKey((prevKey) => prevKey + 1);
 		}
+	};
+
+	const fetchDirections = async ({ origin, destination, travelMode }) => {
+		const directionsService = new google.maps.DirectionsService();
+
+		return new Promise((resolve, reject) => {
+			directionsService.route(
+				{
+					origin,
+					destination,
+					travelMode,
+				},
+				(result, status) => {
+					if (status === google.maps.DirectionsStatus.OK && result?.routes[0]?.legs[0]) {
+						resolve(result.routes[0].legs[0]); 
+					} else {
+						console.error('Directions request failed:', status);
+						resolve(null); 
+					}
+				}
+			);
+		});
 	};
 
 	const fetchFilteredListings = async () => {
@@ -143,20 +165,40 @@ export default function Listings() {
 				scoreFilter
 			);
 
-			let updatedListings;
+			let updatedListings = [];
 			if (selectedLocation) {
-				updatedListings = fetchedListings.map((listing) => {
-					const distance = haversineDistance(selectedLocation, {
-						lat: listing.latitude,
-						lng: listing.longitude,
-					});
-					const travelTime = estimateTravelTime(distance);
-					return { ...listing, distance, travelTime };
-				});
-			} else {
-				updatedListings = fetchedListings;
-			}
+				updatedListings = await Promise.all(
+					fetchedListings.map(async (listing) => {
+						const directions = await fetchDirections({
+							origin: selectedLocation,
+							destination: { lat: listing.latitude, lng: listing.longitude },
+							travelMode: google.maps.TravelMode.WALKING,
+						});
+			
+						let distance = null;
+						let travelTime = null;
 
+						if (directions) {
+							const distanceMeters = directions.distance?.value || 0;
+							if (distanceMeters < 1000) {
+								distance = `${distanceMeters}m`;
+							} else {
+								distance = directions.distance?.text || null;
+							}
+							travelTime = directions.duration?.text || null;
+						}
+			
+						return { ...listing, distance, travelTime, directions };
+					})
+				);
+			} else {
+				updatedListings = fetchedListings.map((listing) => ({
+					...listing,
+					distance: null,
+					travelTime: null,
+					directions: null,
+				}));
+			}
 			setListings(updatedListings);
 		} catch (err) {
 			setError('Failed to fetch listings.');
@@ -169,13 +211,11 @@ export default function Listings() {
 		const fetchData = async () => {
 			await handleDeviceLocation();
 			await fetchFilteredListings();
-
-			await new Promise((resolve) => setTimeout(resolve, 1000));
 			setListingLoading(false);
 		};
 
 		fetchData();
-		setListingLoading(false);
+		console.log(listings)
 	}, [
 		deviceLocation,
 		selectedLocation,
@@ -192,6 +232,8 @@ export default function Listings() {
 		radius,
 	]);
 
+	
+
 	const sortedListings = [...listings].sort((a, b) => {
 		if (a.ispropertyboosted && !b.ispropertyboosted) return -1;
 		if (!a.ispropertyboosted && b.ispropertyboosted) return 1;
@@ -199,6 +241,10 @@ export default function Listings() {
 			? a.minimum_price - b.minimum_price
 			: b.minimum_price - a.minimum_price;
 	});
+
+	const filteredListings = listings.filter((listing) =>
+		listing.title.toLowerCase().includes(searchGlobalTerm.toLowerCase())
+	);
 
 	const toggleSortOrder = () => {
 		setSortOrder((prevOrder) => (prevOrder === 'asc' ? 'desc' : 'asc'));
@@ -740,7 +786,7 @@ export default function Listings() {
 					)}
 					<div className='row-span-1 grid grid-cols-1 xl:grid-cols-3 lg:grid-cols-2 md1:grid-cols-3 md:grid-cols-2 sm:grid-cols-2 gap-4'>
 						{!listingLoading &&
-							sortedListings.map((item) => (
+							filteredListings.map((item) => (
 								<BranchListings
 									key={item.id}
 									{...item}
