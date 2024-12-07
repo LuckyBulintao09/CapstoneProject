@@ -87,29 +87,25 @@ const PropertyListingActionsCell = ({
 	row: any;
 	onPropertyUpdate: (
 		id: string,
-		isApproved: boolean,
-		isRejected?: boolean
+		isApproved: any,
 	) => void;
 }) => {
 	const [loading, setLoading] = useState(false);
 	const [isApproved, setIsApproved] = useState(row.original.isApproved);
-	const [isRejected, setIsRejected] = useState(row.original.isRejected);
 	const [isModalOpen, setModalOpen] = useState(false);
 	const [isApproveModalOpen, setIsApproveModalOpen] = useState(false);
 
 	useEffect(() => {
 		// Sync local state with row data
 		setIsApproved(row.original.isApproved);
-		setIsRejected(row.original.isRejected);
-	}, [row.original.isApproved, row.original.isRejected]);
+	}, [row.original.isApproved]);
 
 	const handleApproveClick = async () => {
 		setLoading(true);
 
 		try {
 			const updates = {
-				isApproved: true,
-				isRejected: false,
+				isApproved: 'approved',
 				due_date: new Date().toISOString().slice(0, 10),
 			};
 
@@ -120,12 +116,11 @@ const PropertyListingActionsCell = ({
 
 			if (!error) {
 				await approve_PropertyNotification(
-					row.original.proprietor_id,
+					row.original.ownerId,
 					row.original.id
 				);
 				setIsApproved(true);
-				setIsRejected(false);
-				onPropertyUpdate(row.original.id, true, false);
+				onPropertyUpdate(row.original.id, 'approved');
 			}
 		} catch (error) {
 			console.error('Error updating approval:', error);
@@ -139,8 +134,7 @@ const PropertyListingActionsCell = ({
 
 		try {
 			const updates = {
-				isApproved: false,
-				isRejected: true,
+				isApproved: "rejected",
 				decline_reason: reason,
 				due_date: null,
 			};
@@ -150,15 +144,16 @@ const PropertyListingActionsCell = ({
 				.update(updates)
 				.eq('id', row.original.id);
 
+				console.log("Updates being sent to Supabase:", updates);
+
 			if (!error) {
 				await reject_PropertyNotification(
-					row.original.proprietor_id,
+					row.original.ownerId,
 					row.original.id,
 					reason
 				);
 				setIsApproved(false);
-				setIsRejected(true);
-				onPropertyUpdate(row.original.id, false, true);
+				onPropertyUpdate(row.original.id, "rejected");
 			}
 		} catch (error) {
 			console.error('Error updating rejection:', error);
@@ -167,20 +162,20 @@ const PropertyListingActionsCell = ({
 		}
 	};
 
-	if (isApproved) {
+	if (isApproved === 'approved' || isApproved === 'rejected') {
 		return (
-			<span className='flex items-center gap-2 text-green-600 font-bold'>
-				<CheckCircle className='w-5 h-5' />
-				Approved
-			</span>
-		);
-	}
-
-	if (isRejected) {
-		return (
-			<span className='flex items-center gap-2 text-red-600 font-bold'>
-				<XCircle className='w-5 h-5' />
-				Rejected
+			<span className='flex items-center gap-2 font-bold'>
+				{isApproved === 'approved' ? (
+					<>
+						<CheckCircle className='w-5 h-5 text-green-600' />
+						<span className='text-green-600'>Approved</span>
+					</>
+				) : (
+					<>
+						<XCircle className='w-5 h-5 text-red-600' />
+						<span className='text-red-600'>Rejected</span>
+					</>
+				)}
 			</span>
 		);
 	}
@@ -202,12 +197,14 @@ const PropertyListingActionsCell = ({
 				isOpen={isApproveModalOpen}
 				onClose={() => setIsApproveModalOpen(false)}
 				handleApprove={handleApproveClick}
+				property_title={row.original.property_title}
 			/>
 
 			<RejectionReasonModal
 				isOpen={isModalOpen}
 				onClose={() => setModalOpen(false)}
 				onSubmit={(reason) => handleRejectClick(reason)}
+				property_title={row.original.property_title}
 			/>
 		</div>
 	);

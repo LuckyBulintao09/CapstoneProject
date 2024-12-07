@@ -71,6 +71,8 @@ export default function BranchListings({
 			router.push(`/property/${id}`);
 		}
 	};
+
+	console.log()
 	return (
 		<div>
 			<BentoGrid
@@ -153,7 +155,7 @@ export default function BranchListings({
 												className='h-4 w-4 text-primary'
 											/>
 											<span className='text-sm font-semibold text-gray-700'>
-												{travelTime.minutes}:{travelTime.seconds} mins walk
+												{distance} away
 											</span>
 										</div>
 									)}

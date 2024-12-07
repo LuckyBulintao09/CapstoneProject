@@ -1,6 +1,6 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 'use client';
-import React, { useState, useEffect, useMemo } from 'react';
+import React, { useState, useEffect, useMemo, useCallback } from 'react';
 import {
 	Axis3D,
 	Bed,
@@ -61,6 +61,17 @@ import { Dialog, DialogContent } from '@/components/ui/dialog';
 import { BookingCardModal } from '../components/BookingCardModal';
 import { useSearchParams } from 'next/navigation';
 import { fetchLandmarks } from '@/actions/landmarks/landmark';
+import Script from 'next/script';
+import { Loader } from '@googlemaps/js-api-loader';
+import {
+	Pagination,
+	PaginationContent,
+	PaginationEllipsis,
+	PaginationItem,
+	PaginationLink,
+	PaginationNext,
+	PaginationPrevious,
+  } from "@/components/ui/pagination"
 
 interface SpecificListingProps {
 	id: number;
@@ -81,6 +92,7 @@ export function SpecificListing({ id }: SpecificListingProps) {
 	const [propertyReviews, setPropertyReviews] = useState<any>(null);
 	const [units, setUnits] = useState<any>(null);
 	const [commonFacilities, setCommonFacilities] = useState<any>(null);
+	const [nearbyFacilities, setNearbyFacilities] = useState<google.maps.places.PlaceResult[]>([]);
 	const [userId, setUserId] = useState<string | null>(null);
 	const [isLoginModalOpen, setIsLoginModalOpen] = useState(false);
 	const [loading, setLoading] = useState(true);
@@ -106,6 +118,7 @@ export function SpecificListing({ id }: SpecificListingProps) {
 	const [landmarks, setLandmarks] = useState([]);
 	const [availableSpots, setAvailableSpots] = useState<number | null>(null);
 	const [houserules, setHouserules] = useState<any>(null);
+	const [currentPage, setCurrentPage] = useState(1);
 
 	//Parameter Filters
 	const searchParams = useSearchParams();
@@ -120,13 +133,14 @@ export function SpecificListing({ id }: SpecificListingProps) {
 		const value = searchParams.get(param);
 		return value ?? null;
 	};
-
 	const amenities = getSearchParam('amenities');
 	const privacy = getSearchParam('privacy');
 	const minPrice = getSearchParam('minPrice');
 	const maxPrice = getSearchParam('maxPrice');
 	const room = getSearchParam('room');
 	const bed = getSearchParam('bed');
+
+	//FETCHING
 
 	useEffect(() => {
 		const loadUserAndProperty = async () => {
@@ -139,7 +153,7 @@ export function SpecificListing({ id }: SpecificListingProps) {
 
 				setIsFavourite(await fetchFavorite(userId, id));
 
-				const { property } = await fetchProperty(id, fetchedUserId);
+				const { property } = await fetchProperty(id);
 				if (!property) {
 					setError(true);
 					setLoading(false);
@@ -164,14 +178,16 @@ export function SpecificListing({ id }: SpecificListingProps) {
 				setTotalOccupants(occupantsCount);
 				setHouserules(await getPropertyHouseRules(id));
 				await addAnalytics(property?.id, property?.company_id,property?.title);
-				setLoading(false);
 			} catch (err) {
 				setError(true);
 			}
+			setLoading(false);
 		};
 		loadUserAndProperty();
 		console.log(property);
 	}, [id, isFavourite]);
+
+	//SORTING
 
 	const sortedUnits = useMemo(() => {
 		if (!Array.isArray(units) || units.length === 0) {
@@ -233,6 +249,8 @@ export function SpecificListing({ id }: SpecificListingProps) {
 		});
 	}, [units]);
 
+	//FAVORITES
+
 	const handleToggleFavourite = async () => {
 		if (!userId) {
 			setIsLoginModalOpen(true);
@@ -257,25 +275,104 @@ export function SpecificListing({ id }: SpecificListingProps) {
 		}
 	}, [userPosition]);
 
+
+	// NEARBY FACILITIES
+
+	useEffect(() => {
+		const loader = new Loader({
+		  apiKey: process.env.NEXT_PUBLIC_GOOGLE_MAPS_API_KEY as string,
+		  version: "weekly",
+		  libraries: ["places", "geometry"]
+		});
+	
+		loader.load().then(() => {
+		  console.log("Google Maps API loaded");
+		  setIsMapLoaded(true);
+		  // handleNearbyFacilities(); // Moved to separate useEffect
+		}).catch(e => {
+		  console.error("Error loading Google Maps API", e);
+		});
+	  }, []);
+	
+	
+	  const calculateDistance = (origin: google.maps.LatLng, destination: google.maps.LatLng): number | null => {
+		if (window.google && window.google.maps && window.google.maps.geometry && window.google.maps.geometry.spherical) {
+		  return window.google.maps.geometry.spherical.computeDistanceBetween(origin, destination);
+		}
+		console.error('Google Maps Geometry library not loaded');
+		return null;
+	  };
+	
+	  const handleNearbyFacilities = useCallback(() => {
+		if (!window.google || !position) return;
+	
+		const service = new window.google.maps.places.PlacesService(document.createElement('div'));
+		const request = {
+		  location: new window.google.maps.LatLng(position.lat, position.lng),
+		  radius: 500,
+		  type: ['store']
+		};
+	
+		service.nearbySearch(request, (results, status) => {
+		  if (status === window.google.maps.places.PlacesServiceStatus.OK && results) {
+			const facilitiesWithDistance = results.map((facility) => {
+			  const facilityLocation = facility.geometry?.location;
+			  let distance = 'N/A';
+			  if (facilityLocation) {
+				const distanceInMeters = calculateDistance(
+				  new window.google.maps.LatLng(position.lat, position.lng),
+				  facilityLocation
+				);
+				distance = distanceInMeters !== null ? `${Math.round(distanceInMeters)} meters` : 'N/A';
+			  }
+			  return { ...facility, distance };
+			});
+			setNearbyFacilities(facilitiesWithDistance);
+		  } else {
+			console.error('Error retrieving nearby places:', status);
+		  }
+		  setLoading(false);
+		});
+	  }, [position]);
+	
+
+
+
+	const totalPages = Math.ceil(nearbyFacilities.length / 5);
+	const paginatedFacilities = nearbyFacilities.slice(
+		(currentPage - 1) * 5,
+		currentPage * 5
+	);
+
+	// GOOGLE REDIRECT SERVICE
 	const handleAddUserLocation = () => {
+		let currentpos = position
 		navigator.geolocation.getCurrentPosition(
 			(position) => {
-				if (position.coords.accuracy > 100) {
-					toast.error(
-						'Location accuracy is too low. Manually search location or use a mobile device instead.'
-					);
-				} else {
-					setUserPosition({
-						lat: position.coords.latitude,
-						lng: position.coords.longitude,
-					});
-				}
+				const userLatitude = position.coords.latitude;
+				const userLongitude = position.coords.longitude;
+	
+				const destinationLatitude = currentpos.lat;
+				const destinationLongitude = currentpos.lng;
+	
+				const googleMapsUrl = `https://www.google.com/maps/dir/?api=1&origin=${userLatitude},${userLongitude}&destination=${destinationLatitude},${destinationLongitude}&travelmode=driving`;
+	
+				window.open(googleMapsUrl, "_blank");
 			},
 			(error) => {
-				console.error('Error fetching user location:', error);
+				console.error("Error fetching user location:", error);
+				toast.error("Unable to fetch your location. Please enable location services.");
 			}
 		);
 	};
+
+	useEffect(() => {
+		if (!loading && !nearbyFacilities.length && property) {
+			handleNearbyFacilities();
+		}
+	}, [loading, nearbyFacilities.length, handleNearbyFacilities]);
+
+
 
 	const fetchDirections = () => {
 		if (!userPosition) return;
@@ -300,6 +397,8 @@ export function SpecificListing({ id }: SpecificListingProps) {
 			}
 		);
 	};
+
+	//MODALS
 
 	const handleOpenBookingModal = (
 		unit_id: number,
@@ -351,6 +450,7 @@ export function SpecificListing({ id }: SpecificListingProps) {
 	const scrollToTop = () => {
 		window.scrollTo({ top: 0, behavior: 'smooth' });
 	};
+
 
 	if (loading)
 		return (
@@ -469,6 +569,82 @@ export function SpecificListing({ id }: SpecificListingProps) {
 						/>
 					</div>
 				</div>
+			</div>
+
+			<div className='border-t border-gray-300 py-8 '>
+				<h4 className='text-2xl font-semibold tracking-tight'>
+					Nearby Facilities
+				</h4>
+				{nearbyFacilities.length > 0 ? (
+					<div className="mt-4 p-4 border border-gray-300 rounded-lg shadow-md bg-white dark:bg-secondary"> 
+					<ul className="space-y-2">
+					{paginatedFacilities.map((facility, index) => (
+						<li key={index} className="flex items-start justify-between">
+							<div className="flex items-start">
+							<div className="flex-shrink-0 w-8 h-8 mr-2">
+								{facility.photos && facility.photos[0] && (
+								<img
+									src={facility.photos[0].getUrl()}
+									alt={facility.name || 'Facility'}
+									className="w-full h-full object-cover rounded"
+								/>
+								)}
+							</div>
+							<div>
+								<h3 className="font-medium">{facility.name}</h3>
+								<p className="text-sm text-gray-600">{facility.vicinity}</p>
+							</div>
+							</div>
+							<div className="text-sm text-gray-600">
+							{facility.distance}
+							</div>
+						</li>
+						))}
+					</ul>
+					<div className="mt-4">
+						<Pagination>
+						<PaginationContent>
+							<PaginationItem>
+							<PaginationPrevious 
+								href="#" 
+								onClick={(e) => {
+								e.preventDefault();
+								setCurrentPage((prev) => Math.max(prev - 1, 1));
+								}}
+								className={currentPage === 1 ? 'pointer-events-none opacity-50' : ''}
+							/>
+							</PaginationItem>
+							{[...Array(totalPages)].map((_, i) => (
+							<PaginationItem key={i}>
+								<PaginationLink 
+								href="#" 
+								onClick={(e) => {
+									e.preventDefault();
+									setCurrentPage(i + 1);
+								}}
+								isActive={currentPage === i + 1}
+								>
+								{i + 1}
+								</PaginationLink>
+							</PaginationItem>
+							))}
+							<PaginationItem>
+							<PaginationNext 
+								href="#" 
+								onClick={(e) => {
+								e.preventDefault();
+								setCurrentPage((prev) => Math.min(prev + 1, totalPages));
+								}}
+								className={currentPage === totalPages ? 'pointer-events-none opacity-50' : ''}
+							/>
+							</PaginationItem>
+						</PaginationContent>
+						</Pagination>
+					</div>
+					</div>
+				) : (
+					<p>No nearby facilities found.</p>
+				)}
 			</div>
 
 			{/* UNITS */}
@@ -695,7 +871,7 @@ export function SpecificListing({ id }: SpecificListingProps) {
 				id='location'
 			>
 				<div className='flex items-center justify-between pb-4'>
-					<h4 className='text-2xl font-semibold tracking-tight'>Location</h4>
+					<h4 className='text-2xl font-semibold tracking-tight'>Where you'll be</h4>
 					<Button
 						className='text-primary hover:bg-background dark:text-foreground dark:bg-primary border-primary gap-2 items-center justify-center'
 						variant='outline'
@@ -708,12 +884,11 @@ export function SpecificListing({ id }: SpecificListingProps) {
 				<Card className='lg:h-[550px] xs:h-[365px] border-none'>
 					<GoogleMap
 						mapContainerClassName='w-full h-full rounded-md'
-						zoom={14}
-						center={userPosition || position}
+						zoom={20}
+						center={position}
 					>
-						{userPosition && <Marker position={userPosition} />}
+						{userPosition && <Marker position={position} />}
 						<Marker position={position} />
-						{directions && <DirectionsRenderer directions={directions} />}
 					</GoogleMap>
 				</Card>
 			</div>
@@ -731,7 +906,6 @@ export function SpecificListing({ id }: SpecificListingProps) {
 					<ul className='list-disc pl-5 space-y-3'>
 						{houserules.map((rule, index) => (
 							<li key={index}>
-								<span className='font-medium'>{rule.title}: </span>
 								{rule.rule}
 							</li>
 						))}
