@@ -143,7 +143,6 @@ const Inbox = ({ receiver_id, company_name }) => {
     try {
       let fileToUpload = file;
   
-      // Compress the file if it's 2.5MB or larger
       if (file.size >= maxSize) {
         const options = {
           maxSizeMB: 1.5, 
@@ -186,7 +185,7 @@ const Inbox = ({ receiver_id, company_name }) => {
   };
 
   return (
-    <Card className="w-full h-full bg-transparent">
+    <Card className="w-full h-full bg-transparent ">
       <div className="w-full h-full flex flex-col p-4">
         {receiver_id && receiverNameMemo && (
           <Card className="flex items-center p-2 shadow-sm mb-4 bg-transparent">

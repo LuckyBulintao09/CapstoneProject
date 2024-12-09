@@ -1,19 +1,11 @@
 'use client';
 
-import React, {
-  useEffect,
-  useState,
-  useCallback,
-  useMemo,
-  lazy,
-  Suspense,
-} from 'react';
+import React, { useState, useEffect, useCallback, useMemo, lazy, Suspense } from 'react';
 import { Card } from '@/components/ui/card';
 import { fetchConversations } from '@/actions/chat/fetchConversations';
 import { createClient } from '@/utils/supabase/client';
-import { BadgeCheck, ChevronsUpDown, X, MoreVertical } from 'lucide-react';
+import { BadgeCheck, ChevronsUpDown, X, MoreVertical, Menu } from 'lucide-react';
 import { Button } from '@/components/ui/button';
-import { Command, CommandItem, CommandList } from '@/components/ui/command';
 import { DropdownMenu, DropdownMenuTrigger, DropdownMenuContent, DropdownMenuItem, DropdownMenuLabel, DropdownMenuSeparator } from '@/components/ui/dropdown-menu';
 import { toast } from 'sonner';
 import { setAsRead } from '@/actions/chat/setAsRead';
@@ -28,7 +20,9 @@ const Page = () => {
   const [selectedCompanyName, setSelectedCompanyName] = useState<string | null>(null);
   const [loading, setLoading] = useState(true);
   const [showArchived, setShowArchived] = useState(false);
-  const [open, setOpen] = useState(false);
+  const [showConversations, setShowConversations] = useState(false); 
+  const [messagesOpen, setMessagesOpen] = useState(false); 
+  const [isSmallScreen, setIsSmallScreen] = useState(false); 
 
   useEffect(() => {
     const fetchCurrentUserId = async () => {
@@ -53,10 +47,30 @@ const Page = () => {
     loadConversations();
   }, [currentUserId]);
 
+  useEffect(() => {
+    const handleResize = () => {
+      if (window.innerWidth < 1024) {
+        setIsSmallScreen(true);
+        setShowConversations(true); 
+      } else {
+        setIsSmallScreen(false);
+        setShowConversations(false); 
+      }
+    };
+
+    window.addEventListener('resize', handleResize);
+
+    handleResize();
+
+    return () => window.removeEventListener('resize', handleResize);
+  }, []);
+
   const handleSelectConversation = useCallback(
     (receiverId: string, companyName: string | null) => {
       setSelectedReceiverId(receiverId);
       setSelectedCompanyName(companyName);
+      setMessagesOpen(true); 
+      setShowConversations(false); 
     },
     []
   );
@@ -94,7 +108,6 @@ const Page = () => {
       toast.error('Failed to update conversation.');
     }
   };
-  console.log(conversations);
 
   const filteredConversations = useMemo(() => {
     return showArchived
@@ -165,16 +178,12 @@ const Page = () => {
       </Card>
     ));
   }, [filteredConversations, getInitials, handleSelectConversation]);
-  
-  const setToRead = async () => {
-    await setAsRead()
-  }
 
   return (
     <Card className='bg-transparent m-2'>
       <div className='flex h-screen'>
         {/* Sidebar */}
-        <div className='p-4 rounded-lg m-2 shadow-md w-1/4 overflow-auto border-r border-gray-300'>
+        <div className={`p-4 rounded-lg m-2 shadow-md w-full md:w-1/3 lg:w-1/4 overflow-auto mt-[3.54rem] border-r border-gray-300 ${showConversations ? 'block fixed inset-0 z-10 bg-white' : 'hidden'} lg:block`}>
           <h2 className='text-lg font-bold mb-4'>
             {filteredConversations.length === 0
               ? 'Archived Conversations'
@@ -186,7 +195,7 @@ const Page = () => {
             <Button
               variant='outline'
               role='combobox'
-              aria-expanded={open}
+              aria-expanded={showConversations}
               className='w-full justify-between mb-4'
               onClick={() => setShowArchived(!showArchived)}
             >
@@ -198,12 +207,14 @@ const Page = () => {
                 <Button
                   className='ml-2'
                   onClick={() => {
-                    setSelectedReceiverId(null);
-                    setSelectedCompanyName(null);
+                    setSelectedReceiverId(null); 
+                    setSelectedCompanyName(null); 
+                    setMessagesOpen(false); 
                   }}
                 >
                   <X className='w-4 h-4' />
                 </Button>
+
                 <span className='absolute left-1/2 transform -translate-x-1/2 bottom-full mb-2 text-xs text-white-500 opacity-0 group-hover:opacity-100 transition-opacity'>
                   Close conversation
                 </span>
@@ -221,8 +232,30 @@ const Page = () => {
           )}
         </div>
 
+        {/* Sidebar Toggle Button */}
+        <Button
+          variant='ghost'
+          className='lg:hidden absolute top-4 left-4'
+          onClick={() => {
+            setShowConversations(!showConversations); 
+            setMessagesOpen(false); 
+          }}
+        >
+          <Menu className='w-6 h-6' />
+        </Button>
+
         {/* Messages */}
-        <div className='flex-grow p-4 overflow-auto'>
+        <div className={`flex-grow p-4 overflow-auto ${messagesOpen ? 'block' : 'hidden'} lg:block`}>
+          <Button
+            variant='outline'
+            className='lg:hidden w-full bg-primary text-white mb-4'
+            onClick={() => {
+              setShowConversations(true); 
+              setMessagesOpen(false); 
+            }}
+          >
+            Show Conversations
+          </Button>
           <Suspense fallback={<div>Loading chat...</div>}>
             {selectedReceiverId ? (
               <Inbox receiver_id={selectedReceiverId} company_name={selectedCompanyName} />
