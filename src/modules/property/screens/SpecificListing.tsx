@@ -112,6 +112,7 @@ export function SpecificListing({ id }: SpecificListingProps) {
 	const [selectedUnit, setSelectedUnit] = useState<any>(null);
 	const [selectedUnitTitle, setSelectedUnitTitle] = useState<any>(null);
 	const [selectedUnitPrice, setSelectedUnitPrice] = useState(0);
+	const [selectedUnitContract, setSelectedUnitContract] = useState<any>(null);
 	const [unitImage, setUnitImage] = useState<any>(null);
 	const [unitCount, setUnitCount] = useState(0);
 	const [totalOccupants, setTotalOccupants] = useState(0);
@@ -404,13 +405,15 @@ export function SpecificListing({ id }: SpecificListingProps) {
 		unit_id: number,
 		availableSpots: number,
 		unitPrice: number,
-		unitTitle: string
+		unitTitle: string,
+		contact: any
 	) => {
 		setIsBookingModalOpen(true);
 		setSelectedUnit(unit_id);
 		setAvailableSpots(availableSpots);
 		setSelectedUnitPrice(unitPrice);
 		setSelectedUnitTitle(unitTitle);
+		setSelectedUnitContract(contact);
 		// const unit = units.find((u) => u.id === unit_id);
 		// setSelectedUnitOccupants(unit ? unit.occupants : 0);
 	};
@@ -815,7 +818,8 @@ export function SpecificListing({ id }: SpecificListingProps) {
 																			unit.id,
 																			unit.occupants - unit.current_occupants,
 																			unit.price,
-																			unit.title
+																			unit.title,
+																			unit.contract
 																	  )
 																	: toast.error('Please log in first')
 															}
@@ -855,6 +859,7 @@ export function SpecificListing({ id }: SpecificListingProps) {
 				accountID={accountId}
 				propertyTitle={title}
 				unitTitle={selectedUnitTitle}
+				contract={selectedUnitContract}
 			/>
 
 			{/* REVIEWS */}

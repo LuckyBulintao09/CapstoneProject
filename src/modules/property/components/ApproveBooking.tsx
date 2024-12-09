@@ -24,7 +24,7 @@ const ApproveBooking = ({
 }: ApproveConfirmationModalProps) => {
 	return (
 		<Dialog open={isOpen} onOpenChange={onClose}>
-			<DialogContent className='bg-white dark:bg-secondary'>
+			<DialogContent className='bg-white dark:bg-secondary z-[1000] top-1/2 absolute'>
 				<DialogHeader>
 					<DialogTitle>{spiels.MODAL_APPROVE}</DialogTitle>
 				</DialogHeader>

@@ -37,7 +37,10 @@ const TransactionActionsCell = ({ row }: { row: Row<Transaction> }) => {
 	const [isCancelModalOpen, setIsCancelModalOpen] = useState(false);
 	const [reviewData, setReviewData] = useState<Review | null>(null);
 	const transactionStatus = row.getValue('transaction_status') as string;
+	const isPaid = row.original.isPaid;
 	const unitId = row.original.unit?.id;
+
+
 
 	useEffect(() => {
 		const getReviewData = async () => {
@@ -71,8 +74,8 @@ const TransactionActionsCell = ({ row }: { row: Row<Transaction> }) => {
 
 	return (
 		<div className='flex flex-row gap-3'>
-			{(transactionStatus === 'reserved' ||
-				transactionStatus === 'visited') && (
+			{((transactionStatus === 'reserved' && isPaid) || 
+				(transactionStatus === 'visited' && !isPaid)) && (
 				<>
 					{reviewData ? (
 						<div className='flex gap-3 w-[150px]'>
@@ -90,7 +93,6 @@ const TransactionActionsCell = ({ row }: { row: Row<Transaction> }) => {
 							size='sm'
 							onClick={() => setIsModalOpen(true)}
 						>
-							{/* <Star className='h-4 w-4 mr-2' /> */}
 							Add Review
 						</Button>
 					)}

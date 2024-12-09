@@ -32,7 +32,6 @@ export const fetchProperty = async (
     console.error("Error fetching property:", error);
     return null;
   }
-
   return { property };
 };
 

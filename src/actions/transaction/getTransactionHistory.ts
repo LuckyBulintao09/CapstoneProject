@@ -60,7 +60,9 @@ export const getTransactionHistory = async (userId: string) => {
         service_option,     
         appointment_date, 
         transaction_status, 
-        isPaid, 
+        isPaid,
+        contract,
+        client_name, 
         unit:unit_id (
           id, title, unit_code, property:property_id (title)
         ),
@@ -85,7 +87,10 @@ export const getTransactionHistory = async (userId: string) => {
       ...transaction,
       unit_title: transaction.unit.title,
       property_title: transaction.unit.property.title,
-      client_name: `${transaction.account.firstname} ${transaction.account.lastname}`,
+      client_name:
+        transaction.user_id === null
+          ? transaction.client_name
+          : `${transaction.account.firstname} ${transaction.account.lastname}`,
     }));
   } catch (error: any) {
     console.error(

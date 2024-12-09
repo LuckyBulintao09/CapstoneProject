@@ -5,8 +5,11 @@ import { DataTable } from "@/components/table/data-table";
 import { columns as generateColumns, Transaction } from "./columns";
 import { createClient } from "@/utils/supabase/client";
 import { getTransactionHistory } from "@/actions/transaction/getTransactionHistory";
-import { cancel_lessorNotification, cancelled_onsiteNotification, confirm_onsiteNotification } from "@/actions/notification/notification";
+import { cancel_lessorNotification, cancelled_onsiteNotification, confirm_onsiteNotification, expireContractNotification } from "@/actions/notification/notification";
 import CustomBreadcrumbs from "../../components/CustomBreadcrumbs";
+import CreateTransactionModal from "./CreateTransactionModal";
+import { Plus } from "lucide-react";
+import { Button } from "@/components/ui/button";
 
 const supabase = createClient();
 
@@ -14,6 +17,16 @@ const TransactionDashboard = () => {
   const [data, setData] = useState<Transaction[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+  const [isCreateModalOpen, setIsCreateModalOpen] = useState(false);
+
+  //check if there are nearing end of contract
+  // useEffect(() => {
+  //   const fetchExpiringTransactions = async () => {
+  //     const user = await supabase.auth.getUser();
+  //     await expireContractNotification(user.data.user.id);
+  //   };
+  //   fetchExpiringTransactions();
+  // }, [])
 
   const fetchTransactionHistory = async () => {
     setLoading(true);
@@ -152,10 +165,27 @@ const TransactionDashboard = () => {
 		<div className='px-32 md:px-24 sm:px-20 xs:px-10 p-5 bg-background dark:bg-secondary h-screen'>
 			{/* <HostingTransactionBreadcrumb active='Transactions' /> */}
       <CustomBreadcrumbs />
-			<div className='mt-1 mb-4'>
+			<div className='flex mt-1 mb-4 justify-between'>
 				<h1 className='font-semibold xs:text-xl sm:text-2xl md:text-3xl text-left dark:text-white'>
-					Transaction History
+					Booking Transactions
 				</h1>
+          <div className='flex justify-end'>
+            <Button
+              className='flex justify-center items-center border bg-white dark:bg-secondary dark:border-gray-300 border-black text-black dark:text-white'
+              onClick={() => setIsCreateModalOpen(true)}
+            >
+              <Plus size={20}/>
+            </Button>
+          </div>
+          <CreateTransactionModal
+            isOpen={isCreateModalOpen}
+            onClose={() => setIsCreateModalOpen(false)}
+            onSubmit={(newTransactionData) => {
+              // Handle new transaction data submission
+              setIsCreateModalOpen(false);
+              fetchTransactionHistory(); // Refresh transaction history
+            }}
+          />
 			</div>
 			<div className='col-span-full'>
 				{error ? (

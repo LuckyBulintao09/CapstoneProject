@@ -1,19 +1,31 @@
-"use client";
-import { createClient } from "@/utils/supabase/client";
-import React from "react";
-import Image from "next/image";
-import Link from "next/link";
-import { Button, buttonVariants } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
-import { Form, FormControl, FormDescription, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form";
-import { useForm } from "react-hook-form";
-import { zodResolver } from "@hookform/resolvers/zod";
-import { LoginFormData, loginSchema } from "@/lib/schemas/authSchema";
-import { EyeClosedIcon, EyeOpenIcon } from "@radix-ui/react-icons";
-import { useRouter } from "next/navigation";
-import { toast } from "sonner";
-import { LoginWithPassword } from "@/app/(authentication)/login/actions";
-import { getErrorMessage } from "@/lib/handle-error";
+
+'use client';
+import { createClient } from '@/utils/supabase/client';
+import React from 'react';
+import Image from 'next/image';
+import Link from 'next/link';
+import { Button, buttonVariants } from '@/components/ui/button';
+import { Input } from '@/components/ui/input';
+import {
+	Form,
+	FormControl,
+	FormDescription,
+	FormField,
+	FormItem,
+	FormLabel,
+	FormMessage,
+} from '@/components/ui/form';
+import { useForm } from 'react-hook-form';
+import { zodResolver } from '@hookform/resolvers/zod';
+import { LoginFormData, loginSchema } from '@/lib/schemas/authSchema';
+import { EyeClosedIcon, EyeOpenIcon } from '@radix-ui/react-icons';
+import { useRouter } from 'next/navigation';
+import { toast } from 'sonner';
+import { LoginWithPassword } from '@/app/(authentication)/login/actions';
+import { getErrorMessage } from '@/lib/handle-error';
+import { expireContractNotification } from '@/actions/notification/notification';
+
+
 const supabase = createClient();
 function LoginForm() {
     const queryString = typeof window !== "undefined" ? window?.location.search : "";
@@ -32,34 +44,38 @@ function LoginForm() {
         },
     });
 
-    async function onSubmit(values: LoginFormData) {
-        if (!isPending) {
-            startTransition(() => {
-                toast.promise(LoginWithPassword(values), {
-                    loading: "Logging in...",
-                    success: async () => {
-                        const { data, error } = await supabase.auth.getUser();
-                        if (error) {
-                            console.error("Error fetching user:", error.message);
-                            throw new Error("Unable to fetch user data.");
-                        }
-                        const userRole = data?.user?.user_metadata?.user_role;
-                        if (userRole === "Admin") {
-                            window.location.href = "/administrator/dashboard";
-                            loginForm.reset();
-                        } else {
-                            router.push(redirectedFrom || "/");
-                            loginForm.reset();
-                        }
-                        return "Login successful!";
-                    },
-                    error: (error) => {
-                        return error.message || "Invalid login credentials";
-                    },
-                });
-            });
-        }
-    }
+
+	async function onSubmit(values: LoginFormData) {
+		if (!isPending) {
+			startTransition(() => {
+				toast.promise(LoginWithPassword(values), {
+					loading: 'Logging in...',
+					success: async () => {
+						const { data, error } = await supabase.auth.getUser();
+						
+						await expireContractNotification(data.user.id);
+						if (error) {
+							console.error('Error fetching user:', error.message);
+							throw new Error('Unable to fetch user data.');
+						}
+						const userRole = data?.user?.user_metadata?.user_role;
+						if (userRole === 'Admin') {
+							window.location.href = '/administrator/dashboard';
+							loginForm.reset();
+						} else {
+							router.push(redirectedFrom || '/');
+							loginForm.reset();
+						}
+						return 'Login successful!';
+					},
+					error: (error) => {
+						return error.message || 'Invalid login credentials';
+					},
+				});
+			});
+		}
+	}
+
 
     return (
         <div className="grid w-full gap-6">

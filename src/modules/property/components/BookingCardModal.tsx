@@ -41,6 +41,7 @@ interface BookingCardProps {
 	accountID: string | null;
 	propertyTitle: string;
 	unitTitle: string;
+	contract?: any
 }
 
 export const BookingCardModal: React.FC<BookingCardProps> = ({
@@ -52,6 +53,7 @@ export const BookingCardModal: React.FC<BookingCardProps> = ({
 	accountID,
 	propertyTitle,
 	unitTitle,
+	contract
 }) => {
 	const [date, setDate] = useState<Date | undefined>();
 	const [isCalendarOpen, setIsCalendarOpen] = useState(false);
@@ -226,6 +228,11 @@ export const BookingCardModal: React.FC<BookingCardProps> = ({
 											setDate(selectedDate);
 											setIsCalendarOpen(false);
 										}}
+										disabled={(date) =>
+											contract
+												? date < new Date(contract)
+												: date < today
+										}
 										// disabled={(date) =>
 										// 	selectedService === 'Room Reservation'
 										// 		? date > new Date(Date.now() + 3 * 24 * 60 * 60 * 1000)
@@ -353,7 +360,7 @@ export const BookingCardModal: React.FC<BookingCardProps> = ({
 
 					<Button
 						className='w-full mt-2'
-						onClick={handleApproveReservation}
+						onClick={()=> setIsConfirmationModalOpen(true)}
 						disabled={
 							!date || !selectedService || hasReservation || isUnitReserved
 						}
