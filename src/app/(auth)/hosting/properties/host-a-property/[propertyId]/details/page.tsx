@@ -2,7 +2,7 @@
 
 import { getUserCompanyId } from "@/actions/company/getUserCompaniesById";
 import CustomBreadcrumbs from "@/modules/hosting/components/CustomBreadcrumbs";
-import PropertyDetailsForm from "@/modules/hosting/property/PropertyDetailsForm";
+import PropertyDetailsForm from "@/modules/hosting/property/Forms/PropertyDetailsForm";
 import { getAuthenticatedUser } from "@/utils/supabase/server";
 
 async function PropertyDetails({ params }: { params: { propertyId: string } }) {

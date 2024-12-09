@@ -52,6 +52,7 @@ import { NotificationPopover } from '@/components/navbar/NotificationPopover';
 import { ModeToggle } from '@/components/mode-toggle';
 import { logout } from '@/app/auth/login/actions';
 import { IconExchange } from '@tabler/icons-react';
+import { Skeleton } from '@/components/ui/skeleton';
 
 function TopNavigation() {
 	/*
@@ -70,7 +71,6 @@ function TopNavigation() {
 		const { auth } = createClient();
 
 		auth.getSession().then(({ data }) => {
-			console.log(data);
 			setUser(data.session?.user);
 		});
 
@@ -124,6 +124,12 @@ function TopNavigation() {
 			document.body.classList.remove('overflow-hidden');
 		};
 	}, [open]);
+
+	if (!user) {
+		return (
+			<Skeleton className='h-[68px] w-full'/>
+		);
+	}
 
 	return (
 		<nav className='py-3 sticky z-[999] airBnbDesktop:z-999 top-0 w-full bg-white/95 shadow backdrop-blur supports-[backdrop-filter]:bg-white/60 dark:bg-background'>

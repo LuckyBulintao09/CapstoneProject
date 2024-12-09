@@ -156,10 +156,14 @@ const config: Config = {
     			airBnbBigDesktop: '1440px'
     		},
     		gridTemplateColumns: {
-    			'16': 'repeat(16, minmax(0, 1fr))'
+    			'16': 'repeat(16, minmax(0, 1fr))',
+    			'25': 'repeat(25, minmax(0, 1fr))',
+    			'30': 'repeat(30, minmax(0, 1fr))',
     		},
     		gridTemplateRows: {
-    			'16': 'repeat(16, minmax(0, 1fr))'
+    			'16': 'repeat(16, minmax(0, 1fr))',
+    			'25': 'repeat(25, minmax(0, 1fr))',
+    			'30': 'repeat(30, minmax(0, 1fr))',
     		}
     	}
     },

@@ -2,6 +2,7 @@
 
 import { createClient } from "@/utils/supabase/server"
 
+
 export const getUserCompaniesById = async (userId : string) => {
 
     const supabase = createClient();

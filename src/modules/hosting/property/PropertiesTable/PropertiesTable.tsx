@@ -57,7 +57,7 @@ function PropertiesTable<TData, TValue>({ columns, data }: DataTableProps<TData,
     const isDesktop = useMediaQuery("(min-width: 748px)");
 
     return (
-        <div className="h-full pb-11">
+        <div className="h-full min-h-screen pb-11">
             <PropertiesHeader table={propertiesTable} />
             <div className="rounded-md border">
                 <Table>
@@ -65,27 +65,33 @@ function PropertiesTable<TData, TValue>({ columns, data }: DataTableProps<TData,
                         {propertiesTable.getHeaderGroups().map((headerGroup) => (
                             <TableRow key={headerGroup.id}>
                                 {headerGroup.headers.map((header) => {
-                                    if (
-                                        !isDesktop &&
-                                        (header.column.columnDef.header === "Address" || header.column.columnDef.header === "Verified")
-                                    ) {
+                                    if (!isDesktop && (header.id === "address" || header.id === "isApproved" || header.id === "due_date")) {
                                         return null;
                                     }
                                     return (
                                         <TableHead key={header.id}>
-                                            {header.isPlaceholder ? null : flexRender(header.column.columnDef.header, header.getContext())}
+                                            {header.isPlaceholder
+                                                ? null
+                                                : flexRender(header.column.columnDef.header, header.getContext())}
                                         </TableHead>
                                     );
                                 })}
                             </TableRow>
                         ))}
                     </TableHeader>
-                    <TableBody>
+                    <TableBody className="relative">
                         {propertiesTable.getRowModel().rows?.length ? (
                             propertiesTable.getRowModel().rows.map((row) => (
                                 <TableRow key={row.id} data-state={row.getIsSelected() && "selected"}>
                                     {row.getVisibleCells().map((cell) => {
-                                        return <TableCell key={cell.id}>{flexRender(cell.column.columnDef.cell, cell.getContext())}</TableCell>;
+                                        if (!isDesktop && cell.id.match(/address|isApproved|action|due_date/)) {
+                                            return null;
+                                        }
+                                        return (
+                                            <TableCell key={cell.id}>
+                                                {flexRender(cell.column.columnDef.cell, cell.getContext())}
+                                            </TableCell>
+                                        );
                                     })}
                                 </TableRow>
                             ))

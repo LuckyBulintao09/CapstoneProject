@@ -44,9 +44,11 @@ function Properties({ data }: any) {
 
 
     const { viewMode } = React.useContext(PropertyViewModeContext);
+
     if (viewMode === "grid") {
         return <PropertiesCard data={data} columns={columns} />;
     }
+    
     return <PropertiesTable data={data} columns={columns} />;
 }
 
