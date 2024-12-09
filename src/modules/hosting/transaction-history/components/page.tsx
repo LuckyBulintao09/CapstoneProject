@@ -5,7 +5,7 @@ import { DataTable } from "@/components/table/data-table";
 import { columns as generateColumns, Transaction } from "./columns";
 import { createClient } from "@/utils/supabase/client";
 import { getTransactionHistory } from "@/actions/transaction/getTransactionHistory";
-import { cancel_lessorNotification, cancelled_onsiteNotification, confirm_onsiteNotification } from "@/actions/notification/notification";
+import { cancel_lessorNotification, cancelled_onsiteNotification, confirm_onsiteNotification, expireContractNotification } from "@/actions/notification/notification";
 import CustomBreadcrumbs from "../../components/CustomBreadcrumbs";
 import CreateTransactionModal from "./CreateTransactionModal";
 import { Plus } from "lucide-react";
@@ -20,9 +20,13 @@ const TransactionDashboard = () => {
   const [isCreateModalOpen, setIsCreateModalOpen] = useState(false);
 
   //check if there are nearing end of contract
-  useEffect(() => {
-    
-  }, [])
+  // useEffect(() => {
+  //   const fetchExpiringTransactions = async () => {
+  //     const user = await supabase.auth.getUser();
+  //     await expireContractNotification(user.data.user.id);
+  //   };
+  //   fetchExpiringTransactions();
+  // }, [])
 
   const fetchTransactionHistory = async () => {
     setLoading(true);

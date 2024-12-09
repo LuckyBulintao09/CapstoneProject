@@ -16,6 +16,45 @@ export const fetchNotifications = async (userId : string) => {
 }
 
 // LESSOR
+export const expireContractNotification = async (
+    userId : string,
+) => {
+  const { data, error } = await supabase
+    .from("company")
+    .select(`
+        property (
+          unit (id, title)
+        )`)
+    .eq("owner_id", userId);
+
+  const unitIDs = data
+    .flatMap(company => company.property)
+    .flatMap(property => property.unit)
+    .map(unit => unit.id);
+
+  const today = new Date();
+  const thirtyDaysFromNow = new Date(today.setDate(today.getDate() + 30));
+  const { data: transactions, error: transactionError } = await supabase
+    .from("transaction")
+    .select("id, unit_id")
+    .in("unit_id", unitIDs)
+    .lt("contract", thirtyDaysFromNow.toISOString());
+
+  const notifications = transactions.map(transaction => ({
+    text: `Contract for unit - ${data
+      .flatMap(company => company.property)
+      .flatMap(property => property.unit)
+      .find(unit => unit.id === transaction.unit_id)?.title} is expiring`,
+    receiver_id: userId,
+  }));
+
+  const { data: notificationData, error: notificationError } = await supabase
+    .from("notifications")
+    .insert(notifications);
+  if (error) throw error;
+
+}
+
 export const reservationNotification = async (
     userId : string, 
     propertyTitle : string, 

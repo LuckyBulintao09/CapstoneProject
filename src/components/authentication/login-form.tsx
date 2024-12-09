@@ -22,6 +22,8 @@ import { useRouter } from 'next/navigation';
 import { toast } from 'sonner';
 import { LoginWithPassword } from '@/app/(authentication)/login/actions';
 import { getErrorMessage } from '@/lib/handle-error';
+import { expireContractNotification } from '@/actions/notification/notification';
+
 const supabase = createClient();
 function LoginForm() {
 	const queryString =
@@ -48,6 +50,8 @@ function LoginForm() {
 					loading: 'Logging in...',
 					success: async () => {
 						const { data, error } = await supabase.auth.getUser();
+						
+						await expireContractNotification(data.user.id);
 						if (error) {
 							console.error('Error fetching user:', error.message);
 							throw new Error('Unable to fetch user data.');
