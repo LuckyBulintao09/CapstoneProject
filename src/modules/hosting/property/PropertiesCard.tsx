@@ -23,6 +23,7 @@ interface DataTableProps<TData, TValue> {
 }
 
 import PropertiesHeader from "./PropertiesHeader";
+import { DataTablePagination } from "./PropertiesTable/data-table-pagination";
 
 function PropertiesCard<TData, TValue>({ columns, data }: DataTableProps<TData, TValue>) {
     const [sorting, setSorting] = React.useState<SortingState>([]);
@@ -54,12 +55,12 @@ function PropertiesCard<TData, TValue>({ columns, data }: DataTableProps<TData, 
     const isDesktop = useMediaQuery("(min-width: 740px)");
     
     return (
-        <div>
+        <div className="h-full min-h-screen pb-11">
             <PropertiesHeader table={propertiesCardTable} />
-            <div className="grid grid-cols-12 gap-7">
+            <div className="grid airBnbDesktop:grid-cols-5 airBnbTablet:grid-cols-2 grid-cols-1 gap-3">
                 {propertiesCardTable.getRowModel().rows?.length ? (
                     propertiesCardTable.getRowModel().rows.map((row) => (
-                        <div key={row.id} className="col-span-12 airBnbTablet:col-span-6 airBnbDesktop:col-span-4">
+                        <div key={row.id} className="col-span-1">
                             {row.getVisibleCells().map((cell) => {
                                 if (
                                     !isDesktop &&
@@ -80,11 +81,12 @@ function PropertiesCard<TData, TValue>({ columns, data }: DataTableProps<TData, 
                         </div>
                     ))
                 ) : (
-                    <div>
+                    <div className="col-span-full border border-dashed flex items-center justify-center aspect-auto w-full h-[400px] rounded-xl">
                         <div>No results.</div>
                     </div>
                 )}
             </div>
+            <DataTablePagination table={propertiesCardTable} />
         </div>
     );
 }
