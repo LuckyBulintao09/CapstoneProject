@@ -1,6 +1,6 @@
 "use client";
 
-import { Skeleton } from "@/components/ui/skeleton";
+import { Spinner } from "@/components/ui/spinner";
 import React from "react";
 
 type ViewModeContextType = {
@@ -14,7 +14,7 @@ const PropertyViewModeContext = React.createContext<ViewModeContextType>({
 });
 
 function PropertyViewModeProvider({ children }: { children: React.ReactNode }) {
-    const [viewMode, setViewMode] = React.useState<string | null>(null); // Initialize as null
+    const [viewMode, setViewMode] = React.useState<string | null>(null);
     const [isLoading, setIsLoading] = React.useState(true);
 
     // Load view mode from localStorage on initial render in the browser
@@ -33,7 +33,11 @@ function PropertyViewModeProvider({ children }: { children: React.ReactNode }) {
         }
     }, [viewMode]);
 
-    if (isLoading) return <Skeleton className="h-screen w-full" />; // Render nothing while loading
+    if (isLoading) return (
+        <div className="flex items-center justify-center h-[calc(100vh-70px)]">
+            <Spinner size="lg" className="w-32 h-32 bg-primary" />
+        </div>
+    );
 
 
     return <PropertyViewModeContext.Provider value={{ viewMode, setViewMode }}>{children}</PropertyViewModeContext.Provider>;

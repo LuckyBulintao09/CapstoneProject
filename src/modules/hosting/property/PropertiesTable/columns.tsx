@@ -10,7 +10,7 @@ import { useMediaQuery } from "@/hooks/use-media-query";
 
 import { PropertyViewModeContext } from "@/modules/hosting/property/PropertyViewModeProvider";
 
-import { ChevronRight, MoreHorizontal } from "lucide-react";
+import { ChevronRight, Eye, MoreHorizontal } from "lucide-react";
 
 import { Button, buttonVariants } from "@/components/ui/button";
 import {
@@ -43,21 +43,28 @@ import { getAllUnitUnderProperty } from "@/actions/unit/getAllUnitUnderProperty"
 import Image from "next/image";
 import { cn } from "@/lib/utils";
 import { DataTableColumnHeader } from "./data-table-column-header";
+import { parseISO, isWithinInterval, format } from "date-fns";
 
 export const columns: ColumnDef<any>[] = [
     {
         accessorKey: "property",
         accessorFn: (row) => `${row.title}`,
-        header: ({ column }) => (
-            <DataTableColumnHeader column={column} title="Property" />
-        ),
+        header: ({ column }) => <DataTableColumnHeader column={column} title="Property" />,
         cell: ({ row }) => {
             const property_name = row.original.title;
             const thumbnail = row.original.property_image;
             const address = row.getValue<string>("address");
-            const propertyId = row.getValue<string>("id");
+            const propertyId = row.getValue<string>("property_id");
+            const status = row.getValue<string>("isApproved");
 
             const { viewMode } = React.useContext(PropertyViewModeContext);
+
+            const status_classnames = {
+                rejected: "bg-destructive",
+                missing: "bg-orange-500",
+                approved: "bg-success",
+                pending: "bg-warning",
+            };
 
             if (viewMode === "table") {
                 return (
@@ -70,6 +77,7 @@ export const columns: ColumnDef<any>[] = [
                                     width={64}
                                     height={64}
                                     className="rounded-xl h-[64px] w-[64px] min-h-[64px] min-w-[64px] object-cover overflow-clip"
+                                    loading="lazy"
                                 />
                             ) : (
                                 <Image
@@ -78,15 +86,23 @@ export const columns: ColumnDef<any>[] = [
                                     width={64}
                                     height={64}
                                     className="rounded-xl h-[64px] w-[64px] min-h-[64px] min-w-[64px] object-cover overflow-clip"
+                                    loading="lazy"
                                 />
                             )}
+                            <div className={cn("absolute top-0 left-0 z-[3] h-3 w-3 mt-1 ml-1 rounded-full airBnbTablet:hidden", status_classnames[status])}></div>
                         </div>
                         <span className="ml-7">{property_name}</span>
                     </div>
                 );
             }
             return (
-                <div className="flex flex-col">
+                <div className="flex flex-col relative">
+                    <Link
+                        href={`/hosting/properties/${propertyId}/details/photos`}
+                        className={cn(
+                            "left-0 right-0 p-0 m-0 absolute bg-transparent top-0 bottom-0 z-[2] outline-none"
+                        )}
+                    ></Link>
                     <div className="relative">
                         {thumbnail && thumbnail[0] ? (
                             <Image
@@ -95,6 +111,7 @@ export const columns: ColumnDef<any>[] = [
                                 width={1524}
                                 height={2032}
                                 className="rounded-xl object-cover overflow-clip aspect-[20/19] mb-3 select-none"
+                                loading="lazy"
                             />
                         ) : (
                             <Image
@@ -103,24 +120,24 @@ export const columns: ColumnDef<any>[] = [
                                 width={1524}
                                 height={2032}
                                 className="rounded-xl object-cover overflow-clip aspect-[20/19] mb-3 select-none"
+                                loading="lazy"
                             />
                         )}
-                        <div className="absolute top-0 right-0 mt-3 mr-3">
-                            <Link
-                                href={`/hosting/properties/${propertyId}/details/photos`}
-                                className={cn(
-                                    buttonVariants({ variant: "default", size: "sm" }),
-                                    "flex items-center justify-center gap-2 rounded-full text-primary-foreground"
-                                )}
+                        <div className="absolute top-0 left-0 mt-4 ml-4">
+                            <Badge
+                                className="flex flex-row items-center px-4 py-2 gap-2 w-max text-sm font-light shadow-md"
+                                variant="secondary"
                             >
-                                Go to property
-                                <ChevronRight className="size-4" />
-                            </Link>
+                                <div className={cn("h-2 w-2 rounded-full", status_classnames[status])}></div>
+                                <span className="font-medium text-[0.875rem] leading-normal tracking-wide grow-0 w-fit">{status.charAt(0).toUpperCase() + status.slice(1)}</span>
+                            </Badge>
                         </div>
                     </div>
                     <div className="flex flex-col text-left ">
                         <span className="text-clip break-all">{property_name}</span>
-                        <span className="text-muted-foreground text-nowrap text-ellipsis overflow-hidden">{address}</span>
+                        <span className="text-muted-foreground text-nowrap text-ellipsis overflow-hidden">
+                            {address}
+                        </span>
                     </div>
                 </div>
             );
@@ -128,9 +145,7 @@ export const columns: ColumnDef<any>[] = [
     },
     {
         accessorKey: "address",
-        header: ({ column }) => (
-            <DataTableColumnHeader column={column} title="Address" />
-        ),
+        header: ({ column }) => <DataTableColumnHeader column={column} title="Address" />,
         cell: ({ row }) => {
             const address = row.getValue<string>("address");
 
@@ -142,122 +157,98 @@ export const columns: ColumnDef<any>[] = [
             return null;
         },
     },
-	{
+    {
+        accessorKey: "due_date",
+        header: ({ column }) => <DataTableColumnHeader column={column} title="Valid until" />,
+        cell: ({ row }) => {
+            const due_date = row.getValue<string>("due_date");
+
+            const { viewMode } = React.useContext(PropertyViewModeContext);
+
+            if (viewMode === "table") {
+                return <span>{due_date ? format(new Date(due_date), 'MMM, dd, yyyy') : 'N/A'}</span>;
+            }
+            return null;
+        },
+        filterFn: (row, id, value) => {
+            const { from, to } = value;
+            const theDate = parseISO(row.getValue(id));
+
+            if ((from || to) && !theDate) {
+                return false;
+            } else if (from && !to) {
+                return theDate.getTime() >= from.getTime();
+            } else if (!from && to) {
+                return theDate.getTime() <= to.getTime();
+            } else if (from && to) {
+                return isWithinInterval(theDate, { start: from, end: to });
+            } else {
+                return true;
+            }
+        },
+    },
+    {
         accessorKey: "isApproved",
-        header: ({ column }) => (
-            <DataTableColumnHeader column={column} title="Status" />
-        ),
+        header: ({ column }) => <DataTableColumnHeader column={column} title="Status" />,
         cell: ({ row }) => {
             const status = row.getValue<string>("isApproved");
 
             const { viewMode } = React.useContext(PropertyViewModeContext);
 
+            const status_classnames = {
+                rejected: "bg-destructive",
+                missing: "bg-orange-500",
+                approved: "bg-success",
+                pending: "bg-warning",
+            };
+
             if (viewMode === "table") {
                 return (
-                    <div className="flex shrink-0 items-center">
-						<div className={cn("mr-2 h-3 w-3 rounded-full", status ? "bg-success" : "bg-destructive")}></div>
-                        <p className="whitespace-nowrap">{status ? "Approved" : "Action required"}</p>
-                    </div>
+                    <Badge
+                        className="flex flex-row shrink-0 items-center px-3 py-1 gap-2 w-max text-sm font-light shadow-md"
+                        variant="outline"
+                    >
+                        <div className={cn("h-3 w-3 rounded-full", status_classnames[status])}></div>
+                        <p className="whitespace-nowrap">{status.charAt(0).toUpperCase() + status.slice(1)}</p>
+                    </Badge>
                 );
             }
             return null;
         },
+        filterFn: (row, id, value) => {
+            return value.includes(row.getValue(id));
+        },
     },
-    // {
-    //     accessorKey: "",
-    //     header: "Units",
-    //     cell: ({ row }) => {
-    //         return (
-    //             <span>{"5"}</span>
-    //         )
-    //     }
-    // },
     {
-        accessorKey: "id",
+        accessorKey: "property_id",
         header: () => {
             return <span className="sr-only">Actions</span>;
         },
         cell: ({ row }) => {
-            const propertyId = row.getValue<string>("id");
+            const propertyId = row.getValue<string>("property_id");
             const { viewMode } = React.useContext(PropertyViewModeContext);
-            const unitId = "123";
 
             if (viewMode === "grid") {
                 return <span className="sr-only">Actions</span>;
             }
 
             return (
-                // <DropdownMenu>
-                //     <DropdownMenuTrigger asChild>
-                //         <Button variant="ghost" className="h-8 w-8 p-0">
-                //             <span className="sr-only">Open menu</span>
-                //             <MoreHorizontal className="h-4 w-4" />
-                //         </Button>
-                //     </DropdownMenuTrigger>
-                //     <DropdownMenuContent align="end">
-                //         <DropdownMenuLabel>Actions</DropdownMenuLabel>
-                //         <DropdownMenuSeparator />
-
-                //         <DropdownMenuItem asChild>
-                //             <Link href={`/hosting/property/edit-property/${propertyId}`}>Edit</Link>
-                //         </DropdownMenuItem>
-                //         <DropdownMenuItem asChild>
-                //             <DeletePropertyAlert trigger={<Button variant="ghost" className="w-full justify-start h-auto relative flex cursor-default select-none items-center rounded-sm px-2 py-1.5 text-sm outline-none transition-colors focus:bg-accent focus:text-accent-foreground data-[disabled]:pointer-events-none data-[disabled]:opacity-50" >Delete</Button>} propertyId={propertyId} />
-                //         </DropdownMenuItem>
-                //     </DropdownMenuContent>
-                // </DropdownMenu>
-                <Link
-                    href={`/hosting/properties/${propertyId}/details/photos`}
-                    className={cn(buttonVariants({ variant: "ghost", size: "sm" }), "flex items-center justify-center gap-2 px-5 rounded-lg")}
-                >
-                    Go to property
+                <>
+                    <Link
+                        href={`/hosting/properties/${propertyId}/details/photos`}
+                        className={cn(
+                            // buttonVariants({ variant: "ghost", size: "sm" }),
+                            // "flex items-center justify-center gap-2 rounded-full px-0 airBnbTablet:px-5"
+                            "left-0 right-0 p-0 m-0 absolute bg-transparent top-0 bottom-0 z-[2] outline-none"
+                        )}
+                    >
+                        {/* <span className="hidden airBnbMobile:block">View property</span>
+                    <Eye className="size-4 airBnbMobile:hidden" /> */}
+                        {/* <ChevronRight className="size-4" /> */}
+                    </Link>
                     <ChevronRight className="size-4" />
-                </Link>
+                </>
             );
         },
     },
 ];
-
-function DeletePropertyAlert({ propertyId, trigger }: { propertyId: string; trigger: React.ReactNode }) {
-    const [open, setOpen] = React.useState(false);
-    return (
-        <Dialog open={open} onOpenChange={setOpen}>
-            <DialogTrigger asChild>{trigger}</DialogTrigger>
-            <DialogContent>
-                <DialogHeader>
-                    <DialogTitle>Are you absolutely sure?</DialogTitle>
-                    <DialogDescription>
-                        This action cannot be undone. This will permanently delete your property and remove the data from our servers.
-                    </DialogDescription>
-                </DialogHeader>
-                <DialogFooter className="inline-flex items-center justify-end gap-2">
-                    <Button
-                        variant="destructive"
-                        size="sm"
-                        onClick={async () => {
-                            toast.promise(removePropertyById(propertyId), {
-                                loading: "Deleting property...",
-                                success: () => {
-                                    setOpen(false);
-                                    return toast.success("Property deleted successfully!");
-                                },
-                                error: (error) => {
-                                    setOpen(false);
-                                    return showErrorToast(error);
-                                },
-                            });
-                            setOpen(false);
-                        }}
-                    >
-                        Yes, I'm sure
-                    </Button>
-                    <DialogClose asChild>
-                        <Button variant="outline" size="sm">
-                            No, nevermind
-                        </Button>
-                    </DialogClose>
-                </DialogFooter>
-            </DialogContent>
-        </Dialog>
-    );
-}
