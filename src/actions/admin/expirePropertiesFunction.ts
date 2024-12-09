@@ -25,7 +25,7 @@ export async function expirePropertiesFunction() {
     const { data: clearedProperties, error: clearError } = await supabase
       .from("property")
       .update({ due_date: null }) // Clear due_date
-      .eq("isApproved", 'pending'); // Only where isApproved is already false
+      .eq("isApproved", 'missing'); // Only where isApproved is already false
 
     if (clearError) {
       console.error("Error clearing due dates:", clearError.message);

@@ -27,7 +27,7 @@ export function ArrivingCard({ data }) {
                 </span>
               </div>
               <div className="text-sm">
-                <strong>{data.account.firstname} {data.account.lastname}</strong>
+                <strong>{data.account ? `${data.account.firstname} ${data.account.lastname}` : data.client_name}</strong>
                 <p>Appointment</p>
               </div>
             </div>

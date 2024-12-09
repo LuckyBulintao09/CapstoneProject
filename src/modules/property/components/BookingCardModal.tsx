@@ -51,7 +51,7 @@ export const BookingCardModal: React.FC<BookingCardProps> = ({
 	unitPrice,
 	accountID,
 	propertyTitle,
-	unitTitle,
+	unitTitle
 }) => {
 	const [date, setDate] = useState<Date | undefined>();
 	const [isCalendarOpen, setIsCalendarOpen] = useState(false);
@@ -353,7 +353,7 @@ export const BookingCardModal: React.FC<BookingCardProps> = ({
 
 					<Button
 						className='w-full mt-2'
-						onClick={handleApproveReservation}
+						onClick={()=> setIsConfirmationModalOpen(true)}
 						disabled={
 							!date || !selectedService || hasReservation || isUnitReserved
 						}

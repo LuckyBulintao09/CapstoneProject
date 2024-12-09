@@ -13,6 +13,17 @@ import { MoreHorizontal } from "lucide-react";
 import RejectionTransactionModal from "./cancellationModal";
 import { toast } from "sonner";
 import { cancel_lessorNotification } from "@/actions/notification/notification";
+import {
+	Dialog,
+	DialogContent,
+	DialogTitle,
+	DialogDescription,
+	DialogHeader,
+  DialogTrigger,
+  DialogFooter,
+  DialogClose
+} from '@/components/ui/dialog';
+import EditTransactionModal from "./EditTransactionModal";
 
 
 const supabase = createClient();
@@ -88,6 +99,20 @@ export const columns = (
     },
   },
   {
+    accessorKey: "contract",
+    header: ({ column }) => (
+      <DataTableColumnHeader column={column} title="End of Contract" />
+    ),
+    cell: ({ row }) => {
+      const date = row.getValue("contract") as string;
+      return (
+        <span className="truncate">
+          {date ? format(parseISO(date), "dd MMMM, yyyy") : "Not yet set"}
+        </span>
+      );
+    },
+  },
+  {
     accessorKey: "transaction_status",
     header: ({ column }) => (
       <DataTableColumnHeader column={column} title="Transaction Status" />
@@ -113,44 +138,73 @@ export const columns = (
   },
   {
     accessorKey: "isPaid",
-    header: ({ column }) => (
-      <DataTableColumnHeader column={column} title="Payment Status" />
-    ),
-    cell: ({ row }) => {
-      const [isPaid, setIsPaid] = React.useState(row.getValue("isPaid") as boolean);
-      
-      const handleClick = async () => {
-        const { data, error } = await supabase
+  header: ({ column }) => (
+    <DataTableColumnHeader column={column} title="Payment Status" />
+  ),
+  cell: ({ row }) => {
+    const [isPaid, setIsPaid] = React.useState(row.getValue("isPaid") as boolean);
+    const [isOpen, setIsOpen] = React.useState(false);
+
+    const handleConfirm = async () => {
+      try {
+        const { error } = await supabase
           .from("transaction")
           .update({ isPaid: !isPaid })
           .eq("id", row.original.id);
+
         if (error) {
           console.error(error);
         } else {
           setIsPaid(!isPaid);
         }
 
-        const { data: unitData, error: unitError } = await supabase
+        const { error: unitError } = await supabase
           .from("unit")
           .update({ isReserved: !isPaid })
           .eq("id", row.original.unit.id);
+
         if (unitError) {
           console.error(unitError);
         }
+      } finally {
+        setIsOpen(false);
+      }
+    };
 
-      };
-
-      return (
-        <span className="cursor-pointer" onClick={handleClick}>
-          {isPaid ? (
-            <CheckCircle2 className="text-white bg-green-800 dark:bg-green-700 mx-8 rounded-full p-0" />
-          ) : (
-            <XCircleIcon className="text-white bg-red-800 dark:bg-red-700 mx-8 rounded-full p-0" />
-          )}
-        </span>
-      );
+    return (
+      <Dialog open={isOpen} onOpenChange={setIsOpen}>
+        <DialogTrigger asChild>
+          <span className="cursor-pointer">
+            {isPaid ? (
+              <CheckCircle2 className="text-white bg-green-800 dark:bg-green-700 mx-8 rounded-full p-0" />
+            ) : (
+              <XCircleIcon className="text-white bg-red-800 dark:bg-red-700 mx-8 rounded-full p-0" />
+            )}
+          </span>
+        </DialogTrigger>
+        <DialogContent>
+          <DialogHeader>
+            <DialogTitle>
+              Payment Confirmation for <b>{row.original.unit.title}</b>
+            </DialogTitle>
+            <DialogDescription>
+              Are you sure you want to {isPaid ? "remove" : "confirm"} payment for this transaction?
+            </DialogDescription>
+          </DialogHeader>
+          <DialogFooter>
+            <Button variant="outline" onClick={() => setIsOpen(false)}>
+              Cancel
+            </Button>
+            <Button onClick={handleConfirm}>
+              Confirm
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
+    );
     },
   },
+  
   {
     accessorKey: "action",
     header: ({ column }) => (
@@ -160,6 +214,7 @@ export const columns = (
       const transactionStatus = row.getValue("transaction_status") as string;
 
       const [isModalOpen, setIsModalOpen] = React.useState(false);
+      const [isEditModalOpen, setIsEditModalOpen] = React.useState(false);
 
       const handleCancel = async (reason: string) => {
         try {
@@ -204,6 +259,9 @@ export const columns = (
                 </DropdownMenuItem>
               </>
             )}
+            <DropdownMenuItem onSelect={() => setIsEditModalOpen(true)}>
+              Edit Transaction
+            </DropdownMenuItem>
             <DropdownMenuItem onSelect={() => setIsModalOpen(true)}>
               Cancel
             </DropdownMenuItem>
@@ -213,6 +271,11 @@ export const columns = (
           isOpen={isModalOpen}
           onClose={() => setIsModalOpen(false)}
           onSubmit={handleCancel}
+        />
+        <EditTransactionModal
+          isOpen={isEditModalOpen}
+          onClose={() => setIsEditModalOpen(false)}
+          id={row.original.id}
         />
         </>
       ) : (

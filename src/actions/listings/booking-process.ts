@@ -91,7 +91,7 @@ export const createReservation = async (
     
     const { error: unitError } = await supabase
       .from("unit")
-      .update({ isReserved: true, current_occupants: updatedOccupants })
+      .update({current_occupants: updatedOccupants })
       .eq("id", unitId);
 
     if (unitError) {

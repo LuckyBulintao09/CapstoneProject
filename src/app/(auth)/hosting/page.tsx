@@ -68,68 +68,74 @@ async function LessorPage() {
 					</div>
 					<div className='w-full shadow mt-4 rounded-lg border p-5 bg-white border-gray-300'>
 						<div className='flex overflow-x-scroll pb-4 lg:pb-0 gap-4'>
-							{requirements?.map((requirement) => {
-								let statusText = '';
-								let alertColor = '';
+							{requirements?.length === 0 ? (
+								<div className='flex-shrink-0 w-full text-center py-4'>
+									<span className='text-lg font-semibold'>No Current Actions Needed</span>
+								</div>
+							) : (
+								requirements.map((requirement) => {
+									let statusText = '';
+									let alertColor = '';
 
-								// Determine the status based on specific fields
-								if (
-									!requirement.business_permit ||
-									!requirement.fire_inspection ||
-									!requirement.location ||
-									!requirement.address
-								) {
-									statusText = 'Confirm important details';
-									alertColor = 'text-destructive'; // Red
-								} else if (
-									!requirement.description ||
-									!requirement.structure ||
-									!requirement.property_image ||
-									!requirement.title
-								) {
-									statusText = 'Incomplete property details';
-									alertColor = 'text-warning'; // Orange
-								} else if (!requirement.isApproved) {
-									statusText = 'Pending Approval';
-									alertColor = 'text-primary'; // Blue
-								} else {
-									statusText = 'All details confirmed';
-									alertColor = 'text-success'; // Optional, for completeness
-								}
+									// Determine the status based on specific fields
+									if (
+										!requirement.business_permit ||
+										!requirement.fire_inspection ||
+										!requirement.location ||
+										!requirement.address
+									) {
+										statusText = 'Confirm important details';
+										alertColor = 'text-destructive'; // Red
+									} else if (
+										!requirement.description ||
+										!requirement.structure ||
+										!requirement.property_image ||
+										!requirement.title
+									) {
+										statusText = 'Incomplete property details';
+										alertColor = 'text-warning'; // Orange
+									} else if (!requirement.isApproved) {
+										statusText = 'Pending Approval';
+										alertColor = 'text-primary'; // Blue
+									} else {
+										statusText = 'All details confirmed';
+										alertColor = 'text-success'; // Optional, for completeness
+									}
 
-								return (
-									<div
-										key={requirement.id}
-										className='flex-shrink-0 w-64 hover:shadow-md hover:bg-gray-50 transition-all duration-300 rounded-md'
-									>
-										<div className='flex flex-col gap-3'>
-											<div className='flex flex-row justify-between items-center px-5 py-3 border rounded-md border-gray-300'>
-												<div className='flex flex-col justify-start text-sm'>
-													<span className='font-[500]'>{statusText}</span>
-													{statusText === 'Confirm important details' && (
-														<span className='text-destructive'>
-															Required to publish
-														</span>
-													)}
-													<span>
-														{requirement.title || 'Untitled Property'}
-													</span>
-													<Link
-														href={`/hosting/properties/${requirement.id}/details/photos`}
-														className={cn(
-															buttonVariants({ variant: 'link', size: 'sm' }),
-															'px-0 py-0 h-fit w-fit block mt-2 underline'
+									return (
+										<div
+											key={requirement.id}
+											className='flex-shrink-0 w-64 hover:shadow-md hover:bg-gray-50 transition-all duration-300 rounded-md'
+										>
+											<div className='flex flex-col gap-3'>
+												<div className='flex flex-row justify-between items-center px-5 py-3 border rounded-md border-gray-300'>
+													<div className='flex flex-col justify-start text-sm'>
+														<span className='font-[500]'>{statusText}</span>
+														{statusText === 'Confirm important details' && (
+															<span className='text-destructive'>
+																Required to publish
+															</span>
 														)}
-													>
-														Go to Property
-													</Link>
+														<span>
+															{requirement.title || 'Untitled Property'}
+														</span>
+														<Link
+															href={`/hosting/properties/${requirement.id}/details/photos`}
+															className={cn(
+																buttonVariants({ variant: 'link', size: 'sm' }),
+																'px-0 py-0 h-fit w-fit block mt-2 underline'
+															)}
+														>
+															Go to Property
+														</Link>
+													</div>
+													<CircleAlert className={`size-8 ${alertColor}`} />
 												</div>
-												<CircleAlert className={`size-8 ${alertColor}`} />
 											</div>
 										</div>
-									</div>
-								);
-							})}
+									);
+								})
+							)}
 						</div>
 					</div>
 				</div>

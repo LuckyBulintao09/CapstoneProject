@@ -27,7 +27,7 @@ const supabase = createClient();
   
     const { data, error } = await supabase
         .from("transaction")
-        .select(`*, account:user_id(firstname, lastname)`)
+        .select(`*,client_name, account:user_id(firstname, lastname)`)
         .lt("appointment_date", endDate.toISOString())
         .in("unit_id", unitIDs)
         .neq("transaction_status", "cancelled")
