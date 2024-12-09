@@ -79,6 +79,11 @@ interface CreateTransactionModalProps {
 				contract: format(new Date(Date.now() + (monthContract * 30 * 24 * 60 * 60 * 1000)), 'yyyy-MM-dd')
 			})
 
+		const { error: unitError } = await supabase
+			.from("unit")
+			.update({ contract: format(new Date(Date.now() + (monthContract * 30 * 24 * 60 * 60 * 1000)), 'yyyy-MM-dd') })
+			.eq("id", unitId);
+
 		if (error) {
 			console.error("Error saving reservation:", error.message);
 			return { success: false, error: error.message };

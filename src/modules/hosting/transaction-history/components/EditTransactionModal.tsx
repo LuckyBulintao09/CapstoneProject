@@ -7,7 +7,7 @@ import { Dialog, DialogContent, DialogTitle, DialogDescription, DialogHeader } f
 import { MinusCircle, PlusCircle } from "lucide-react";
 import { createClient } from "@/utils/supabase/client";
 import { fetchEditDetails } from "@/actions/transaction/fetchDetails";
-import { format } from 'date-fns';
+import { format, set } from 'date-fns';
 import { toast } from "sonner";
 
 interface EditTransactionModalProps {
@@ -21,6 +21,7 @@ const EditTransactionModal = ({ isOpen, onClose, id }: EditTransactionModalProps
   const [unitTitle, setUnitTitle] = useState("");
   const [clientName, setClientName] = useState("");
   const [monthContract, setMonthContract] = useState(0);
+  const [unitId, setUnitId] = useState(null);
 
   useEffect(() => {
     if (isOpen) {
@@ -29,6 +30,7 @@ const EditTransactionModal = ({ isOpen, onClose, id }: EditTransactionModalProps
           const data = await fetchEditDetails(id);
           setPropertyTitle(data?.unit?.property?.title || "");
           setUnitTitle(data?.unit?.title || "");
+          setUnitId(data?.unit_id || null);
 		  if(data.user_id){
 			setClientName(`${data?.account?.firstname || ""} ${data?.account?.lastname || ""}`);
 		  }else{
@@ -55,6 +57,12 @@ const EditTransactionModal = ({ isOpen, onClose, id }: EditTransactionModalProps
 		client_name: clientName
 	  })
 	  .eq("id", id);
+
+  const { error: unitError } = await supabase
+    .from("unit")
+    .update({ contract: format(new Date(Date.now() + (monthContract * 30 * 24 * 60 * 60 * 1000)), 'yyyy-MM-dd') })
+    .eq("id", unitId);
+  
 
 	if (error) {
 	  console.error("Error updating transaction:", error.message);
