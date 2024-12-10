@@ -54,7 +54,7 @@ export const columns: ColumnDef<any>[] = [
             const property_name = row.original.title;
             const thumbnail = row.original.property_image;
             const address = row.getValue<string>("address");
-            const propertyId = row.getValue<string>("property_id");
+            const propertyId = row.getValue<string>("id");
             const status = row.getValue<string>("isApproved");
 
             const { viewMode } = React.useContext(PropertyViewModeContext);
@@ -125,7 +125,7 @@ export const columns: ColumnDef<any>[] = [
                         )}
                         <div className="absolute top-0 left-0 mt-4 ml-4">
                             <Badge
-                                className="flex flex-row items-center px-4 py-2 gap-2 w-max text-sm font-light shadow-md"
+                                className="flex flex-row items-center gap-2 w-max text-sm font-light shadow-md"
                                 variant="secondary"
                             >
                                 <div className={cn("h-2 w-2 rounded-full", status_classnames[status])}></div>
@@ -220,12 +220,12 @@ export const columns: ColumnDef<any>[] = [
         },
     },
     {
-        accessorKey: "property_id",
+        accessorKey: "id",
         header: () => {
             return <span className="sr-only">Actions</span>;
         },
         cell: ({ row }) => {
-            const propertyId = row.getValue<string>("property_id");
+            const propertyId = row.getValue<string>("id");
             const { viewMode } = React.useContext(PropertyViewModeContext);
 
             if (viewMode === "grid") {
