@@ -168,6 +168,36 @@ const Terms = () => {
               outside of any conflicts between tenants and lessors.
             </li>
           </ul>
+
+          <p className="mt-4">
+            <span className="font-bold">10.</span> Data Privacy and File
+            Uploads:
+          </p>
+          <ul className="list-disc ml-8 mt-2">
+            <li>
+              As a lessor, you may be required to upload specific documents,
+              including your business permit and fire inspection certificate, to
+              complete your listing on the UniHomes platform.
+            </li>
+            <li>
+              By uploading these documents, you consent to UniHomes processing
+              and storing these files for the sole purpose of fulfilling the
+              listing requirements and ensuring compliance with applicable
+              regulations.
+            </li>
+          </ul>
+
+          <p className="mt-4">
+            <span className="font-bold">11.</span> User Consent:
+          </p>
+          <ul className="list-disc ml-8 mt-2">
+            <li>
+              By uploading any documents to the UniHomes platform, you
+              explicitly consent to the use of your data for the stated purposes
+              and agree that it will be handled in accordance with our Privacy
+              Policy.
+            </li>
+          </ul>
         </div>
 
         <div className={poppinsNormal.className}>
@@ -300,6 +330,33 @@ const Terms = () => {
             <li>
               If unresolved, the tenant can escalate the issue to UniHomes
               support team for further assistance.
+            </li>
+          </ul>
+
+          <p className="mt-4">
+            <span className="font-bold">9.</span> First Pay, First Reserve:
+          </p>
+          <ul className="list-disc ml-8 mt-2">
+            <li>
+              Reservations are confirmed only when payment is completed in full.
+              The first tenant to complete the payment for a room or property
+              will secure the reservation.
+            </li>
+            <li>
+              Once a property or room is booked and payment is confirmed, it
+              will no longer be available for other tenants. Any subsequent
+              inquiries for the same property or room will be notified that the
+              reservation has already been confirmed.
+            </li>
+            <li>
+              Users who inquire about a property that has already been booked
+              will receive an automatic notification informing them that the
+              property is no longer available and their inquiry is canceled.
+            </li>
+            <li>
+              To avoid losing their preferred room or property, tenants are
+              advised to complete the payment promptly upon confirmation of
+              interest.
             </li>
           </ul>
         </div>
