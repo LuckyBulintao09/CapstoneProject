@@ -246,7 +246,9 @@ export default function Listings() {
     listing.title.toLowerCase().includes(searchGlobalTerm.toLowerCase())
   );
 
-  {/* Pagination */}
+  {
+    /* Pagination */
+  }
   const itemsPerPage = 1;
   const [currentPage, setCurrentPage] = useState(1);
   const startIndex = (currentPage - 1) * itemsPerPage;
@@ -254,7 +256,7 @@ export default function Listings() {
   const paginatedListings = filteredListings.slice(startIndex, endIndex);
   const totalPages = Math.ceil(filteredListings.length / itemsPerPage);
   const shouldShowPagination = filteredListings.length > 0 && totalPages > 1;
-  
+
   const toggleSortOrder = () => {
     setSortOrder((prevOrder) => (prevOrder === "asc" ? "desc" : "asc"));
   };
@@ -730,15 +732,15 @@ export default function Listings() {
               </div>
 
               {/* For Smaller Screens */}
-              <div className="sm:hidden relative">
-                <DropdownMenu>
+              <div className="sm:hidden relative w-full">
+                {/* <DropdownMenu>
                   <DropdownMenuTrigger asChild>
                     <MoreVertical className="w-5 h-5 hover:text-primary" />
                   </DropdownMenuTrigger>
 
-                  <DropdownMenuContent className="w-48 translate-x-[-32px] bg-white dark:bg-secondary border-gray-300 shadow-lg">
-                    {/* Sort by: Price */}
-                    <DropdownMenuItem
+                  <DropdownMenuContent className="w-48 translate-x-[-32px] bg-white dark:bg-secondary border-gray-300 shadow-lg"> */}
+                {/* Sort by: Price */}
+                {/* <DropdownMenuItem
                       onClick={toggleSortOrder}
                       className="flex items-center space-x-2"
                     >
@@ -749,10 +751,10 @@ export default function Listings() {
                           ? "(Low to High)"
                           : "(High to Low)"}
                       </span>
-                    </DropdownMenuItem>
+                    </DropdownMenuItem> */}
 
-                    {/* Check Map */}
-                    <DropdownMenuItem
+                {/* Check Map */}
+                {/* <DropdownMenuItem
                       onClick={() => setIsFilterOpen(true)}
                       className="flex items-center space-x-2"
                     >
@@ -760,7 +762,34 @@ export default function Listings() {
                       <span>Check Map</span>
                     </DropdownMenuItem>
                   </DropdownMenuContent>
-                </DropdownMenu>
+                </DropdownMenu> */}
+                <div className="flex items-center justify-between">
+                  <Button
+                    variant="outline"
+                    className="mb-2 hover:bg-primary hover:text-white dark:hover:bg-border"
+                    onClick={toggleSortOrder}
+                  >
+                    <div className="flex items-center space-x-2">
+                      <ArrowDownUp className="w-4 h-auto" />
+                      <span>
+                        Sort by: Price{" "}
+                        {sortOrder === "asc"
+                          ? "(Low to High)"
+                          : "(High to Low)"}
+                      </span>
+                    </div>
+                  </Button>
+                  <Button
+                    variant="outline"
+                    className="mb-2 hover:bg-primary hover:text-white dark:hover:bg-border"
+                    onClick={() => setIsFilterOpen(true)}
+                  >
+                    <div className="flex items-center space-x-2">
+                      <Map className="w-4 h-auto" />
+                      <span>Check Map</span>
+                    </div>
+                  </Button>
+                </div>
 
                 <FilterModal
                   isOpen={isFilterOpen}
@@ -827,7 +856,7 @@ export default function Listings() {
                 showControls
                 initialPage={currentPage}
                 total={totalPages}
-                onChange={(page) => setCurrentPage(page)} 
+                onChange={(page) => setCurrentPage(page)}
               />
             </div>
           )}
