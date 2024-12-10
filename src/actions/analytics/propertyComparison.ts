@@ -5,7 +5,7 @@ import { subDays } from "date-fns";
 
 const supabase = createClient();
 
-const mapTimePeriodToDays = (period) => {
+const mapTimePeriodToDays = (period: string) => {
   switch (period) {
     case "Last 24 hours":
       return 1;
@@ -19,7 +19,7 @@ const mapTimePeriodToDays = (period) => {
   }
 };
 
-export default async function getPropertyComparison(dateRange: any) {
+export default async function getPropertyComparison(dateRange: string, property: string = "all_properties") {
   try {
     const { data: { user }, error: userError } = await supabase.auth.getUser();
     if (userError) throw new Error(`Error fetching user: ${userError.message}`);
@@ -27,6 +27,7 @@ export default async function getPropertyComparison(dateRange: any) {
 
     const userId = user.id;
 
+   
     const { data: companyData, error: companyError } = await supabase
       .from("company")
       .select("id")
@@ -38,53 +39,51 @@ export default async function getPropertyComparison(dateRange: any) {
 
     const companyId = companyData.id;
 
+   
     const days = mapTimePeriodToDays(dateRange);
     let startDate = null;
 
     if (days > 0) {
-      startDate = subDays(Date.now(), days); 
+      startDate = subDays(Date.now(), days);
     }
 
-    console.log("Start date for property comparison query:", startDate ? new Date(startDate).toISOString() : "All Time (no filtering)");
+    console.log(
+      "Start date for property comparison query:",
+      startDate ? new Date(startDate).toISOString() : "All Time (no filtering)"
+    );
 
+  
     let query = supabase
       .from("transactionAnalytics")
-      .select("property_title, created_at") 
+      .select("property_title, created_at")
       .eq("company_id", companyId)
       .order("created_at", { ascending: true });
 
+  
     if (startDate) {
-      const startDateISOString = new Date(startDate).toISOString();
-      console.log("Applying date filter with startDate:", startDateISOString);
-
-    
-      query = query.gte("created_at", startDateISOString);  
+      query = query.gte("created_at", new Date(startDate).toISOString());
     }
 
+    if (property !== "all_properties") {
+      query = query.eq("property_title", property);
+    }
 
     const { data: propertyData, error: propertyError } = await query;
 
     if (propertyError) throw new Error(`Error fetching property data: ${propertyError.message}`);
 
-
     if (!propertyData || propertyData.length === 0) {
-      console.log("No data found for the given date range.");
-
-      const { data: allData, error: allDataError } = await supabase
-        .from("transactionAnalytics")
-        .select("*")
-        .eq("company_id", companyId);
-
-      console.log("Data without date filter:", allData); 
+      console.log("No data found for the given filters.");
+      return [];
     }
 
+   
     const resultArray = propertyData.map((entry) => ({
-      propertyTitle: entry.property_title,  
-      date: entry.created_at,  
+      propertyTitle: entry.property_title,
+      date: entry.created_at,
     }));
 
     return resultArray;
-
   } catch (error) {
     console.error("Error in getPropertyComparison:", error.message);
     return { success: false, message: error.message, result: [] };

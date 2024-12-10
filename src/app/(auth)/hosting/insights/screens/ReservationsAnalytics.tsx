@@ -179,7 +179,7 @@ const ReservationsAnalytics = () => {
               <CardHeader className="p-1 flex justify-center items-center text-center">
                 <CardTitle className="text-4xl font-bold">
                  
-                  {loading ?  <p className='text-xs pb-4'>Recalculating...</p> : (reservationAnalyticsData?.count || 'no data')}
+                  {loading ?  <p className='text-xs pb-4'>Recalculating...</p> : (reservationAnalyticsData?.count || <p className='text-xs text-gray-500'>no data.</p>)}
 
              
                 </CardTitle>
@@ -190,13 +190,13 @@ const ReservationsAnalytics = () => {
               <p className="p-4 text-xs text-gray-500 dark:text-gray-300">Total Company Page Visits</p>
               <CardHeader className="p-1 flex justify-center items-center text-center">
                 <CardTitle className="text-4xl font-bold">
-                  {loading ? <p className='text-xs pb-4'>Recalculating...</p> : (companyAnalyticsData?.count || 'no data')}
+                  {loading ? <p className='text-xs pb-4'>Recalculating...</p> : (companyAnalyticsData?.count || <p className='text-xs text-gray-500'>no data.</p>)}
                 </CardTitle>
               </CardHeader>
             </Card>
           </div>
           <div className="row-span-2 rounded-lg">
-            <Card className="bg-white dark:bg-secondary rounded-lg border-gray-300 row-span-2 mb-4 xl:mb-0">
+            <Card className="bg-white dark:bg-secondary rounded-lg border-gray-300 row-span-2 mb-4 xl:mb-0 h-full">
               <p className="p-4 text-xs text-gray-500 dark:text-gray-300">On-Site vs Room Reservations</p>
               <CardContent>
                 {loading ? <p className='text-xs pb-4'>Recalculating...</p> : <Bar data={data} />}
@@ -206,10 +206,10 @@ const ReservationsAnalytics = () => {
         </div>
         <div className="col-span-6 rounded-lg">
           <Card className="bg-white dark:bg-secondary rounded-lg border-gray-300 h-[470px] justify-center h-full">
-            <p className="p-4 text-m text-gray-500 dark:text-gray-300">Total Reservations Across All Properties</p>
+            <p className="p-4 text-m text-left dark:text-white">Reservation Comparison Across Properties</p>
 
             <CardContent className='w-full bg-transparent'>
-              {loading ? <p className='text-xs pb-4'>Recalculating...</p> : (isAnalyticsFetched && <ComparisonBetweenProperty dateRange={date} />)}
+             <ComparisonBetweenProperty />
             </CardContent>
           </Card>
         </div>
