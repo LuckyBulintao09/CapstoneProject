@@ -242,10 +242,11 @@ export default function Listings() {
       : b.minimum_price - a.minimum_price;
   });
 
-  const filteredListings = listings.filter((listing) =>
-    listing.title.toLowerCase().includes(searchGlobalTerm.toLowerCase())
-  );
+	const filteredListings = sortedListings.filter((listing) =>
+		listing.title.toLowerCase().includes(searchGlobalTerm.toLowerCase())
+	);
 
+  
   {
     /* Pagination */
   }

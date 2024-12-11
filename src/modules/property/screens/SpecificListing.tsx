@@ -166,6 +166,7 @@ export function SpecificListing({ id }: SpecificListingProps) {
         setProperty(property);
         setPropertyReviews(await fetchPropertyReviews(id));
         setCommonFacilities(await fetchPropertyFacilities(id));
+       
         setPosition({
           lat: (await fetchPropertyLocation(id))[0].latitude,
           lng: (await fetchPropertyLocation(id))[0].longitude,
