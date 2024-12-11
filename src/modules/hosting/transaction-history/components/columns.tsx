@@ -215,6 +215,7 @@ export const columns = (
 
       const [isModalOpen, setIsModalOpen] = React.useState(false);
       const [isEditModalOpen, setIsEditModalOpen] = React.useState(false);
+      const [paidStatus, setPaidStatus] = React.useState(row.getValue("isPaid") as boolean);
 
       const handleCancel = async (reason: string) => {
         try {
@@ -238,7 +239,7 @@ export const columns = (
         }
       };
 
-      return (transactionStatus === "pending" || (transactionStatus === "reserved" && row.getValue("service_option") === "Room Reservation" && !row.getValue("isPaid"))) ? (
+      return (transactionStatus === "pending" || (transactionStatus === "reserved" && row.getValue("service_option") === "Room Reservation")) ? (
         <>
         <DropdownMenu>
           <DropdownMenuTrigger asChild>
@@ -262,9 +263,11 @@ export const columns = (
             <DropdownMenuItem onSelect={() => setIsEditModalOpen(true)}>
               Edit Transaction
             </DropdownMenuItem>
-            <DropdownMenuItem onSelect={() => setIsModalOpen(true)}>
-              Cancel
-            </DropdownMenuItem>
+            {!paidStatus && (
+              <DropdownMenuItem onSelect={() => setIsModalOpen(true)}>
+                Cancel
+              </DropdownMenuItem>
+            )}
           </DropdownMenuContent>
         </DropdownMenu>
         <RejectionTransactionModal

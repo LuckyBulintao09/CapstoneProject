@@ -1,10 +1,12 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
-import { Card } from '@/components/ui/card';
+import { Card, CardContent } from '@/components/ui/card';
 import React, { useEffect, useState } from 'react';
 import {
 	Carousel,
 	CarouselContent,
 	CarouselItem,
+	CarouselNext,
+	CarouselPrevious,
 } from '@/components/ui/carousel';
 import { createClient } from '../../../utils/supabase/client';
 import { Loader } from 'lucide-react';
@@ -88,7 +90,7 @@ const MainPreview: React.FC<MainPreviewProps> = ({
 							<img
 								src={propertyImages[0]}
 								alt='property image'
-								className='rounded-md w-full h-full cursor-pointer transition-all duration-300 ease-in-out transform hover:brightness-75'
+								className='rounded-md w-full h-full'
 								onClick={() => setSelectedImage(propertyImages[0])}
 							/>
 						)
@@ -103,7 +105,7 @@ const MainPreview: React.FC<MainPreviewProps> = ({
 				</Card>
 			</div>
 
-			{selectedImage && (
+			{/* {selectedImage && (
 				<Dialog
 					open={Boolean(selectedImage)}
 					onOpenChange={() => setSelectedImage(null)}
@@ -116,7 +118,7 @@ const MainPreview: React.FC<MainPreviewProps> = ({
 						/>
 					</DialogContent>
 				</Dialog>
-			)}
+			)} */}
 
 			<GalleryModal
 				isOpen={isGalleryModalOpen}
@@ -170,12 +172,36 @@ const MainPreview: React.FC<MainPreviewProps> = ({
 					open={Boolean(selectedImage)}
 					onOpenChange={() => setSelectedImage(null)}
 				>
-					<DialogContent className='p-0 max-w-6xl'>
-						<img
-							src={selectedImage}
-							alt='Selected property'
+					<DialogContent className={`p-0 max-w-6xl ${window.innerWidth < 640 ? 'bg-transparent border-none' : ''}`}>
+						<Carousel
+							plugins={[Autoplay({ delay: 3000, stopOnInteraction: true })]}
 							className='w-full h-auto'
-						/>
+						>
+							<CarouselContent className='flex flex-row gap-4'>
+								{propertyImages.map((url, index) => (
+									<CarouselItem
+										key={index}
+										className={`flex justify-center items-center ${url === selectedImage ? 'selected' : ''}`}
+									>
+										<img
+											src={url}
+											alt={`property image ${index + 1}`}
+											className='rounded-md object-cover max-h-[500px] w-auto cursor-pointer'
+											style={{
+												maxWidth: '90%',
+												height: 'auto',
+											}}
+										/>
+									</CarouselItem>
+								))}
+							</CarouselContent>
+							{window.innerWidth > 640 && (
+								<>
+									<CarouselPrevious className='absolute left-2 top-1/2 transform -translate-y-1/2 text-white' />
+									<CarouselNext className='absolute right-2 top-1/2 transform -translate-y-1/2 text-white' />
+								</>
+							)}
+						</Carousel>
 					</DialogContent>
 				</Dialog>
 			)}

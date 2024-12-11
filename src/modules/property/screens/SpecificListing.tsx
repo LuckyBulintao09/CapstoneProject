@@ -292,7 +292,7 @@ export function SpecificListing({ id }: SpecificListingProps) {
       .load()
       .then(() => {
         console.log("Google Maps API loaded");
-        setIsMapLoaded(true);
+        // setIsMapLoaded(true);
         // handleNearbyFacilities(); // Moved to separate useEffect
       })
       .catch((e) => {
