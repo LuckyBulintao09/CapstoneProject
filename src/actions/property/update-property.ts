@@ -55,7 +55,8 @@ export async function updatePropertyHouseRules(houseRules: any, propertyId: stri
     }
 }
 
-export async function updatePropertyAmenities(propertyId: string, property_amenities: any) {
+export async function updatePropertyAmenities(property_amenities: any, propertyId: string ) {
+    console.log(property_amenities)
 
     const supabase = createClient();
     try {
@@ -116,7 +117,7 @@ export async function updatePropertyType(propertyId: string, values: any) {
         if (error?.code) {
             throw error
         }
-
+        console.log(values.property_amenities, "test")
         await updatePropertyHouseRules(values.house_rules, propertyId);
         await updatePropertyAmenities(values.property_amenities, propertyId);
 
