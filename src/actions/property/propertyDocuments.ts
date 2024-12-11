@@ -2,6 +2,12 @@
 
 import { createClient } from "@/utils/supabase/server";
 
+// UPDATE public.property
+// SET isApproved = 'pending'
+// WHERE business_permit IS NOT NULL
+//   AND fire_inspection IS NOT NULL;
+// run this for updating the business permit and fire inspection permit
+
 export const getBusinessPermit = async (propertyId: string) => {
     const supabase = createClient();
 
@@ -100,7 +106,7 @@ export const getFireInspection = async (propertyId: string) => {
     }
 };
 
-export const addPropertyFireInspection = async (url: string, propertyId: string, userId: any) => {
+export const  addPropertyFireInspection = async (url: string, propertyId: string, userId: any) => {
     const supabase = createClient();
 
     try {
@@ -111,7 +117,6 @@ export const addPropertyFireInspection = async (url: string, propertyId: string,
             const { data: fiData, error: fiRemoveError } = await supabase.storage
                 .from("unihomes image storage")
                 .remove([`property/${userId}/${propertyId}/fire_inspection/${fileName}`]);
-
             if (fiRemoveError) {
                 console.error("Error removing files:", fiRemoveError.message);
                 throw { error: fiRemoveError };
@@ -127,7 +132,7 @@ export const addPropertyFireInspection = async (url: string, propertyId: string,
         if (dbError?.code) {
             return dbError;
         }
-
+        console.log(dbData);
         return { data: { dbData } };
     } catch (error: any) {
         return error;

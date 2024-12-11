@@ -32,7 +32,7 @@ async function PropertyTypePage({params}: {params: {propertyId: string}}) {
 							</Link>
 							<h2 className='m-0 p-0 text-[1em]'>
 								<span className='p-1 px-0 text-[1.5rem] font-normal'>
-									Property Type
+									Property Details
 								</span>
 							</h2>
 						</div>

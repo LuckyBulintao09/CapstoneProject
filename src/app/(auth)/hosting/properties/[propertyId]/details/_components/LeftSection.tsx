@@ -20,6 +20,62 @@ function LeftSection({ property, units, location, propertyId, property_house_rul
     const pathname = usePathname();
     return (
         <>
+            {property?.isApproved === "missing" || property?.isApproved === "rejected" ? (
+                <div>
+                    <div
+                        className={cn(
+                            "border-2 rounded-lg relative p-[22px]",
+                            pathname === `/hosting/properties/${propertyId}/details/documents`
+                                ? "border-primary shadow-xl"
+                                : " border-accent"
+                        )}
+                    >
+                        <div className="flex flex-row items-center gap-2">
+                            <div
+                                className={cn("h-2 w-2 rounded-full", {
+                                    "bg-destructive": property?.isApproved === "rejected",
+                                    "bg-orange-500": property?.isApproved === "missing",
+                                })}
+                            />
+                            <span className="text-[1rem] leading-5 tracking-normal font-[500]">
+                                Complete required steps
+                            </span>
+                        </div>
+                        <Link
+                            href={`/hosting/properties/${propertyId}/details/documents`}
+                            className="left-0 right-0 p-0 m-0 absolute bg-transparent top-0 bottom-0 z-[2] outline-none"
+                        ></Link>
+                        <div>
+                            <div className="pt-2 overflow-clip text-sm tracking-normal leading-5 text-ellipsis font-normal whitespace-pre-line text-muted-foreground">
+                                <div>
+                                    <p className="break-words w-[464px]">
+                                        Finish these final tasks to publish your property and start getting booked.
+                                    </p>
+                                </div>
+                                <ul className="mt-2">
+                                    {property?.isApproved === "missing" && (
+                                        <li className="flex flex-row items-center gap-2">
+                                            <TriangleAlert className="h-4 w-4" />
+                                            <span className="text-[0.875rem] leading-5 tracking-normal font-[400]">
+                                                Add property documents
+                                            </span>
+                                        </li>
+                                    )}
+                                    {property?.isApproved === "rejected" && (
+                                        <li className="flex flex-row items-center gap-2">
+                                            <TriangleAlert className="h-4 w-4" />
+                                            <span className="text-[0.875rem] leading-5 tracking-normal font-[400]">
+                                                {property?.decline_reason}
+                                            </span>
+                                        </li>
+                                    )}
+                                </ul>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            ) : null}
+
             <div>
                 {/* add some onclick effect */}
                 <div
@@ -168,7 +224,7 @@ function LeftSection({ property, units, location, propertyId, property_house_rul
                     )}
                 >
                     <span className="text-[1rem] leading-5 tracking-normal font-[500]">
-                        Property type &amp; Property rules
+                        Property details
                     </span>
                     <Link
                         href={`/hosting/properties/${propertyId}/details/property-type`}
@@ -180,10 +236,36 @@ function LeftSection({ property, units, location, propertyId, property_house_rul
                                 <div>{`${property.structure.charAt(0).toUpperCase()}${property.structure.slice(
                                     1
                                 )}`}</div>
-                                <div className="flex flex-row flex-wrap w-[464px] gap-2">
-                                    <div className="w-[464px] max-h-[200px] overflow-y-auto rounded-md p-2 z-[4]">
+                                <div className="flex flex-row flex-wrap gap-2 shrink-0 w-full max-w-[464px] h-full max-h-[200px]">
+                                    {propertyAmenities?.length > 0 ? (
+                                        propertyAmenities?.map(
+                                            ({
+                                                amenity_id,
+                                                amenity_name,
+                                            }: {
+                                                amenity_id: number;
+                                                amenity_name: string;
+                                            }) => (
+                                                <div
+                                                    className="flex items-center gap-1 shrink-0  "
+                                                    key={amenity_id}
+                                                >
+                                                    <Check className="w-4 h-4 text-success" />
+                                                    <span className="text-xs">{amenity_name}</span>
+                                                </div>
+                                            )
+                                        )
+                                    ) : (
+                                        <div className="flex items-center gap-1">
+                                            <X className="w-4 h-4 text-danger" />
+                                            <span className="text-xs">No amenities</span>
+                                        </div>
+                                    )}
+                                </div>
+                                <div className="flex flex-row flex-wrap w-full max-w-[464px] h-full max-h-[200px] gap-2">
+                                    <div className="w-[464px] max-h-[200px] overflow-y-auto rounded-md z-[4]">
                                         {property_house_rules?.length > 0 ? (
-                                            <ul className="space-y-2">
+                                            <ul className="space-y-1">
                                                 {property_house_rules.map(
                                                     ({ id, rule }: { id: number; rule: string }) => (
                                                         <li className="flex items-center gap-2" key={id}>
@@ -199,30 +281,7 @@ function LeftSection({ property, units, location, propertyId, property_house_rul
                                                 <span className="text-sm">This property has no house rules</span>
                                             </div>
                                         )}
-                                        {propertyAmenities?.length > 0 ? (
-                                            propertyAmenities?.map(
-                                                ({
-                                                    amenity_id,
-                                                    amenity_name,
-                                                }: {
-                                                    amenity_id: number;
-                                                    amenity_name: string;
-                                                }) => (
-                                                    <div
-                                                        className="flex items-center gap-1 shrink-0  "
-                                                        key={amenity_id}
-                                                    >
-                                                        <Check className="w-4 h-4 text-success" />
-                                                        <span className="text-xs">{amenity_name}</span>
-                                                    </div>
-                                                )
-                                            )
-                                        ) : (
-                                            <div className="flex items-center gap-1">
-                                                <X className="w-4 h-4 text-danger" />
-                                                <span className="text-xs">No amenities</span>
-                                            </div>
-                                        )}
+                                        
                                     </div>
                                 </div>
                             </div>

@@ -261,37 +261,41 @@ function PropertyDetailsForm({
 
             await Promise.all(uploadPromises);
 
-            // Business permit file upload
-            const businessPermitObjectName = `property/${userId}/${propertyId}/business_permit/${businessPermitUppy.getFiles()[0].name}`;
-            businessPermitUppy.setFileMeta(businessPermitUppy.getFiles()[0].id, {
-                objectName: businessPermitObjectName,
-            });
+            if (businessPermitUppy.getFiles().length > 0) {
+                // Business permit file upload
+                const businessPermitObjectName = `property/${userId}/${propertyId}/business_permit/${businessPermitUppy.getFiles()[0].name}`;
+                businessPermitUppy.setFileMeta(businessPermitUppy.getFiles()[0].id, {
+                    objectName: businessPermitObjectName,
+                });
 
-            businessPermitUppy.upload().then(async (result) => {
-                if (result.failed.length > 0) {
-                    console.error('Business permit upload failed', result.failed);
-                    throw new Error('Business permit upload failed');
-                }
+                businessPermitUppy.upload().then(async (result) => {
+                    if (result.failed.length > 0) {
+                        console.error("Business permit upload failed", result.failed);
+                        throw new Error("Business permit upload failed");
+                    }
 
-                const BPfileUrl = `${supabaseUrl}/storage/v1/object/public/${bucketName}/${businessPermitObjectName}`;
-                await addPropertyBusinessPermit(BPfileUrl, propertyId, userId);
-            });
+                    const BPfileUrl = `${supabaseUrl}/storage/v1/object/public/${bucketName}/${businessPermitObjectName}`;
+                    await addPropertyBusinessPermit(BPfileUrl, propertyId, userId);
+                });
+            }
 
-            // Fire inspection file upload
-            const fireInspectionObjectName = `property/${userId}/${propertyId}/fire_inspection/${fireInspectionUppy.getFiles()[0].name}`;
-            fireInspectionUppy.setFileMeta(fireInspectionUppy.getFiles()[0].id, {
-                objectName: fireInspectionObjectName,
-            });
+           if (fireInspectionUppy.getFiles().length > 0) {
+               // Fire inspection file upload
+                const fireInspectionObjectName = `property/${userId}/${propertyId}/fire_inspection/${fireInspectionUppy.getFiles()[0].name}`;
+                fireInspectionUppy.setFileMeta(fireInspectionUppy.getFiles()[0].id, {
+                    objectName: fireInspectionObjectName,
+                });
 
-            fireInspectionUppy.upload().then(async (result) => {
-                if (result.failed.length > 0) {
-                    console.error('Fire inspection upload failed', result.failed);
-                    throw new Error('Fire inspection upload failed');
-                }
+                fireInspectionUppy.upload().then(async (result) => {
+                    if (result.failed.length > 0) {
+                        console.error("Fire inspection upload failed", result.failed);
+                        throw new Error("Fire inspection upload failed");
+                    }
 
-                const FIfileUrl = `${supabaseUrl}/storage/v1/object/public/${bucketName}/${fireInspectionObjectName}`;
-                await addPropertyFireInspection(FIfileUrl, propertyId, userId);
-            });
+                    const FIfileUrl = `${supabaseUrl}/storage/v1/object/public/${bucketName}/${fireInspectionObjectName}`;
+                    await addPropertyFireInspection(FIfileUrl, propertyId, userId);
+                });
+           }
 
             toast.promise(updateProperty(propertyId, values, uploadedFiles, companyId, userId), {
                 loading: "Adding property...",
