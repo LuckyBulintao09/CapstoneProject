@@ -5,7 +5,7 @@ import React from "react";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
 
-import { UnitAmenityData, unitAmenitySchema } from "@/lib/schemas/editUnitSchema";
+import { UnitAmenityData, unitAmenitySchema } from "@/lib/schemas/unitSchema";
 
 import { Form, FormControl, FormDescription, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form";
 

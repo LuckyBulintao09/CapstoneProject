@@ -31,7 +31,7 @@ export function DataTableViewOptions<TData>({ table }: DataTableViewOptionsProps
                 <DropdownMenuSeparator />
                 {table
                     .getAllColumns()
-                    .filter((column) => typeof column.accessorFn !== "undefined" && column.getCanHide() && column.id !== "property_id")
+                    .filter((column) => typeof column.accessorFn !== "undefined" && column.getCanHide() && column.id !== "id")
                     .map((column) => {
                         const column_name = column.id
                         const display_name = column_name

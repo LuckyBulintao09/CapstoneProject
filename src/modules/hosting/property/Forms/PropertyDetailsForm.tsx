@@ -19,8 +19,6 @@ import { Tag, TagInput } from "emblor";
 
 import { createPropertySchema, CreatePropertyTypes } from "@/lib/schemas/propertySchema";
 
-import ListingStepButton from "../add-listing/ListingStepButton";
-
 import { Map, MapCameraChangedEvent, MapCameraProps, Marker, useMapsLibrary } from "@vis.gl/react-google-maps";
 
 import { showErrorToast } from "@/lib/handle-error";
@@ -38,9 +36,23 @@ import "@uppy/dashboard/dist/style.min.css";
 import { createClient } from "@/utils/supabase/client";
 import { addPropertyImages } from "@/actions/property/propertyImage";
 import { SelectNative } from "@/components/ui/select-native";
+import MultipleSelector from "@/components/ui/multiple-selector";
+import { ExclamationTriangleIcon } from "@radix-ui/react-icons";
+import { X } from "lucide-react";
 
+function PropertyDetailsForm({
+    propertyId,
+    userId,
+    companyId,
+    amenities,
+}: {
+    propertyId: string;
+    userId: string;
+    companyId: any;
+    amenities: any;
+}) {
+    // console.log(amenities);
 
-function PropertyDetailsForm({ propertyId, userId, companyId }: { propertyId: string, userId: string, companyId: any }) {
     const router = useRouter();
     const [enableMap, setEnableMap] = React.useState(false);
     const [placesAutocomplete, setPlacesAutocomplete] = React.useState<google.maps.places.Autocomplete | null>(null);
@@ -51,21 +63,22 @@ function PropertyDetailsForm({ propertyId, userId, companyId }: { propertyId: st
     const autocompleteRef = React.useRef<HTMLInputElement>(null);
     const places = useMapsLibrary("places");
 
-
     const createPropertyForm = useForm<CreatePropertyTypes>({
         resolver: zodResolver(createPropertySchema),
         defaultValues: {
             title: "",
             address: "",
+            description: "",
+            property_type: "dormitory",
             location: {
                 lat: 16.4023,
                 lng: 120.596,
             },
-            description: "",
             image: [],
             house_rules: [],
-            property_type: "dormitory"
+            property_amenities: [],
         },
+        mode: "onChange",
     });
 
     const onBeforeRequest = async (req: any) => {
@@ -181,35 +194,44 @@ function PropertyDetailsForm({ propertyId, userId, companyId }: { propertyId: st
 
     return (
         <Form {...createPropertyForm}>
-            <form onSubmit={createPropertyForm.handleSubmit(onSubmit)} className="w-full mx-auto max-w-7xl">
-                <div className="grid grid-cols-12 gap-7">
-                    <div className="col-span-6 flex flex-col gap-7">
+            <form onSubmit={createPropertyForm.handleSubmit(onSubmit)} className="w-full mx-auto max-w-7xl px-3">
+                <div className="grid airBnbTablet:grid-cols-16 grid-cols-1 gap-5">
+                    <div className="airBnbTablet:col-span-10 col-span-full flex flex-col gap-5">
                         <FormField
                             control={createPropertyForm.control}
                             name="title"
                             render={({ field }) => (
                                 <FormItem>
                                     <FormLabel htmlFor="title" className="">
-                                        Property title
+                                        Property title <span className="text-destructive text-lg">*</span>
                                     </FormLabel>
                                     <div className="space-y-2">
-                                        <div className="text-muted-foreground text-sm font-medium">
-                                            {createPropertyForm.watch("title", "").length <= 52
-                                                ? `${52 - createPropertyForm.watch("title", "").length} characters remaining`
-                                                : `${createPropertyForm.watch("title", "").length - 52} characters over the limit`}
-                                        </div>
                                         <FormControl>
-                                            <div className="mt-2">
+                                            <div className="relative">
                                                 <Input
                                                     id="title"
                                                     autoCapitalize="none"
                                                     autoCorrect="off"
                                                     // rows={4}
-                                                    className=""
+                                                    className={cn("peer pe-52", {
+                                                        "border-destructive/80 text-destructive focus-visible:border-destructive/80 focus-visible:ring-destructive/20":
+                                                            !!createPropertyForm.formState.errors.title ||
+                                                            createPropertyForm.watch("title", "").length > 52,
+                                                    })}
+                                                    placeholder="Your property title"
                                                     value={field.value}
                                                     onChange={field.onChange}
                                                     {...field}
                                                 />
+                                                <div className="text-muted-foreground text-sm font-medium pointer-events-none absolute inset-y-0 end-0 flex items-center justify-center pe-3 tabular-nums peer-disabled:opacity-50">
+                                                    {createPropertyForm.watch("title", "").length <= 52
+                                                        ? `${
+                                                              52 - createPropertyForm.watch("title", "").length
+                                                          } characters remaining`
+                                                        : `${
+                                                              createPropertyForm.watch("title", "").length - 52
+                                                          } characters over the limit`}
+                                                </div>
                                             </div>
                                         </FormControl>
                                         {createPropertyForm.formState.errors.title ? (
@@ -227,12 +249,22 @@ function PropertyDetailsForm({ propertyId, userId, companyId }: { propertyId: st
                             name="description"
                             render={({ field }) => (
                                 <FormItem>
-                                    <FormLabel>Description</FormLabel>
                                     <div className="space-y-2">
-                                        <div className="text-muted-foreground text-sm font-medium">
-                                            {(createPropertyForm.watch("description", "") || "").length <= 1000
-                                                ? `${1000 - (createPropertyForm.watch("description", "") || "").length} characters remaining`
-                                                : `${(createPropertyForm.watch("description", "") || "").length - 1000} characters over the limit`}
+                                        <div className="flex flex-row items-center justify-between w-full">
+                                            <FormLabel>
+                                                Description <span className="text-destructive text-lg">*</span>
+                                            </FormLabel>
+                                            <div className="text-muted-foreground text-sm font-medium">
+                                                {(createPropertyForm.watch("description", "") || "").length <= 1000
+                                                    ? `${
+                                                          1000 -
+                                                          (createPropertyForm.watch("description", "") || "").length
+                                                      } characters remaining`
+                                                    : `${
+                                                          (createPropertyForm.watch("description", "") || "").length -
+                                                          1000
+                                                      } characters over the limit`}
+                                            </div>
                                         </div>
                                         <FormControl>
                                             <div className="mt-2">
@@ -240,8 +272,11 @@ function PropertyDetailsForm({ propertyId, userId, companyId }: { propertyId: st
                                                     id="description"
                                                     autoCapitalize="none"
                                                     autoCorrect="off"
-                                                    rows={14}
-                                                    className="w-full resize-none"
+                                                    rows={10}
+                                                    className={cn("w-full resize-none", {
+                                                        "border-destructive/80 text-destructive focus-visible:border-destructive/80 focus-visible:ring-destructive/20":
+                                                            createPropertyForm.formState.errors.description,
+                                                    })}
                                                     placeholder="Describe your place"
                                                     value={field.value}
                                                     onChange={field.onChange}
@@ -250,7 +285,7 @@ function PropertyDetailsForm({ propertyId, userId, companyId }: { propertyId: st
                                             </div>
                                         </FormControl>
                                         {createPropertyForm.formState.errors.description ? (
-                                            <FormMessage className="" />
+                                            <FormMessage />
                                         ) : (
                                             <FormDescription>Enter your property description here.</FormDescription>
                                         )}
@@ -258,20 +293,31 @@ function PropertyDetailsForm({ propertyId, userId, companyId }: { propertyId: st
                                 </FormItem>
                             )}
                         />
-                    </div>
 
-                    <div className="col-span-6">
                         <FormField
                             control={createPropertyForm.control}
                             name="address"
                             render={({ field }) => (
                                 <FormItem>
-                                    <FormLabel htmlFor="address">Address</FormLabel>
+                                    <FormLabel htmlFor="address">
+                                        Address <span className="text-destructive text-lg">*</span>
+                                    </FormLabel>
                                     <FormControl>
-                                        <Input {...field} ref={autocompleteRef} />
+                                        <Input
+                                            {...field}
+                                            ref={autocompleteRef}
+                                            id="address"
+                                            className={cn("w-full resize-none", {
+                                                "border-destructive/80 text-destructive focus-visible:border-destructive/80 focus-visible:ring-destructive/20":
+                                                    createPropertyForm.formState.errors.address,
+                                            })}
+                                        />
                                     </FormControl>
-                                    <FormDescription>Enter your address here.</FormDescription>
-                                    <FormMessage />
+                                    {createPropertyForm.formState.errors.address ? (
+                                        <FormMessage className="" />
+                                    ) : (
+                                        <FormDescription>Enter your property address here.</FormDescription>
+                                    )}
                                 </FormItem>
                             )}
                         />
@@ -302,43 +348,175 @@ function PropertyDetailsForm({ propertyId, userId, companyId }: { propertyId: st
                                                         onCheckedChange={setEnableMap}
                                                         aria-label="Toggle switch"
                                                     />
-                                                    <Label htmlFor="pinpoint location switch" className="text-sm font-medium">
+                                                    <Label
+                                                        htmlFor="pinpoint location switch"
+                                                        className="text-sm font-medium"
+                                                    >
                                                         {enableMap ? "On" : "Off"}
                                                     </Label>
                                                 </div>
                                             </div>
                                         </div>
                                     </FormControl>
-                                    <FormDescription>Pinpoint your location here for more accuracy.</FormDescription>
-                                    <FormMessage />
+                                    {createPropertyForm.formState.errors.location ? (
+                                        <FormMessage className="" />
+                                    ) : (
+                                        <FormDescription>
+                                            For more accuracy, you can also pinpoint your property location here.
+                                            Optional
+                                        </FormDescription>
+                                    )}
                                 </FormItem>
                             )}
                         />
+
+                        <FormField
+                            control={createPropertyForm.control}
+                            name="house_rules"
+                            render={({ field }) => (
+                                <FormItem className="flex flex-col items-start">
+                                    <FormLabel className="text-left" htmlFor="house_rules">
+                                        House rules <span className="text-destructive text-lg">*</span>
+                                    </FormLabel>
+                                    <FormControl className="w-full">
+                                        <TagInput
+                                            id="house_rules"
+                                            {...field}
+                                            placeholder="Enter house rules"
+                                            tags={tags}
+                                            setTags={(newTags) => {
+                                                setTags(newTags);
+                                                createPropertyForm.setValue("house_rules", newTags as [Tag, ...Tag[]]);
+                                            }}
+                                            styleClasses={{
+                                                tagList: {
+                                                    container: "gap-1 max-h-[94px] overflow-y-auto rounded-md",
+                                                },
+                                                input: cn(
+                                                    {
+                                                        "border-destructive/80 text-destructive focus-visible:border-destructive/80 focus-visible:ring-destructive/20":
+                                                            createPropertyForm.formState.errors.house_rules,
+                                                    },
+                                                    "rounded-lg transition-shadow placeholder:text-muted-foreground/70 focus-visible:border-ring focus-visible:outline-none focus-visible:ring-[3px] focus-visible:ring-ring/20"
+                                                ),
+                                                tag: {
+                                                    body: "hidden",
+                                                    closeButton: "block",
+                                                },
+                                            }}
+                                            clearAllButton={true}
+                                            setActiveTagIndex={setActiveTagIndex}
+                                            activeTagIndex={activeTagIndex}
+                                            inlineTags={false}
+                                            inputFieldPosition="top"
+                                        />
+                                    </FormControl>
+                                    {/* Error Messages */}
+                                    {createPropertyForm.formState.errors.house_rules?.message && (
+                                        <FormMessage>
+                                            {createPropertyForm.formState.errors.house_rules.message}
+                                        </FormMessage>
+                                    )}
+
+                                    {Array.isArray(createPropertyForm.formState.errors.house_rules) &&
+                                        createPropertyForm.formState.errors.house_rules.map((error, index) => (
+                                            <FormMessage key={index}>
+                                                Rule {index + 1}: {error?.text?.message}
+                                            </FormMessage>
+                                        ))}
+
+                                    {/* Description */}
+                                    {!createPropertyForm.formState.errors.house_rules && (
+                                        <FormDescription>
+                                            Enter house rules here. Type a rule then press enter when you're done. You
+                                            can do this any number of times.
+                                        </FormDescription>
+                                    )}
+                                </FormItem>
+                            )}
+                        />
+                        {/* Render Bulleted List of Tags */}
+                        {tags.length > 0 && (
+                            <div className="w-full border rounded-xl px-3 py-2">
+                                <div className="flex items-center justify-between">
+                                    <span className="text-sm">Preview</span>
+                                    <Button
+                                        onClick={() => {
+                                            setTags([]);
+                                            createPropertyForm.setValue("house_rules", []);
+                                        }}
+                                        size="sm"
+                                        variant="destructive"
+                                        className="text-xs"
+                                    >
+                                        Clear All
+                                    </Button>
+                                </div>
+                                <ul className="list-inside text-sm text-foreground h-[200px] overflow-y-auto max-h-[200px]">
+                                    {tags.map((tag, index) => (
+                                        <li key={tag.id} className="leading-6 flex items-center gap-2">
+                                            <Button
+                                                onClick={() => {
+                                                    const updatedTags = tags.filter((_, i) => i !== index);
+                                                    setTags(updatedTags);
+                                                    createPropertyForm.setValue(
+                                                        "house_rules",
+                                                        updatedTags as [Tag, ...Tag[]] | []
+                                                    );
+                                                }}
+                                                size="sm"
+                                                variant="ghost"
+                                                className="text-xs rounded-full h-8 w-8 p-0"
+                                                aria-label={`Remove rule: ${tag.text}`}
+                                            >
+                                                <X className="w-4 h-4" />
+                                            </Button>
+                                            <div className="flex items-center gap-2">
+                                                <ExclamationTriangleIcon className="w-4 h-4 text-warning" />
+                                                {tag.text}
+                                            </div>
+                                        </li>
+                                    ))}
+                                </ul>
+                            </div>
+                        )}
                     </div>
 
-                    <div className="col-span-6">
+                    <div className="airBnbTablet:col-span-6 col-span-full flex flex-col gap-5">
                         <FormField
                             control={createPropertyForm.control}
                             name="image"
                             render={({ field }) => (
-                                <FormItem className="col-span-12">
-                                    <FormLabel htmlFor="title">Images</FormLabel>
+                                <FormItem className="">
+                                    <FormLabel htmlFor="image">
+                                        Property images <span className="text-destructive text-lg">*</span>
+                                    </FormLabel>
                                     <FormControl>
-                                        <Dashboard uppy={uppy} hideUploadButton className="col-span-3" />
+                                        <Dashboard uppy={uppy} hideUploadButton height={300} id="image" />
                                     </FormControl>
-                                    {createPropertyForm.formState.errors.image ? <FormMessage /> : <FormDescription>Add images.</FormDescription>}
+                                    {createPropertyForm.formState.errors.image ? (
+                                        <FormMessage />
+                                    ) : (
+                                        <FormDescription>Add images.</FormDescription>
+                                    )}
                                 </FormItem>
                             )}
                         />
-                    </div>
-                    <div className="col-span-6 flex flex-col gap-7">
+
                         <FormField
                             control={createPropertyForm.control}
                             name="property_type"
                             render={({ field }) => (
                                 <FormItem className="col-span-7">
-                                    <FormLabel htmlFor="property_type">Property type</FormLabel>
-                                    <div className={cn({ "[&_svg]:text-destructive/80": createPropertyForm.formState.errors.property_type })}>
+                                    <FormLabel htmlFor="property_type">
+                                        Property type <span className="text-destructive text-lg">*</span>
+                                    </FormLabel>
+                                    <div
+                                        className={cn({
+                                            "[&_svg]:text-destructive/80":
+                                                createPropertyForm.formState.errors.property_type,
+                                        })}
+                                    >
                                         <SelectNative
                                             id="property_type"
                                             defaultValue=""
@@ -365,46 +543,60 @@ function PropertyDetailsForm({ propertyId, userId, companyId }: { propertyId: st
                                 </FormItem>
                             )}
                         />
+
                         <FormField
                             control={createPropertyForm.control}
-                            name="house_rules"
+                            name="property_amenities"
                             render={({ field }) => (
-                                <FormItem className="flex flex-col items-start">
-                                    <FormLabel className="text-left" htmlFor="house_rules">
-                                        House rules
-                                    </FormLabel>
-                                    <FormControl className="w-full">
-                                        <TagInput
-                                            id="house_rules"
+                                <FormItem>
+                                    <div>
+                                        <FormLabel htmlFor="outside_view">
+                                            Amenities <span className="text-destructive text-lg">*</span>
+                                        </FormLabel>
+                                    </div>
+                                    <FormControl>
+                                        <MultipleSelector
                                             {...field}
-                                            placeholder="Enter house rules"
-                                            tags={tags}
-                                            setTags={(newTags) => {
-                                                setTags(newTags);
-                                                createPropertyForm.setValue("house_rules", newTags as [Tag, ...Tag[]]);
+                                            defaultOptions={amenities.map(
+                                                ({ id, amenity_name }: { id: string; amenity_name: string }) => ({
+                                                    value: id.toString(),
+                                                    label: amenity_name,
+                                                })
+                                            )}
+                                            placeholder="Select amenities"
+                                            emptyIndicator={<p className="text-center text-sm">No results found</p>}
+                                            onChange={(selectedOptions) => {
+                                                field.onChange(
+                                                    selectedOptions.map((option) => ({
+                                                        value: option.value,
+                                                        label: option.label,
+                                                    }))
+                                                );
                                             }}
-                                            styleClasses={{
-                                                tagList: {
-                                                    container: "gap-1 max-h-[94px] overflow-y-auto rounded-md",
-                                                },
-                                                input: "rounded-lg transition-shadow placeholder:text-muted-foreground/70 focus-visible:border-ring focus-visible:outline-none focus-visible:ring-[3px] focus-visible:ring-ring/20",
-                                                tag: {
-                                                    body: "relative h-7 bg-background border border-input hover:bg-background rounded-md font-medium text-xs ps-2 pe-7",
-                                                    closeButton:
-                                                        "absolute -inset-y-px -end-px p-0 rounded-s-none rounded-e-lg flex size-7 transition-colors outline-0 focus-visible:outline focus-visible:outline-2 focus-visible:outline-ring/70 text-muted-foreground/80 hover:text-foreground",
-                                                },
+                                            creatable
+                                            value={field.value as Option[]}
+                                            onSearch={(searchTerm) => {
+                                                // Add the search logic here (e.g., filtering or API call)
+                                                const filteredAmenities = amenities.filter((amenity) =>
+                                                    amenity.amenity_name
+                                                        .toLowerCase()
+                                                        .includes(searchTerm.toLowerCase())
+                                                );
+                                                return filteredAmenities.map(({ id, amenity_name }) => ({
+                                                    value: id.toString(),
+                                                    label: amenity_name,
+                                                }));
                                             }}
-                                            clearAllButton
-                                            setActiveTagIndex={setActiveTagIndex}
-                                            activeTagIndex={activeTagIndex}
-                                            inlineTags={false}
-                                            inputFieldPosition="top"
+                                            className={cn({
+                                                "border-destructive/80 text-destructive focus-visible:border-destructive/80 focus-visible:ring-destructive/20":
+                                                    createPropertyForm.formState.errors.property_amenities,
+                                            })}
                                         />
                                     </FormControl>
-                                    {createPropertyForm.formState.errors.house_rules ? (
+                                    {createPropertyForm.formState.errors.property_amenities ? (
                                         <FormMessage />
                                     ) : (
-                                        <FormDescription>Enter house rules here. Type a rule then press enter when you're done. You can do this any number of times.</FormDescription>
+                                        <FormDescription>Select an amenity or multiple amenities</FormDescription>
                                     )}
                                 </FormItem>
                             )}
@@ -467,7 +659,7 @@ const ControlledMap = ({ field, disabled, className }: { field: any; disabled?: 
             gestureHandling={disabled ? "none" : "greedy"}
             disableDefaultUI={true}
             zoomControl={!disabled ? true : false}
-            className={cn("w-full h-[400px]", className)}
+            className={cn("w-full h-[200px]", className)}
         >
             <Marker position={cameraProps.center} />
         </Map>
