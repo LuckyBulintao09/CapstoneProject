@@ -237,16 +237,12 @@ export const columns: ColumnDef<any>[] = [
                     <Link
                         href={`/hosting/properties/${propertyId}/details/photos`}
                         className={cn(
-                            // buttonVariants({ variant: "ghost", size: "sm" }),
-                            // "flex items-center justify-center gap-2 rounded-full px-0 airBnbTablet:px-5"
-                            "left-0 right-0 p-0 m-0 absolute bg-transparent top-0 bottom-0 z-[2] outline-none"
+                            buttonVariants({ variant: "ghost" }),
+                            "rounded-full airBnbDesktop:px-11 airBnbMobile:px-3 inline-flex items-center gap-2"
                         )}
                     >
-                        {/* <span className="hidden airBnbMobile:block">View property</span>
-                    <Eye className="size-4 airBnbMobile:hidden" /> */}
-                        {/* <ChevronRight className="size-4" /> */}
+                        <span>Go to property</span> <ChevronRight className="size-4" />
                     </Link>
-                    <ChevronRight className="size-4" />
                 </>
             );
         },

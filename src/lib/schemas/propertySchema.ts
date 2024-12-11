@@ -36,12 +36,33 @@ export const createPropertySchema = z.object({
     image: z
         .array(z.string({ required_error: "Please add at least one image." }))
         .nonempty({ message: "Please add at least one image." }),
+    // business_permit: z
+    //     .array(z.string({ required_error: "Please add at least one image." })),
+    // fire_inspection: z
+    //     .array(z.string({ required_error: "Please add at least one image." })),
 
     property_type: z.string({ required_error: "Please select a property type." })
     .refine(
         (value) => ["dormitory", "condominium", "apartment"].includes(value),
         { message: "Invalid property type. Please select dormitory, condominium, or apartment." }
-    )
+    ),
+    property_amenities: z.array(
+        z.object(
+            {
+                value: z.string().transform((val) => parseInt(val)),
+                label: z
+                    .string({ message: "Please enter a valid amenity." })
+                    .min(1, { message: "Amenity name too short. Minimum of 1 character" })
+                    .max(52, { message: "Amenity name too long. Max of 52 characters." }),
+            },
+            {
+                message: "Amenity object shape is invalid.",
+            }
+        ),
+        {
+            message: "Amenity is not an array.", required_error: "Please enter an amenity."
+        }
+    ).nonempty({message: "Please enter an amenity."}),
     
 });
 

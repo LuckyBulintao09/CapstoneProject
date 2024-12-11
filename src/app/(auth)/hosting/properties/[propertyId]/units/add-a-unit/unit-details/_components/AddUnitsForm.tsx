@@ -533,7 +533,7 @@ function AddUnitsForm({ amenities, unitId, propertyId, userId }: { amenities?: a
                         render={({ field }) => (
                             <FormItem>
                                 <div>
-                                    <FormLabel htmlFor="outside_view">Amenities</FormLabel>
+                                    <FormLabel htmlFor="amenities">Amenities</FormLabel>
                                 </div>
                                 <FormControl>
                                     <MultipleSelector
