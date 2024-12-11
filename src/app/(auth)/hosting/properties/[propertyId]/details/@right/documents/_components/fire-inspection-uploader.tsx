@@ -98,7 +98,7 @@ function FireInstpectionUploder({
 		if (uppy.getFiles().length > 0) {
 			const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL;
 			const bucketName = 'unihomes image storage';
-			const objectName = `property/${userId}/${propertyId}/fire-inspection/${
+			const objectName = `property/${userId}/${propertyId}/fire_inspection/${
 				uppy.getFiles()[0].name
 			}`;
 
@@ -116,7 +116,7 @@ function FireInstpectionUploder({
 
 					const fileUrl = `${supabaseUrl}/storage/v1/object/public/${bucketName}/${objectName}`;
 
-					await addPropertyFireInspection(fileUrl, propertyId);
+					await addPropertyFireInspection(fileUrl, propertyId, userId);
 
 					setIsFileUploadEmpty(true);
 					router.refresh();
@@ -127,6 +127,7 @@ function FireInstpectionUploder({
 				});
 		}
 	};
+	
 	return (
 		<Dialog open={open} onOpenChange={setOpen} modal={true}>
 			<TooltipProvider>
@@ -161,14 +162,14 @@ function FireInstpectionUploder({
 								<li>
 									Allowed file types: .jpg, .jpeg, .png, .pdf, .doc, .docx.
 								</li>
-								<li>Minimum file size of 6 mb.</li>
+								<li>Maximum file size of 6 mb.</li>
 							</ul>
 						</div>
 					</DialogDescription>
 				</DialogHeader>
 
 				<div>
-					<Dashboard uppy={uppy} hideUploadButton />
+					<Dashboard uppy={uppy} hideUploadButton height={320} />
 					<Button
 						className='mt-3'
 						type='button'

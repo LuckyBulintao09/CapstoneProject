@@ -4,9 +4,9 @@ import { CreatePropertyTypes } from "@/lib/schemas/propertySchema";
 import { createClient } from "@/utils/supabase/server"
 import { redirect } from "next/navigation";
 import { addPropertyImages } from "./propertyImage";
-import { rule } from "postcss";
+import { addPropertyBusinessPermit, addPropertyFireInspection } from "./propertyDocuments";
 
-export async function updateProperty(propertyId: string, formValues: CreatePropertyTypes, uploadedFiles: any, companyId: any) {
+export async function updateProperty(propertyId: string, formValues: CreatePropertyTypes, uploadedFiles: any, companyId: any, userId: any) {
     const supabase = createClient();
     try {
         const { data, error } = await supabase.rpc('update_property_details', {
@@ -23,8 +23,8 @@ export async function updateProperty(propertyId: string, formValues: CreatePrope
             throw error
         }
 
-        await addPropertyImages(uploadedFiles, propertyId)
-        await updatePropertyHouseRules(formValues.house_rules, propertyId)
+        await addPropertyImages(uploadedFiles, propertyId);
+        await updatePropertyHouseRules(formValues.house_rules, propertyId);
 
         return data;
     } catch (error: any) {
@@ -47,6 +47,30 @@ export async function updatePropertyHouseRules(houseRules: any, propertyId: stri
 
         if (houseRulesError?.code) {
             throw houseRulesError;
+        }
+
+        return { success: true };
+    } catch (error: any) {
+        throw error;
+    }
+}
+
+export async function updatePropertyAmenities(property_amenities: any, propertyId: string ) {
+    console.log(property_amenities)
+
+    const supabase = createClient();
+    try {
+        await supabase.from("property_amenities").delete().eq("property_id", propertyId);
+
+        const newAmenities = property_amenities.map(({ value }: { value: any }) => ({
+            property_id: propertyId,
+            amenity_id: value,
+        }));
+
+        const { error: amenityError  } = await supabase.from("property_amenities").insert(newAmenities);
+
+        if (amenityError?.code) {
+            throw amenityError
         }
 
         return { success: true };
@@ -93,8 +117,9 @@ export async function updatePropertyType(propertyId: string, values: any) {
         if (error?.code) {
             throw error
         }
-
+        console.log(values.property_amenities, "test")
         await updatePropertyHouseRules(values.house_rules, propertyId);
+        await updatePropertyAmenities(values.property_amenities, propertyId);
 
         // this is the updated data that is sent to supabase bro
         return data;

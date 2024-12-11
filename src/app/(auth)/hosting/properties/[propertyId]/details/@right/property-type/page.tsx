@@ -1,4 +1,4 @@
-import { getPropertyHouseRules, getPropertyType } from "@/actions/property/get-property-by-id";
+import { getPropertyAmenities, getPropertyHouseRules, getPropertyType } from "@/actions/property/get-property-by-id";
 
 import Link from "next/link";
 
@@ -8,10 +8,14 @@ import { cn } from "@/lib/utils";
 
 import { ArrowLeft } from "lucide-react";
 import PropertyTypeForm from "./_components/PropertyTypeForm";
+import { getAllAmenities } from "@/actions/amenety/getAllAmenities";
 
 async function PropertyTypePage({params}: {params: {propertyId: string}}) {
     const { structure } = await getPropertyType(params.propertyId);
 	const property_house_rules = await getPropertyHouseRules(params.propertyId);
+	const property_amenities = await getPropertyAmenities(params.propertyId);
+	const all_amenities = await getAllAmenities();
+
     return (
 			<section className='flex flex-col h-[calc(100vh-68px)] w-full px-6 airBnbDesktop:overflow-x-hidden airBnbDesktop:overflow-y-auto airBnbTablet:px-10 min-[1128px]:px-20 airBnbBigDesktop:px-0'>
 				<header className='airBnbDesktop:mx-auto airBnbDesktop:sticky airBnbDesktop:z-[3] airBnbDesktop:top-0 airBnbDesktop:grow-0 airBnbDesktop:shrink-0 airBnbDesktop:basis-auto airBnbDesktop:pb-5 airBnbDesktop:pt-11 bg-background'>
@@ -40,6 +44,8 @@ async function PropertyTypePage({params}: {params: {propertyId: string}}) {
 							propertyType={structure}
 							propertyId={params.propertyId}
 							propertyHouseRules={property_house_rules}
+							propertyAmenities={property_amenities}
+							allAmenities={all_amenities}
 						/>
 					</div>
 				</div>

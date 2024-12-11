@@ -30,6 +30,7 @@ import { Label } from "@/components/ui/label";
 import Uppy from "@uppy/core";
 import { Dashboard } from "@uppy/react";
 import Tus from "@uppy/tus";
+import FileInput from '@uppy/file-input';
 import "@uppy/core/dist/style.min.css";
 import "@uppy/dashboard/dist/style.min.css";
 
@@ -39,6 +40,7 @@ import { SelectNative } from "@/components/ui/select-native";
 import MultipleSelector from "@/components/ui/multiple-selector";
 import { ExclamationTriangleIcon } from "@radix-ui/react-icons";
 import { X } from "lucide-react";
+import { addPropertyBusinessPermit, addPropertyFireInspection } from "@/actions/property/propertyDocuments";
 
 function PropertyDetailsForm({
     propertyId,
@@ -77,6 +79,8 @@ function PropertyDetailsForm({
             image: [],
             house_rules: [],
             property_amenities: [],
+            business_permit: "",
+            fire_inspection: "",
         },
         mode: "onChange",
     });
@@ -107,6 +111,46 @@ function PropertyDetailsForm({
         })
     );
 
+    const [businessPermitUppy] = React.useState(() =>
+        new Uppy({
+            restrictions: {
+                maxNumberOfFiles: 1,
+                allowedFileTypes: ["image/jpg", "image/jpeg", "image/png", ".pdf", ".doc", ".docx"],
+                maxFileSize: 6 * 1024 * 1024,
+            },
+        }).use(Tus, {
+            endpoint: `${process.env.NEXT_PUBLIC_SUPABASE_URL}/storage/v1/upload/resumable`,
+            onBeforeRequest,
+            retryDelays: [0, 3000, 5000, 10000, 20000],
+            headers: {
+                "x-upsert": "true",
+            },
+            allowedMetaFields: ["bucketName", "objectName", "contentType", "cacheControl"],
+            removeFingerprintOnSuccess: true,
+            chunkSize: 6 * 1024 * 1024,
+        })
+    );
+
+    const [fireInspectionUppy] = React.useState(() =>
+        new Uppy({
+            restrictions: {
+                maxNumberOfFiles: 1,
+                allowedFileTypes: ["image/jpg", "image/jpeg", "image/png", ".pdf", ".doc", ".docx"],
+                maxFileSize: 6 * 1024 * 1024,
+            },
+        }).use(Tus, {
+            endpoint: `${process.env.NEXT_PUBLIC_SUPABASE_URL}/storage/v1/upload/resumable`,
+            onBeforeRequest,
+            retryDelays: [0, 3000, 5000, 10000, 20000],
+            headers: {
+                "x-upsert": "true",
+            },
+            allowedMetaFields: ["bucketName", "objectName", "contentType", "cacheControl"],
+            removeFingerprintOnSuccess: true,
+            chunkSize: 6 * 1024 * 1024,
+        })
+    );
+
     uppy.on("file-added", (file) => {
         file.meta = {
             ...file.meta,
@@ -114,13 +158,51 @@ function PropertyDetailsForm({
             contentType: file.type,
             cacheControl: 3600,
         };
-        createPropertyForm.setValue("image", [...createPropertyForm.getValues("image"), file.name]);
+
+        const currentImages = createPropertyForm.getValues("image");
+
+        if (!currentImages.includes(file.name)) {
+            createPropertyForm.setValue("image", [...currentImages, file.name]);
+        }
+
+        console.log(createPropertyForm.getValues("image"))
     });
 
     uppy.on("file-removed", (file) => {
         const currentImages = createPropertyForm.getValues("image");
         const updatedImages = currentImages.filter((imageName) => imageName !== file.name);
         createPropertyForm.setValue("image", updatedImages);
+        console.log(createPropertyForm.getValues("image"))
+    });
+
+    businessPermitUppy.on("file-added", (file) => {
+        file.meta = {
+            ...file.meta,
+            bucketName: "unihomes image storage",
+            contentType: file.type,
+            cacheControl: 3600,
+        };
+
+        createPropertyForm.setValue("business_permit", file.name);
+    });
+
+    businessPermitUppy.on("file-removed", () => {
+        createPropertyForm.setValue("business_permit", "");
+    });
+
+    fireInspectionUppy.on("file-added", (file) => {
+        file.meta = {
+            ...file.meta,
+            bucketName: "unihomes image storage",
+            contentType: file.type,
+            cacheControl: 3600,
+        };
+
+        createPropertyForm.setValue("fire_inspection", file.name);
+    });
+
+    fireInspectionUppy.on("file-removed", () => {
+        createPropertyForm.setValue("fire_inspection", "");
     });
 
     React.useEffect(() => {
@@ -165,25 +247,57 @@ function PropertyDetailsForm({
 
             const uploadedFiles: string[] = [];
 
-            const uploadFiles = uppy.getFiles().map(async (file, index) => {
+            const uploadPromises = uppy.getFiles().map(async (file) => {
                 const objectName = `property/${userId}/${propertyId}/property_image/${file.name}`;
                 const fileUrl = `${supabaseUrl}/storage/v1/object/public/${bucketName}/${objectName}`;
                 uppy.setFileMeta(file.id, {
                     objectName,
                 });
-
-                uploadedFiles.push(fileUrl);
-
+    
                 await uppy.upload();
+    
+                uploadedFiles.push(fileUrl);
             });
 
-            await Promise.all(uploadedFiles);
+            await Promise.all(uploadPromises);
 
-            toast.promise(updateProperty(propertyId, values, uploadedFiles, companyId), {
+            // Business permit file upload
+            const businessPermitObjectName = `property/${userId}/${propertyId}/business_permit/${businessPermitUppy.getFiles()[0].name}`;
+            businessPermitUppy.setFileMeta(businessPermitUppy.getFiles()[0].id, {
+                objectName: businessPermitObjectName,
+            });
+
+            businessPermitUppy.upload().then(async (result) => {
+                if (result.failed.length > 0) {
+                    console.error('Business permit upload failed', result.failed);
+                    throw new Error('Business permit upload failed');
+                }
+
+                const BPfileUrl = `${supabaseUrl}/storage/v1/object/public/${bucketName}/${businessPermitObjectName}`;
+                await addPropertyBusinessPermit(BPfileUrl, propertyId, userId);
+            });
+
+            // Fire inspection file upload
+            const fireInspectionObjectName = `property/${userId}/${propertyId}/fire_inspection/${fireInspectionUppy.getFiles()[0].name}`;
+            fireInspectionUppy.setFileMeta(fireInspectionUppy.getFiles()[0].id, {
+                objectName: fireInspectionObjectName,
+            });
+
+            fireInspectionUppy.upload().then(async (result) => {
+                if (result.failed.length > 0) {
+                    console.error('Fire inspection upload failed', result.failed);
+                    throw new Error('Fire inspection upload failed');
+                }
+
+                const FIfileUrl = `${supabaseUrl}/storage/v1/object/public/${bucketName}/${fireInspectionObjectName}`;
+                await addPropertyFireInspection(FIfileUrl, propertyId, userId);
+            });
+
+            toast.promise(updateProperty(propertyId, values, uploadedFiles, companyId, userId), {
                 loading: "Adding property...",
                 success: () => {
-                    router.push(`/hosting/properties`);
-                    return toast.success("Property added successfully!");
+                    router.replace(`/hosting/properties`);
+                    return "Property added successfully!";
                 },
                 error: (error) => {
                     return showErrorToast(error);
@@ -191,6 +305,7 @@ function PropertyDetailsForm({
             });
         }
     }
+
 
     return (
         <Form {...createPropertyForm}>
@@ -249,25 +364,12 @@ function PropertyDetailsForm({
                             name="description"
                             render={({ field }) => (
                                 <FormItem>
+                                    <FormLabel>
+                                        Description <span className="text-destructive text-lg">*</span>
+                                    </FormLabel>
                                     <div className="space-y-2">
-                                        <div className="flex flex-row items-center justify-between w-full">
-                                            <FormLabel>
-                                                Description <span className="text-destructive text-lg">*</span>
-                                            </FormLabel>
-                                            <div className="text-muted-foreground text-sm font-medium">
-                                                {(createPropertyForm.watch("description", "") || "").length <= 1000
-                                                    ? `${
-                                                          1000 -
-                                                          (createPropertyForm.watch("description", "") || "").length
-                                                      } characters remaining`
-                                                    : `${
-                                                          (createPropertyForm.watch("description", "") || "").length -
-                                                          1000
-                                                      } characters over the limit`}
-                                            </div>
-                                        </div>
                                         <FormControl>
-                                            <div className="mt-2">
+                                            <div className="flex flex-col items-center w-full">
                                                 <Textarea
                                                     id="description"
                                                     autoCapitalize="none"
@@ -282,6 +384,17 @@ function PropertyDetailsForm({
                                                     onChange={field.onChange}
                                                     {...field}
                                                 />
+                                                <div className="inline-flex justify-end w-full mt-1 text-muted-foreground text-sm font-medium">
+                                                    {(createPropertyForm.watch("description", "") || "").length <= 1000
+                                                        ? `${
+                                                              1000 -
+                                                              (createPropertyForm.watch("description", "") || "").length
+                                                          } characters remaining`
+                                                        : `${
+                                                              (createPropertyForm.watch("description", "") || "")
+                                                                  .length - 1000
+                                                          } characters over the limit`}
+                                                </div>
                                             </div>
                                         </FormControl>
                                         {createPropertyForm.formState.errors.description ? (
@@ -550,7 +663,7 @@ function PropertyDetailsForm({
                             render={({ field }) => (
                                 <FormItem>
                                     <div>
-                                        <FormLabel htmlFor="outside_view">
+                                        <FormLabel htmlFor="property_amenities">
                                             Amenities <span className="text-destructive text-lg">*</span>
                                         </FormLabel>
                                     </div>
@@ -601,6 +714,62 @@ function PropertyDetailsForm({
                                 </FormItem>
                             )}
                         />
+
+                        <div className="border border-warning rounded-md px-3 py-2 flex flex-col gap-5">
+                            <div>
+                                {" "}
+                                <Label>Documents</Label>
+                                <p className="text-sm text-foreground">
+                                    These files necessary for your property to be listed on the platform. You may add
+                                    them later on when you go to the property after creation.
+                                </p>
+                            </div>
+                            <FormField
+                                control={createPropertyForm.control}
+                                name="business_permit"
+                                render={({ field }) => (
+                                    <FormItem className="">
+                                        <FormLabel htmlFor="fire_inspection">Business permit</FormLabel>
+                                        <FormControl>
+                                            <Dashboard
+                                                uppy={businessPermitUppy}
+                                                hideUploadButton
+                                                height={150}
+                                                id="business_permit"
+                                            />
+                                        </FormControl>
+                                        {createPropertyForm.formState.errors.image ? (
+                                            <FormMessage />
+                                        ) : (
+                                            <FormDescription>Add business permit.</FormDescription>
+                                        )}
+                                    </FormItem>
+                                )}
+                            />
+
+                            <FormField
+                                control={createPropertyForm.control}
+                                name="fire_inspection"
+                                render={({ field }) => (
+                                    <FormItem className="">
+                                        <FormLabel htmlFor="fire_inspection">Fire inspection permit</FormLabel>
+                                        <FormControl>
+                                            <Dashboard
+                                                uppy={fireInspectionUppy}
+                                                hideUploadButton
+                                                height={150}
+                                                id="fire_inspection"
+                                            />
+                                        </FormControl>
+                                        {createPropertyForm.formState.errors.image ? (
+                                            <FormMessage />
+                                        ) : (
+                                            <FormDescription>Add file inspection.</FormDescription>
+                                        )}
+                                    </FormItem>
+                                )}
+                            />
+                        </div>
                     </div>
                 </div>
 
@@ -659,7 +828,7 @@ const ControlledMap = ({ field, disabled, className }: { field: any; disabled?: 
             gestureHandling={disabled ? "none" : "greedy"}
             disableDefaultUI={true}
             zoomControl={!disabled ? true : false}
-            className={cn("w-full h-[200px]", className)}
+            className={cn("w-full h-[250px]", className)}
         >
             <Marker position={cameraProps.center} />
         </Map>

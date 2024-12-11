@@ -42,11 +42,11 @@ function NumberOfUnits({ propertyId }: { propertyId: string }) {
                 }}
             >
                 <DialogHeader>
-                    <DialogTitle>How many units do you wish to add for this property?</DialogTitle>
-                    <DialogDescription>This will create an arbitrary amount of units with a minimum of 1 and a maximum of 10.</DialogDescription>
+                    <DialogTitle>How many identical units do you wish to add for this property?</DialogTitle>
+                    <DialogDescription>This will create an arbitrary amount of identical units for this property.</DialogDescription>
                 </DialogHeader>
 
-                <NumberField value={value} onChange={setValue} minValue={1} maxValue={10} autoFocus={false}>
+                <NumberField value={value} onChange={setValue} minValue={1} autoFocus={false}>
                     <div className="space-y-2">
                         <Label className="text-sm font-medium text-foreground">Number of units.</Label>
                         <Group className="relative inline-flex h-9 w-full items-center overflow-hidden whitespace-nowrap rounded-lg border border-input text-sm shadow-sm shadow-black/5 transition-shadow data-[focus-within]:border-ring data-[disabled]:opacity-50 data-[focus-within]:outline-none data-[focus-within]:ring-[3px] data-[focus-within]:ring-ring/20">
