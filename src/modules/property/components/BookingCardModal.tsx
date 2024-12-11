@@ -123,7 +123,8 @@ export const BookingCardModal: React.FC<BookingCardProps> = ({
 			selectedService,
 			date,
 			numGuests,
-			paymentOption
+			paymentOption,
+			unitPrice
 		);
 		if (result.success) {
 			setHasReservation(true);
@@ -360,7 +361,7 @@ export const BookingCardModal: React.FC<BookingCardProps> = ({
 
 					<Button
 						className='w-full mt-2'
-						onClick={()=> setIsConfirmationModalOpen(true)}
+						onClick={()=> handleApproveReservation()}
 						disabled={
 							!date || !selectedService || hasReservation || isUnitReserved
 						}

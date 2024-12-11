@@ -3,6 +3,7 @@ import { format } from "date-fns";
 import { sendMessageAfterReservation } from "../chat/sendMessageAfterReservation";
 import { notifyProprietor } from "../email/notifyProprietor";
 import { addTransactionAnalytics } from "../analytics/addTransactionAnalytics";
+import { initializeBilling } from "./initializeBilling";
 const supabase = createClient();
 
 export const fetchUserData = async () => {
@@ -56,28 +57,38 @@ export const createReservation = async (
   selectedService,
   date,
   guestNumber,
-  paymentOption
+  paymentOption,
+  amount
 ) => {
   const formattedDate = format(date, "yyyy-MM-dd");
   const transactionStatus =
     selectedService === "Room Reservation" ? "reserved" : "pending";
 
-  const { error: transactionError } = await supabase
+  const { data: transactionData, error: transactionError } = await supabase
     .from("transaction")
-    .insert([{
-      user_id: userId,
-      service_option: selectedService,
-      appointment_date: formattedDate,
-      transaction_status: transactionStatus,
-      isPaid: false,
-      unit_id: unitId,
-      guest_number: guestNumber,
-      payment_option: paymentOption,
-    }]);
+    .insert([
+      {
+        user_id: userId,
+        service_option: selectedService,
+        appointment_date: formattedDate,
+        transaction_status: transactionStatus,
+        isPaid: false,
+        unit_id: unitId,
+        guest_number: guestNumber,
+        payment_option: paymentOption,
+      },
+    ])
+    .select("id");
 
   if (transactionError) {
     console.error("Error saving reservation:", transactionError.message);
     return { success: false, error: transactionError.message };
+  }
+
+  const transactionId = transactionData?.[0]?.id;
+  if (!transactionId) {
+    console.error("Failed to retrieve transaction ID");
+    return { success: false, error: "Failed to retrieve transaction ID" };
   }
 
   if (selectedService === "Room Reservation") {
@@ -86,12 +97,12 @@ export const createReservation = async (
       .select("current_occupants")
       .eq("id", unitId)
       .single();
-    
+
     let updatedOccupants = unitOccupants?.current_occupants + guestNumber;
-    
+
     const { error: unitError } = await supabase
       .from("unit")
-      .update({current_occupants: updatedOccupants })
+      .update({ current_occupants: updatedOccupants })
       .eq("id", unitId);
 
     if (unitError) {
@@ -100,12 +111,11 @@ export const createReservation = async (
     }
   }
 
-
   const { data: unitData, error: unitDataError } = await supabase
     .from("unit")
-    .select("property:property_id(company_id, title)") 
+    .select("property:property_id(company_id, title)")
     .eq("id", unitId)
-    .single(); 
+    .single();
 
   if (unitDataError) {
     console.error("Error fetching unit data:", unitDataError.message);
@@ -120,7 +130,7 @@ export const createReservation = async (
   console.log(companyId, selectedService, propertyTitle, formattedDate);
 
   await addTransactionAnalytics(companyId, selectedService, propertyTitle, formattedDate);
-  
+
   await sendMessageAfterReservation(unitId, userId);
 
   const { data: ownerData, error: ownerDataError } = await supabase
@@ -129,6 +139,7 @@ export const createReservation = async (
       property:property_id (
         title,
         company:company_id (
+        company_name,
           owner:owner_id (
             email
           )
@@ -143,11 +154,13 @@ export const createReservation = async (
     return null;
   }
 
-  const email = ownerData.property.company.owner.email;
-  const propertyName = ownerData.property.title;
+  const email = ownerData.property?.company?.owner.email;
+  const propertyName = ownerData.property?.title;
+  const company_name = ownerData.property?.company?.company_name;
   const subject = `New ${selectedService} Reservation`;
   const message = `A new ${selectedService} service has been made for your unit in "${propertyName}".`;
-  
+
+  await initializeBilling(companyId, selectedService, email, amount, propertyTitle, company_name, transactionId);
   await notifyProprietor({ email, subject, message });
 
   return { success: true };
