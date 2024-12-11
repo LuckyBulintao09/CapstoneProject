@@ -114,4 +114,33 @@ export const getPropertyHouseRules = async (propertyId: string) => {
         throw error;
     }
 };
+export const getPropertyAmenities = async (propertyId: string) => {
+    const supabase = createClient();
+    try {
+        
+        const {data, error} = await supabase.from("property_amenities")
+        .select(`
+            amenity_id,
+            property_id,
+            amenity (id, amenity_name)
+        `)
+        .eq("property_id", propertyId);
 
+        if (error?.code) {
+            return error
+        }
+
+        const formattedData = data.map((item: any) => ({
+            amenity_id: item.amenity_id,
+            amenity_name: item.amenity?.amenity_name,
+        }));
+
+        console.log(formattedData)
+        return formattedData;
+
+    } catch (error: any) {
+
+        return error
+
+    }
+};

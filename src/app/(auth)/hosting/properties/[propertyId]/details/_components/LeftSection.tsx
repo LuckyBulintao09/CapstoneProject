@@ -16,7 +16,7 @@ import MapLocation from "../@right/_components/MapLocation";
 import { usePathname } from "next/navigation";
 import DeleteProperty from "./DeleteProperty";
 
-function LeftSection({ property, units, location, propertyId, property_house_rules }: any) {
+function LeftSection({ property, units, location, propertyId, property_house_rules, propertyAmenities }: any) {
     const pathname = usePathname();
     return (
         <>
@@ -25,7 +25,9 @@ function LeftSection({ property, units, location, propertyId, property_house_rul
                 <div
                     className={cn(
                         "border-2 rounded-lg relative p-[22px]",
-                        pathname === `/hosting/properties/${propertyId}/details/photos` ? "border-primary shadow-xl" : " border-accent"
+                        pathname === `/hosting/properties/${propertyId}/details/photos`
+                            ? "border-primary shadow-xl"
+                            : " border-accent"
                     )}
                 >
                     <span className="text-[1rem] leading-5 tracking-normal font-[500]">Photo gallery</span>
@@ -136,7 +138,9 @@ function LeftSection({ property, units, location, propertyId, property_house_rul
                 <div
                     className={cn(
                         "border-2 rounded-lg relative p-[22px]",
-                        pathname === `/hosting/properties/${propertyId}/details/title` ? "border-primary shadow-xl" : " border-accent"
+                        pathname === `/hosting/properties/${propertyId}/details/title`
+                            ? "border-primary shadow-xl"
+                            : " border-accent"
                     )}
                 >
                     <span className="text-[1rem] leading-5 tracking-normal font-[500]">Title</span>
@@ -146,7 +150,9 @@ function LeftSection({ property, units, location, propertyId, property_house_rul
                     ></Link>
                     <div>
                         <div className="pt-2 overflow-clip tracking-normal leading-5 text-ellipsis font-normal whitespace-pre-line text-muted-foreground">
-                            <div className="text-[1.375rem] -tracking-[0.01375rem] font-[500] leading-[1.625rem]">{property?.title}</div>
+                            <div className="text-[1.375rem] -tracking-[0.01375rem] font-[500] leading-[1.625rem]">
+                                {property?.title}
+                            </div>
                         </div>
                     </div>
                 </div>
@@ -156,10 +162,14 @@ function LeftSection({ property, units, location, propertyId, property_house_rul
                 <div
                     className={cn(
                         "border-2 rounded-lg relative p-[22px]",
-                        pathname === `/hosting/properties/${propertyId}/details/property-type` ? "border-primary shadow-xl" : " border-accent"
+                        pathname === `/hosting/properties/${propertyId}/details/property-type`
+                            ? "border-primary shadow-xl"
+                            : " border-accent"
                     )}
                 >
-                    <span className="text-[1rem] leading-5 tracking-normal font-[500]">Property type &amp; Property rules</span>
+                    <span className="text-[1rem] leading-5 tracking-normal font-[500]">
+                        Property type &amp; Property rules
+                    </span>
                     <Link
                         href={`/hosting/properties/${propertyId}/details/property-type`}
                         className="left-0 right-0 p-0 m-0 absolute bg-transparent top-0 bottom-0 z-[2] outline-none"
@@ -167,22 +177,50 @@ function LeftSection({ property, units, location, propertyId, property_house_rul
                     <div>
                         <div className="pt-2 overflow-clip text-[1rem] tracking-normal leading-5 text-ellipsis font-normal whitespace-pre-line text-muted-foreground">
                             <div className="flex flex-col gap-3">
-                                <div>{`${property.structure.charAt(0).toUpperCase()}${property.structure.slice(1)}`}</div>
+                                <div>{`${property.structure.charAt(0).toUpperCase()}${property.structure.slice(
+                                    1
+                                )}`}</div>
                                 <div className="flex flex-row flex-wrap w-[464px] gap-2">
                                     <div className="w-[464px] max-h-[200px] overflow-y-auto rounded-md p-2 z-[4]">
                                         {property_house_rules?.length > 0 ? (
                                             <ul className="space-y-2">
-                                                {property_house_rules.map(({ id, rule }: { id: number; rule: string }) => (
-                                                    <li className="flex items-center gap-2" key={id}>
-                                                        <TriangleAlert className="w-4 h-4 text-warning" />
-                                                        <span className="text-sm">{rule}</span>
-                                                    </li>
-                                                ))}
+                                                {property_house_rules.map(
+                                                    ({ id, rule }: { id: number; rule: string }) => (
+                                                        <li className="flex items-center gap-2" key={id}>
+                                                            <TriangleAlert className="w-4 h-4 text-warning" />
+                                                            <span className="text-sm">{rule}</span>
+                                                        </li>
+                                                    )
+                                                )}
                                             </ul>
                                         ) : (
                                             <div className="flex items-center gap-2">
                                                 <X className="w-4 h-4 text-danger" />
                                                 <span className="text-sm">This property has no house rules</span>
+                                            </div>
+                                        )}
+                                        {propertyAmenities?.length > 0 ? (
+                                            propertyAmenities?.map(
+                                                ({
+                                                    amenity_id,
+                                                    amenity_name,
+                                                }: {
+                                                    amenity_id: number;
+                                                    amenity_name: string;
+                                                }) => (
+                                                    <div
+                                                        className="flex items-center gap-1 shrink-0  "
+                                                        key={amenity_id}
+                                                    >
+                                                        <Check className="w-4 h-4 text-success" />
+                                                        <span className="text-xs">{amenity_name}</span>
+                                                    </div>
+                                                )
+                                            )
+                                        ) : (
+                                            <div className="flex items-center gap-1">
+                                                <X className="w-4 h-4 text-danger" />
+                                                <span className="text-xs">No amenities</span>
                                             </div>
                                         )}
                                     </div>
@@ -197,7 +235,9 @@ function LeftSection({ property, units, location, propertyId, property_house_rul
                 <div
                     className={cn(
                         "border-2 rounded-lg relative p-[22px]",
-                        pathname === `/hosting/properties/${propertyId}/details/description` ? "border-primary shadow-xl" : " border-accent"
+                        pathname === `/hosting/properties/${propertyId}/details/description`
+                            ? "border-primary shadow-xl"
+                            : " border-accent"
                     )}
                 >
                     <span className="text-[1rem] leading-5 tracking-normal font-[500]">Description</span>
@@ -219,7 +259,9 @@ function LeftSection({ property, units, location, propertyId, property_house_rul
                 <div
                     className={cn(
                         "border-2 rounded-lg relative p-[22px]",
-                        pathname === `/hosting/properties/${propertyId}/details/location` ? "border-primary shadow-xl" : " border-accent"
+                        pathname === `/hosting/properties/${propertyId}/details/location`
+                            ? "border-primary shadow-xl"
+                            : " border-accent"
                     )}
                 >
                     <span className="text-[1rem] leading-5 tracking-normal font-[500]">Location</span>
@@ -242,7 +284,9 @@ function LeftSection({ property, units, location, propertyId, property_house_rul
                 <div
                     className={cn(
                         "border-2 rounded-lg relative p-[22px]",
-                        pathname === `/hosting/properties/${propertyId}/details/documents` ? "border-primary shadow-xl" : " border-accent"
+                        pathname === `/hosting/properties/${propertyId}/details/documents`
+                            ? "border-primary shadow-xl"
+                            : " border-accent"
                     )}
                 >
                     <span className="text-[1rem] leading-5 tracking-normal font-[500]">Documents</span>
@@ -281,7 +325,9 @@ function LeftSection({ property, units, location, propertyId, property_house_rul
                 <div
                     className={cn(
                         "border-2 rounded-lg relative p-[22px]",
-                        pathname === `/hosting/properties/${propertyId}/details/units` ? "border-primary shadow-xl" : " border-accent"
+                        pathname === `/hosting/properties/${propertyId}/details/units`
+                            ? "border-primary shadow-xl"
+                            : " border-accent"
                     )}
                 >
                     <span className="text-[1rem] leading-5 tracking-normal font-[500]">Units</span>

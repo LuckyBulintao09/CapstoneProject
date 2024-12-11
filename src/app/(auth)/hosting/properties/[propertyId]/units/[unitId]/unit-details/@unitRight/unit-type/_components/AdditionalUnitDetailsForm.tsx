@@ -10,7 +10,7 @@ import { SelectNative } from "@/components/ui/select-native";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 
-import { UnitTypeData, unitTypeSchema } from "@/lib/schemas/editUnitSchema";
+import { UnitTypeData, unitTypeSchema } from "@/lib/schemas/unitSchema";
 
 import { toast } from "sonner";
 

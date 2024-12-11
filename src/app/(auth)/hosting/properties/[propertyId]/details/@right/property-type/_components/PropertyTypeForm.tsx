@@ -10,15 +10,17 @@ import { SelectNative } from "@/components/ui/select-native";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 
-import { PropertyTypeData, propertyTypeSchema } from "@/lib/schemas/propertySchemaV2";
+import { PropertyTypeData, propertyTypeSchema } from "@/lib/schemas/propertySchema";
 
 import { updatePropertyType } from "@/actions/property/update-property";
 
 import { useRouter } from "next/navigation";
 
 import { Tag, TagInput } from "emblor";
+import MultipleSelector from "@/components/ui/multiple-selector";
+import { cn } from "@/lib/utils";
 
-function PropertyTypeForm({propertyType, propertyId, propertyHouseRules} : {propertyType: any, propertyId: string, propertyHouseRules: any}) {
+function PropertyTypeForm({propertyType, propertyId, propertyHouseRules, propertyAmenities, allAmenities} : {propertyType: any, propertyId: string, propertyHouseRules: any, propertyAmenities: any, allAmenities:any}) {
     const router = useRouter();
     const [isPending, startTransition] = React.useTransition();
     const [tags, setTags] = React.useState<Tag[]>([]);
@@ -31,6 +33,10 @@ function PropertyTypeForm({propertyType, propertyId, propertyHouseRules} : {prop
             house_rules: propertyHouseRules.map(({ id, rule }: { id: number; rule: string }) => ({
                 id: id.toString(),
                 text: rule,
+            })),
+            property_amenities: propertyAmenities.map(({ amenity_id, amenity_name }: { amenity_id: number; amenity_name: string }) => ({
+                value: amenity_id.toString(),
+                label: amenity_name,
             })),
         },
         mode: "onChange",
@@ -63,14 +69,17 @@ function PropertyTypeForm({propertyType, propertyId, propertyHouseRules} : {prop
     
     return (
         <Form {...propertiesTypeForm}>
-            <form onSubmit={propertiesTypeForm.handleSubmit(onSubmit)} className="flex flex-col gap-11">
+            <form onSubmit={propertiesTypeForm.handleSubmit(onSubmit)} className="flex flex-col gap-5">
                 <FormField
                     control={propertiesTypeForm.control}
                     name="property_type"
                     render={({ field }) => (
                         <FormItem>
                             <div className="relative rounded-lg border border-input bg-background shadow-sm shadow-black/5 transition-shadow focus-within:border-ring focus-within:outline-none focus-within:ring-[3px] focus-within:ring-ring/20 has-[select:disabled]:cursor-not-allowed has-[select:disabled]:opacity-50 [&:has(select:is(:disabled))_*]:pointer-events-none">
-                                <label htmlFor="property_type" className="block px-3 pt-2 text-xs font-medium text-foreground">
+                                <label
+                                    htmlFor="property_type"
+                                    className="block px-3 pt-2 text-xs font-medium text-foreground"
+                                >
                                     Select what best describes your property
                                 </label>
                                 <SelectNative
@@ -133,17 +142,78 @@ function PropertyTypeForm({propertyType, propertyId, propertyHouseRules} : {prop
                                 <FormMessage />
                             ) : (
                                 <FormDescription>
-                                    Enter house rules here. Type a rule then press enter when you're done. You can do this any number of times.
+                                    Enter house rules here. Type a rule then press enter when you're done. You can do
+                                    this any number of times.
                                 </FormDescription>
                             )}
                         </FormItem>
                     )}
                 />
+
+                <FormField
+                    control={propertiesTypeForm.control}
+                    name="property_amenities"
+                    render={({ field }) => (
+                        <FormItem>
+                            <div>
+                                <FormLabel htmlFor="property_amenities">
+                                    Amenities <span className="text-destructive text-lg">*</span>
+                                </FormLabel>
+                            </div>
+                            <FormControl>
+                                <MultipleSelector
+                                    {...field}
+                                    defaultOptions={allAmenities.map(
+                                        ({ id, amenity_name }: { id: string; amenity_name: string }) => ({
+                                            value: id.toString(),
+                                            label: amenity_name,
+                                        })
+                                    )}
+                                    placeholder="Select amenities"
+                                    emptyIndicator={<p className="text-center text-sm">No results found</p>}
+                                    onChange={(selectedOptions) => {
+                                        field.onChange(
+                                            selectedOptions.map((option) => ({
+                                                value: option.value,
+                                                label: option.label,
+                                            }))
+                                        );
+                                    }}
+                                    creatable
+                                    value={field.value as Option[]}
+                                    onSearch={(searchTerm) => {
+                                        // Add the search logic here (e.g., filtering or API call)
+                                        const filteredAmenities = allAmenities.filter((amenity) =>
+                                            amenity.amenity_name.toLowerCase().includes(searchTerm.toLowerCase())
+                                        );
+                                        return filteredAmenities.map(({ id, amenity_name }) => ({
+                                            value: id.toString(),
+                                            label: amenity_name,
+                                        }));
+                                    }}
+                                    className={cn({
+                                        "border-destructive/80 text-destructive focus-visible:border-destructive/80 focus-visible:ring-destructive/20":
+                                        propertiesTypeForm.formState.errors.property_amenities,
+                                    })}
+                                />
+                            </FormControl>
+                            {propertiesTypeForm.formState.errors.property_amenities ? (
+                                <FormMessage />
+                            ) : (
+                                <FormDescription>Select an amenity or multiple amenities</FormDescription>
+                            )}
+                        </FormItem>
+                    )}
+                />
+
                 <Button
                     type="submit"
                     className="w-full"
                     disabled={
-                        isPending || propertiesTypeForm.formState.isSubmitting || propertiesTypeForm.formState.errors.property_type !== undefined || propertiesTypeForm.formState.errors.house_rules !== undefined
+                        isPending ||
+                        propertiesTypeForm.formState.isSubmitting ||
+                        propertiesTypeForm.formState.errors.property_type !== undefined ||
+                        propertiesTypeForm.formState.errors.house_rules !== undefined
                     }
                 >
                     {(isPending || propertiesTypeForm.formState.isSubmitting) && (

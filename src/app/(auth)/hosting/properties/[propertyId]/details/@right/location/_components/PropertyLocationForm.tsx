@@ -17,7 +17,7 @@ import { Map, MapCameraChangedEvent, MapCameraProps, Marker, useMapsLibrary } fr
 
 import { cn } from "@/lib/utils";
 
-import { PropertyLocationData, propertyLocationSchema } from "@/lib/schemas/propertySchemaV2";
+import { PropertyLocationData, propertyLocationSchema } from "@/lib/schemas/propertySchema";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { updatePropertyLocation } from "@/actions/property/update-property";

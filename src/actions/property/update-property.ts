@@ -55,6 +55,29 @@ export async function updatePropertyHouseRules(houseRules: any, propertyId: stri
     }
 }
 
+export async function updatePropertyAmenities(propertyId: string, property_amenities: any) {
+
+    const supabase = createClient();
+    try {
+        await supabase.from("property_amenities").delete().eq("property_id", propertyId);
+
+        const newAmenities = property_amenities.map(({ value }: { value: any }) => ({
+            property_id: propertyId,
+            amenity_id: value,
+        }));
+
+        const { error: amenityError  } = await supabase.from("property_amenities").insert(newAmenities);
+
+        if (amenityError?.code) {
+            throw amenityError
+        }
+
+        return { success: true };
+    } catch (error: any) {
+        throw error;
+    }
+}
+
 export async function updatePropertyTitle(propertyId: string, title: string) {
     const supabase = createClient();
     try {
@@ -95,6 +118,7 @@ export async function updatePropertyType(propertyId: string, values: any) {
         }
 
         await updatePropertyHouseRules(values.house_rules, propertyId);
+        await updatePropertyAmenities(values.property_amenities, propertyId);
 
         // this is the updated data that is sent to supabase bro
         return data;

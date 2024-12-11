@@ -1,6 +1,6 @@
-"use server"
+"use server";
 
-import { createClient } from "@/utils/supabase/server"
+import { createClient } from "@/utils/supabase/server";
 
 export const getBusinessPermit = async (propertyId: string) => {
     const supabase = createClient();
@@ -16,31 +16,29 @@ export const getBusinessPermit = async (propertyId: string) => {
     } catch (error: any) {
         return error;
     }
-}
+};
 
 export const addPropertyBusinessPermit = async (url: string, propertyId: string, userId: any) => {
     const supabase = createClient();
 
     try {
-        const { data: list, error: listError } = await supabase.storage.from("unihomes image storage").list(`property/${userId}/${propertyId}/business_permit`);
+        const businessPermitUrl = await getBusinessPermit(propertyId);
 
-        if (listError) {
-            console.error("Error listing files:", listError.message);
-            throw { error: listError };
-        }
+        if (businessPermitUrl?.business_permit) {
+            const fileName = businessPermitUrl?.business_permit.split("/").pop();
+            const { data: bpData, error: bpRemoveError } = await supabase.storage
+                .from("unihomes image storage")
+                .remove([`property/${userId}/${propertyId}/business_permit/${fileName}`]);
 
-        const filesToRemove = list.map((x) => `property/${userId}/${propertyId}/business_permit/${x.name}`);
-
-        const { data: bpData ,error: bpRemoveError } = await supabase.storage.from("unihomes image storage").remove(filesToRemove);
-        
-        if (bpRemoveError) {
-            console.error("Error removing files:", bpRemoveError.message);
-            throw { error: bpRemoveError };
+            if (bpRemoveError) {
+                console.error("Error removing files:", bpRemoveError.message);
+                throw { error: bpRemoveError };
+            }
         }
 
         const { data: dbData, error: businessPermitColError } = await supabase
             .from("property")
-            .update({ business_permit: url})
+            .update({ business_permit: url })
             .eq("id", propertyId)
             .select();
 
@@ -48,7 +46,7 @@ export const addPropertyBusinessPermit = async (url: string, propertyId: string,
             return businessPermitColError;
         }
 
-        return { data: { dbData, bpData } };
+        return { data: { dbData } };
     } catch (error: any) {
         return error;
     }
@@ -58,34 +56,32 @@ export const removeBusinessPermit = async (propertyId: string, imageUrl: string,
     const supabase = createClient();
 
     try {
-        const { data: list, error: listError } = await supabase.storage.from("unihomes image storage").list(`property/${userId}/${propertyId}/business_permit`);
+        const fileName = imageUrl.split("/").pop();
+        const { data: bpData, error: bpRemoveError } = await supabase.storage
+            .from("unihomes image storage")
+            .remove([`property/${userId}/${propertyId}/business_permit/${fileName}`]);
 
-        if (listError) {
-            console.error("Error listing files:", listError.message);
-            throw { error: listError };
-        }
-
-        const filesToRemove = list.map((x) => `property/${userId}/${propertyId}/business_permit/${x.name}`);
-
-        const { data: bpData ,error: bpRemoveError } = await supabase.storage.from("unihomes image storage").remove(filesToRemove);
-        
         if (bpRemoveError) {
             console.error("Error removing files:", bpRemoveError.message);
             throw { error: bpRemoveError };
         }
-        const { data: dbData, error: dbError } = await supabase.from("property").update({ business_permit: null }).eq("id", propertyId).select();
+
+        const { data: dbData, error: dbError } = await supabase
+            .from("property")
+            .update({ business_permit: null })
+            .eq("id", propertyId)
+            .select();
 
         if (dbError) {
-            console.error("Error removing image from database:", dbError);
+            console.error("Error removing file from database:", dbError);
             return { error: dbError };
         }
 
         return { data: { dbData, bpData } };
-
     } catch (error: any) {
         throw error;
     }
-}
+};
 
 // fire inspection
 export const getFireInspection = async (propertyId: string) => {
@@ -102,34 +98,31 @@ export const getFireInspection = async (propertyId: string) => {
     } catch (error: any) {
         return error;
     }
-}
+};
 
 export const addPropertyFireInspection = async (url: string, propertyId: string, userId: any) => {
     const supabase = createClient();
 
     try {
-
         const fireInspectionUrl = await getFireInspection(propertyId);
 
-       if (fireInspectionUrl?.fire_inspection) {
-           const fileName = fireInspectionUrl?.fire_inspection.split("/").pop();
-           const { data: fiData, error: fiRemoveError } = await supabase.storage
-               .from("unihomes image storage")
-               .remove([`property/${userId}/${propertyId}/fire_inspection/${fileName}`]);
-           console.log("success", fiData);
+        if (fireInspectionUrl?.fire_inspection) {
+            const fileName = fireInspectionUrl?.fire_inspection.split("/").pop();
+            const { data: fiData, error: fiRemoveError } = await supabase.storage
+                .from("unihomes image storage")
+                .remove([`property/${userId}/${propertyId}/fire_inspection/${fileName}`]);
 
-           if (fiRemoveError) {
-               console.error("Error removing files:", fiRemoveError.message);
-               throw { error: fiRemoveError };
-           }
-       }
+            if (fiRemoveError) {
+                console.error("Error removing files:", fiRemoveError.message);
+                throw { error: fiRemoveError };
+            }
+        }
 
         const { data: dbData, error: dbError } = await supabase
-                .from("property")
-                .update({ fire_inspection: url })
-                .eq("id", propertyId)
-                .select();
-
+            .from("property")
+            .update({ fire_inspection: url })
+            .eq("id", propertyId)
+            .select();
 
         if (dbError?.code) {
             return dbError;
@@ -149,7 +142,6 @@ export const removeFireInspection = async (propertyId: string, imageUrl: string,
         const { data: fiData, error: fiRemoveError } = await supabase.storage
             .from("unihomes image storage")
             .remove([`property/${userId}/${propertyId}/fire_inspection/${fileName}`]);
-        console.log("success", fiData);
 
         if (fiRemoveError) {
             console.error("Error removing files:", fiRemoveError.message);
@@ -167,8 +159,7 @@ export const removeFireInspection = async (propertyId: string, imageUrl: string,
         }
 
         return { data: { dbData } };
-
     } catch (error: any) {
         throw error;
     }
-}
+};

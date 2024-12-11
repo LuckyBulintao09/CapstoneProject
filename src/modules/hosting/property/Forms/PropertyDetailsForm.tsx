@@ -663,7 +663,7 @@ function PropertyDetailsForm({
                             render={({ field }) => (
                                 <FormItem>
                                     <div>
-                                        <FormLabel htmlFor="outside_view">
+                                        <FormLabel htmlFor="property_amenities">
                                             Amenities <span className="text-destructive text-lg">*</span>
                                         </FormLabel>
                                     </div>
