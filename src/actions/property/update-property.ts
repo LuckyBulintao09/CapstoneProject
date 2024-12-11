@@ -4,9 +4,9 @@ import { CreatePropertyTypes } from "@/lib/schemas/propertySchema";
 import { createClient } from "@/utils/supabase/server"
 import { redirect } from "next/navigation";
 import { addPropertyImages } from "./propertyImage";
-import { rule } from "postcss";
+import { addPropertyBusinessPermit, addPropertyFireInspection } from "./propertyDocuments";
 
-export async function updateProperty(propertyId: string, formValues: CreatePropertyTypes, uploadedFiles: any, companyId: any) {
+export async function updateProperty(propertyId: string, formValues: CreatePropertyTypes, uploadedFiles: any, companyId: any, userId: any) {
     const supabase = createClient();
     try {
         const { data, error } = await supabase.rpc('update_property_details', {
@@ -23,8 +23,8 @@ export async function updateProperty(propertyId: string, formValues: CreatePrope
             throw error
         }
 
-        await addPropertyImages(uploadedFiles, propertyId)
-        await updatePropertyHouseRules(formValues.house_rules, propertyId)
+        await addPropertyImages(uploadedFiles, propertyId);
+        await updatePropertyHouseRules(formValues.house_rules, propertyId);
 
         return data;
     } catch (error: any) {

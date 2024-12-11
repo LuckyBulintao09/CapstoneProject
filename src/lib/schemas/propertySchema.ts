@@ -33,13 +33,15 @@ export const createPropertySchema = z.object({
             message: "House rule is not an array.", required_error: "Please enter a house rule."
         }
     ).nonempty({message: "Please enter a house rule."}),
+
     image: z
         .array(z.string({ required_error: "Please add at least one image." }))
         .nonempty({ message: "Please add at least one image." }),
-    // business_permit: z
-    //     .array(z.string({ required_error: "Please add at least one image." })),
-    // fire_inspection: z
-    //     .array(z.string({ required_error: "Please add at least one image." })),
+        
+    business_permit: z
+        .string().optional(),
+    fire_inspection: z
+        .string().optional(),
 
     property_type: z.string({ required_error: "Please select a property type." })
     .refine(

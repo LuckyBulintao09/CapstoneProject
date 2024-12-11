@@ -18,21 +18,37 @@ export const getBusinessPermit = async (propertyId: string) => {
     }
 }
 
-export const addPropertyBusinessPermit = async (url: string, propertyId: string) => {
+export const addPropertyBusinessPermit = async (url: string, propertyId: string, userId: any) => {
     const supabase = createClient();
 
     try {
-        const { data, error } = await supabase
+        const { data: list, error: listError } = await supabase.storage.from("unihomes image storage").list(`property/${userId}/${propertyId}/business_permit`);
+
+        if (listError) {
+            console.error("Error listing files:", listError.message);
+            throw { error: listError };
+        }
+
+        const filesToRemove = list.map((x) => `property/${userId}/${propertyId}/business_permit/${x.name}`);
+
+        const { data: bpData ,error: bpRemoveError } = await supabase.storage.from("unihomes image storage").remove(filesToRemove);
+        
+        if (bpRemoveError) {
+            console.error("Error removing files:", bpRemoveError.message);
+            throw { error: bpRemoveError };
+        }
+
+        const { data: dbData, error: businessPermitColError } = await supabase
             .from("property")
             .update({ business_permit: url})
             .eq("id", propertyId)
             .select();
 
-        if (error?.code) {
-            return error;
+        if (businessPermitColError?.code) {
+            return businessPermitColError;
         }
 
-        return data;
+        return { data: { dbData, bpData } };
     } catch (error: any) {
         return error;
     }
@@ -42,6 +58,21 @@ export const removeBusinessPermit = async (propertyId: string, imageUrl: string,
     const supabase = createClient();
 
     try {
+        const { data: list, error: listError } = await supabase.storage.from("unihomes image storage").list(`property/${userId}/${propertyId}/business_permit`);
+
+        if (listError) {
+            console.error("Error listing files:", listError.message);
+            throw { error: listError };
+        }
+
+        const filesToRemove = list.map((x) => `property/${userId}/${propertyId}/business_permit/${x.name}`);
+
+        const { data: bpData ,error: bpRemoveError } = await supabase.storage.from("unihomes image storage").remove(filesToRemove);
+        
+        if (bpRemoveError) {
+            console.error("Error removing files:", bpRemoveError.message);
+            throw { error: bpRemoveError };
+        }
         const { data: dbData, error: dbError } = await supabase.from("property").update({ business_permit: null }).eq("id", propertyId).select();
 
         if (dbError) {
@@ -49,38 +80,14 @@ export const removeBusinessPermit = async (propertyId: string, imageUrl: string,
             return { error: dbError };
         }
 
-        const { data: storageData, error: storageError } = await supabase.storage
-            .from('unihomes image storage')
-            .remove([`property/${userId}/${propertyId}/business_permit/${imageUrl.split('/').pop()}`]);
-
-        if (storageError) {
-            console.error("Error removing image from storage bucket:", storageError);
-            return { error: storageError };
-        }
-
-        return { data: { dbData, storageData } };
+        return { data: { dbData, bpData } };
 
     } catch (error: any) {
         throw error;
     }
 }
 
-export const downloadBusinessPermit = async (userId: string, propertyId: string, imageUrl: string) => {
-    const supabase = createClient();
-
-    try {
-        const { data, error } = await supabase.storage.from('unihomes image storage').download(`property/${userId}/${propertyId}/business-permit/${imageUrl.split('/').pop()}`);
-
-        if (error) {
-            throw error;
-        }
-        
-        console.log(data)
-    } catch (error: any) {
-        throw error;
-    }
-}
-
+// fire inspection
 export const getFireInspection = async (propertyId: string) => {
     const supabase = createClient();
 
@@ -90,28 +97,45 @@ export const getFireInspection = async (propertyId: string) => {
         if (error?.code) {
             return error;
         }
-
+        // console.log(data, "fire inspection")
         return data;
     } catch (error: any) {
         return error;
     }
 }
 
-export const addPropertyFireInspection = async (url: string, propertyId: string) => {
+export const addPropertyFireInspection = async (url: string, propertyId: string, userId: any) => {
     const supabase = createClient();
 
     try {
-        const { data, error } = await supabase
-            .from("property")
-            .update({ fire_inspection: url})
-            .eq("id", propertyId)
-            .select();
 
-        if (error?.code) {
-            return error;
+        const fireInspectionUrl = await getFireInspection(propertyId);
+
+       if (fireInspectionUrl?.fire_inspection) {
+           const fileName = fireInspectionUrl?.fire_inspection.split("/").pop();
+           const { data: fiData, error: fiRemoveError } = await supabase.storage
+               .from("unihomes image storage")
+               .remove([`property/${userId}/${propertyId}/fire_inspection/${fileName}`]);
+           console.log("success", fiData);
+
+           if (fiRemoveError) {
+               console.error("Error removing files:", fiRemoveError.message);
+               throw { error: fiRemoveError };
+           }
+       }
+
+        const { data: dbData, error: dbError } = await supabase
+                .from("property")
+                .update({ fire_inspection: url })
+                .eq("id", propertyId)
+                .select();
+
+
+        if (dbError?.code) {
+            return dbError;
         }
 
-        return data;
+        return { data: { dbData } };
     } catch (error: any) {
         return error;
     }
@@ -121,41 +145,35 @@ export const removeFireInspection = async (propertyId: string, imageUrl: string,
     const supabase = createClient();
 
     try {
-        const { data: dbData, error: dbError } = await supabase.from("property").update({ fire_inspection: null }).eq("id", propertyId).select();
+        const { data: list, error: listError } = await supabase.storage.from("unihomes image storage").list(`property/${userId}/${propertyId}/fire_inspection`);
 
-        if (dbError) {
-            console.error("Error removing image from database:", dbError);
-            return { error: dbError };
+        if (listError) {
+            console.error("Error listing files:", listError.message);
+            throw { error: listError };
         }
 
-        const { data: storageData, error: storageError } = await supabase.storage
-            .from('unihomes image storage')
-            .remove([`property/${userId}/${propertyId}/fire_inspection/${imageUrl.split('/').pop()}`]);
+        const filesToRemove = list.map((x) => `property/${userId}/${propertyId}/fire_inspection/${x.name}`);
 
-        if (storageError) {
-            console.error("Error removing image from storage bucket:", storageError);
-            return { error: storageError };
+        const { data: fiData, error: fiRemoveError } = await supabase.storage.from("unihomes image storage").remove(filesToRemove);
+        
+        if (fiRemoveError) {
+            console.error("Error removing files:", fiRemoveError.message);
+            throw { error: fiRemoveError };
         }
 
-        return { data: { dbData, storageData } };
+        const { data: dbData, error: dbError } = await supabase
+            .from("property")
+            .update({ fire_inspection: null })
+            .eq("id", propertyId)
+            .select();
+
+        if (dbError?.code) {
+            return dbError;
+        }
+
+        return { data: { dbData } };
 
     } catch (error: any) {
         throw error;
-    }
-}
-
-export const downloadFireInspection = async (userId: string, propertyId: string, imageUrl: string) => {
-    const supabase = createClient();
-
-    try {
-        const { data, error } = await supabase.storage.from('unihomes image storage').download(`property/${userId}/${propertyId}/fire_inspection/${imageUrl.split('/').pop()}`);
-
-        if (error) {
-            return error;
-        }
-
-        return data;
-    } catch (error: any) {
-        return error;
     }
 }
