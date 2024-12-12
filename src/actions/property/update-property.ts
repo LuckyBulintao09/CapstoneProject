@@ -148,3 +148,20 @@ export async function updatePropertyLocation(propertyId: string, address:string,
     }
     
 }
+
+
+export async function propertyReapplication (propertyId: string) {
+    const supabase = createClient();
+    try {
+        const { data, error } = await supabase.from("property").update({ isApproved: "pending" }).eq("id", propertyId).select();
+        
+        if (error?.code) {
+            throw error
+        }
+
+        return data;
+    } catch (error: any) {
+        throw error
+    }
+    
+}

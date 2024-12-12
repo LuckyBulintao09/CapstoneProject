@@ -151,7 +151,7 @@ function FireInspectionContent({
 								)}
 							</Button>
 						</AlertDialogTrigger>
-						<AlertDialogContent>
+						<AlertDialogContent className='z-[51]'>
 							<AlertDialogHeader>
 								<AlertDialogTitle>
 									Are you absolutely sure you want to delete this file?

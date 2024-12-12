@@ -120,13 +120,6 @@ async function DocumentsPage({ params }: { params: { propertyId: string } }) {
                                 userId={user?.id}
                                 propertyId={params.propertyId}
                             />
-
-                            {/* <div className='col-span-1'>
-									<FireInstpectionUploder
-										propertyId={params.propertyId}
-										userId={user?.id}
-									/>
-								</div> */}
                         </div>
                     </div>
                 </div>

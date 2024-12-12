@@ -2,12 +2,6 @@
 
 import { createClient } from "@/utils/supabase/server";
 
-// UPDATE public.property
-// SET isApproved = 'pending'
-// WHERE business_permit IS NOT NULL
-//   AND fire_inspection IS NOT NULL;
-// run this for updating the business permit and fire inspection permit
-
 export const getBusinessPermit = async (propertyId: string) => {
     const supabase = createClient();
 
@@ -168,3 +162,24 @@ export const removeFireInspection = async (propertyId: string, imageUrl: string,
         throw error;
     }
 };
+
+
+export const checkPropertyDocuments = async (propertyId: string) => {
+    const supabase = createClient();
+
+    try {
+        const { data: status, error: statusError } = await supabase.rpc("check_property_status", { property_id: propertyId });
+
+        if (statusError?.code) {
+            throw statusError;    
+        }
+
+        console.log(status, "check property documents");
+
+        return status;
+
+    } catch (error: any) {
+        throw error;
+    }
+}
+
