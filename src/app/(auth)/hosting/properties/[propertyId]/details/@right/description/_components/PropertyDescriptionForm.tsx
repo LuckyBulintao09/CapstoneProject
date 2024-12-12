@@ -9,7 +9,7 @@ import { SelectNative } from "@/components/ui/select-native";
 
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { PropertyDescriptionData, propertyDescriptionSchema } from "@/lib/schemas/propertySchemaV2";
+import { PropertyDescriptionData, propertyDescriptionSchema } from "@/lib/schemas/propertySchema";
 import { updatePropertyDescription } from "@/actions/property/update-property";
 import { useRouter } from "next/navigation";
 import { X } from "lucide-react";

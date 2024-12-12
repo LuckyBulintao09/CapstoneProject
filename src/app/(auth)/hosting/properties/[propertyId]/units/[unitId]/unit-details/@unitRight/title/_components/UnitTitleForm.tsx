@@ -7,7 +7,7 @@ import { Form, FormControl, FormDescription, FormField, FormItem, FormLabel, For
 
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { UnitTitleData, unitTitleSchema } from "@/lib/schemas/editUnitSchema";
+import { UnitTitleData, unitTitleSchema } from "@/lib/schemas/unitSchema";
 import { toast } from "sonner";
 import { updatePropertyTitle } from "@/actions/property/update-property";
 import { useRouter } from "next/navigation";

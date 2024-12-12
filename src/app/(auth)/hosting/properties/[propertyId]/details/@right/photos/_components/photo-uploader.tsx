@@ -142,9 +142,10 @@ function PhotoUploader({ userId, propertyId, photoBucketFileCount }: { userId: s
                                 <div className="grow space-y-2">
                                     <p className="">Upload your property photos here.</p>
                                     <ul className="list-inside list-disc text-sm text-muted-foreground">
-                                        <li>Up to 5 images allowed.</li>
+                                        <li>Up to 5 images allowed at a time.</li>
+                                        <li>If there are 5 images, the uploaded file will be truncated.</li>
                                         <li>Allowed image types: .jpg, .jpeg, .png.</li>
-                                        <li>Minimum file size of 6 mb per image.</li>
+                                        <li>Maximum file size of 6 mb per image.</li>
                                     </ul>
                                 </div>
                             )}
@@ -153,7 +154,7 @@ function PhotoUploader({ userId, propertyId, photoBucketFileCount }: { userId: s
                 </DialogHeader>
 
                 <div>
-                    <Dashboard uppy={uppy} hideUploadButton className={cn({ hidden: photoBucketFileCount >= 5 })} />
+                    <Dashboard uppy={uppy} hideUploadButton className={cn({ hidden: photoBucketFileCount >= 5 })} height={300} />
                     <Button
                         className="mt-3"
                         type="button"

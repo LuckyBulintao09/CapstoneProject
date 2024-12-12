@@ -13,11 +13,39 @@ import { Check, Eye, TriangleAlert, X } from "lucide-react";
 
 import MapLocation from "../@right/_components/MapLocation";
 
-import { usePathname } from "next/navigation";
+import { usePathname, useRouter } from "next/navigation";
 import DeleteProperty from "./DeleteProperty";
+import { createClient } from "@/utils/supabase/client";
 
 function LeftSection({ property, units, location, propertyId, property_house_rules, propertyAmenities }: any) {
     const pathname = usePathname();
+    const supabase = createClient();
+    const router = useRouter();
+    const lastPayloadRef = React.useRef(null);
+    
+    React.useEffect(() => {
+        const channel = supabase
+            .channel("public-property")
+            .on(
+                "postgres_changes",
+                {
+                    event: "*",
+                    schema: "public",
+                    table: "property",
+                },
+                (payload: any) => {
+                    if (JSON.stringify(lastPayloadRef.current) !== JSON.stringify(payload)) {
+                        lastPayloadRef.current = payload;
+                        router.refresh();
+                    }
+                }
+            )
+            .subscribe();
+            
+        return () => {
+            supabase.removeChannel(channel);
+        };
+    }, [supabase, router]);
     return (
         <>
             {property?.isApproved === "missing" || property?.isApproved === "rejected" ? (
@@ -65,7 +93,7 @@ function LeftSection({ property, units, location, propertyId, property_house_rul
                                         <li className="flex flex-row items-center gap-2">
                                             <TriangleAlert className="h-4 w-4" />
                                             <span className="text-[0.875rem] leading-5 tracking-normal font-[400]">
-                                                {property?.decline_reason}
+                                                {property?.decline_reason || (<span className="z-[3] cursor-text">Property declined, please contact <strong>unihomes2024@gmail.com</strong></span>)}
                                             </span>
                                         </li>
                                     )}

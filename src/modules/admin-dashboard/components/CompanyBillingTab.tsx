@@ -282,8 +282,18 @@ function CompanyBillingTab() {
                       <TableCell>
                         {item.paidAt ? new Date(item.paidAt).toLocaleDateString() : "Not Paid"}
                       </TableCell>
-                      <TableCell className="text-right">${item.amount.toFixed(2)}</TableCell>
-                      <TableCell className="text-right">${item.amountToBeCollected.toFixed(2)}</TableCell>
+                      <TableCell className="text-right truncate">₱{" "}{new Intl.NumberFormat("en-PH", {
+                                        style: "decimal",
+                                        minimumFractionDigits: 2,
+                                        maximumFractionDigits: 2,
+                      }).format(item.amount.toFixed(2))}</TableCell>
+                      
+                      <TableCell className="text-right truncate">₱{" "}{new Intl.NumberFormat("en-PH", {
+                                        style: "decimal",
+                                        minimumFractionDigits: 2,
+                                        maximumFractionDigits: 2,
+                      }).format(item.amountToBeCollected.toFixed(2))}</TableCell>
+                      
                       <TableCell className="text-center">
                         {item.isOfficial && !item.isSettled && (
                           <button
@@ -378,7 +388,12 @@ function CompanyBillingTab() {
                 </TableBody>
               </Table>
               <div className="mt-4 text-right">
-                <p>Total Amount to be Collected (Official Items): ${totalAmountToBeCollected.toFixed(2)}</p>
+                <p>Total Amount to be Collected (Official Items): ₱{" "}{new Intl.NumberFormat("en-PH", {
+                                        style: "decimal",
+                                        minimumFractionDigits: 2,
+                                        maximumFractionDigits: 2,
+                      }).format(totalAmountToBeCollected)}</p>
+                
                 <button
                   onClick={() => handleGeneratePDF(selectedCompany)}
                   className="px-4 py-2 bg-blue-600 text-white rounded"
