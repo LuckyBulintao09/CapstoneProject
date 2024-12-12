@@ -108,6 +108,7 @@ const ReservationsAnalytics = () => {
   const options = {
     indexAxis: 'y',
     responsive: true,
+    maintainAspectRatio: false,
     scales: {
       x: {
         beginAtZero: true,
@@ -122,12 +123,12 @@ const ReservationsAnalytics = () => {
 
   return (
     <>
-      <div className="mb-4 flex items-center space-x-4">
+      <div className="mb-4 flex flex-col sm:flex-row items-start sm:items-center space-y-4 sm:space-y-0 sm:space-x-4">
         {/* Property Selector */}
         <Select value={selectedProperty || ''} onValueChange={setSelectedProperty}>
           <SelectTrigger
             id="property-selector"
-            className="border-gray-300 dark:text-gray-300 bg-transparent w-48 rounded-md text-sm text-gray-700 focus:ring-offset-0 focus:ring-0 hover:font-semibold transition-all duration-300"
+            className="border-gray-300 dark:text-gray-300 bg-transparent w-full sm:w-48 rounded-md text-sm text-gray-700 focus:ring-offset-0 focus:ring-0 hover:font-semibold transition-all duration-300"
           >
             <SelectValue placeholder="Select Property" />
           </SelectTrigger>
@@ -150,7 +151,7 @@ const ReservationsAnalytics = () => {
         <Select value={date} onValueChange={setDate}>
           <SelectTrigger
             id="date-selector"
-            className="border-gray-300 dark:text-gray-300 bg-transparent w-48 rounded-md text-sm text-gray-700 focus:ring-offset-0 focus:ring-0 hover:font-semibold transition-all duration-300"
+            className="border-gray-300 dark:text-gray-300 bg-transparent w-full sm:w-48 rounded-md text-sm text-gray-700 focus:ring-offset-0 focus:ring-0 hover:font-semibold transition-all duration-300"
           >
             <SelectValue placeholder="Select Date Range" />
           </SelectTrigger>
@@ -171,17 +172,14 @@ const ReservationsAnalytics = () => {
         </Select>
       </div>
 
-      <div className="grid grid-cols-1 xl:grid-cols-10 gap-0 xl:gap-4">
-        <div className="col-span-4 grid grid-rows-3 gap-4">
-          <div className="grid grid-cols-2 gap-4">
+      <div className="grid grid-cols-1 gap-4 xl:grid-cols-10">
+        <div className="col-span-1 xl:col-span-4 grid grid-rows-3 gap-4">
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
             <Card className="bg-white dark:bg-secondary rounded-lg border-gray-300">
               <p className="p-4 text-xs text-gray-500 dark:text-gray-300">Total Reservations</p>
               <CardHeader className="p-1 flex justify-center items-center text-center">
-                <CardTitle className="text-4xl font-bold">
-                 
-                  {loading ?  <p className='text-xs pb-4'>Recalculating...</p> : (reservationAnalyticsData?.count || <p className='text-xs text-gray-500'>no data.</p>)}
-
-             
+                <CardTitle className="text-2xl sm:text-4xl font-bold">
+                  {loading ? <p className="text-xs pb-4">Recalculating...</p> : (reservationAnalyticsData?.count || <p className="text-xs text-gray-500">no data.</p>)}
                 </CardTitle>
               </CardHeader>
             </Card>
@@ -189,27 +187,26 @@ const ReservationsAnalytics = () => {
             <Card className="bg-white dark:bg-secondary rounded-lg border-gray-300">
               <p className="p-4 text-xs text-gray-500 dark:text-gray-300">Total Company Page Visits</p>
               <CardHeader className="p-1 flex justify-center items-center text-center">
-                <CardTitle className="text-4xl font-bold">
-                  {loading ? <p className='text-xs pb-4'>Recalculating...</p> : (companyAnalyticsData?.count || <p className='text-xs text-gray-500'>no data.</p>)}
+                <CardTitle className="text-2xl sm:text-4xl font-bold">
+                  {loading ? <p className="text-xs pb-4">Recalculating...</p> : (companyAnalyticsData?.count || <p className="text-xs text-gray-500">no data.</p>)}
                 </CardTitle>
               </CardHeader>
             </Card>
           </div>
           <div className="row-span-2 rounded-lg">
-            <Card className="bg-white dark:bg-secondary rounded-lg border-gray-300 row-span-2 mb-4 xl:mb-0 h-full">
+            <Card className="bg-white dark:bg-secondary rounded-lg border-gray-300 h-full">
               <p className="p-4 text-xs text-gray-500 dark:text-gray-300">On-Site vs Room Reservations</p>
-              <CardContent>
-                {loading ? <p className='text-xs pb-4'>Recalculating...</p> : <Bar data={data} />}
+              <CardContent className="h-60 sm:h-96">
+                {loading ? <p className="text-xs pb-4">Recalculating...</p> : <Bar data={data} options={options} />}
               </CardContent>
             </Card>
           </div>
         </div>
-        <div className="col-span-6 rounded-lg">
-          <Card className="bg-white dark:bg-secondary rounded-lg border-gray-300 h-[470px] justify-center h-full">
-            <p className="p-4 text-m text-left dark:text-white">Reservation Comparison Across Properties</p>
 
-            <CardContent className='w-full bg-transparent'>
-             <ComparisonBetweenProperty />
+        <div className="col-span-1 xl:col-span-6">
+          <Card className="bg-white dark:bg-secondary rounded-lg border-gray-300 h-full">
+            <CardContent className="w-full bg-transparent">
+              <ComparisonBetweenProperty />
             </CardContent>
           </Card>
         </div>

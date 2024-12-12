@@ -15,7 +15,8 @@ import { PaperAirplaneIcon } from "@heroicons/react/24/solid";
 import { PlusCircleIcon } from "lucide-react";
 import { toast } from "sonner";
 import sendImage from "@/actions/chat/sendImage";
-import imageCompression from "browser-image-compression";
+import { sendVideo } from "@/actions/chat/sendVideo"; // Updated import
+import imageCompression from "browser-image-compression"; // Import the compression library
 
 const supabase = createClient();
 
@@ -30,7 +31,7 @@ const Inbox = ({ receiver_id, company_name }) => {
   const [modalOpen, setModalOpen] = useState(false);
   const [expandedImage, setExpandedImage] = useState(null);
   const [pendingMessages, setPendingMessages] = useState([]);
-  const [imageLoading, setImageLoading] = useState({}); 
+  const [imageLoading, setImageLoading] = useState({});
   const messagesEndRef = useRef(null);
 
   const receiverNameMemo = useMemo(() => receiverName, [receiverName]);
@@ -130,50 +131,76 @@ const Inbox = ({ receiver_id, company_name }) => {
       toast.error("Please choose a file to upload");
       return;
     }
-  
-    const allowedTypes = ["image/jpeg", "image/png", "image/gif", "image/webp"];
-    if (!allowedTypes.includes(file.type)) {
-      toast.error("Please upload a valid image file (JPEG, PNG, GIF, or WEBP).");
+
+    const allowedImageTypes = ["image/jpeg", "image/png", "image/gif", "image/webp"];
+    const allowedVideoTypes = ["video/mp4", "video/avi", "video/mkv", "video/webm"];
+
+    if (![...allowedImageTypes, ...allowedVideoTypes].includes(file.type)) {
+      toast.error("Please upload a valid image or video file.");
       event.target.value = "";
       return;
     }
-  
-    const maxSize = 2.5 * 1024 * 1024;
-  
-    try {
-      let fileToUpload = file;
-  
-      if (file.size >= maxSize) {
+
+    const maxSize = 20 * 1024 * 1024;
+    if (file.size > maxSize) {
+      toast.error("File is too large. Please upload a smaller file.");
+      event.target.value = "";
+      return;
+    }
+
+    if (file.type.startsWith("image/")) {
+      try {
         const options = {
-          maxSizeMB: 1.5, 
-          maxWidthOrHeight: 800, 
+          maxWidthOrHeight: 800, // Max width/height for compression
           useWebWorker: true,
         };
-        toast.info("Image upload is too large. Compressing...");
-        fileToUpload = await imageCompression(file, options);
+        const compressedFile = await imageCompression(file, options);
+        setSelectedFile(compressedFile);
+      } catch (error) {
+        toast.error("Error compressing the image.");
       }
-      setSelectedFile(fileToUpload);
-    } catch (error) {
-      toast.error("Error compressing image");
+    } else {
+      setSelectedFile(file);
     }
   };
 
-  const submitImageHandler = useCallback(async (e) => {
+  const submitFileHandler = useCallback(async (e) => {
     e.preventDefault();
+  
+    if (!conversationId) {
+      toast.error("Conversation ID is not set.");
+      return;
+    }
+  
     if (selectedFile && user) {
       setLoading(true);
+  
       try {
-        await sendImage(user.id, receiver_id, conversationId, selectedFile);
-        toast.success("Image sent successfully!");
+        if (selectedFile.type.startsWith("image/")) {
+          // Pass arguments as separate parameters
+          await sendImage(user.id, receiver_id, conversationId, selectedFile, setMessages);
+          toast.success("Image sent successfully!");
+        } else if (selectedFile.type.startsWith("video/")) {
+          // Pass arguments as separate parameters
+          await sendVideo({
+            userId: user.id,
+            receiverId: receiver_id,
+            conversationId: conversationId,
+            videoFile: selectedFile,
+            setMessages: setMessages
+          });
+          toast.success("Video sent successfully!");
+        }
         setModalOpen(false);
       } catch (error) {
-        toast.error("Error sending image.");
+        toast.error("Error sending file.");
       } finally {
         setLoading(false);
         setSelectedFile(null);
       }
     }
   }, [selectedFile, user, receiver_id, conversationId]);
+  
 
   const handleImageLoad = (id) => {
     setImageLoading((prev) => ({ ...prev, [id]: false }));
@@ -185,7 +212,7 @@ const Inbox = ({ receiver_id, company_name }) => {
   };
 
   return (
-    <Card className="w-full h-full bg-transparent ">
+    <Card className="w-full h-full bg-transparent">
       <div className="w-full h-full flex flex-col p-4">
         {receiver_id && receiverNameMemo && (
           <Card className="flex items-center p-2 shadow-sm mb-4 bg-transparent">
@@ -218,18 +245,21 @@ const Inbox = ({ receiver_id, company_name }) => {
             return (
               <div key={msg.id} className={`mb-2 max-w-xs p-2 rounded-lg text-sm break-words ${messageClasses}`}>
                 {msg.content.startsWith("http") ? (
-                  <>
-                   {imageLoading[msg.id] !== false && <p>Loading image...</p>}
+                  msg.content.endsWith(".mp4") || msg.content.endsWith(".avi") || msg.content.endsWith(".mkv") || msg.content.endsWith(".webm") ? (
+                    <video className="rounded-md cursor-pointer" controls>
+                      <source src={msg.content} type="video/mp4" />
+                      Your browser does not support the video tag.
+                    </video>
+                  ) : (
                     <img
                       src={msg.content}
-                      alt="sent image"
+                      alt="sent media"
                       className="rounded-md cursor-pointer"
                       onLoad={() => handleImageLoad(msg.id)}
                       onError={() => handleImageError(msg.id)}
                       onClick={() => setExpandedImage(msg.content)}
-                      style={{ display: imageLoading[msg.id] !== false ? "none" : "block" }}
                     />
-                  </>
+                  )
                 ) : (
                   <p>{msg.content}</p>
                 )}
@@ -269,16 +299,16 @@ const Inbox = ({ receiver_id, company_name }) => {
             </DialogTrigger>
             <DialogContent className="sm:max-w-[425px]">
               <DialogHeader>
-                <DialogTitle>Send an image</DialogTitle>
+                <DialogTitle>Send a file</DialogTitle>
               </DialogHeader>
-              <DialogDescription>Images over 2.5MB will automatically be compressed.</DialogDescription>
+              <DialogDescription>Images and videos up to 20MB are supported.</DialogDescription>
               <div className="grid gap-4 py-4">
                 <div className="grid items-center">
                   <Input id="file-input" type="file" className="col-span-3 rounded-full bg-secondary" onChange={handleFileChange} />
                 </div>
               </div>
               <DialogFooter>
-                <Button type="button" onClick={submitImageHandler} disabled={loading}>
+                <Button type="button" onClick={submitFileHandler} disabled={loading}>
                   {loading ? "Sending..." : "Send"}
                 </Button>
               </DialogFooter>

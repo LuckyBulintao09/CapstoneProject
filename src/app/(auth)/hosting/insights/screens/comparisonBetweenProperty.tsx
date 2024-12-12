@@ -19,9 +19,9 @@ function ComparisonBetweenProperty() {
   const [data, setData] = useState(null);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
-  const [dateRange, setDateRange] = useState<string>('default'); 
-  const [properties, setProperties] = useState<string[]>([]); 
-  const [selectedProperty, setSelectedProperty] = useState<string | null>(null); 
+  const [dateRange, setDateRange] = useState<string>('default');
+  const [properties, setProperties] = useState<string[]>([]);
+  const [selectedProperty, setSelectedProperty] = useState<string | null>(null);
 
   useEffect(() => {
     if (dateRange !== 'default' && selectedProperty) {
@@ -102,6 +102,7 @@ function ComparisonBetweenProperty() {
 
   const options = {
     responsive: true,
+    maintainAspectRatio: false,
     scales: {
       x: {
         beginAtZero: true,
@@ -118,71 +119,57 @@ function ComparisonBetweenProperty() {
   };
 
   return (
-    <div>
-      {/* Time Range Picker */}
-     
-      <div className='flex-row flex'>
-      <div className=" m-4">
-        <Select value={dateRange} onValueChange={setDateRange}>
-          <SelectTrigger className="border-gray-300 dark:text-gray-300 bg-transparent w-48 rounded-md text-sm text-gray-700 focus:ring-offset-0 focus:ring-0 hover:font-semibold transition-all duration-300">
-            <SelectValue placeholder="Select Date Range" />
-          </SelectTrigger>
-          <SelectContent position="popper" className="text-sm bg-white dark:bg-secondary border-gray-300">
-            <SelectItem value="All Time" className="text-sm">
-              All Time
-            </SelectItem>
-            <SelectItem value="Last 24 hours" className="text-sm">
-              Last 24 hours
-            </SelectItem>
-            <SelectItem value="Last 7 days" className="text-sm">
-              Last 7 days
-            </SelectItem>
-            <SelectItem value="Last 4 weeks" className="text-sm">
-              Last 4 weeks
-            </SelectItem>
-          </SelectContent>
-        </Select>
+    <div className="w-full p-4">
+      <p className="text-base text-left dark:text-white mt-4">
+        {selectedProperty && selectedProperty !== 'all_properties'
+          ? `Reservation Analytics for ${selectedProperty}`
+          : selectedProperty === 'all_properties'
+          ? 'Reservation Comparison Across All Properties'
+          : 'Property Reservation Analytics'}
+      </p>
+
+      <div className="flex flex-col sm:flex-row gap-4 my-4">
+        <div className="flex-1">
+          <Select value={dateRange} onValueChange={setDateRange}>
+            <SelectTrigger className="w-full sm:w-64 border-gray-300 dark:text-gray-300 bg-transparent rounded-md text-sm focus:ring-offset-0 focus:ring-0">
+              <SelectValue placeholder="Select Date Range" />
+            </SelectTrigger>
+            <SelectContent className="text-sm bg-white dark:bg-secondary">
+              <SelectItem value="All Time">All Time</SelectItem>
+              <SelectItem value="Last 24 hours">Last 24 hours</SelectItem>
+              <SelectItem value="Last 7 days">Last 7 days</SelectItem>
+              <SelectItem value="Last 4 weeks">Last 4 weeks</SelectItem>
+            </SelectContent>
+          </Select>
+        </div>
+
+        <div className="flex-1">
+          <Select value={selectedProperty || ''} onValueChange={setSelectedProperty}>
+            <SelectTrigger className="w-full sm:w-64 border-gray-300 dark:text-gray-300 bg-transparent rounded-md text-sm focus:ring-offset-0 focus:ring-0">
+              <SelectValue placeholder="Select Property" />
+            </SelectTrigger>
+            <SelectContent className="text-sm bg-white dark:bg-secondary">
+              <SelectItem value="all_properties">All Properties</SelectItem>
+              {properties.length > 0 ? (
+                properties.map((property, index) => (
+                  <SelectItem key={index} value={property}>
+                    {property}
+                  </SelectItem>
+                ))
+              ) : (
+                <SelectItem disabled>Loading properties...</SelectItem>
+              )}
+            </SelectContent>
+          </Select>
+        </div>
       </div>
 
-      {/* Property Selector */}
-      <div className="m-4">
-        <Select value={selectedProperty || ''} onValueChange={setSelectedProperty}>
-          <SelectTrigger
-            id="property-selector"
-            className="border-gray-300 dark:text-gray-300 bg-transparent w-48 rounded-md text-sm text-gray-700 focus:ring-offset-0 focus:ring-0 hover:font-semibold transition-all duration-300"
-          >
-            <SelectValue placeholder="Select Property" />
-          </SelectTrigger>
-          <SelectContent position="popper" className="text-sm bg-white dark:bg-secondary border-gray-300">
-            {/* "All Properties" option */}
-            <SelectItem value="all_properties" className="text-sm">
-              All Properties
-            </SelectItem>
-            {/* Dynamic properties list */}
-            {properties.length > 0 ? (
-              properties.map((property, index) => (
-                <SelectItem key={index} value={property} className="text-sm">
-                  {property}
-                </SelectItem>
-              ))
-            ) : (
-              <SelectItem disabled className="text-sm">
-                Loading properties...
-              </SelectItem>
-            )}
-          </SelectContent>
-        </Select>
-      </div>
-      </div>
-
-
-      {/* Chart Rendering */}
       {loading ? (
         <p>Generating chart...</p>
       ) : error ? (
-        <p>{error}</p>
+        <p className="text-red-500">{error}</p>
       ) : (
-        <div>
+        <div className="h-64 sm:h-96">
           {data ? (
             <Line data={chartData()} options={options} />
           ) : (
