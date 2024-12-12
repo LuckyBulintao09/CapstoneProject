@@ -13,133 +13,64 @@ import { createClient } from '@/utils/supabase/client';
 import { fetchDropdownDetails } from '@/actions/transaction/fetchDetails';
 import { toast } from 'sonner';
 import { cancelled_onsiteNotification } from '@/actions/notification/notification';
-interface CreateTransactionModalProps {
+interface ReserveTransactionModalProps {
 	isOpen: boolean;
 	onClose: () => void;
+    handleReserve: (cmonth: number, nguest: number) => Promise<void>;
   }
   
-  const CreateTransactionModal = ({
+  const ReserveTransactionModal = ({
 	isOpen,
-	onClose
-  }: CreateTransactionModalProps) => {
-	const [data, setData] = useState<any[]>([]);
-	const [propertyOptions, setPropertyOptions] = useState<any[]>([]);
-	const [unitOptions, setUnitOptions] = useState<any[]>([]);
-	const [propertyTitle, setPropertyTitle] = useState('');
-	const [unitTitle, setUnitTitle] = useState('');
-	const [clientName, setClientName] = useState('');
-	const [serviceOption, setServiceOption] = useState('');
-	const [appointmentDate, setAppointmentDate] = useState('');
-	const [propertyId, setPropertyId] = useState<number | null>(null);
-	const [unitId, setUnitId] = useState<number | null>(null);
-	const [isCalendarOpen, setIsCalendarOpen] = useState(false);
+	onClose,
+    handleReserve
+  }: ReserveTransactionModalProps) => {
 	const [numGuests, setNumGuests] = useState<number>(1);
 	const [monthContract, setMonthContract] = useState(0);
-	const [userId, setUserId] = useState<any>(null);
   
-	useEffect(() => {
-		const fetchDetails = async () => {
-		  const supabase = createClient();
-		  const userId = await supabase.auth.getUser();
-		  setUserId(userId);
-		  const fetchedData = await fetchDropdownDetails(userId.data.user.id);
+	// useEffect(() => {
+	// 	const fetchDetails = async () => {
+	// 	  const supabase = createClient();
+	// 	  const userId = await supabase.auth.getUser();
+	// 	  setUserId(userId);
+	// 	  const fetchedData = await fetchDropdownDetails(userId.data.user.id);
 	
-		  console.log(fetchedData);
+	// 	  console.log(fetchedData);
 	
-		  setData(fetchedData);
-		  if (fetchedData[0] && fetchedData[0].property) {
-			setPropertyOptions(fetchedData[0].property);
-		  }
-		};
+	// 	  setData(fetchedData);
+	// 	  if (fetchedData[0] && fetchedData[0].property) {
+	// 		setPropertyOptions(fetchedData[0].property);
+	// 	  }
+	// 	};
 	
-		fetchDetails();
-	}, []);
+	// 	fetchDetails();
+	// }, []);
   
-	useEffect(() => {
-		const selectedProperty = propertyOptions.find(
-		  (item) => item.id === propertyId
-		);
+	// useEffect(() => {
+	// 	const selectedProperty = propertyOptions.find(
+	// 	  (item) => item.id === propertyId
+	// 	);
 	
-		if (selectedProperty) {
-		  setUnitOptions(selectedProperty.unit || []);
-		  setUnitId(null);
-		  setUnitTitle('');
-		}
-	}, [propertyId, propertyOptions]);
+	// 	if (selectedProperty) {
+	// 	  setUnitOptions(selectedProperty.unit || []);
+	// 	  setUnitId(null);
+	// 	  setUnitTitle('');
+	// 	}
+	// }, [propertyId, propertyOptions]);
 	
-	  const handleFormSubmit = async () => {
-		const supabase = createClient();
-
-		//notification to cancelled and reserved users
-		const { data: receiver_id, error: receiverIdError } = await supabase
-			.from("transaction")
-			.select("user_id")
-			.eq("unit_id", unitId)
-			.eq("isPaid", false)
-			.in("transaction_status", ["pending", "reserved"])
-			.not("user_id", "eq", userId.data.user.id);
-		
-		const receiverIds = receiver_id.map(item => item.user_id);
-		await cancelled_onsiteNotification(unitId, receiverIds);
-
-		//cancel other
-		const { error: cancelError } = await supabase
-			.from("transaction")
-			.update({ transaction_status: "cancelled" })
-			.eq("unit_id", unitId)
-			.eq("isPaid", false)
-			.in("transaction_status", ["pending", "reserved"]);
-		
-		//insert walk-in
-		const {error} = await supabase
-			.from("transaction")
-			.insert({
-				unit_id: unitId, 
-				client_name: clientName, 
-				service_option: "Room Reservation", 
-				appointment_date: format(new Date(), 'yyyy-MM-dd'), 
-				guest_number: numGuests,
-				transaction_status: "reserved",
-				payment_option: "Cash (On-Site)",
-				transaction_type: "Walk-in",
-				isPaid: true,
-				month_contract: monthContract,
-				contract: format(new Date(Date.now() + (monthContract * 30 * 24 * 60 * 60 * 1000)), 'yyyy-MM-dd')
-			})
-
-		const {error: unitUpdateError} = await supabase
-			.from("unit")
-			.update({ current_occupants: numGuests ,isReserved: true, contract: format(new Date(Date.now() + (monthContract * 30 * 24 * 60 * 60 * 1000)), 'yyyy-MM-dd') })
-			.eq("id", unitId);
-
-
-		const { error: unitError } = await supabase
-			.from("unit")
-			.update({ isReserved: true, contract: format(new Date(Date.now() + (monthContract * 30 * 24 * 60 * 60 * 1000)), 'yyyy-MM-dd') })
-			.eq("id", unitId);
-
-		if (error) {
-			console.error("Error saving reservation:", error.message);
-			return { success: false, error: error.message };
-		}
-		toast.success('Transaction created successfully');
-		onClose();
-		window.location.reload();
-	};
   
 	return (
 	  <Dialog open={isOpen} onOpenChange={onClose}>
 		<DialogContent className="max-w-[80%] lg:max-w-[50%] max-h-[80%] bg-white dark:bg-secondary shadow-lg rounded-lg overflow-y-auto">
 		  <DialogHeader>
-			<DialogTitle>Create Transaction</DialogTitle>
+			<DialogTitle>Reserve an On-Site Transaction</DialogTitle>
 			<DialogDescription className="border-b border-gray-300 dark:text-gray-200 pb-2">
-			  Provide the details below to create a new transaction.
+			  Provide the details below to reserve the unit.
 			</DialogDescription>
 		  </DialogHeader>
   
 		  <div className="grid w-full items-center gap-5">
 			{/* Property Name */}
-			<div className="flex flex-col space-y-1.5">
+			{/* <div className="flex flex-col space-y-1.5">
 			<Label htmlFor="propertyName" className="font-semibold">
 				Property Name
 			</Label>
@@ -163,11 +94,11 @@ interface CreateTransactionModalProps {
 				))}
 				</SelectContent>
 			</Select>
-			</div>
+			</div> */}
 
   
 			{/* Unit Title */}
-			<div className="flex flex-col space-y-1.5">
+			{/* <div className="flex flex-col space-y-1.5">
 			<Select 
 				value={unitId ? unitId.toString() : ''} 
 				onValueChange={(value) => {
@@ -188,10 +119,10 @@ interface CreateTransactionModalProps {
 				))}
 				</SelectContent>
 			</Select>
-			</div>
+			</div> */}
   
 			{/* Client Name */}
-			<div className="flex flex-col space-y-1.5">
+			{/* <div className="flex flex-col space-y-1.5">
 			  <Label htmlFor="clientName" className="font-semibold">
 				Client Name
 			  </Label>
@@ -203,7 +134,7 @@ interface CreateTransactionModalProps {
 				className="border-gray-400"
 				placeholder="Enter the client name"
 			  />
-			</div>
+			</div> */}
   
 
 			{/* Number of Guests */}
@@ -258,14 +189,13 @@ interface CreateTransactionModalProps {
   
 		  <Button
 			className="w-full mt-4"
-			onClick={handleFormSubmit}
-			disabled={!propertyTitle || !unitTitle || !clientName}
+			onClick={async () => await handleReserve(monthContract, numGuests)}
 		  >
-			Create Transaction
+			Reserve
 		  </Button>
 		</DialogContent>
 	  </Dialog>
 	);
   };
   
-  export default CreateTransactionModal;
+  export default ReserveTransactionModal;

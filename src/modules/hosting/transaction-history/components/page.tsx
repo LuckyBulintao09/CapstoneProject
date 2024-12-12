@@ -107,51 +107,51 @@ const TransactionDashboard = () => {
         return;
       }
 
-      if (newStatus === "reserved") {
-        const { data: transactionData, error: transactionDataError } = await supabase
-            .from("transaction")
-            .select("guest_number")
-            .eq("id", id)
-            .single();
+      // if (newStatus === "reserved") {
+      //   const { data: transactionData, error: transactionDataError } = await supabase
+      //       .from("transaction")
+      //       .select("guest_number")
+      //       .eq("id", id)
+      //       .single();
         
-        const { data: unitCurrentOccupants, error: unitCurrentOccupantsError } = await supabase
-            .from("unit")
-            .select("current_occupants")
-            .eq("id", unitId)
-            .single();
+      //   const { data: unitCurrentOccupants, error: unitCurrentOccupantsError } = await supabase
+      //       .from("unit")
+      //       .select("current_occupants")
+      //       .eq("id", unitId)
+      //       .single();
         
-        let updatedOccupants = transactionData?.guest_number + unitCurrentOccupants?.current_occupants;
+      //   let updatedOccupants = transactionData?.guest_number + unitCurrentOccupants?.current_occupants;
 
-        const { error: unitUpdateError } = await supabase
-          .from("unit")
-          .update({ isReserved: true, current_occupants: updatedOccupants  })
-          .eq("id", unitId);
+      //   const { error: unitUpdateError } = await supabase
+      //     .from("unit")
+      //     .update({ isReserved: true, current_occupants: updatedOccupants  })
+      //     .eq("id", unitId);
 
-          await confirm_onsiteNotification(unitId, receiver_id[0].user_id)
+      //     await confirm_onsiteNotification(unitId, receiver_id[0].user_id)
 
-        if (unitUpdateError) {
-          setError(`Failed to update reserved status for unit ID ${unitId}`);
-          return;
-        }
+      //   if (unitUpdateError) {
+      //     setError(`Failed to update reserved status for unit ID ${unitId}`);
+      //     return;
+      //   }
 
-        const { data: updatedRows, error: cancelOtherError } = await supabase
-          .from("transaction")
-          .update({ transaction_status: "cancelled" })
-          .eq("unit_id", unitId)
-          .eq("transaction_status", "pending")
-          .neq("id", id)
-          .select()
+      //   const { data: updatedRows, error: cancelOtherError } = await supabase
+      //     .from("transaction")
+      //     .update({ transaction_status: "cancelled" })
+      //     .eq("unit_id", unitId)
+      //     .eq("transaction_status", "pending")
+      //     .neq("id", id)
+      //     .select()
         
-        await cancelled_onsiteNotification(unitId, updatedRows.map((row) => row.user_id))
+      //   await cancelled_onsiteNotification(unitId, updatedRows.map((row) => row.user_id))
           
 
-        if (cancelOtherError) {
-          setError(
-            `Failed to cancel other pending transactions for unit ID ${unitId}`
-          );
-          return;
-        }
-      }
+      //   if (cancelOtherError) {
+      //     setError(
+      //       `Failed to cancel other pending transactions for unit ID ${unitId}`
+      //     );
+      //     return;
+      //   }
+      // }
 
       await fetchTransactionHistory();
     } catch (err: any) {

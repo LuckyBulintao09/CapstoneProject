@@ -62,7 +62,8 @@ export const getTransactionHistory = async (userId: string) => {
         transaction_status, 
         isPaid,
         contract,
-        client_name, 
+        client_name,
+        transaction_type, 
         unit:unit_id (
           id, title, unit_code, property:property_id (title)
         ),
@@ -73,6 +74,14 @@ export const getTransactionHistory = async (userId: string) => {
       `
       )
       .in("unit_id", unitIds);
+
+      const customOrder = ["reserved", "pending", "visited", "cancelled"];
+
+      // Sort transactions based on transaction_status
+      const sortedTransactions = transactions.sort((a, b) => {
+        return customOrder.indexOf(a.transaction_status) - customOrder.indexOf(b.transaction_status);
+      });
+
     console.log(transactions);
 
     if (transactionsError || !transactions?.length) {
@@ -83,7 +92,7 @@ export const getTransactionHistory = async (userId: string) => {
       return [];
     }
 
-    return transactions.map((transaction) => ({
+    return sortedTransactions.map((transaction) => ({
       ...transaction,
       unit_title: transaction.unit.title,
       property_title: transaction.unit.property.title,

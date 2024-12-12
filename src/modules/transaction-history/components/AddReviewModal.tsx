@@ -143,7 +143,7 @@ const AddReviewModal = ({
       toast.success("Review saved successfully!");
 
       const updatedReviewData = await fetchReviewData(unit_id, userId);
-      setRating(updatedReviewData.ratings || 0);
+      setRating(updatedReviewData?.ratings || 0);
       setReviewText(updatedReviewData.comment || "");
       setLocationRating(updatedReviewData.location || 0);
       setCleanlinessRating(updatedReviewData.cleanliness || 0);

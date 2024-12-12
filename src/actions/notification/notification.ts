@@ -33,7 +33,7 @@ export const expireContractNotification = async (
     .map(unit => unit.id);
 
   const today = new Date();
-  const thirtyDaysFromNow = new Date(today.setDate(today.getDate() + 30));
+  const thirtyDaysFromNow = new Date(today.setDate(today.getDate() + 35));
   const { data: transactions, error: transactionError } = await supabase
     .from("transaction")
     .select("id, unit_id")
@@ -127,6 +127,25 @@ export const confirm_onsiteNotification = async (
     if (error) throw error;
 }
 
+export const confirm_reserveNotification = async (
+  unitID : number,
+  receiver_id: string
+) => {
+  const {data: property_id, error: propertyIdError} = await supabase
+    .from("unit")
+    .select("property_id, title")
+    .eq("id", unitID)
+
+  const {data: property_title, error: propertyTitleError} = await supabase
+    .from("property")
+    .select("title")
+    .eq("id", property_id[0].property_id)
+  
+  const { data, error } = await supabase
+    .from("notifications")
+    .insert({ receiver_id: receiver_id, text: `Your Reservation is confirmed for ${property_title[0].title} - ${property_id[0].title}` });
+  if (error) throw error;
+}
 export const cancelled_onsiteNotification = async (
     unitID : number,
     receiver_id: string[]
@@ -145,7 +164,7 @@ export const cancelled_onsiteNotification = async (
     
       const notifications = receiver_id.map(userId => ({
         receiver_id: userId,
-        text: `Cancelled: Someone has reserved your Onsite Visit for ${propertyData.title} - ${unitData.title}`,
+        text: `Cancelled: Someone has reserved and paid for ${propertyData.title} - ${unitData.title} before you.`,
       }));
     
       const { data, error } = await supabase

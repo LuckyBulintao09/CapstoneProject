@@ -91,25 +91,25 @@ export const createReservation = async (
     return { success: false, error: "Failed to retrieve transaction ID" };
   }
 
-  if (selectedService === "Room Reservation") {
-    const { data: unitOccupants, error: unitOccupantsError } = await supabase
-      .from("unit")
-      .select("current_occupants")
-      .eq("id", unitId)
-      .single();
+  // if (selectedService === "Room Reservation") {
+  //   const { data: unitOccupants, error: unitOccupantsError } = await supabase
+  //     .from("unit")
+  //     .select("current_occupants")
+  //     .eq("id", unitId)
+  //     .single();
 
-    let updatedOccupants = unitOccupants?.current_occupants + guestNumber;
+  //   let updatedOccupants = unitOccupants?.current_occupants + guestNumber;
 
-    const { error: unitError } = await supabase
-      .from("unit")
-      .update({ current_occupants: updatedOccupants })
-      .eq("id", unitId);
+  //   const { error: unitError } = await supabase
+  //     .from("unit")
+  //     .update({ current_occupants: updatedOccupants })
+  //     .eq("id", unitId);
 
-    if (unitError) {
-      console.error("Error updating unit reservation status:", unitError.message);
-      return { success: false, error: unitError.message };
-    }
-  }
+  //   if (unitError) {
+  //     console.error("Error updating unit reservation status:", unitError.message);
+  //     return { success: false, error: unitError.message };
+  //   }
+  // }
 
   const { data: unitData, error: unitDataError } = await supabase
     .from("unit")
