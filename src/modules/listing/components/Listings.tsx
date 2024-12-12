@@ -249,7 +249,7 @@ export default function Listings() {
   {
     /* Pagination */
   }
-  const itemsPerPage = 1;
+  const itemsPerPage = 9;
   const [currentPage, setCurrentPage] = useState(1);
   const startIndex = (currentPage - 1) * itemsPerPage;
   const endIndex = startIndex + itemsPerPage;

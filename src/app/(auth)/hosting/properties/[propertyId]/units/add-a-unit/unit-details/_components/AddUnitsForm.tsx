@@ -583,8 +583,21 @@ function AddUnitsForm({ amenities, unitId, propertyId, userId }: { amenities?: a
                                         placeholder="Enter additional ameneties"
                                         tags={tags}
                                         setTags={(newTags) => {
-                                            setTags(newTags);
-                                            unitForm.setValue("additional_amenities", newTags as [Tag, ...Tag[]]);
+                                            const normalizedTags = newTags.map(tag => ({
+                                                ...tag,
+                                                text: tag.text.toLowerCase(),
+                                            }));
+                    
+                                            // Remove duplicates
+                                            const uniqueTags = normalizedTags.filter(
+                                                (tag, index, self) =>
+                                                    self.findIndex(t => t.text === tag.text) === index
+                                            );
+                    
+                                            setTags(uniqueTags);
+                                            unitForm.setValue("additional_amenities", uniqueTags as [Tag, ...Tag[]]);
+                                            // setTags(newTags);
+                                            // unitForm.setValue("additional_amenities", newTags as [Tag, ...Tag[]]);
                                         }}
                                         styleClasses={{
                                             tagList: {
