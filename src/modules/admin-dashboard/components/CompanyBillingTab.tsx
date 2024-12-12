@@ -51,7 +51,7 @@ function CompanyBillingTab() {
     const fetchCompanyBilling = async () => {
       const { data, error } = await supabase
         .from('company_billing')
-        .select(`id, created_at, company_name, amount, isOfficial, isSettled, paidAt, owner_id, amountToBeCollected, owner_email, property_title, service`)
+        .select(`id, created_at, company_name, amount, isOfficial, isSettled, paidAt, owner_id, amountToBeCollected, owner_email, property_title, service,tenant,unit`)
         .neq('service', 'On-Site Visit')
         .order('created_at', { ascending: false });
 
@@ -97,65 +97,58 @@ function CompanyBillingTab() {
   };
 
   const handleGeneratePDF = (companyName) => {
-    
     const companyData = filteredData.filter(item => item.company_name === companyName && !item.isSettled);
-  
-   
     const officialData = companyData.filter(item => item.isOfficial);
     const totalAmount = officialData.reduce((sum, item) => sum + item.amountToBeCollected, 0);
   
     const doc = new jsPDF();
   
-  
-    const logoUrl = "https://kxkkueirrfwmrrurarhw.supabase.co/storage/v1/object/public/unihomes%20image%20storage/logo/Logo.png"; // Replace with your logo URL or base64 image string
-    const logoWidth = 30; 
-    const logoHeight = 30; 
+    const logoUrl = "https://kxkkueirrfwmrrurarhw.supabase.co/storage/v1/object/public/unihomes%20image%20storage/logo/Logo.png";
+    const logoWidth = 20; 
+    const logoHeight = 20;
   
     doc.addImage(logoUrl, 'PNG', 20, 10, logoWidth, logoHeight);
   
- 
-    doc.setFontSize(18);
+    doc.setFontSize(12); 
     doc.setFont("helvetica", "bold");
-    doc.text("Unihomes", 60, 25); 
-
-    doc.setFontSize(16);
-    doc.text(`Invoice Report for ${companyName}`, 20, 40); 
+    doc.text("Unihomes", 60, 20); 
   
-    
-    const currentDate = new Date().toLocaleDateString(); 
-    doc.setFontSize(12);
-    doc.text(`Date Generated: ${currentDate}`, 20, 50); 
+    doc.setFontSize(10); 
+    doc.text(`Invoice Report for ${companyName}`, 20, 35);
   
-    
-    const headers = ["Transaction ID", "Date", "Amount", "Property", "Status", "Official", "Amount to be Collected"];
+    const currentDate = new Date().toLocaleDateString();
+    doc.setFontSize(8); 
+    doc.text(`Date Generated: ${currentDate}`, 20, 42);
+  
+    const headers = ["Transaction ID", "Client Name", "Unit", "Date", "Amount", "Property", "Status", "Official", "Amount to be Collected"];
     const rows = companyData.map(item => [
       item.id,
+      item.tenant,
+      item.unit,
       new Date(item.created_at).toLocaleDateString(),
-      `$${item.amount.toFixed(2)}`,
+      `PHP ${item.amount.toFixed(2)}`,
       item.property_title,
       item.isSettled ? "Settled" : "Unsettled",
       item.isOfficial ? "Yes" : "No",
-      `$${item.amountToBeCollected.toFixed(2)}`
+      `PHP ${item.amountToBeCollected.toFixed(2)}`
     ]);
-  
   
     doc.autoTable({
       head: [headers],
       body: rows,
-      startY: 60,  
+      startY: 50,
       theme: 'striped',
-      styles: { fontSize: 12, cellPadding: 2, halign: 'center' },
+      styles: { fontSize: 8, cellPadding: 1, halign: 'center' }, 
       headStyles: { fillColor: [0, 51, 102], textColor: [255, 255, 255] },
     });
   
-   
-    doc.setFontSize(12);
-    doc.text(`Total Amount to be Collected (Official): $${totalAmount.toFixed(2)}`, 20, doc.lastAutoTable.finalY + 10);
+    doc.setFontSize(10); 
+    doc.text(`Total Amount to be Collected (Official): $${totalAmount.toFixed(2)}`, 20, doc.lastAutoTable.finalY + 5);
   
-    
     doc.save(`invoice_report_${companyName}.pdf`);
     setOpenModal(false);
   };
+  
   
   
 
@@ -252,6 +245,8 @@ function CompanyBillingTab() {
               <TableHeader className="bg-blue-800">
                 <TableRow>
                   <TableHead className="text-white">Invoice ID</TableHead>
+                  <TableHead className="text-white">Client Name</TableHead>
+                  <TableHead className="text-white">Unit</TableHead>
                   <TableHead className="text-white">Date</TableHead>
                   <TableHead className="text-white">Company Name</TableHead>
                   <TableHead className="text-white">Service</TableHead>
@@ -269,6 +264,8 @@ function CompanyBillingTab() {
                   currentItems.map((item, index) => (
                     <TableRow key={index}>
                       <TableCell>{item.id}</TableCell>
+                      <TableCell>{item.tenant}</TableCell>
+                      <TableCell>{item.unit}</TableCell>
                       <TableCell>{new Date(item.created_at).toLocaleDateString()}</TableCell>
                       <TableCell>{item.company_name}</TableCell>
                       <TableCell>{item.service}</TableCell>
@@ -376,13 +373,15 @@ function CompanyBillingTab() {
                   {previewData.map((item, index) => (
                     <TableRow key={index}>
                       <TableCell>{item.id}</TableCell>
+                      <TableCell>{item.tenant}</TableCell>
+                      <TableCell>{item.unit}</TableCell>
                       <TableCell>{new Date(item.created_at).toLocaleDateString()}</TableCell>
                       <TableCell>{item.service}</TableCell>
                       <TableCell>{item.property_title}</TableCell>
                       <TableCell>{item.isSettled ? "Paid" : "Unpaid"}</TableCell>
                       <TableCell>{item.isOfficial ? "Yes" : "No"}</TableCell>
-                      <TableCell>${item.amount.toFixed(2)}</TableCell>
-                      <TableCell>${item.amountToBeCollected.toFixed(2)}</TableCell>
+                      <TableCell>₱{item.amount.toFixed(2)}</TableCell>
+                      <TableCell>₱{item.amountToBeCollected.toFixed(2)}</TableCell>
                     </TableRow>
                   ))}
                 </TableBody>

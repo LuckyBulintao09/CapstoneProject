@@ -160,7 +160,7 @@ export const createReservation = async (
   const subject = `New ${selectedService} Reservation`;
   const message = `A new ${selectedService} service has been made for your unit in "${propertyName}".`;
 
-  await initializeBilling(companyId, selectedService, email, amount, propertyTitle, company_name, transactionId);
+  await initializeBilling(companyId, selectedService, email, amount, propertyTitle, company_name, transactionId,userId,unitId);
   await notifyProprietor({ email, subject, message });
 
   return { success: true };
