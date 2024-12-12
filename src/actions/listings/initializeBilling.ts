@@ -4,7 +4,6 @@ const supabase = createClient();
 
 export const initializeBilling = async (companyId: string,selectedService: string,ownerEmail: string, amount: number,propertyTitle: string,company_name: string,transactionId: string) => {
     console.log("Initialize billing called", "selectedService:", selectedService, "ownerEmail:", ownerEmail, "amount:", amount, "propertyTitle:", propertyTitle);
-    console.log("============================");
     const amountToBeCollected = amount * 0.03;
     const { data, error } = await supabase.from("company_billing").insert([{ company_id: companyId, service: selectedService, owner_email: ownerEmail, amount: amount, property_title: propertyTitle,company_name,amountToBeCollected,transaction_id:transactionId }]);
 

@@ -168,7 +168,9 @@ const ReviewsAnalytics = () => {
                   <div className='flex items-center'>
                     <LucideStar className='h-6 w-6 text-yellow-500 mr-2' />
                     <span className='font-bold text-2xl'>
-                      {reviewData?.ratings || 'no data'}/10
+                      {reviewData?.ratings || <p className='p-4 text-xs text-gray-500 dark:text-gray-300'>
+                No data
+              </p>}
                     </span>
                   </div>
                   <span className='text-xs text-green-600 mt-1'>
@@ -179,7 +181,9 @@ const ReviewsAnalytics = () => {
                   <div className='flex items-center'>
                     <MessageSquare className='h-6 w-6 text-yellow-500 mr-2' />
                     <span className='font-bold text-2xl'>
-                       {reviewData?.totalReviews || 'no data'} 
+                       {reviewData?.totalReviews ||  <p className='p-4 text-xs text-gray-500 dark:text-gray-300'>
+                No data
+              </p>} 
                     </span>
                   </div>
                   <span className='text-xs text-green-600 mt-1'>

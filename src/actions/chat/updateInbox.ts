@@ -23,6 +23,7 @@ export const updateInbox = async (
       .update({
         updated_at: currentTime, 
         last_message: message,
+        read:true
       })
       .or(`id.eq.${senderId}_${receiverId},id.eq.${receiverId}_${senderId}`);
 
