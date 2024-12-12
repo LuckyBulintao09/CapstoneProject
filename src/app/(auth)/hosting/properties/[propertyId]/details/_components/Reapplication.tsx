@@ -136,6 +136,9 @@ function Reapplication({ propertyId, classNames, propertyTitle, documentsStatus,
                                     toast.promise(propertyReapplication(propertyId), {
                                         loading: "Updating property...",
                                         success: () => {
+                                            setBusinessPermitContent(false);
+                                            setFireInspectionContent(false);
+                                            setOpen(false);
                                             return "Property updated successfully";
                                         },
                                         error: (error) => {
