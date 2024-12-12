@@ -24,6 +24,8 @@ import {
   DialogClose
 } from '@/components/ui/dialog';
 import EditTransactionModal from "./EditTransactionModal";
+import { setOfficialTransaction } from "@/actions/transaction/setOfficialTransacttion";
+import { setUnofficialTransaction } from "@/actions/transaction/setUnofficialTransaction";
 
 
 const supabase = createClient();
@@ -152,10 +154,13 @@ export const columns = (
           .update({ isPaid: !isPaid })
           .eq("id", row.original.id);
 
+          await setOfficialTransaction(row.original.id);
+
         if (error) {
           console.error(error);
         } else {
           setIsPaid(!isPaid);
+          await setUnofficialTransaction(row.original.id);
         }
 
         const { error: unitError } = await supabase
