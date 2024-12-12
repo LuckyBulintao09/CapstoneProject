@@ -5,7 +5,7 @@ import React from "react";
 import Image from "next/image";
 import Link from "next/link";
 
-import { buttonVariants } from "@/components/ui/button";
+import { Button, buttonVariants } from "@/components/ui/button";
 
 import { cn } from "@/lib/utils";
 
@@ -16,8 +16,10 @@ import MapLocation from "../@right/_components/MapLocation";
 import { usePathname, useRouter } from "next/navigation";
 import DeleteProperty from "./DeleteProperty";
 import { createClient } from "@/utils/supabase/client";
+import { checkPropertyDocuments } from "@/actions/property/propertyDocuments";
+import Reapplication from "./Reapplication";
 
-function LeftSection({ property, units, location, propertyId, property_house_rules, propertyAmenities }: any) {
+function LeftSection({ property, units, location, propertyId, property_house_rules, propertyAmenities, businessPermit, fireInspection, documentsStatus, userId }: any) {
     const pathname = usePathname();
     const supabase = createClient();
     const router = useRouter();
@@ -46,17 +48,18 @@ function LeftSection({ property, units, location, propertyId, property_house_rul
             supabase.removeChannel(channel);
         };
     }, [supabase, router]);
+
+    console.log(documentsStatus, "left section");
+
     return (
         <>
             {property?.isApproved === "missing" || property?.isApproved === "rejected" ? (
                 <div>
                     <div
-                        className={cn(
-                            "border-2 rounded-lg relative p-[22px]",
-                            pathname === `/hosting/properties/${propertyId}/details/documents`
-                                ? "border-primary shadow-xl"
-                                : " border-accent"
-                        )}
+                        className={cn("border rounded-lg relative p-[22px] shadow-xl", {
+                            "border-destructive bg-destructive/20": property?.isApproved === "rejected",
+                            "border-orange-500": property?.isApproved === "missing",
+                        })}
                     >
                         <div className="flex flex-row items-center gap-2">
                             <div
@@ -74,28 +77,39 @@ function LeftSection({ property, units, location, propertyId, property_house_rul
                             className="left-0 right-0 p-0 m-0 absolute bg-transparent top-0 bottom-0 z-[2] outline-none"
                         ></Link>
                         <div>
-                            <div className="pt-2 overflow-clip text-sm tracking-normal leading-5 text-ellipsis font-normal whitespace-pre-line text-muted-foreground">
+                            <div className="pt-2 overflow-clip text-sm tracking-normal leading-5 text-ellipsis font-normal whitespace-pre-line text-foreground">
                                 <div>
                                     <p className="break-words w-[464px]">
-                                        Finish these final tasks to publish your property and start getting booked.
+                                        Finish these final tasks to publish your property.{" "}
+                                        <span className={cn({"hidden": property?.isApproved !== "rejected"})}>
+                                            If your property is rejected without reason, please contact{" "}
+                                            <strong className="relative z-[3] cursor-text h-auto w-auto underline">
+                                                unihomes2024@gmail.com
+                                            </strong>
+                                        </span>
                                     </p>
                                 </div>
                                 <ul className="mt-2">
                                     {property?.isApproved === "missing" && (
                                         <li className="flex flex-row items-center gap-2">
-                                            <TriangleAlert className="h-4 w-4" />
+                                            <TriangleAlert className="h-4 w-4 mt-[2px]" />
                                             <span className="text-[0.875rem] leading-5 tracking-normal font-[400]">
                                                 Add property documents
                                             </span>
                                         </li>
                                     )}
                                     {property?.isApproved === "rejected" && (
-                                        <li className="flex flex-row items-center gap-2">
-                                            <TriangleAlert className="h-4 w-4" />
-                                            <span className="text-[0.875rem] leading-5 tracking-normal font-[400]">
-                                                {property?.decline_reason || (<span className="z-[3] cursor-text">Property declined, please contact <strong>unihomes2024@gmail.com</strong></span>)}
-                                            </span>
-                                        </li>
+                                        <>
+                                            <li className="flex flex-row items-start gap-2">
+                                                <TriangleAlert className="h-4 w-4 mt-[2px]" />
+                                                <span className="text-[0.875rem] leading-5 tracking-normal font-[400]">
+                                                    {property?.decline_reason}
+                                                </span>
+                                            </li>
+                                            <li className="mt-3 relative z-[4] w-fit h-fit">
+                                                <Reapplication propertyId={propertyId} propertyTitle={property?.title} documentsStatus={documentsStatus} userId={userId} classNames=" h-auto w-auto" />
+                                            </li>
+                                        </>
                                     )}
                                 </ul>
                             </div>
@@ -251,9 +265,7 @@ function LeftSection({ property, units, location, propertyId, property_house_rul
                             : " border-accent"
                     )}
                 >
-                    <span className="text-[1rem] leading-5 tracking-normal font-[500]">
-                        Property details
-                    </span>
+                    <span className="text-[1rem] leading-5 tracking-normal font-[500]">Property details</span>
                     <Link
                         href={`/hosting/properties/${propertyId}/details/property-type`}
                         className="left-0 right-0 p-0 m-0 absolute bg-transparent top-0 bottom-0 z-[2] outline-none"
@@ -274,10 +286,7 @@ function LeftSection({ property, units, location, propertyId, property_house_rul
                                                 amenity_id: number;
                                                 amenity_name: string;
                                             }) => (
-                                                <div
-                                                    className="flex items-center gap-1 shrink-0  "
-                                                    key={amenity_id}
-                                                >
+                                                <div className="flex items-center gap-1 shrink-0  " key={amenity_id}>
                                                     <Check className="w-4 h-4 text-success" />
                                                     <span className="text-xs">{amenity_name}</span>
                                                 </div>
@@ -309,7 +318,6 @@ function LeftSection({ property, units, location, propertyId, property_house_rul
                                                 <span className="text-sm">This property has no house rules</span>
                                             </div>
                                         )}
-                                        
                                     </div>
                                 </div>
                             </div>
