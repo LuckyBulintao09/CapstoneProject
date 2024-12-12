@@ -51,7 +51,7 @@ async function DocumentsPage({ params }: { params: { propertyId: string } }) {
                         <div className="text-base leading-5 tracking-normal my-4 lg:mt-0">
                             You need to upload necessary documents for the property to be
                             approved by UniHomes. Once the property is approved, it will be published for users to see.
-                            You can read more on our{" "}
+                            Too see more information about the documents required, you can read more on our{" "}
                             <Link
                                 href={`/TermsAndCondition`}
                                 className={cn(buttonVariants({ variant: "link" }), "p-0 h-auto m-0 text-base")}

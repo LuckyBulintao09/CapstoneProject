@@ -68,10 +68,8 @@ export async function createDuplicateUnit(propertyId: string, values: any, numbe
         const unitIds = data.map((unit: any) => unit.id);
 
         for (const unit of data) {
-            const updatedTitle = `${values.title}-${unit.id}`;
-    
             // Update the unit title with the unit ID
-            await supabase.from("unit").update({ title: updatedTitle }).eq("id", unit.id);
+            await supabase.from("unit").update({ title: values.title }).eq("id", unit.id);
     
             // Insert amenities and images
             await insertAmenities(values.amenities, unit.id);
