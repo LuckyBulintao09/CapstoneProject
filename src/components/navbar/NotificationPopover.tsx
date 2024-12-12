@@ -95,6 +95,16 @@ export function NotificationPopover() {
 		if (error) throw error;
 	};
 
+	const handleClearNotification = async () => {
+		const { error } = await supabase
+			.from('notifications')
+			.delete()
+			.eq('receiver_id', user);
+		if (error) throw error;
+		setNotifications([]);
+		setUnreadCount(0);
+	};
+
 	if (!isUserLoggedIn) return null;
 
 	return (
@@ -124,6 +134,12 @@ export function NotificationPopover() {
 					<div className='p-4'>
 						<div className='mb-2 text-sm font-semibold lg:pl-0 pl-4 text-foreground'>
 							Notifications
+							<button
+								onClick={handleClearNotification}
+								className='text-sm float-right text-gray-500 hover:text-gray-800 dark:text-gray-400 dark:hover:text-gray-300'
+							>
+								Clear
+							</button>
 						</div>
 						{notifications?.length > 0 ? (
 							<div className='space-y-1'>
@@ -150,3 +166,4 @@ export function NotificationPopover() {
 		</Popover>
 	);
 }
+
