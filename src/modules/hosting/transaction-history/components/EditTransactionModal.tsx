@@ -77,7 +77,7 @@ const EditTransactionModal = ({ isOpen, onClose, id }: EditTransactionModalProps
     <Dialog open={isOpen} onOpenChange={onClose}>
       <DialogContent className="max-w-[80%] lg:max-w-[50%] max-h-[80%] bg-white dark:bg-secondary shadow-lg rounded-lg overflow-y-auto">
         <DialogHeader>
-          <DialogTitle>Edit Transaction</DialogTitle>
+          <DialogTitle>Edit Contract</DialogTitle>
           <DialogDescription className="border-b border-gray-300 dark:text-gray-200 pb-2">
             Provide the details below.
           </DialogDescription>
@@ -85,23 +85,23 @@ const EditTransactionModal = ({ isOpen, onClose, id }: EditTransactionModalProps
 
         <div className="grid w-full items-center gap-5">
           {/* Property Name */}
-          <div className="flex flex-col space-y-1.5">
+          {/* <div className="flex flex-col space-y-1.5">
             <Label htmlFor="propertyName" className="font-semibold">
               Property Name
             </Label>
             <Input value={propertyTitle} placeholder="Property name" disabled />
-          </div>
+          </div> */}
 
           {/* Unit Title */}
-          <div className="flex flex-col space-y-1.5">
+          {/* <div className="flex flex-col space-y-1.5">
             <Label htmlFor="unitTitle" className="font-semibold">
               Unit Title
             </Label>
             <Input value={unitTitle} placeholder="Unit title" disabled />
-          </div>
+          </div> */}
 
           {/* Client Name */}
-          <div className="flex flex-col space-y-1.5">
+          {/* <div className="flex flex-col space-y-1.5">
             <Label htmlFor="clientName" className="font-semibold">
               Client Name
             </Label>
@@ -113,7 +113,7 @@ const EditTransactionModal = ({ isOpen, onClose, id }: EditTransactionModalProps
               className="border-gray-400"
               placeholder="Enter the client name"
             />
-          </div>
+          </div> */}
 
           {/* Month Contract */}
           <div className="flex items-center justify-between w-full">
