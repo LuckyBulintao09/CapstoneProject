@@ -18,7 +18,7 @@ const Page = () => {
   const [conversations, setConversations] = useState([]);
   const [selectedReceiverId, setSelectedReceiverId] = useState<string | null>(null);
   const [selectedCompanyName, setSelectedCompanyName] = useState<string | null>(null);
-  const [loading, setLoading] = useState(true);
+  const [loading, setLoading] = useState(false); 
   const [showArchived, setShowArchived] = useState(false);
   const [showConversations, setShowConversations] = useState(false); 
   const [messagesOpen, setMessagesOpen] = useState(false); 
@@ -38,13 +38,23 @@ const Page = () => {
     if (!currentUserId) return;
 
     const loadConversations = async () => {
-      setLoading(true);
       const fetchedConversations = await fetchConversations(currentUserId);
-      setConversations(fetchedConversations);
-      setLoading(false);
+      setConversations((prev) => {
+        const updatedConversations = new Map(prev.map((c) => [c.user2, c]));
+        fetchedConversations.forEach((newConv) => {
+          updatedConversations.set(newConv.user2, newConv); 
+        });
+        return Array.from(updatedConversations.values());
+      });
     };
 
-    loadConversations();
+    loadConversations(); 
+
+    const intervalId = setInterval(() => {
+      loadConversations(); 
+    }, 3000);
+
+    return () => clearInterval(intervalId); 
   }, [currentUserId]);
 
   useEffect(() => {
@@ -110,10 +120,29 @@ const Page = () => {
   };
 
   const filteredConversations = useMemo(() => {
-    return showArchived
+    const sortedConversations = showArchived
       ? conversations.filter((conversation) => conversation.isArchived)
       : conversations.filter((conversation) => !conversation.isArchived);
+  
+    // console.log('Sorted Conversations before sorting:', sortedConversations.map(c => c.updated_at));
+  
+    return sortedConversations.sort((a, b) => {
+      const currentDate = new Date().toISOString().split('T')[0]; 
+ 
+      const dateA = new Date(`${currentDate}T${a.updated_at}`);
+      const dateB = new Date(`${currentDate}T${b.updated_at}`);
+  
+      // console.log(`Comparing: ${dateA} vs ${dateB}`);
+  
+      // Sort in descending order: latest updated_at first
+      return dateB.getTime() - dateA.getTime();
+    });
   }, [conversations, showArchived]);
+  
+  
+  
+  
+  
 
   const conversationList = useMemo(() => {
     return filteredConversations.map((conversation) => (
@@ -190,7 +219,6 @@ const Page = () => {
               : `Showing ${showArchived ? 'Archived' : 'Current'} Conversations (${filteredConversations.length})`}
           </h2>
 
-          {/* Combobox for Archived Conversations */}
           <div className='relative flex justify-between'>
             <Button
               variant='outline'
