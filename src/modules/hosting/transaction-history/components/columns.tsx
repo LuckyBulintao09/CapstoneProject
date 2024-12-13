@@ -29,7 +29,7 @@ import { setUnofficialTransaction } from "@/actions/transaction/setUnofficialTra
 import { Label } from '@/components/ui/label';
 import { CalendarIcon, PlusCircle, MinusCircle } from 'lucide-react';
 import { ca } from "date-fns/locale";
-import { addMonths } from "date-fns";
+import { addMonths, isWithinInterval } from "date-fns";
 import ReserveTransactionModal from "./ReserveTransactionModal";
 import DropContractModal from "./DropContractModal";
 
@@ -129,13 +129,13 @@ export const columns = (
         //   {date ? format(parseISO(date), "dd MMMM, yyyy") : "Not yet set"}
         // </span>
         <>
-          {status === "ended" ? (
+          {date ? (
             <span className="truncate">
-              Contract Ended
+              {date ? format(parseISO(date), "dd MMMM, yyyy") : "Not yet set"}
             </span>
           ) : (
             <span className="truncate">
-              {date ? format(parseISO(date), "dd MMMM, yyyy") : "Not yet set"}
+              No date available
             </span>
           )}
         </>
@@ -505,12 +505,12 @@ export const columns = (
         try {
           const { error: TransactionError } = await supabase
             .from("transaction")
-            .update({ transaction_status: "ended", month_contract: null, contract: null })
+            .update({ transaction_status: "ended", month_contract: null })
             .eq("id", row.original.id);
 
           const { error: unitError} = await supabase
             .from("unit")
-            .update({ contract: null, isReserved: false, current_occupants: 0  })
+            .update({ isReserved: false, current_occupants: 0  })
             .eq("id", row.original.unit.id);
 
   
