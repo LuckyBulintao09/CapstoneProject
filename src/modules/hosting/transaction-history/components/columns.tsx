@@ -43,6 +43,7 @@ export type Transaction = {
   appointment_date: string;
   transaction_status: string;
   isPaid: boolean;
+  month_contract: Date;
   unit: {
     id: number;
     title: string;
@@ -459,8 +460,31 @@ export const columns = (
       }
 
       //Add drop Contract
+      const handleDropContract = async () => {
+        try {
+          //update transaction
+          const { error } = await supabase
+            .from("transaction")
+            .update({ contract: null, month_contract: null })
+            .eq("id", row.original.id);
 
-      return (transactionStatus === "pending" || (transactionStatus === "reserved" && row.getValue("service_option") === "Room Reservation")) ? (
+          const { error: unitError} = await supabase
+            .from("unit")
+            .update({ contract: null, isReserved: false, current_occupants: 0  })
+            .eq("id", row.original.unit.id);
+
+          if (error || unitError) {
+            console.error("Error updating transaction:", error || unitError);
+          } else {
+            toast.success("Contract dropped successfully");
+          }
+      } catch (error) {
+        console.error("Unexpected error:", error);
+      }
+    }
+
+
+      return (transactionStatus === "pending" || (transactionStatus === "reserved")) ? (
         <>
         <DropdownMenu>
           <DropdownMenuTrigger asChild>
@@ -481,10 +505,13 @@ export const columns = (
               <DropdownMenuSeparator/>
               </>
             )}
-            {transactionStatus === "reserved" && paidStatus && (
+            {transactionStatus === "reserved" && paidStatus &&  (
               <>
                 <DropdownMenuItem onSelect={() => handleRenewContract()}>
                   Renew Contract
+                </DropdownMenuItem>
+                <DropdownMenuItem onSelect={() => handleDropContract()}>
+                  Drop Contract
                 </DropdownMenuItem>
               </>
             )}

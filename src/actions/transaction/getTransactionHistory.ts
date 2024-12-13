@@ -63,6 +63,7 @@ export const getTransactionHistory = async (userId: string) => {
         isPaid,
         contract,
         client_name,
+        month_contract,
         transaction_type, 
         unit:unit_id (
           id, title, unit_code, property:property_id (title)
