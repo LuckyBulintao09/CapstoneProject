@@ -44,10 +44,10 @@ const PropertyListingsDashboard: React.FC<PropertyListingsDashboardProps> = ({
         `)
         .in("isApproved", ["pending", "approved", "rejected"])
         .order("isApproved", {
-          ascending: false,
+          ascending: true,
         })
         .order("isApproved", {
-          ascending: true,
+          ascending: false,
           nullsFirst: true,
         })
 
