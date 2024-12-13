@@ -20,14 +20,14 @@ export async function countPropertyImageStorageBucket(userId: string, propertyId
     }
 }
 
-export async function addUnitImages(fileUrls: any, unitIds: any) {
+export async function addUnitImages(fileUrls: string[], unitIds: number[]) {
     const supabase = createClient();
 
     try {
         const updatePromises = unitIds.map(async (unitId) => {
             const { data, error } = await supabase.rpc("append_to_unit_images", {
                 unit_id: unitId,
-                new_images: fileUrls, // Same file URLs for all units
+                new_images: fileUrls, // Only the URLs for this specific unit
             });
 
             if (error) {
@@ -42,13 +42,14 @@ export async function addUnitImages(fileUrls: any, unitIds: any) {
 
         console.log("Unit images updated successfully:", results);
 
-        return results; // Return the results for further inspection
+        return results;
 
     } catch (error: any) {
         console.log(error.message, "error");
         throw error.message;
     }
 }
+
 
 export async function addUnitPhotos(fileUrls: any, unitId: any) {
     const supabase = createClient();

@@ -141,34 +141,39 @@ function AddUnitsForm({ amenities, unitId, propertyId, userId }: { amenities?: a
                         if (uppy.getFiles().length > 0) {
                             const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL;
                             const bucketName = "unihomes image storage";
-                            const uploadedFiles: string[] = [];
+                            const uploadedFiles: Record<string, string[]> = {}; // Map unitId to file URLs
                             const supabase = createClient();
-    
+                    
                             try {
-                                // Iterate over unit IDs and files
                                 for (const unitId of unitIds) {
+                                    uploadedFiles[unitId] = []; // Initialize an array for each unitId
+                    
                                     for (const file of uppy.getFiles()) {
                                         const objectName = `property/${userId}/${propertyId}/unit/${unitId}/unit_image/${file.name}`;
-    
+                    
                                         // Upload the file to Supabase storage
                                         const { data, error } = await supabase.storage
                                             .from(bucketName)
                                             .upload(objectName, file.data as Blob);
-    
+                    
                                         if (error) {
                                             console.error("Error uploading file:", error.message);
                                             throw new Error(`Failed to upload ${file.name}`);
                                         }
-    
-                                        // Push the public file URL into uploadedFiles
+                    
+                                        // Push the public file URL into the specific unit's array
                                         const fileUrl = `${supabaseUrl}/storage/v1/object/public/${bucketName}/${objectName}`;
-                                        uploadedFiles.push(fileUrl);
+                                        uploadedFiles[unitId].push(fileUrl);
                                     }
                                 }
-    
-                                // Add the uploaded file URLs to all units
-                                await addUnitImages(uploadedFiles, unitIds);
-    
+                    
+                                // Add the uploaded file URLs to each unit
+                                for (const unitId of unitIds) {
+                                    if (uploadedFiles[unitId]?.length > 0) {
+                                        await addUnitImages(uploadedFiles[unitId], [unitId]); // Pass the URLs for this unit
+                                    }
+                                }
+                    
                                 // Redirect after success
                                 router.replace(`/hosting/properties/${propertyId}/details/units`);
                             } catch (error) {
@@ -177,7 +182,7 @@ function AddUnitsForm({ amenities, unitId, propertyId, userId }: { amenities?: a
                             }
                         }
                         return "Unit added successfully";
-                    },
+                    },                    
                     error: (error) => {
                         console.error("Error creating units:", error.message);
                         return "Something went wrong. Failed to create units.";
