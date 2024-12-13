@@ -64,6 +64,7 @@ export const BookingCardModal: React.FC<BookingCardProps> = ({
 	const [isUnitReserved, setIsUnitReserved] = useState<boolean>(false);
 	const [userId, setUserId] = useState<string | null>(null);
 	const [confirmationMessage, setConfirmationMessage] = useState<string>('');
+	const [isDisabled, setIsDisabled] = useState<boolean>(false);
 
 	const [isConfirmationModalOpen, setIsConfirmationModalOpen] = useState(false);
 
@@ -143,7 +144,7 @@ export const BookingCardModal: React.FC<BookingCardProps> = ({
 	return (
 		<>
 			<Dialog open={isOpen} onOpenChange={onClose}>
-				<DialogContent className='max-w-[80%] lg:max-w-[50%] max-h-[80%] bg-white dark:bg-secondary shadow-lg rounded-lg overflow-y-auto' style={{ zIndex: 999 }}>
+				<DialogContent className='max-w-[80%] lg:max-w-[50%] max-h-[80%] bg-white dark:bg-secondary shadow-lg rounded-lg overflow-y-auto'>
 					<DialogHeader>
 						<DialogTitle>Book Now</DialogTitle>
 						<DialogDescription className='border-b border-gray-300 dark:text-gray-200 pb-2'>
@@ -361,7 +362,9 @@ export const BookingCardModal: React.FC<BookingCardProps> = ({
 
 					<Button
 						className='w-full mt-2'
-						onClick={()=> handleApproveReservation()}
+						onClick={() => {
+							setIsConfirmationModalOpen(true);
+						}}
 						disabled={
 							!date || !selectedService || hasReservation || isUnitReserved
 						}

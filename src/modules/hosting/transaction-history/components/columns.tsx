@@ -214,7 +214,7 @@ export const columns = (
         } else {
           setIsPaid(!isPaid);
           toast.success("Payment confirmed successfully.");
-          await setUnofficialTransaction(row.original.id);
+          // await setUnofficialTransaction(row.original.id);
         }
 
       } finally {
@@ -453,6 +453,7 @@ export const columns = (
             console.error("Error updating transaction:", updateError || unitError);
           } else {
             toast.success("Transaction reserved successfully");
+            await setOfficialTransaction(row.original.id);
           }
         } catch (error) {
           console.error("Unexpected error:", error);
