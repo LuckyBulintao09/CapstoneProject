@@ -117,7 +117,7 @@ export const columns: ColumnDef<any>[] = [
                             <Image
                                 src={`/placeholderImage.webp`}
                                 alt={`property image`}
-                                width={1524}
+                                width={1524} 
                                 height={2032}
                                 className="rounded-xl object-cover overflow-clip aspect-[20/19] mb-3 select-none"
                                 loading="lazy"

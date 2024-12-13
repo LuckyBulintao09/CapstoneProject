@@ -166,7 +166,7 @@ export default function UnitList({ propertyId }: { propertyId: string }) {
 
                         <div className="flex grow items-center gap-3">
                             <div className="flex-shrink-0">
-                                {((unit.unit_image && unit.unit_image[0]) || (unit.unit_image)) ? (
+                                {((unit.unit_image.length > 0 && unit.unit_image[0] !== "")) ? (
                                     <Image
                                         src={unit.unit_image[0]}
                                         alt={unit.title}
@@ -189,8 +189,8 @@ export default function UnitList({ propertyId }: { propertyId: string }) {
                                     {unit.title} <span className="text-xs font-normal leading-[inherit] text-muted-foreground"></span>
                                 </Label>
                                 <div>
-                                    <p id="set_isReserved-description" className="text-xs text-muted-foreground">
-                                        Private Type: {unit.privacy_type}
+                                    <p id="set_isReserved-description" className="text-xs text-muted-foreground capitalize">
+                                        {unit.privacy_type}
                                     </p>
                                     <p id="set_isReserved-description" className="text-xs text-muted-foreground">
                                         Price: ₱
