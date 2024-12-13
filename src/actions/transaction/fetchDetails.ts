@@ -12,7 +12,8 @@ export const fetchDropdownDetails = async (userId: string) => {
                 title,
                 unit (
                     id,
-                    title
+                    title,
+                    isReserved
                 )
             )
         `)
@@ -21,7 +22,7 @@ export const fetchDropdownDetails = async (userId: string) => {
     if (error) {
         throw error;
     }
-
+    console.log(data)
     return data
 };
 
@@ -35,6 +36,7 @@ export const fetchEditDetails = async (id: number) => {
             unit (
                 id,
                 title,
+                isReserved,
                 property (
                     id,
                     title

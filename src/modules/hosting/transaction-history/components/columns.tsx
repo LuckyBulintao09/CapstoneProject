@@ -31,6 +31,7 @@ import { CalendarIcon, PlusCircle, MinusCircle } from 'lucide-react';
 import { ca } from "date-fns/locale";
 import { addMonths } from "date-fns";
 import ReserveTransactionModal from "./ReserveTransactionModal";
+import DropContractModal from "./DropContractModal";
 
 
 const supabase = createClient();
@@ -122,10 +123,22 @@ export const columns = (
     ),
     cell: ({ row }) => {
       const date = row.getValue("contract") as string;
+      const status = row.getValue("transaction_status") as string;
       return (
-        <span className="truncate">
-          {date ? format(parseISO(date), "dd MMMM, yyyy") : "Not yet set"}
-        </span>
+        // <span className="truncate">
+        //   {date ? format(parseISO(date), "dd MMMM, yyyy") : "Not yet set"}
+        // </span>
+        <>
+          {status === "ended" ? (
+            <span className="truncate">
+              Contract Ended
+            </span>
+          ) : (
+            <span className="truncate">
+              {date ? format(parseISO(date), "dd MMMM, yyyy") : "Not yet set"}
+            </span>
+          )}
+        </>
       );
     },
   },
@@ -141,6 +154,7 @@ export const columns = (
         pending: "bg-amber-100 text-amber-800 dark:bg-amber-800 dark:text-amber-200",
         cancelled: "bg-red-100 text-red-800 dark:bg-red-800 dark:text-red-200",
         visited: "bg-green-100 text-green-800 dark:bg-green-800 dark:text-green-200",
+        ended: "bg-gray-100 text-gray-800 dark:bg-gray-800 dark:text-gray-200",
       };
       const style = badgeStyles[status] || "bg-gray-100 text-gray-800 dark:bg-gray-800 dark:text-gray-200";
 
@@ -176,9 +190,11 @@ export const columns = (
           .in("transaction_status", ["pending", "reserved"])
           .not("user_id", "eq", row.original.user_id);
 
-        const receiverIds = receiver_id.map(item => item.user_id);
-		    await cancelled_onsiteNotification(row.original.unit.id, receiverIds);
-        await confirm_reserveNotification(row.original.unit.id, row.original.user_id);
+        const receiverIds = receiver_id?.map(item => item?.user_id) || [];
+        if (row.original.user_id) {
+          await cancelled_onsiteNotification(row.original.unit.id, receiverIds);
+          await confirm_reserveNotification(row.original.unit.id, row.original.user_id);
+        }
 
         //cancel other
         const { error: cancelError } = await supabase
@@ -334,6 +350,7 @@ export const columns = (
       const [isEditModalOpen, setIsEditModalOpen] = React.useState(false);
       const [paidStatus, setPaidStatus] = React.useState(row.getValue("isPaid") as boolean);
       const [isReserveModalOpen, setIsReserveModalOpen] = React.useState(false);
+      const [isDropModalOpen, setIsDropModalOpen] = React.useState(false);
       const handleCancel = async (reason: string) => {
         try {
           await supabase
@@ -461,12 +478,34 @@ export const columns = (
       }
 
       //Add drop Contract
-      const handleDropContract = async () => {
+    //   const handleDropContract = async () => {
+    //     try {
+    //       //update transaction
+    //       const { error } = await supabase
+    //         .from("transaction")
+    //         .update({ contract: null, month_contract: null })
+    //         .eq("id", row.original.id);
+
+    //       const { error: unitError} = await supabase
+    //         .from("unit")
+    //         .update({ contract: null, isReserved: false, current_occupants: 0  })
+    //         .eq("id", row.original.unit.id);
+
+    //       if (error || unitError) {
+    //         console.error("Error updating transaction:", error || unitError);
+    //       } else {
+    //         toast.success("Contract dropped successfully");
+    //       }
+    //   } catch (error) {
+    //     console.error("Unexpected error:", error);
+    //   }
+    // }
+
+      const handleEndContract = async () => {
         try {
-          //update transaction
-          const { error } = await supabase
+          const { error: TransactionError } = await supabase
             .from("transaction")
-            .update({ contract: null, month_contract: null })
+            .update({ transaction_status: "ended", month_contract: null, contract: null })
             .eq("id", row.original.id);
 
           const { error: unitError} = await supabase
@@ -474,15 +513,16 @@ export const columns = (
             .update({ contract: null, isReserved: false, current_occupants: 0  })
             .eq("id", row.original.unit.id);
 
-          if (error || unitError) {
-            console.error("Error updating transaction:", error || unitError);
+  
+          if (TransactionError||unitError) {
+            console.error("Error updating transaction:", TransactionError||unitError);
           } else {
-            toast.success("Contract dropped successfully");
+            toast.success("Contract ended successfully");
           }
-      } catch (error) {
-        console.error("Unexpected error:", error);
+        } catch (error) {
+          console.error("Unexpected error:", error);
+        }
       }
-    }
 
 
       return (transactionStatus === "pending" || (transactionStatus === "reserved")) ? (
@@ -508,17 +548,21 @@ export const columns = (
             )}
             {transactionStatus === "reserved" && paidStatus &&  (
               <>
-                <DropdownMenuItem onSelect={() => handleRenewContract()}>
+                {/* <DropdownMenuItem onSelect={() => handleRenewContract()}>
                   Renew Contract
+                </DropdownMenuItem> */}
+
+              <DropdownMenuItem onSelect={() => setIsEditModalOpen(true)}>
+                Renew Contract
+              </DropdownMenuItem>
+              <DropdownMenuItem onSelect={() => handleEndContract()}>
+                  End Contract
                 </DropdownMenuItem>
-                <DropdownMenuItem onSelect={() => handleDropContract()}>
+                <DropdownMenuItem onSelect={() => setIsDropModalOpen(true)}>
                   Drop Contract
                 </DropdownMenuItem>
               </>
             )}
-            <DropdownMenuItem onSelect={() => setIsEditModalOpen(true)}>
-              Edit Contract
-            </DropdownMenuItem>
             {!paidStatus && (
               <>
                 <DropdownMenuSeparator/>
@@ -543,6 +587,11 @@ export const columns = (
           isOpen={isReserveModalOpen}
           onClose={() => setIsReserveModalOpen(false)}
           handleReserve={handleReserve}
+        />
+        <DropContractModal
+          isOpen={isDropModalOpen}
+          onClose={() => setIsDropModalOpen(false)}
+          id={row.original.id}
         />
         </>
       ) : (
