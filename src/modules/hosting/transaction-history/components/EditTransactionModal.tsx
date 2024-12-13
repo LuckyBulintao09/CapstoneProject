@@ -9,6 +9,7 @@ import { createClient } from "@/utils/supabase/client";
 import { fetchEditDetails } from "@/actions/transaction/fetchDetails";
 import { format, set } from 'date-fns';
 import { toast } from "sonner";
+import { addMonths } from "date-fns";
 
 interface EditTransactionModalProps {
   isOpen: boolean;
@@ -47,29 +48,82 @@ const EditTransactionModal = ({ isOpen, onClose, id }: EditTransactionModalProps
 
   const handleFormSubmit = async () => {
     const supabase = createClient();
-    // Add the update function here
-    // If needed, include fields like "propertyTitle", "unitTitle", etc.
+    try {
+      // Fetch the data
+      const { data: transactionData, error: contractError } = await supabase
+        .from("transaction")
+        .select("month_contract, contract, unit_id")
+        .eq("id", id)
+        .single();
 
-	const { error } = await supabase
-	  .from("transaction")
-	  .update({
-		contract: format(new Date(Date.now() + (monthContract * 30 * 24 * 60 * 60 * 1000)), 'yyyy-MM-dd'),
-		client_name: clientName
-	  })
-	  .eq("id", id);
+        console.log(transactionData)
+  
+      if (contractError) {
+        console.error("Error fetching transaction:", contractError);
+        return;
+      }
+  
+      const { month_contract, contract, unit_id } = transactionData;
+  
+       // Validate the data
+      if (typeof monthContract !== "number" || isNaN(monthContract)) {
+        console.error("Invalid or missing value for month_contract:", monthContract);
+        return;
+      }
 
-  const { error: unitError } = await supabase
-    .from("unit")
-    .update({ contract: format(new Date(Date.now() + (monthContract * 30 * 24 * 60 * 60 * 1000)), 'yyyy-MM-dd') })
-    .eq("id", unitId);
+      if (!contract || isNaN(new Date(contract).getTime())) {
+        console.error("Invalid or missing date for contract:", contract);
+        return;
+      }
+
+      // Calculate the new contract date
+      const newContractDate = addMonths(new Date(contract), monthContract)
+        .toISOString()
+        .slice(0, 10);
+  
+  
+      // // Update the transaction
+      const { error: updateError } = await supabase
+        .from("transaction")
+        .update({ contract: newContractDate })
+        .eq("id", id);
+
+      const { error: unitError } = await supabase
+        .from("unit")
+        .update({ contract: newContractDate })
+        .eq("id", unit_id);
+  
+      if (updateError || unitError) {
+        console.error("Error updating transaction:", updateError || unitError);
+      } else {
+        toast.success("Contract renewed successfully");
+      }
+    } catch (error) {
+      console.error("Unexpected error:", error);
+    } 
+
+	// const { error } = await supabase
+	//   .from("transaction")
+	//   .update({
+	// 	contract: format(new Date(Date.now() + (monthContract * 30 * 24 * 60 * 60 * 1000)), 'yyyy-MM-dd'),
+	// 	client_name: clientName
+	//   })
+	//   .eq("id", id);
+
+  // const { error: unitError } = await supabase
+  //   .from("unit")
+  //   .update({ contract: format(new Date(Date.now() + (monthContract * 30 * 24 * 60 * 60 * 1000)), 'yyyy-MM-dd') })
+  //   .eq("id", unitId);
   
 
-	if (error) {
-	  console.error("Error updating transaction:", error.message);
-	  return { success: false, error: error.message };
-	}
-	toast.success("Transaction updated successfully");
-    onClose();
+	// if (error) {
+	//   console.error("Error updating transaction:", error.message);
+	//   return { success: false, error: error.message };
+	// }
+	// toast.success("Transaction updated successfully");
+  //   onClose();
+
+
 	window.location.reload();
   };
 

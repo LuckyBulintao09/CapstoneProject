@@ -39,33 +39,49 @@ interface CreateTransactionModalProps {
   
 	useEffect(() => {
 		const fetchDetails = async () => {
-		  const supabase = createClient();
-		  const userId = await supabase.auth.getUser();
-		  setUserId(userId);
-		  const fetchedData = await fetchDropdownDetails(userId.data.user.id);
+			const supabase = createClient();
+			const userId = await supabase.auth.getUser();
+			setUserId(userId);
+			const fetchedData = await fetchDropdownDetails(userId.data.user.id);
 	
-		  console.log(fetchedData);
+			console.log(fetchedData);
 	
-		  setData(fetchedData);
-		  if (fetchedData[0] && fetchedData[0].property) {
-			setPropertyOptions(fetchedData[0].property);
-		  }
+			// Filter properties with units and units that are not reserved
+			const filteredData = fetchedData.map(entry => ({
+				...entry,
+				property: entry.property.map(property => ({
+					...property,
+					unit: property.unit.filter(unit => !unit.isReserved)
+				})).filter(property => property.unit.length > 0)
+			})).filter(entry => entry.property.length > 0);
+	
+			setData(filteredData);
+	
+			if (filteredData.length > 0) {
+				setPropertyOptions(filteredData.flatMap(entry => entry.property));
+			}
 		};
 	
 		fetchDetails();
 	}, []);
-  
-	useEffect(() => {
-		const selectedProperty = propertyOptions.find(
-		  (item) => item.id === propertyId
-		);
 	
-		if (selectedProperty) {
-		  setUnitOptions(selectedProperty.unit || []);
-		  setUnitId(null);
-		  setUnitTitle('');
+	useEffect(() => {
+		if (propertyId && propertyOptions.length > 0) {
+			const selectedProperty = propertyOptions.find(
+				(item) => item.id === propertyId
+			);
+	
+			if (selectedProperty) {
+				const availableUnits = selectedProperty.unit.filter(unit => !unit.isReserved);
+				setUnitOptions(availableUnits);
+				setUnitId(null);
+				setUnitTitle('');
+			} else {
+				setUnitOptions([]);
+			}
 		}
 	}, [propertyId, propertyOptions]);
+	
 	
 	  const handleFormSubmit = async () => {
 		const supabase = createClient();
