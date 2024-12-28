@@ -3,7 +3,7 @@ import React from 'react'
 function page() {
   return (
     <div>
-      services page
+      resource page
     </div>
   )
 }

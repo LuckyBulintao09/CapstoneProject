@@ -15,7 +15,7 @@ function NavBar() {
 
   const navItems = [
     { label: 'Home', href: '/' },
-    { label: 'Services', href: '/services' },
+    { label: 'Resources', href: '/resources' },
     { label: 'Announcements', href: '/announcements' },
   ];
 
@@ -66,7 +66,7 @@ function NavBar() {
       <div className='hidden lg:block animate-in fade-in zoom-in p-4'>
         <div className='flex justify-between mx-2 md:mx-[30px] items-center'>
           <Image
-            src='/deped-logo.png'
+            src='/deped-ifugao-logo.png'
             alt='Logo'
             width={160}
             height={80}

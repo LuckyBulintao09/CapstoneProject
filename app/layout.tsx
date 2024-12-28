@@ -33,12 +33,12 @@ export default function RootLayout({
         >
           <div className="flex flex-col min-h-screen">
             <NavBar />
-            <main className="flex-1 flex flex-col gap-20 items-center max-w-5xl p-5 pt-[76px] sm:pt-[90px] md:pt-[100px]">
+            <main className="flex-grow p-5 pt-[76px] sm:pt-[90px] md:pt-[100px]">
               {children}
             </main>
-            <footer className="flex flex-col items-center py-5 dark:bg-secondary border-t">
+            <footer className="flex-shrink-0 flex flex-col items-center py-5 dark:bg-secondary border-t">
               <div className="flex flex-col sm:flex-row justify-center items-center gap-1 text-xs text-muted-foreground p-2">
-                <span>Copyright @ 2024 | SDO - IFUGAO | Schools Governance and Operations Division Online Support System</span>
+                <span>Copyright @ 2024 | Schools Governance and Operations Division Online Support System | SDO - IFUGAO </span>
               </div>
             </footer>
           </div>
