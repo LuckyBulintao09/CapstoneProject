@@ -15,16 +15,15 @@ const Hero = () => {
 
   const heroBadgeText = "New Release";
   const heroDescription = "Schools Governance and Operations Division Online Support System";
-  const buttonLearnMoreText = "View Services";
+  const buttonLearnMoreText = "Explore";
 
   const typewriterEffectStyle: React.CSSProperties = {
     display: 'inline-block',
     borderRight: '4px solid',
     paddingRight: '4px',
-    animation: 'typing 4s steps(200) 1s forwards, blink 1.5s step-end infinite',
+    animation: 'typing 5s steps(300) 1s forwards, blink 2.5s step-end infinite', // Adjust steps here
     whiteSpace: 'nowrap',
-    overflow: 'hidden',
-    overflowWrap: 'anywhere', 
+    overflow: 'hidden', 
   };
 
   const typingAnimation = `
@@ -38,11 +37,11 @@ const Hero = () => {
   `;
 
   return (
-    <section className="px-4 sm:px-16 md:px-8 lg:px-32">
+    <section className="px-2 sm:px-4 md:px-6 lg:px-8">
       <style>{typingAnimation}</style>
-      <div className="flex flex-col-reverse lg:flex-row items-center gap-6">
-        <div className="flex flex-col items-center text-center lg:items-start lg:text-left">
-          <h3 className="mt-4 text-2xl font-bold tracking-tight sm:text-5xl md:text-3xl lg:text-6xl max-w-full">
+      <div className="flex flex-col-reverse lg:flex-row items-start gap-6"> 
+        <div className="flex flex-col items-start text-left w-full lg:w-2/3">
+          <h3 className="mt-4 text-2xl font-bold tracking-tight sm:text-5xl md:text-3xl lg:text-6xl">
             <span style={typewriterEffectStyle}>
               {words.map((word, index) => (
                 <span key={index} className={word.className}>
@@ -64,7 +63,7 @@ const Hero = () => {
                 if (element) {
                   element.scrollIntoView({ behavior: 'smooth' });
                 } else {
-                  window.location.href = '/services';
+                  window.location.href = '/resources';
                 }
               }}
             >
