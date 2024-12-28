@@ -31,11 +31,8 @@ export default function RootLayout({
           enableSystem
           disableTransitionOnChange
         >
-          <div className="flex flex-col min-h-screen">
-            <NavBar />
-            <main className="flex-grow p-5 pt-[76px] sm:pt-[90px] md:pt-[100px]">
+          <div >
               {children}
-            </main>
             <footer className="flex-shrink-0 flex flex-col items-center py-5 dark:bg-secondary border-t">
               <div className="flex flex-col sm:flex-row justify-center items-center gap-1 text-xs text-muted-foreground p-2">
                 <span>Copyright @ 2024 | Schools Governance and Operations Division Online Support System | SDO - IFUGAO </span>

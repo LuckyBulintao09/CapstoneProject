@@ -21,7 +21,7 @@ const Hero = () => {
     display: 'inline-block',
     borderRight: '4px solid',
     paddingRight: '4px',
-    animation: 'typing 5s steps(300) 1s forwards, blink 2.5s step-end infinite', // Adjust steps here
+    animation: 'typing 5s steps(300) 1s forwards, blink 2.5s step-end infinite',
     whiteSpace: 'nowrap',
     overflow: 'hidden', 
   };

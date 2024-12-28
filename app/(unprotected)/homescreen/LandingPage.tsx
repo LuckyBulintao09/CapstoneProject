@@ -6,7 +6,7 @@ import React from 'react';
 function LandingPage() {
   return (
     <>
-      <div className="flex flex-col gap-6 px-2 sm:px-4 md:px-6 lg:px-8 p-3 justify-start items-start"> 
+      <div className="flex flex-col gap-6 px-2 sm:px-4 md:px-6 lg:px-8 p-3 justify-start items-start mt-32"> 
         <div className="w-full flex flex-col lg:flex-row gap-6">
           <div className="w-full lg:w-2/3 flex-shrink-0">
             <Hero />
