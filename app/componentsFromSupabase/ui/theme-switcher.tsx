@@ -1,13 +1,13 @@
 "use client";
 
-import { Button } from "@/app/scrap/ui/button";
+import { Button } from "@/app/componentsFromSupabase/ui/button";
 import {
   DropdownMenu,
   DropdownMenuContent,
   DropdownMenuRadioGroup,
   DropdownMenuRadioItem,
   DropdownMenuTrigger,
-} from "@/app/scrap/ui/dropdown-menu";
+} from "@/app/componentsFromSupabase/ui/dropdown-menu";
 import { Laptop, Moon, Sun } from "lucide-react";
 import { useTheme } from "next-themes";
 import { useEffect, useState } from "react";

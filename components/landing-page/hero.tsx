@@ -17,14 +17,14 @@ const Hero = () => {
   const heroDescription = "Schools Governance and Operations Division Online Support System";
   const buttonLearnMoreText = "View Services";
 
-  const typewriterEffectStyle = {
+  const typewriterEffectStyle: React.CSSProperties = {
     display: 'inline-block',
     borderRight: '4px solid',
     paddingRight: '4px',
     animation: 'typing 4s steps(200) 1s forwards, blink 1.5s step-end infinite',
     whiteSpace: 'nowrap',
     overflow: 'hidden',
-    wordWrap: 'break-word',
+    overflowWrap: 'anywhere', 
   };
 
   const typingAnimation = `
