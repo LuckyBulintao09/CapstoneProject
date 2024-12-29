@@ -20,13 +20,16 @@ function Howitworks() {
 
     const observer = new IntersectionObserver((entries) => {
       entries.forEach((entry) => {
+        // Type-casting entry.target as HTMLElement to access the 'style' property
+        const target = entry.target as HTMLElement;
+
         if (entry.isIntersecting) {
-          entry.target.style.opacity = "1";
-          entry.target.style.transform = "translateY(0)";
-          entry.target.style.transition = "opacity 1s ease-in-out, transform 1s ease-in-out";
+          target.style.opacity = "1";
+          target.style.transform = "translateY(0)";
+          target.style.transition = "opacity 1s ease-in-out, transform 1s ease-in-out";
         } else {
-          entry.target.style.opacity = "0";
-          entry.target.style.transform = "translateY(20px)"; 
+          target.style.opacity = "0";
+          target.style.transform = "translateY(20px)";
         }
       });
     }, options);
@@ -36,7 +39,6 @@ function Howitworks() {
     });
 
     return () => {
-    
       cardsRef.current.forEach((card) => observer.unobserve(card));
     };
   }, []);
@@ -55,7 +57,7 @@ function Howitworks() {
           ref={addToRef}
           style={{
             opacity: 0,
-            transform: "translateY(20px)", 
+            transform: "translateY(20px)",
           }}
           className="bg-blue-800 text-white shadow-md transition-all"
         >
@@ -71,7 +73,7 @@ function Howitworks() {
           ref={addToRef}
           style={{
             opacity: 0,
-            transform: "translateY(20px)", 
+            transform: "translateY(20px)",
           }}
           className="bg-blue-800 text-white shadow-md transition-all"
         >
@@ -87,7 +89,7 @@ function Howitworks() {
           ref={addToRef}
           style={{
             opacity: 0,
-            transform: "translateY(20px)", 
+            transform: "translateY(20px)",
           }}
           className="bg-blue-800 text-white shadow-md transition-all"
         >
