@@ -1,5 +1,5 @@
 import { signUpAction } from "@/app/actions/actions";
-import { FormMessage, Message } from "@/app/scrap/form-message";
+import { FormMessage, Message } from "@/app/componentsFromSupabase/ui/form-message";
 import { SubmitButton } from "@/app/scrap/submit-button";
 import { Input } from "@/app/scrap/ui/input";
 import { Label } from "@/app/scrap/ui/label";
