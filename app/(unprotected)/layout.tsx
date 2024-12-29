@@ -1,15 +1,20 @@
-import NavBar from "@/components/navbar/Navbar"
-
+import Footer from "@/components/navbar/Footer";
+import NavBar from "@/components/navbar/Navbar";
 
 function UnprotectedLayout({ children }: { children: React.ReactNode }) {
   return (
-    <section>
+    <div className="flex flex-col min-h-screen">
+      <header>
         <NavBar />
-      <div> 
+      </header>
+      <main className="flex-grow">
         {children}
-      </div>
-    </section>
+      </main>
+      <footer>
+        <Footer />
+      </footer>
+    </div>
   );
 }
 
-export default UnprotectedLayout
+export default UnprotectedLayout;

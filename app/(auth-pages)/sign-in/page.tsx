@@ -8,39 +8,67 @@ import Link from "next/link";
 export default async function Login(props: { searchParams: Promise<Message> }) {
   const searchParams = await props.searchParams;
   return (
-    <div className="flex items-center justify-center min-h-screen w-full bg-gray-50 m-4">
-      <form className="flex flex-col min-w-[400px] max-w-lg p-10 bg-white shadow-2xl rounded-xl">
-        <h1 className="text-3xl font-semibold mb-3">Sign in</h1>
-        <p className="text-sm text-foreground mb-3">
-          Don't have an account?{" "}
-          <Link className="text-foreground font-medium underline" href="/sign-up">
-            Sign up
-          </Link>
+    <div className="flex flex-col md:flex-row min-h-screen">
+      {/* Left Section */}
+      <div className="hidden md:flex w-full md:w-1/3 lg:w-1/2 bg-blue-900 dark:bg-blue-900 text-white flex-col justify-center p-6 md:p-8">
+        <h1 className="text-3xl md:text-4xl font-bold mb-4 text-center md:text-left">SGODOSS</h1>
+        <p className="text-base md:text-lg leading-6 text-center md:text-left">
+        SGODOSS is a centralized web platform designed to enhance resource access and improve coordination between personels,
+         addressing the challenges of limited access to essential resources. It provides a hub for accessing information,
+          offers search tools for finding resources on various topics, 
+        and allows users to view announcements from SDO Ifugao, improving efficiency and communication within the organization.
         </p>
-        <div className="flex flex-col gap-2 [&>input]:mb-3 mt-8">
-          <Label htmlFor="email">Email</Label>
-          <Input name="email" placeholder="you@example.com" required />
-          <div className="flex justify-between items-center">
-            <Label htmlFor="password">Password</Label>
-            <Link
-              className="text-xs text-foreground underline"
-              href="/forgot-password"
-            >
-              Forgot Password?
-            </Link>
+      </div>
+
+      {/* Right Section */}
+      <div className="flex items-center justify-center w-full md:w-2/3 lg:w-1/2 p-4 md:p-8">
+        <form className="flex flex-col w-full max-w-[400px] p-0 bg-transparent">
+          <h1 className="text-2xl sm:text-3xl font-semibold mb-3 text-center">Login to SGODOSS</h1>
+          <p className="text-sm text-gray-500 mb-4 text-center">
+            Only admins are allowed beyond this point.
+          </p>
+          <div className="flex flex-col gap-4">
+            <div>
+              <Label htmlFor="email">Email</Label>
+              <Input
+                name="email"
+                placeholder="example@email.com"
+                required
+                className="mt-1"
+              />
+            </div>
+            <div>
+ 
+              <Input
+                type="password"
+                name="password"
+                placeholder="Your password"
+                required
+                className="mt-1"
+              />
+            </div>
           </div>
-          <Input
-            type="password"
-            name="password"
-            placeholder="Your password"
-            required
-          />
-          <SubmitButton pendingText="Signing In..." formAction={signInAction}>
-            Sign in
+          <SubmitButton
+            pendingText="Signing In..."
+            formAction={signInAction}
+            className="mt-5 bg-blue-800 hover:bg-blue-700"
+          >
+            Login
           </SubmitButton>
+          <div className="text-red-500">
           <FormMessage message={searchParams} />
         </div>
-      </form>
+
+          <br />
+                <Link
+                  className="text-sm text-blue-500 hover:underline"
+                  
+                  href="/forgot-password"
+                >
+                  Forgot Password?
+                </Link>
+        </form>
+      </div>
     </div>
   );
 }

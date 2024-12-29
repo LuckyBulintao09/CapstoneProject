@@ -1,8 +1,7 @@
 import { Geist } from "next/font/google";
 import { ThemeProvider } from "next-themes";
-import NavBar from "@/components/navbar/Navbar";
 import "./globals.css";
-
+import { Toaster } from "@/components/ui/sonner"
 const defaultUrl = process.env.VERCEL_URL
   ? `https://${process.env.VERCEL_URL}`
   : "http://localhost:3000";
@@ -27,17 +26,24 @@ export default function RootLayout({
       <body className="bg-background text-foreground">
         <ThemeProvider
           attribute="class"
-          defaultTheme="system"
+          defaultTheme="light"
           enableSystem
           disableTransitionOnChange
         >
-          <div >
-              {children}
-            <footer className="flex-shrink-0 flex flex-col items-center py-5 dark:bg-secondary border-t">
-              <div className="flex flex-col sm:flex-row justify-center items-center gap-1 text-xs text-muted-foreground p-2">
-                <span>Copyright @ 2024 | Schools Governance and Operations Division Online Support System | SDO - IFUGAO </span>
-              </div>
-            </footer>
+          <div className="flex flex-col min-h-screen">
+          <Toaster 
+								position='bottom-right' 
+								closeButton
+								richColors
+								toastOptions={{
+									classNames: {
+										closeButton: "absolute cursor-pointer bg-background text-foreground border border-black hover:bg-black hover:text-foreground dark:bg-black dark:hover:bg-foreground dark:hover:text-black "
+									},
+								}}
+								expand
+								/>
+            <main className="flex-grow">{children}</main>
+         
           </div>
         </ThemeProvider>
       </body>
