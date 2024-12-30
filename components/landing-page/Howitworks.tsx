@@ -20,7 +20,6 @@ function Howitworks() {
 
     const observer = new IntersectionObserver((entries) => {
       entries.forEach((entry) => {
-        // Type-casting entry.target as HTMLElement to access the 'style' property
         const target = entry.target as HTMLElement;
 
         if (entry.isIntersecting) {
