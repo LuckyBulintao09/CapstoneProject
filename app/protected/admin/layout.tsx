@@ -2,12 +2,12 @@ import AdminNavbar from "@/components/admin/AdminNavbar";
 
 function AdminLayout({ children }: { children: React.ReactNode }) {
   return (
-    <section>
-      {/* Make AdminNavbar fixed to the top */}
+    <section className="flex h-screen">
+      {/* Sidebar */}
       <AdminNavbar />
-      <div> 
-        {children}
-      </div>
+
+      {/* Main Content */}
+      <div className="flex-1 p-6 overflow-auto">{children}</div>
     </section>
   );
 }
