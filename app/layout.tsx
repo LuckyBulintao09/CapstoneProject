@@ -2,6 +2,7 @@ import { Geist } from "next/font/google";
 import { ThemeProvider } from "next-themes";
 import "./globals.css";
 import { Toaster } from "@/components/ui/sonner"
+import { SpeedInsights } from "@vercel/speed-insights/next"
 const defaultUrl = process.env.VERCEL_URL
   ? `https://${process.env.VERCEL_URL}`
   : "http://localhost:3000";
@@ -43,6 +44,7 @@ export default function RootLayout({
 								expand
 								/>
             <main className="flex-grow">{children}</main>
+            <SpeedInsights />
          
           </div>
         </ThemeProvider>
