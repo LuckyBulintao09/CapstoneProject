@@ -21,11 +21,13 @@ import {
 } from "@/components/ui/breadcrumb";
 import { Button } from "@/components/ui/button";
 import { getAllCards } from "@/app/actions/cards/getAllCards";
+import Link from "next/link";
 
 interface CardData {
+  id: string;
   title: string;
   short_desc: string;
-  thumbnail_url: string;
+  thumbnail_url: string | null;
   short_description: string;
   updated_at: string | null;
   created_at: string;
@@ -41,7 +43,7 @@ function Page() {
         const data = await getAllCards();
 
         if (Array.isArray(data)) {
-          setCardData(data);  
+          setCardData(data);
         } else {
           console.error("Error fetching cards:", data.error);
         }
@@ -82,36 +84,48 @@ function Page() {
           </BreadcrumbList>
         </Breadcrumb>
         <div className="flex justify-end gap-2">
-          <Button className="bg-blue-800 dark:bg-blue-800 dark:text-white hover:bg-blue-900">+New card</Button>
+          <Link href={"/protected/admin/dashboard/create"}>
+            <Button className="bg-blue-800 dark:bg-blue-800 dark:text-white hover:bg-blue-900">
+              +New card
+            </Button>
+          </Link>
           <ModeToggle />
         </div>
 
         <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-3 gap-4 mt-4">
           {cardData.length > 0 ? (
-            cardData.map((card, index) => (
-              <Card key={index} className="p-2">
-                <CardHeader className="p-1">
-                  <CardTitle className="text-sm break-words">{card?.title}</CardTitle>
-                  <CardDescription className="text-xs break-words">{card?.short_desc}</CardDescription>
-                </CardHeader>
-                <CardContent className="p-2">
-                  <div className="w-full h-40 bg-gray-300 flex justify-center items-center rounded-md">
-                    <img
-                      src={card?.thumbnail_url}
-                      alt={card?.title}
-                      className="w-full h-full object-cover rounded-md"
-                    />
-                  </div>
-                  <p className="mt-2 text-xs break-words">{card?.short_description}</p>
-                </CardContent>
-                <CardFooter className="p-1">
-                  <p className="text-xs text-gray-500">
-                    {card?.updated_at
-                      ? `Updated ${formatDistanceToNow(new Date(card?.updated_at))} ago`
-                      : `Created ${formatDistanceToNow(new Date(card?.created_at))} ago`}
-                  </p>
-                </CardFooter>
-              </Card>
+            cardData.map((card) => (
+              <a
+                key={card.id}
+                href={`/protected/admin/dashboard/edit/${card.id}`}
+                className="block"
+              >
+                <Card className="p-2 hover:shadow-lg transition-shadow">
+                  <CardHeader className="p-1">
+                    <CardTitle className="text-sm break-words">{card?.title}</CardTitle>
+                    <CardDescription className="text-xs break-words">{card?.short_desc}</CardDescription>
+                  </CardHeader>
+                  <CardContent className="p-2">
+                    <div className="w-full h-40 bg-gray-300 flex justify-center items-center rounded-md">
+                      {card.thumbnail_url ? (
+                        <img
+                          src={card.thumbnail_url}
+                          alt={card.title}
+                          className="w-full h-full object-cover rounded-md"
+                        />
+                      ) : null}
+                    </div>
+                    <p className="mt-2 text-xs break-words">{card?.short_description}</p>
+                  </CardContent>
+                  <CardFooter className="p-1">
+                    <p className="text-xs text-gray-500">
+                      {card?.updated_at
+                        ? `Updated ${formatDistanceToNow(new Date(card?.updated_at))} ago`
+                        : `Created ${formatDistanceToNow(new Date(card?.created_at))} ago`}
+                    </p>
+                  </CardFooter>
+                </Card>
+              </a>
             ))
           ) : (
             <p>No content available</p>
