@@ -12,18 +12,17 @@ import {
   CardTitle,
 } from "@/components/ui/card";
 
-
 interface CardData {
   title: string;
   short_desc: string;
-  thumbnail_url: string;
+  thumbnail_url: string | null; 
   short_description: string;
   created_at: string;
-  updated_at: string | null; 
+  updated_at: string | null;
 }
 
 function Page() {
-  const [cardData, setCardData] = useState<CardData[]>([]); 
+  const [cardData, setCardData] = useState<CardData[]>([]);
   const [loading, setLoading] = useState<boolean>(true);
 
   useEffect(() => {
@@ -34,7 +33,7 @@ function Page() {
         if ('error' in result) {
           console.error("Error fetching card data:", result.error);
         } else {
-          setCardData(result); 
+          setCardData(result);
         }
       } catch (error) {
         console.error("Error fetching card data:", error);
@@ -67,11 +66,15 @@ function Page() {
               </CardHeader>
               <CardContent className="p-2">
                 <div className="w-full h-40 bg-gray-300 flex justify-center items-center rounded-md">
-                  <img
-                    src={card?.thumbnail_url}
-                    alt={card?.title}
-                    className="w-full h-full object-cover rounded-md"
-                  />
+                  {card?.thumbnail_url ? (
+                    <img
+                      src={card?.thumbnail_url}
+                      alt={card?.title}
+                      className="w-full h-full object-cover rounded-md"
+                    />
+                  ) : (
+                    <p className="text-sm text-gray-500">No image available</p>
+                  )}
                 </div>
                 <p className="mt-2 text-xs break-words">{card?.short_description}</p>
               </CardContent>
