@@ -1,7 +1,7 @@
 'use client';
 
 import { useState, useEffect } from 'react';
-import { LucideAlignJustify, X, Home, Users, Settings, FileText, LogOut, User } from 'lucide-react'; 
+import { LucideAlignJustify, X, Home, Settings, LogOut, User, ArrowLeftRight, FileChartLine, StickyNote } from 'lucide-react'; 
 import Image from 'next/image';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
@@ -54,11 +54,10 @@ function AdminNavbar() {
   const toggleMenu = () => setMenu((prev) => !prev);
 
   const navItems: NavItem[] = [
-    { label: 'Dashboard', href: '/admin/dashboard', icon: <Home /> },
-    { label: 'Users', href: '/admin/users', icon: <Users /> },
-    { label: 'Settings', href: '/admin/settings', icon: <Settings /> },
-    { label: 'Reports', href: '/admin/reports', icon: <FileText /> },
-    { label: 'View Other Options', href: '#', icon: <User /> },
+    { label: 'Dashboard', href: '/protected/admin/dashboard', icon: <Home /> },
+    { label: 'Announcements', href: '/protected/admin/announcements', icon: <StickyNote /> },
+    { label: 'Settings', href: '/protected/admin/settings', icon: <Settings /> },
+    { label: 'Analytics', href: '/protected/admin/analytics', icon: <FileChartLine /> },
   ];
 
   const handleLogout = () => {
@@ -94,7 +93,7 @@ function AdminNavbar() {
     <div className="flex">
       {/* Sidebar */}
       <div
-        className={`bg-gray-800 text-white h-screen p-4 ${
+        className={`bg-gray-800 text-white h-screen p-4 flex flex-col ${
           isMobile ? (menu ? 'w-64' : 'w-16') : 'w-64'
         } transition-all duration-300 ease-in-out`}
       >
@@ -110,14 +109,13 @@ function AdminNavbar() {
                 className="rounded-full"
               />
             </div>
-            {/* Admin Panel Text */}
             <div>
               <h1
                 className={`text-lg font-bold text-blue-700 ${
                   isMobile && !menu ? 'hidden' : 'block'
                 }`}
               >
-                Admin Panel
+                SGODOSS Admin
               </h1>
             </div>
           </div>
@@ -130,7 +128,7 @@ function AdminNavbar() {
         </div>
 
         {/* Navigation Links */}
-        <div className="mt-6">
+        <div className="mt-6 flex-grow">
           {navItems.map((item, index) => (
             <Link
               key={index}
@@ -143,44 +141,48 @@ function AdminNavbar() {
               {!isMobile || menu ? <span>{item.label}</span> : null}
             </Link>
           ))}
-          {/* User Actions */}
-          {loading ? (
-            <Button className="mt-4 w-full bg-gray-400 text-white" disabled>
-              Loading...
-            </Button>
-          ) : user === null ? (
-            <a href="/sign-in" className="w-full">
-              <Button className="w-full bg-blue-800 text-white">Login</Button>
-            </a>
-          ) : (
-            <>
-              <Link
-                href="#"
-                className={`block text-white py-2 px-4 flex items-center gap-4 ${
-                  pathname === '#' ? 'bg-blue-600' : 'hover:bg-blue-700'
-                }`}
-                onClick={handleSwitch}
-              >
-                <span className="text-xl">
-                  <User />
-                </span>
-                {!isMobile || menu ? <span>Switch to Client View</span> : null}
-              </Link>
-              <Link
-                href="#"
-                className={`block text-white py-2 px-4 flex items-center gap-4 ${
-                  pathname === '#' ? 'bg-blue-600' : 'hover:bg-blue-700'
-                }`}
-                onClick={handleLogout}
-              >
-                <span className="text-xl">
-                  <LogOut />
-                </span>
-                {!isMobile || menu ? <span>Logout</span> : null}
-              </Link>
-            </>
-          )}
         </div>
+
+      <div className="mt-auto">
+        {loading ? (
+          <Button className="mt-4 w-full bg-gray-400 text-white" disabled>
+            Loading...
+          </Button>
+        ) : user === null ? (
+          <a href="/sign-in" className="w-full">
+            <Button className="w-full bg-blue-800 text-white">Login</Button>
+          </a>
+        ) : (
+          <>
+            <Link
+              href="#"
+              className={`block text-gray-400 py-1 px-2 text-sm flex items-center gap-2 ${
+                pathname === '#' ? 'bg-gray-700' : 'hover:bg-gray-800'
+              }`}
+              onClick={handleSwitch}
+            >
+              <span className="text-lg">
+                <ArrowLeftRight />
+              </span>
+              {!isMobile || menu ? <span>Switch to Client View</span> : null}
+            </Link>
+            <Link
+              href="#"
+              className={`block text-gray-400 py-1 px-2 text-sm flex items-center gap-2 ${
+                pathname === '#' ? 'bg-gray-700' : 'hover:bg-gray-800'
+              }`}
+              onClick={handleLogout}
+            >
+              <span className="text-lg">
+                <LogOut />
+              </span>
+              {!isMobile || menu ? <span>Logout</span> : null}
+            </Link>
+          </>
+        )}
+      </div>
+
+
       </div>
 
       <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>

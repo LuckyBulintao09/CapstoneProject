@@ -7,7 +7,7 @@ function AdminLayout({ children }: { children: React.ReactNode }) {
       <AdminNavbar />
 
       {/* Main Content */}
-      <div className="flex-1 p-6 overflow-auto">{children}</div>
+      <div className="flex-1 overflow-auto">{children}</div>
     </section>
   );
 }
