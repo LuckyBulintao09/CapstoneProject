@@ -71,7 +71,7 @@ function Page() {
         <Breadcrumb>
           <BreadcrumbList>
             <BreadcrumbItem>
-              <BreadcrumbLink href="/protected/admin/dashboard">Admin</BreadcrumbLink>
+              <BreadcrumbLink href="/protected/admin/dashboard"></BreadcrumbLink>
             </BreadcrumbItem>
             <BreadcrumbSeparator />
             <BreadcrumbItem>
@@ -97,7 +97,7 @@ function Page() {
             cardData.map((card) => (
               <a
                 key={card.id}
-                href={`/protected/admin/dashboard/edit/${card.id}`}
+                href={`/protected/admin/dashboard/${card.id}`}
                 className="block"
               >
                 <Card className="p-2 hover:shadow-lg transition-shadow">
