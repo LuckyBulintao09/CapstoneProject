@@ -57,11 +57,19 @@ function Page() {
 
   return (
     <div className="p-4">
-      <h1 className="text-lg font-bold mb-4">Sections</h1>
       <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-3 gap-4">
         {cardData.length > 0 ? (
           cardData.map((card, index) => (
-            <Link key={index} href={`/resources/${card.id}`}>
+            <Link 
+              key={index} 
+              href={{
+                pathname: `/resources/${card.id}`,
+                query: {
+                  title: card.title,
+                  short_desc: card.short_desc,
+                }
+              }}
+            >
               <Card className="p-2 cursor-pointer">
                 <CardHeader className="p-1">
                   <CardTitle className="text-sm break-words">{card?.title}</CardTitle>

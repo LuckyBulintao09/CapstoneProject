@@ -6,7 +6,8 @@ export const getCardContent = async (cardId: string) => {
         const { data, error } = await supabase
             .from("card_content")
             .select("*")
-            .eq("parent_card", cardId); 
+            .eq("parent_card", cardId)
+            .order("created_at", { ascending: false });  
 
         if (error) {
             throw new Error(error.message);

@@ -54,7 +54,7 @@ function AdminNavbar() {
   const toggleMenu = () => setMenu((prev) => !prev);
 
   const navItems: NavItem[] = [
-    { label: 'Dashboard', href: '/protected/admin/dashboard', icon: <Home /> },
+    { label: 'Programs', href: '/protected/admin/dashboard', icon: <Home /> },
     { label: 'Announcements', href: '/protected/admin/announcements', icon: <StickyNote /> },
     { label: 'Settings', href: '/protected/admin/settings', icon: <Settings /> },
     { label: 'Analytics', href: '/protected/admin/analytics', icon: <FileChartLine /> },

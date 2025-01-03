@@ -46,7 +46,7 @@ function NavBar() {
 
   const navItems: NavItem[] = [
     { label: 'Home', href: '/' },
-    { label: 'Resources', href: '/resources' },
+    { label: 'Programs', href: '/resources' },
     { label: 'Announcements', href: '/announcements' },
   ];
 

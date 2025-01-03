@@ -68,21 +68,18 @@ function Page() {
   return (
     <>
       <div className="p-2">
-        <Breadcrumb>
-          <BreadcrumbList>
-            <BreadcrumbItem>
-              <BreadcrumbLink href="/protected/admin/dashboard"></BreadcrumbLink>
-            </BreadcrumbItem>
-            <BreadcrumbSeparator />
-            <BreadcrumbItem>
-              <BreadcrumbLink href="/protected/admin/dashboard">Dashboard</BreadcrumbLink>
-            </BreadcrumbItem>
-            <BreadcrumbSeparator />
-            <BreadcrumbItem>
-              <BreadcrumbPage>Resources</BreadcrumbPage>
-            </BreadcrumbItem>
-          </BreadcrumbList>
-        </Breadcrumb>
+            <Breadcrumb>
+        <BreadcrumbList>
+          <BreadcrumbItem>
+            <BreadcrumbLink href="/protected/admin/dashboard">Admin</BreadcrumbLink>
+          </BreadcrumbItem>
+          <BreadcrumbSeparator />
+          <BreadcrumbItem>
+            <BreadcrumbPage>Programs</BreadcrumbPage>
+          </BreadcrumbItem>
+        </BreadcrumbList>
+      </Breadcrumb>
+
         <div className="flex justify-end gap-2">
           <Link href={"/protected/admin/dashboard/create"}>
             <Button className="bg-blue-800 dark:bg-blue-800 dark:text-white hover:bg-blue-900">
@@ -128,7 +125,7 @@ function Page() {
               </a>
             ))
           ) : (
-            <p>No content available</p>
+            <p className="text-gray-500">No program created.</p>
           )}
         </div>
       </div>
