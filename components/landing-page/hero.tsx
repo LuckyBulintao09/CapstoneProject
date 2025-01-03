@@ -15,7 +15,7 @@ const Hero = () => {
 
   const heroBadgeText = "New Release";
   const heroDescription = "Schools Governance and Operations Division Online Support System";
-  const buttonLearnMoreText = "Explore";
+  const buttonLearnMoreText = "Explore Programs";
 
   const typewriterEffectStyle: React.CSSProperties = {
     display: 'inline-block',
