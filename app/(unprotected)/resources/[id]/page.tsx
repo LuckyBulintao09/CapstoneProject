@@ -76,7 +76,7 @@ const Page = () => {
 
         {contentList.length > 0 ? (
           contentList.map((item) => (
-            <Card key={item.id} className="w-full mb-4 shadow-md">
+            <Card key={item.id} className="w-full mb-4">
               <CardHeader className="pb-0">
                 <h3 className="text-l">{item.subject || "No subject"}</h3>
                 <CardDescription className="text-xs text-gray-500">
