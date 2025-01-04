@@ -15,7 +15,7 @@ const Page = () => {
 
   const searchParams = useSearchParams();
   const title = searchParams.get("title");
-  const shortDesc = searchParams.get("short_desc");
+  const short_desc = searchParams.get("short_desc");
 
   useEffect(() => {
     const fetchData = async () => {
@@ -58,22 +58,13 @@ const Page = () => {
 
   return (
     <>
-      {/* Pass title and short_desc to SectionBanner */}
       <div className="m-2">
         <SectionBanner 
-          title={title || "Default Title"} 
-          short_description={shortDesc || "Default short description"} 
+          title={title || null} 
+          short_description={short_desc || null} 
         />
       </div>
       <div className="p-6">
-        {/* Display passed title and short_desc from URL query */}
-        {title && shortDesc && (
-          <div className="mb-4">
-            <h2 className="text-xl font-bold">{title}</h2>
-            <p className="text-sm text-gray-500">{shortDesc}</p>
-          </div>
-        )}
-
         {contentList.length > 0 ? (
           contentList.map((item) => (
             <Card key={item.id} className="w-full mb-4">
@@ -87,15 +78,42 @@ const Page = () => {
               <CardContent className="pt-0">
                 <p className="text-sm">{item.content}</p>
                 {item.files && item.files.length > 0 && (
-                  <ul className="mt-2">
-                    {item.files.map((file: string, index: number) => (
-                      <li key={index} className="text-blue-600 text-xs underline">
-                        <a href={file} target="_blank" rel="noopener noreferrer">
-                          {file.split("/").pop()}
-                        </a>
-                      </li>
-                    ))}
-                  </ul>
+                  <div className="mt-4 grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4">
+                    {item.files.map((file: string, index: number) => {
+                      const fileName = file.split("/").pop() || "File";
+                      const fileExtension = fileName.includes(".")
+                        ? fileName.slice(fileName.lastIndexOf(".") + 1).toUpperCase()
+                        : "Unknown";
+
+                      return (
+                        <div
+                          key={index}
+                          className="flex items-center border rounded-lg shadow-md p-4 bg-white"
+                        >
+
+                          <div className="w-16 h-16 bg-gray-100 flex items-center justify-center rounded-md mr-4">
+                            <span className="text-sm font-bold text-gray-500">
+                              {fileExtension}
+                            </span>
+                          </div>
+                          <div className="flex flex-col">
+                            <p className="text-sm font-medium text-gray-800 truncate">
+                              {fileName}
+                            </p>
+                            <p className="text-xs text-gray-500">{fileExtension}</p>
+                            <a
+                              href={file}
+                              target="_blank"
+                              rel="noopener noreferrer"
+                              className="text-blue-600 text-xs underline mt-1"
+                            >
+                              Download
+                            </a>
+                          </div>
+                        </div>
+                      );
+                    })}
+                  </div>
                 )}
               </CardContent>
             </Card>

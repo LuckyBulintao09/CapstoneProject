@@ -1,21 +1,32 @@
 "use client";
 
 import { getSpecificCard } from '@/app/actions/cards/getSpecificCard';
-import CardInfo from '@/components/global-components/CardInfo';
 import SectionBanner from '@/components/global-components/SectionBanner';
+import { Card, CardHeader, CardContent, CardFooter, CardDescription } from "@/components/ui/card";
+import {
+  Breadcrumb,
+  BreadcrumbItem,
+  BreadcrumbLink,
+  BreadcrumbList,
+  BreadcrumbPage,
+  BreadcrumbSeparator,
+} from "@/components/ui/breadcrumb"
+
 import React, { useEffect, useState } from 'react';
 import { X } from 'lucide-react';
 import { Spinner } from '@nextui-org/spinner';
 import { insertCardContent } from '@/app/actions/cards/insertCardContent';
 import { toast } from 'sonner';
+import { getCardContent } from '@/app/actions/cards/getCardContent';
 
 export default function Page({ params }: { params: Promise<{ id: string }> }) {
   const { id } = React.use(params);
 
   const [data, setData] = useState<any>(null);
+  const [contentData, setContentData] = useState<any[]>([]);
   const [isLoading, setIsLoading] = useState<boolean>(true);
   const [isModalOpen, setIsModalOpen] = useState<boolean>(false);
-  const [fileInputs, setFileInputs] = useState<(File | null)[]>([]); // Change type here
+  const [fileInputs, setFileInputs] = useState<(File | null)[]>([]);
   const [isFirstFileAdded, setIsFirstFileAdded] = useState<boolean>(false);
 
   const [subject, setSubject] = useState<string>('');
@@ -25,18 +36,28 @@ export default function Page({ params }: { params: Promise<{ id: string }> }) {
   const maxSubjectLength = 30;
   const maxContentLength = 250;
 
-  useEffect(() => {
-    const fetchData = async () => {
-      try {
-        const cardData = await getSpecificCard(id);
-        setData(cardData);
-      } catch (error) {
-        console.error("Error fetching data:", error);
-      } finally {
-        setIsLoading(false);
-      }
-    };
+  const fetchData = async () => {
+    try {
+      const cardData = await getSpecificCard(id);
+      setData(cardData);
 
+      const cardContent = await getCardContent(id);
+
+      if ('error' in cardContent) {
+        console.error(cardContent.error);
+        setContentData([]);
+      } else {
+        setContentData(cardContent);
+      }
+    } catch (error) {
+      console.error("Error fetching data:", error);
+      setContentData([]);
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
+  useEffect(() => {
     fetchData();
   }, [id]);
 
@@ -52,7 +73,7 @@ export default function Page({ params }: { params: Promise<{ id: string }> }) {
 
   const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>, index: number) => {
     const newFiles = [...fileInputs];
-    newFiles[index] = e.target.files ? e.target.files[0] : null; // Allow null here
+    newFiles[index] = e.target.files ? e.target.files[0] : null;
     setFileInputs(newFiles);
   };
 
@@ -71,17 +92,19 @@ export default function Page({ params }: { params: Promise<{ id: string }> }) {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     if (isSubmitting) return;
-  
+
     setIsSubmitting(true);
-  
+
     try {
       await insertCardContent(
         id,
         subject,
         content,
-        fileInputs.filter(file => file !== null) // Filter out null files
+        fileInputs.filter(file => file !== null)
       );
-  
+
+      await fetchData();
+
       toast.success("Content inserted successfully.");
       handleCloseModal();
     } catch (error) {
@@ -90,115 +113,191 @@ export default function Page({ params }: { params: Promise<{ id: string }> }) {
       setIsSubmitting(false);
     }
   };
-  
+
   if (isLoading) {
     return <div className="flex items-center justify-center text-center p-6 min-h-screen"><Spinner size="lg" color="primary" /></div>;
   }
 
   return (
-    <div className="m-4">
-      {data && (
-        <>
-          <SectionBanner
-            title={data.title}
-            short_description={data.short_description}
-          />
-          <div className="flex justify-end m-2">
-            <button
-              onClick={handleOpenModal}
-              className="bg-blue-800 rounded-md p-2 text-white"
-            >
-              +New Content
-            </button>
-          </div>
-        </>
-      )}
-      <CardInfo />
+    <>
+    
+      <div className='m-2'>
+            <Breadcrumb>
+        <BreadcrumbList>
+          <BreadcrumbItem>
+            <BreadcrumbLink href="/protected/admin/dashboard">Admin</BreadcrumbLink>
+          </BreadcrumbItem>
+          <BreadcrumbSeparator />
+          <BreadcrumbItem>
+            <BreadcrumbLink href="/protected/admin/dashboard">Program</BreadcrumbLink>
+          </BreadcrumbItem>
+          <BreadcrumbSeparator />
+          <BreadcrumbItem>
+            <BreadcrumbPage>{data?.title}</BreadcrumbPage>
+          </BreadcrumbItem>
+        </BreadcrumbList>
+      </Breadcrumb>
+      </div>
 
-      {isModalOpen && (
-        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
-          <div className="bg-white rounded-lg shadow-md p-6 w-full max-w-[80%] m-4 max-h-[90%] overflow-y-auto">
-            <h2 className="text-lg font-bold mb-4">Add New Content</h2>
-            <form onSubmit={handleSubmit}>
-              <div className="space-y-4">
-                <div>
-                  <label htmlFor="subject" className="block text-sm font-medium text-gray-700">
-                    Subject
-                  </label>
-                  <input
-                    type="text"
-                    id="subject"
-                    className="w-full p-2 border rounded-md"
-                    placeholder="Enter subject"
-                    value={subject}
-                    onChange={(e) => setSubject(e.target.value.slice(0, maxSubjectLength))}
-                  />
-                  <p className="text-xs text-gray-500">{maxSubjectLength - subject.length} characters remaining</p>
+      <div className="m-2">
+        <SectionBanner title={data?.title} short_description={data?.short_description} />
+      </div>
+      
+      <div className="m-4">
+        {data && (
+          <>
+            <div className="flex justify-end m-2">
+              <button
+                onClick={handleOpenModal}
+                className="bg-blue-800 rounded-md p-2 text-white"
+              >
+                +New Content
+              </button>
+            </div>
+            {contentData.length > 0 ? (
+              contentData.map((item) => (
+                <Card key={item.id} className="w-full mb-4">
+                  <CardHeader className="pb-0">
+                    <h3 className="text-l">{item.subject || "No subject"}</h3>
+                    <CardDescription className="text-xs text-gray-500">
+                      {new Date(item.created_at).toLocaleDateString()} •{" "}
+                      {new Date(item.created_at).toLocaleTimeString()}
+                    </CardDescription>
+                  </CardHeader>
+                  <CardContent className="pt-0">
+                    <p className="text-sm">{item.content}</p>
+                    {item.files && item.files.length > 0 && (
+                      <div className="mt-4 grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4">
+                        {item.files.map((file: string, index: number) => {
+                          const fileName = file.split("/").pop() || "File";
+                          const fileExtension = fileName.includes(".")
+                            ? fileName.slice(fileName.lastIndexOf(".") + 1).toUpperCase()
+                            : "Unknown";
+
+                          return (
+                            <div
+                              key={index}
+                              className="flex items-center border rounded-lg shadow-md p-4 bg-white"
+                            >
+                              <div className="w-16 h-16 bg-gray-100 flex items-center justify-center rounded-md mr-4">
+                                <span className="text-sm font-bold text-gray-500">
+                                  {fileExtension}
+                                </span>
+                              </div>
+                              <div className="flex flex-col">
+                                <p className="text-sm font-medium text-gray-800 truncate">
+                                  {fileName}
+                                </p>
+                                <p className="text-xs text-gray-500">{fileExtension}</p>
+                                <a
+                                  href={file}
+                                  target="_blank"
+                                  rel="noopener noreferrer"
+                                  className="text-blue-600 text-xs underline mt-1"
+                                >
+                                  Download
+                                </a>
+                              </div>
+                            </div>
+                          );
+                        })}
+                      </div>
+                    )}
+                  </CardContent>
+                </Card>
+              ))
+            ) : (
+              <div className="flex justify-center items-center min-h-screen">
+                <p className="text-lg text-gray-500">No content</p>
+              </div>
+            )}
+          </>
+        )}
+
+        {isModalOpen && (
+          <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+            <div className="bg-white rounded-lg shadow-md p-6 w-full max-w-[80%] m-4 max-h-[90%] overflow-y-auto">
+              <h2 className="text-lg font-bold mb-4">Add New Content</h2>
+              <form onSubmit={handleSubmit}>
+                <div className="space-y-4">
+                  <div>
+                    <label htmlFor="subject" className="block text-sm font-medium text-gray-700">
+                      Subject
+                    </label>
+                    <input
+                      type="text"
+                      id="subject"
+                      className="w-full p-2 border rounded-md"
+                      placeholder="Enter subject"
+                      value={subject}
+                      onChange={(e) => setSubject(e.target.value.slice(0, maxSubjectLength))} />
+                    <p className="text-xs text-gray-500">{maxSubjectLength - subject.length} characters remaining</p>
+                  </div>
+                  <div>
+                    <label htmlFor="content" className="block text-sm font-medium text-gray-700">
+                      Content
+                    </label>
+                    <textarea
+                      id="content"
+                      rows={6}
+                      className="w-full p-2 border rounded-md"
+                      placeholder="Enter content"
+                      value={content}
+                      onChange={(e) => setContent(e.target.value.slice(0, maxContentLength))}
+                    ></textarea>
+                    <p className="text-xs text-gray-500">{maxContentLength - content.length} characters remaining</p>
+                  </div>
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700">File Upload</label>
+                    {fileInputs.map((_, index) => (
+                      <div key={index} className="mb-4 flex items-center">
+                        <input
+                          type="file"
+                          className="w-full"
+                          accept=".pdf, .doc, .docx, .txt, .xls, .xlsx, .jpg, .jpeg, .png, .gif, .bmp, .svg, .webp"
+                          onChange={(e) => handleFileChange(e, index)} />
+                        <button
+                          type="button"
+                          onClick={() => handleRemoveFileInput(index)}
+                          className="text-red-500 hover:text-red-700"
+                        >
+                          <X />
+                        </button>
+                      </div>
+                    ))}
+                  </div>
+                  <div className="flex justify-start mt-4">
+                    <button
+                      type="button"
+                      onClick={handleAddFileInput}
+                      className="px-2 py-1 bg-blue-800 text-white rounded-md text-xs"
+                    >
+                      {isFirstFileAdded ? "+Attach More Files" : "+Attach File"}
+                    </button>
+                  </div>
                 </div>
-                <div>
-                  <label htmlFor="content" className="block text-sm font-medium text-gray-700">
-                    Content
-                  </label>
-                  <textarea
-                    id="content"
-                    rows={6}
-                    className="w-full p-2 border rounded-md"
-                    placeholder="Enter content"
-                    value={content}
-                    onChange={(e) => setContent(e.target.value.slice(0, maxContentLength))}
-                  ></textarea>
-                  <p className="text-xs text-gray-500">{maxContentLength - content.length} characters remaining</p>
-                </div>
-                <div>
-                  <label className="block text-sm font-medium text-gray-700">File Upload</label>
-                  {fileInputs.map((_, index) => (
-                    <div key={index} className="mb-4 flex items-center">
-                      <input
-                        type="file"
-                        className="w-full"
-                        accept=".pdf, .doc, .docx, .txt"
-                        onChange={(e) => handleFileChange(e, index)}
-                      />
-                      <button
-                        type="button"
-                        onClick={() => handleRemoveFileInput(index)}
-                        className="text-red-500 hover:text-red-700"
-                      >
-                        <X />
-                      </button>
-                    </div>
-                  ))}
-                </div>
-                <div className="flex justify-start mt-4">
+                <div className="flex justify-end space-x-2 mt-4">
                   <button
                     type="button"
-                    onClick={handleAddFileInput}
-                    className="px-2 py-1 bg-blue-800 text-white rounded-md text-xs"
+                    onClick={handleCloseModal}
+                    className="px-4 py-2 bg-gray-300 rounded-md"
                   >
-                    {isFirstFileAdded ? "+Attach More Files" : "+Attach File"}
+                    Cancel
+                  </button>
+                  <button
+                    type="submit"
+                    disabled={isSubmitting}
+                    className={`px-4 py-2 text-white rounded-md ${isSubmitting ? 'bg-gray-500' : 'bg-blue-600'}`}
+                  >
+                    {isSubmitting ? "Submitting..." : "Submit"}
                   </button>
                 </div>
-              </div>
-              <div className="flex justify-end space-x-2 mt-4">
-                <button
-                  type="button"
-                  onClick={handleCloseModal}
-                  className="px-4 py-2 bg-gray-300 rounded-md"
-                >
-                  Cancel
-                </button>
-                <button
-                  type="submit"
-                  disabled={isSubmitting}
-                  className={`px-4 py-2 text-white rounded-md ${isSubmitting ? 'bg-gray-500' : 'bg-blue-600'}`}
-                >
-                  {isSubmitting ? "Submitting..." : "Submit"}
-                </button>
-              </div>
-            </form>
+              </form>
+            </div>
           </div>
-        </div>
-      )}
-    </div>
+        )}
+      </div>
+    </>
   );
 }
+

@@ -55,6 +55,7 @@ function Page() {
     );
   }
 
+
   return (
     <div className="p-4">
       <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-3 gap-4">
@@ -66,14 +67,13 @@ function Page() {
                 pathname: `/resources/${card.id}`,
                 query: {
                   title: card.title,
-                  short_desc: card.short_desc,
+                  short_desc: card.short_description,
                 }
               }}
             >
               <Card className="p-2 cursor-pointer">
                 <CardHeader className="p-1">
                   <CardTitle className="text-sm break-words">{card?.title}</CardTitle>
-                  <CardDescription className="text-xs break-words">{card?.short_desc}</CardDescription>
                 </CardHeader>
                 <CardContent className="p-2">
                   <div className="w-full h-40 bg-gray-300 flex justify-center items-center rounded-md">
