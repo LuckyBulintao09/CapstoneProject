@@ -88,16 +88,16 @@ const Page = () => {
                       return (
                         <div
                           key={index}
-                          className="flex items-center border rounded-lg shadow-md p-4 bg-white"
+                          className="flex items-center border rounded-lg shadow-md p-4 bg-transparent"
                         >
 
-                          <div className="w-16 h-16 bg-gray-100 flex items-center justify-center rounded-md mr-4">
+                          <div className="w-16 h-16  flex items-center justify-center rounded-md mr-4">
                             <span className="text-sm font-bold text-gray-500">
                               {fileExtension}
                             </span>
                           </div>
                           <div className="flex flex-col">
-                            <p className="text-sm font-medium text-gray-800 truncate">
+                            <p className="text-sm font-medium truncate">
                               {fileName}
                             </p>
                             <p className="text-xs text-gray-500">{fileExtension}</p>

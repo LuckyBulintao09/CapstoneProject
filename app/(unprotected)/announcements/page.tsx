@@ -71,7 +71,7 @@ function Page() {
             {announcements.map((announcement, index) => (
               <div
                 key={index}
-                className="flex flex-col border border-gray-300 p-6 rounded-lg shadow-md hover:shadow-xl transition-all cursor-pointer dark:bg-gray-800 dark:border-gray-600"
+                className="flex flex-col border border-gray-300 p-6 rounded-lg shadow-md hover:shadow-xl transition-all cursor-pointer  dark:border-gray-600"
                 onClick={() => setSelectedAnnouncement(announcement)}
               >
                 <h2 className="text-lg font-semibold text-gray-800  dark:text-white">
