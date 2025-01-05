@@ -9,27 +9,26 @@ export const insertCardContent = async (
   files: File[]
 ) => {
   try {
-    const uuidFolder = uuidv4(); 
+    const uuidFolder = uuidv4();
     const fileUrls: string[] = [];
 
-    for (const file of files) {
-      const filePath = `${uuidFolder}/${file.name}`; 
-      const { data, error } = await supabase.storage
+    const fileUploadPromises = files.map((file) => {
+      const filePath = `${uuidFolder}/${file.name}`;
+      return supabase.storage
         .from("card_content")
-        .upload(filePath, file);
+        .upload(filePath, file)
+        .then(() => supabase.storage.from("card_content").getPublicUrl(filePath))
+        .then(({ data }) => {
+          if (data?.publicUrl) {
+            fileUrls.push(data.publicUrl);
+          }
+        })
+        .catch((error) => {
+          throw new Error(`File upload failed: ${error.message}`);
+        });
+    });
 
-      if (error) {
-        throw new Error(`File upload failed: ${error.message}`);
-      }
-
-      const { data: publicUrlData } = supabase.storage
-        .from("card_content")
-        .getPublicUrl(filePath);
-
-      if (publicUrlData) {
-        fileUrls.push(publicUrlData.publicUrl);
-      }
-    }
+    await Promise.all(fileUploadPromises);
 
     const { data: newCardContent, error: insertError } = await supabase
       .from("card_content")
@@ -45,9 +44,19 @@ export const insertCardContent = async (
       throw new Error(`Database insertion failed: ${insertError.message}`);
     }
 
+    const { error: updateError } = await supabase
+      .from("card") 
+      .update({ updated_at: new Date() })
+      .eq("id", parent_card_id);
+
+    if (updateError) {
+      throw new Error(`Failed to update parent card: ${updateError.message}`);
+    }
+
     return newCardContent;
   } catch (error) {
     console.error("Error inserting card content:", error);
     throw error;
   }
 };
+

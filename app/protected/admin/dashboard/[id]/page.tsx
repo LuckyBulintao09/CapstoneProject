@@ -2,16 +2,9 @@
 
 import { getSpecificCard } from '@/app/actions/cards/getSpecificCard';
 import SectionBanner from '@/components/global-components/SectionBanner';
+import { format } from "date-fns";
 import { Card, CardHeader, CardContent, CardFooter, CardDescription } from "@/components/ui/card";
-import {
-  Breadcrumb,
-  BreadcrumbItem,
-  BreadcrumbLink,
-  BreadcrumbList,
-  BreadcrumbPage,
-  BreadcrumbSeparator,
-} from "@/components/ui/breadcrumb"
-
+import { Breadcrumb, BreadcrumbItem, BreadcrumbLink, BreadcrumbList, BreadcrumbPage, BreadcrumbSeparator } from "@/components/ui/breadcrumb";
 import React, { useEffect, useState } from 'react';
 import { X } from 'lucide-react';
 import { Spinner } from '@nextui-org/spinner';
@@ -33,8 +26,8 @@ export default function Page({ params }: { params: Promise<{ id: string }> }) {
   const [content, setContent] = useState<string>('');
   const [isSubmitting, setIsSubmitting] = useState<boolean>(false);
 
-  const maxSubjectLength = 30;
-  const maxContentLength = 250;
+  const maxSubjectLength = 100;
+  const maxContentLength = 500;
 
   const fetchData = async () => {
     try {
@@ -96,10 +89,14 @@ export default function Page({ params }: { params: Promise<{ id: string }> }) {
     setIsSubmitting(true);
 
     try {
+      // Preserve line breaks by replacing \n with <br />
+      const formattedContent = content.replace(/\n/g, '<br />');
+
+      // Save the formatted content
       await insertCardContent(
         id,
         subject,
-        content,
+        formattedContent,
         fileInputs.filter(file => file !== null)
       );
 
@@ -120,29 +117,28 @@ export default function Page({ params }: { params: Promise<{ id: string }> }) {
 
   return (
     <>
-    
       <div className='m-2'>
-            <Breadcrumb>
-        <BreadcrumbList>
-          <BreadcrumbItem>
-            <BreadcrumbLink href="/protected/admin/dashboard">Admin</BreadcrumbLink>
-          </BreadcrumbItem>
-          <BreadcrumbSeparator />
-          <BreadcrumbItem>
-            <BreadcrumbLink href="/protected/admin/dashboard">Program</BreadcrumbLink>
-          </BreadcrumbItem>
-          <BreadcrumbSeparator />
-          <BreadcrumbItem>
-            <BreadcrumbPage>{data?.title}</BreadcrumbPage>
-          </BreadcrumbItem>
-        </BreadcrumbList>
-      </Breadcrumb>
+        <Breadcrumb>
+          <BreadcrumbList>
+            <BreadcrumbItem>
+              <BreadcrumbLink href="/protected/admin/dashboard">Admin</BreadcrumbLink>
+            </BreadcrumbItem>
+            <BreadcrumbSeparator />
+            <BreadcrumbItem>
+              <BreadcrumbLink href="/protected/admin/dashboard">Programs</BreadcrumbLink>
+            </BreadcrumbItem>
+            <BreadcrumbSeparator />
+            <BreadcrumbItem>
+              <BreadcrumbPage>{data?.title}</BreadcrumbPage>
+            </BreadcrumbItem>
+          </BreadcrumbList>
+        </Breadcrumb>
       </div>
 
       <div className="m-2">
         <SectionBanner title={data?.title} short_description={data?.short_description} />
       </div>
-      
+
       <div className="m-4">
         {data && (
           <>
@@ -156,16 +152,16 @@ export default function Page({ params }: { params: Promise<{ id: string }> }) {
             </div>
             {contentData.length > 0 ? (
               contentData.map((item) => (
-                <Card key={item.id} className="w-full mb-4">
+                <Card key={item.id} className="w-full mb-4 break-words">
                   <CardHeader className="pb-0">
                     <h3 className="text-l">{item.subject || "No subject"}</h3>
                     <CardDescription className="text-xs text-gray-500">
-                      {new Date(item.created_at).toLocaleDateString()} •{" "}
-                      {new Date(item.created_at).toLocaleTimeString()}
+                      {format(new Date(item.created_at), "MMMM d, yyyy")} •{" "}
+                      {format(new Date(item.created_at), "hh:mm a")}
                     </CardDescription>
                   </CardHeader>
                   <CardContent className="pt-0">
-                    <p className="text-sm">{item.content}</p>
+                    <p className="text-sm" dangerouslySetInnerHTML={{ __html: item.content }}></p>
                     {item.files && item.files.length > 0 && (
                       <div className="mt-4 grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4">
                         {item.files.map((file: string, index: number) => {
@@ -230,7 +226,8 @@ export default function Page({ params }: { params: Promise<{ id: string }> }) {
                       className="w-full p-2 border rounded-md"
                       placeholder="Enter subject"
                       value={subject}
-                      onChange={(e) => setSubject(e.target.value.slice(0, maxSubjectLength))} />
+                      onChange={(e) => setSubject(e.target.value.slice(0, maxSubjectLength))}
+                    />
                     <p className="text-xs text-gray-500">{maxSubjectLength - subject.length} characters remaining</p>
                   </div>
                   <div>
@@ -255,7 +252,8 @@ export default function Page({ params }: { params: Promise<{ id: string }> }) {
                           type="file"
                           className="w-full"
                           accept=".pdf, .doc, .docx, .txt, .xls, .xlsx, .jpg, .jpeg, .png, .gif, .bmp, .svg, .webp"
-                          onChange={(e) => handleFileChange(e, index)} />
+                          onChange={(e) => handleFileChange(e, index)}
+                        />
                         <button
                           type="button"
                           onClick={() => handleRemoveFileInput(index)}
@@ -300,4 +298,3 @@ export default function Page({ params }: { params: Promise<{ id: string }> }) {
     </>
   );
 }
-

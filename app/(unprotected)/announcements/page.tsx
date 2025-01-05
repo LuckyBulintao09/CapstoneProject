@@ -71,15 +71,16 @@ function Page() {
             {announcements.map((announcement, index) => (
               <div
                 key={index}
-                className="flex flex-col border border-gray-300 p-6 rounded-lg shadow-md hover:shadow-xl transition-all cursor-pointer  dark:border-gray-600"
+                className="flex flex-col border border-gray-300 p-6 rounded-lg shadow-md hover:shadow-xl transition-all cursor-pointer bg-gray dark:border-gray-600"
                 onClick={() => setSelectedAnnouncement(announcement)}
               >
                 <h2 className="text-lg font-semibold text-gray-800  dark:text-white">
                   {announcement.subject}
                 </h2>
-                <p className="text-sm text-gray-600 mt-1 line-clamp-3 dark:text-gray-300">
-                  {announcement.content}
-                </p>
+                <p
+                  className="text-sm text-gray-600 mt-1 line-clamp-3 dark:text-gray-300"
+                  dangerouslySetInnerHTML={{ __html: announcement.content }}
+                />
                 <p className="mt-2 text-xs text-gray-500 dark:text-gray-400">
                   Announced on {new Date(announcement.created_at).toLocaleDateString()}
                 </p>
@@ -127,7 +128,9 @@ function Page() {
               Announced on {new Date(selectedAnnouncement.created_at).toLocaleDateString()}
             </p>
             <div className="text-sm text-gray-600 mt-2 dark:text-gray-300 max-h-96 overflow-y-auto">
-              <p>{selectedAnnouncement.content}</p>
+              <p
+                dangerouslySetInnerHTML={{ __html: selectedAnnouncement.content }}
+              />
             </div>
           </div>
         </div>

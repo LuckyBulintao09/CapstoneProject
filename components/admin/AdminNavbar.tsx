@@ -10,6 +10,7 @@ import { checkUser } from '@/app/actions/checkUser';
 import { signOutAction } from '@/app/actions/actions';
 import { Dialog, DialogContent, DialogTitle, DialogDescription } from '../ui/dialog';
 import { toast } from 'sonner';
+import { CustomModeToggle } from '../CustomModeToggle';
 
 interface User {
   id: string;
@@ -143,6 +144,7 @@ function AdminNavbar() {
           ))}
         </div>
 
+
       <div className="mt-auto">
         {loading ? (
           <Button className="mt-4 w-full bg-gray-400 text-white" disabled>
@@ -154,6 +156,7 @@ function AdminNavbar() {
           </a>
         ) : (
           <>
+          <CustomModeToggle />
             <Link
               href="#"
               className={`block text-gray-400 py-1 px-2 text-sm flex items-center gap-2 ${
@@ -192,6 +195,7 @@ function AdminNavbar() {
             Are you sure you want to log out?
           </DialogDescription>
           <div className="flex justify-end gap-4">
+            
             <Button onClick={cancelLogout} className="bg-gray-500 text-white">
               Cancel
             </Button>

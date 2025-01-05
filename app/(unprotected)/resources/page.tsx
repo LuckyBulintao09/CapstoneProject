@@ -6,7 +6,6 @@ import { Spinner } from "@nextui-org/spinner";
 import {
   Card,
   CardContent,
-  CardDescription,
   CardFooter,
   CardHeader,
   CardTitle,
@@ -55,7 +54,6 @@ function Page() {
     );
   }
 
-
   return (
     <div className="p-4">
       <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-3 gap-4">
@@ -91,9 +89,11 @@ function Page() {
                 </CardContent>
                 <CardFooter className="p-1">
                   <p className="text-xs text-gray-500">
-                    {card?.updated_at
-                      ? `Updated ${formatDistanceToNow(new Date(card?.updated_at))} ago`
-                      : `Created ${formatDistanceToNow(new Date(card?.created_at))} ago`}
+                    {card?.updated_at ? (
+                      new Date(card.updated_at).getTime() > Date.now() - 24 * 60 * 60 * 1000
+                        ? `Latest content was posted ${formatDistanceToNow(new Date(card.updated_at))} ago.`
+                        : `Updated ${formatDistanceToNow(new Date(card.updated_at))} ago`
+                    ) : null}
                   </p>
                 </CardFooter>
               </Card>
@@ -108,3 +108,4 @@ function Page() {
 }
 
 export default Page;
+
