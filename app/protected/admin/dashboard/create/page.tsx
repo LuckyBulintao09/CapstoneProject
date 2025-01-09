@@ -75,6 +75,7 @@ export default function Page() {
         toast.success("Card created successfully!", { id: loadingToast });
         setThumbnailFile(null);
         setThumbnailUrl(null);
+        window.location.href = "/protected/admin/dashboard";
       } else {
         toast.error("Failed to create card.", { id: loadingToast });
       }

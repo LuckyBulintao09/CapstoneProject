@@ -43,8 +43,8 @@ interface CardData {
 function Page() {
   const [cardData, setCardData] = useState<CardData[]>([]);
   const [loading, setLoading] = useState(true);
-  const [isModalOpen, setIsModalOpen] = useState(false); // Track modal state
-  const [programToDelete, setProgramToDelete] = useState<string | null>(null); // Track the program to delete
+  const [isModalOpen, setIsModalOpen] = useState(false); 
+  const [programToDelete, setProgramToDelete] = useState<string | null>(null); 
 
   useEffect(() => {
     const fetchData = async () => {
@@ -67,12 +67,9 @@ function Page() {
   }, []);
 
   const handleDeleteProgram = async (programId: string) => {
-    // Your delete logic here
     console.log("Deleting program with ID:", programId);
     await deleteCard(programId)
-    // After successful deletion:
-    // setCardData((prev) => prev.filter((card) => card.id !== programId));
-    setIsModalOpen(false); // Close the modal
+    setIsModalOpen(false); 
   };
 
   const openModal = (programId: string) => {
@@ -155,7 +152,7 @@ function Page() {
                           <DropdownMenuItem asChild>
                             <Button
                               onClick={() => openModal(card.id)}
-                              className="text-red-600"
+                              className="bg-transparent text-red-600 dark:text-red-600 dark:bg-transparent"
                             >
                               Delete Program
                             </Button>
@@ -202,9 +199,9 @@ function Page() {
       {/* Modal for Delete Confirmation */}
       {isModalOpen && (
         <div className="fixed inset-0 bg-gray-500 bg-opacity-50 flex justify-center items-center z-50">
-          <div className="bg-white p-6 rounded-lg shadow-lg w-96">
-            <h2 className="text-lg font-semibold">Confirm Deletion</h2>
-            <p className="mt-2">Are you sure you want to delete this program?</p>
+          <div className="bg-white text-white p-6 rounded-lg shadow-lg w-96 dark:bg-gray-800">
+            <h2 className="text-lg font-semibold text-gray-800 dark:text-white">Confirm Deletion</h2>
+            <p className="mt-2 text-gray-600 dark:text-gray-400">Are you sure you want to delete this program?</p>
             <div className="mt-4 flex justify-between">
               <Button onClick={closeModal} className="bg-gray-400 text-white">
                 Cancel

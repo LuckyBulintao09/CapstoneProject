@@ -110,7 +110,7 @@ function Page() {
         <p>Announcements</p>
       </div>
       <div className="flex justify-end">
-        <Button className="bg-blue-500 hover:bg-blue-600 dark:bg-blue-500 dark:hover:bg-blue-600 mr-3">
+        <Button className="bg-blue-800 hover:bg-blue-600 dark:bg-blue-500 dark:hover:bg-blue-600 mr-3">
           +New Announcement
         </Button>
       </div>
