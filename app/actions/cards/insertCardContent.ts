@@ -1,26 +1,43 @@
 import { createClient } from "@/utils/supabase/client";
-import { v4 as uuidv4 } from "uuid";
 const supabase = createClient();
 
 export const insertCardContent = async (
   parent_card_id: string,
   subject: string,
   content: string,
-  files: File[]
+  files: File[] // Multiple files
 ) => {
   try {
-    const uuidFolder = uuidv4();
-    const fileUrls: string[] = [];
+    const fileUrls: string[] = []; // Array to store file URLs
 
+    // Insert the card content first to get its id
+    const { data: newCardContent, error: insertError } = await supabase
+      .from("card_content")
+      .insert({
+        parent_card: parent_card_id,
+        subject,
+        content,
+        files: [] // Initialize files as an empty array first
+      })
+      .select()
+      .single(); 
+
+    if (insertError) {
+      throw new Error(`Database insertion failed: ${insertError.message}`);
+    }
+
+    const cardContentId = newCardContent.id; 
+
+    // Upload the files to the folder named after the new card_content id
     const fileUploadPromises = files.map((file) => {
-      const filePath = `${uuidFolder}/${file.name}`;
+      const filePath = `${cardContentId}/${file.name}`; 
       return supabase.storage
         .from("card_content")
         .upload(filePath, file)
         .then(() => supabase.storage.from("card_content").getPublicUrl(filePath))
         .then(({ data }) => {
           if (data?.publicUrl) {
-            fileUrls.push(data.publicUrl);
+            fileUrls.push(data.publicUrl); 
           }
         })
         .catch((error) => {
@@ -28,35 +45,31 @@ export const insertCardContent = async (
         });
     });
 
+
     await Promise.all(fileUploadPromises);
-
-    const { data: newCardContent, error: insertError } = await supabase
+    const { error: updateError } = await supabase
       .from("card_content")
-      .insert({
-        parent_card: parent_card_id,
-        subject,
-        content,
-        files: fileUrls,
+      .update({
+        files: fileUrls, // Update the files field with the URLs
       })
-      .select();
+      .eq("id", cardContentId);
 
-    if (insertError) {
-      throw new Error(`Database insertion failed: ${insertError.message}`);
+    if (updateError) {
+      throw new Error(`Failed to update card_content with file URLs: ${updateError.message}`);
     }
 
-    const { error: updateError } = await supabase
-      .from("card") 
+    const { error: updateParentCardError } = await supabase
+      .from("card")
       .update({ updated_at: new Date() })
       .eq("id", parent_card_id);
 
-    if (updateError) {
-      throw new Error(`Failed to update parent card: ${updateError.message}`);
+    if (updateParentCardError) {
+      throw new Error(`Failed to update parent card: ${updateParentCardError.message}`);
     }
 
-    return newCardContent;
+    return newCardContent; // Return the new card content with all files uploaded
   } catch (error) {
     console.error("Error inserting card content:", error);
     throw error;
   }
 };
-

@@ -9,6 +9,7 @@ export async function createCardAction(
   thumbnailImage: File
 ) {
   try {
+    console.log("Thumbnail image:", thumbnailImage);
     const filePath = `cards/${Date.now()}_${thumbnailImage.name}`;
     const { data: uploadData, error: uploadError } = await supabase.storage
       .from("thumbnails")

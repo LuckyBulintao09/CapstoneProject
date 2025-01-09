@@ -6,11 +6,13 @@ import { format } from "date-fns";
 import { Card, CardHeader, CardContent, CardFooter, CardDescription } from "@/components/ui/card";
 import { Breadcrumb, BreadcrumbItem, BreadcrumbLink, BreadcrumbList, BreadcrumbPage, BreadcrumbSeparator } from "@/components/ui/breadcrumb";
 import React, { useEffect, useState } from 'react';
-import { X } from 'lucide-react';
+import { Trash2, X } from 'lucide-react';
 import { Spinner } from '@nextui-org/spinner';
 import { insertCardContent } from '@/app/actions/cards/insertCardContent';
 import { toast } from 'sonner';
 import { getCardContent } from '@/app/actions/cards/getCardContent';
+import { deleteSingleCardContent } from '@/app/actions/cards/deleteSingleCardContent';
+
 
 export default function Page({ params }: { params: Promise<{ id: string }> }) {
   const { id } = React.use(params);
@@ -19,6 +21,8 @@ export default function Page({ params }: { params: Promise<{ id: string }> }) {
   const [contentData, setContentData] = useState<any[]>([]);
   const [isLoading, setIsLoading] = useState<boolean>(true);
   const [isModalOpen, setIsModalOpen] = useState<boolean>(false);
+  const [isDeleteModalOpen, setIsDeleteModalOpen] = useState<boolean>(false); 
+  const [deleteId, setDeleteId] = useState<string | null>(null); 
   const [fileInputs, setFileInputs] = useState<(File | null)[]>([]);
   const [isFirstFileAdded, setIsFirstFileAdded] = useState<boolean>(false);
 
@@ -55,13 +59,41 @@ export default function Page({ params }: { params: Promise<{ id: string }> }) {
   }, [id]);
 
   const handleOpenModal = () => setIsModalOpen(true);
-
   const handleCloseModal = () => {
     setIsModalOpen(false);
     setSubject('');
     setContent('');
     setFileInputs([]);
     setIsFirstFileAdded(false);
+  };
+
+  const handleDeleteClick = (contentId: string) => {
+    setDeleteId(contentId); 
+    setIsDeleteModalOpen(true); 
+  };
+
+  const handleDeleteConfirm = async () => {
+    if (!deleteId || isSubmitting) return; 
+  
+    setIsSubmitting(true); 
+  
+    try {
+      await deleteSingleCardContent(deleteId);
+      setIsDeleteModalOpen(false);
+      setDeleteId(null);
+      fetchData();
+      toast.success("Content deleted successfully.");
+    } catch (error) {
+      toast.error("Error deleting content.");
+    } finally {
+      setIsSubmitting(false); 
+    }
+  };
+  
+
+  const handleCloseDeleteModal = () => {
+    setIsDeleteModalOpen(false);
+    setDeleteId(null); 
   };
 
   const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>, index: number) => {
@@ -89,10 +121,8 @@ export default function Page({ params }: { params: Promise<{ id: string }> }) {
     setIsSubmitting(true);
 
     try {
-      // Preserve line breaks by replacing \n with <br />
       const formattedContent = content.replace(/\n/g, '<br />');
 
-      // Save the formatted content
       await insertCardContent(
         id,
         subject,
@@ -102,7 +132,7 @@ export default function Page({ params }: { params: Promise<{ id: string }> }) {
 
       await fetchData();
 
-      toast.success("Content inserted successfully.");
+      toast.success("Content added successfully.");
       handleCloseModal();
     } catch (error) {
       console.error("Error inserting content:", error);
@@ -154,7 +184,21 @@ export default function Page({ params }: { params: Promise<{ id: string }> }) {
               contentData.map((item) => (
                 <Card key={item.id} className="w-full mb-4 break-words">
                   <CardHeader className="pb-0">
-                    <h3 className="text-l">{item.subject || "No subject"}</h3>
+                    <div className="flex justify-between items-center">
+                      <h3 className="text-l">{item.subject || "No subject"}</h3>
+                      <button
+                        onClick={() => handleDeleteClick(item.id)} 
+                        className="text-gray-500 hover:text-red-500"
+                      >
+                       <div className="relative group">
+                    <Trash2 className="h-3 w-3" />
+                    <span className="absolute invisible group-hover:visible bg-black text-white text-xs rounded p-1 left-1/2 transform -translate-x-1/2 bottom-full mb-1">
+                      Delete
+                    </span>
+                  </div>
+
+                      </button>
+                    </div>
                     <CardDescription className="text-xs text-gray-500">
                       {format(new Date(item.created_at), "MMMM d, yyyy")} •{" "}
                       {format(new Date(item.created_at), "hh:mm a")}
@@ -173,7 +217,7 @@ export default function Page({ params }: { params: Promise<{ id: string }> }) {
                           return (
                             <div
                               key={index}
-                              className="flex items-center border rounded-lg shadow-md p-4 bg-white"
+                              className="flex items-center border rounded-lg shadow-md p-4 bg-white break-words"
                             >
                               <div className="w-16 h-16 bg-gray-100 flex items-center justify-center rounded-md mr-4">
                                 <span className="text-sm font-bold text-gray-500">
@@ -181,7 +225,7 @@ export default function Page({ params }: { params: Promise<{ id: string }> }) {
                                 </span>
                               </div>
                               <div className="flex flex-col">
-                                <p className="text-sm font-medium text-gray-800 truncate">
+                                <p className="text-sm font-medium text-gray-800 break-words">
                                   {fileName}
                                 </p>
                                 <p className="text-xs text-gray-500">{fileExtension}</p>
@@ -210,6 +254,34 @@ export default function Page({ params }: { params: Promise<{ id: string }> }) {
           </>
         )}
 
+        {/* Delete Confirmation Modal */}
+        {isDeleteModalOpen && (
+          <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+            <div className="bg-white rounded-lg shadow-md p-6 w-full max-w-[80%] m-4 max-h-[90%] overflow-y-auto">
+              <h2 className="text-lg font-bold mb-4">Are you sure you want to delete this content?</h2>
+              <div className="flex justify-end space-x-2 mt-4">
+                <button
+                  type="button"
+                  onClick={handleCloseDeleteModal}
+                  className="px-4 py-2 bg-gray-300 rounded-md"
+                >
+                  Cancel
+                </button>
+                <button
+                  type="button"
+                  onClick={handleDeleteConfirm}
+                  disabled={isSubmitting}  // Disable button while submitting
+                  className={`px-4 py-2 text-white rounded-md ${isSubmitting ? 'bg-gray-500' : 'bg-red-600'}`}
+                >
+                  {isSubmitting ? "Deleting..." : "Delete"} {/* Change button text */}
+                </button>
+              </div>
+            </div>
+          </div>
+        )}
+
+
+        {/* Add New Content Modal */}
         {isModalOpen && (
           <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
             <div className="bg-white rounded-lg shadow-md p-6 w-full max-w-[80%] m-4 max-h-[90%] overflow-y-auto">
