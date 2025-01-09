@@ -89,10 +89,8 @@ export default function Page({ params }: { params: Promise<{ id: string }> }) {
     setIsSubmitting(true);
 
     try {
-      // Preserve line breaks by replacing \n with <br />
       const formattedContent = content.replace(/\n/g, '<br />');
 
-      // Save the formatted content
       await insertCardContent(
         id,
         subject,
@@ -102,7 +100,7 @@ export default function Page({ params }: { params: Promise<{ id: string }> }) {
 
       await fetchData();
 
-      toast.success("Content inserted successfully.");
+      toast.success("Content added successfully.");
       handleCloseModal();
     } catch (error) {
       console.error("Error inserting content:", error);

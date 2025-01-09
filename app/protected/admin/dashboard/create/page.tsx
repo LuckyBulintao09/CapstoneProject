@@ -111,7 +111,7 @@ export default function Page() {
         <Card className="w-full sm:w-1/2 md:w-1/3 lg:w-1/4 p-2 hover:shadow-lg transition-shadow">
           <CardHeader className="p-1">
             <CardTitle className="text-sm break-words whitespace-normal">
-              {title || "Card Title"}
+              {title || "Program Title"}
             </CardTitle>
           </CardHeader>
           <CardContent className="p-2">
