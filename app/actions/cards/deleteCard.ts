@@ -78,10 +78,11 @@ async function deleteMainCardContent(parentId: string) {
     console.error("Error deleting card:", error.message);
   } else {
     toast.success("Card deleted successfully.");
+    window.location.reload();
   }
 }
 
-// Delete the thumbnail associated with the card
+
 async function deleteThumbnail(id: string) {
   const filename = await getThumbnailFile(id);
 

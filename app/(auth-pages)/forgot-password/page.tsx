@@ -12,7 +12,7 @@ export default async function ForgotPassword(props: {
 
   return (
     <>
-      <form className="flex flex-col w-full max-w-md mx-auto gap-6 p-6 text-foreground border rounded-md shadow-sm bg-background">
+      <form className="flex flex-col w-full max-w-md mx-auto gap-6 p-6 text-foreground border rounded-md shadow-sm bg-background mt-20 m-2">
         <div className="flex flex-col gap-2">
           <h1 className="text-2xl font-semibold text-center">Reset Password</h1>
           <p className="text-sm text-secondary-foreground text-center">

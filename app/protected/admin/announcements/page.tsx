@@ -39,6 +39,7 @@ function Page() {
   const [announcementToDelete, setAnnouncementToDelete] = useState<Announcement | null>(null);
   const [isDeleting, setIsDeleting] = useState<boolean>(false);
 
+  // Fetch announcements when page changes
   useEffect(() => {
     const fetchAnnouncements = async () => {
       setLoading(true);
@@ -93,28 +94,29 @@ function Page() {
 
   return (
     <>
-    <div className="m-2">
-    <Breadcrumb>
-             <BreadcrumbList>
-               <BreadcrumbItem>
-                 <BreadcrumbLink href="/protected/admin/dashboard">Admin</BreadcrumbLink>
-               </BreadcrumbItem>
-               <BreadcrumbSeparator />
-               <BreadcrumbItem>
-                 <BreadcrumbPage>Announcements</BreadcrumbPage>
-               </BreadcrumbItem>
-             </BreadcrumbList>
-           </Breadcrumb>
-    </div>
+      <div className="m-2">
+        <Breadcrumb>
+          <BreadcrumbList>
+            <BreadcrumbItem>
+              <BreadcrumbLink href="/protected/admin/dashboard">Admin</BreadcrumbLink>
+            </BreadcrumbItem>
+            <BreadcrumbSeparator />
+            <BreadcrumbItem>
+              <BreadcrumbPage>Announcements</BreadcrumbPage>
+            </BreadcrumbItem>
+          </BreadcrumbList>
+        </Breadcrumb>
+      </div>
       <div className="flex items-center justify-center bg-gray-600 text-white dark:bg-gray-800 p-4 rounded-lg m-2">
         <p>Announcements</p>
       </div>
       <div className="flex justify-end">
-        <Button className="bg-blue-800 hover:bg-blue-600 dark:bg-blue-500 dark:hover:bg-blue-600 mr-3">
-          +New Announcement
-        </Button>
+        <a href="/protected/admin/announcements/create">
+          <Button className="bg-blue-800 hover:bg-blue-600 dark:bg-blue-500 dark:hover:bg-blue-600 mr-3">
+            +New Announcement
+          </Button>
+        </a>
       </div>
-
 
       <div className="p-4 max-w-7xl mx-auto">
         {announcements.length > 0 ? (
@@ -159,6 +161,25 @@ function Page() {
         )}
       </div>
 
+      {/* Pagination Controls */}
+      <div className="flex justify-center m-4">
+        <Button
+          onClick={() => setPage((prev) => Math.max(prev - 1, 1))}
+          disabled={page === 1}
+        >
+          Previous
+        </Button>
+        <span className="mx-2">
+          Page {page} of {totalPages}
+        </span>
+        <Button
+          onClick={() => setPage((prev) => Math.min(prev + 1, totalPages))}
+          disabled={page === totalPages}
+        >
+          Next
+        </Button>
+      </div>
+
       {selectedAnnouncement && (
         <div className="fixed inset-0 flex justify-center items-center bg-black bg-opacity-50 z-50">
           <div className="bg-white dark:bg-gray-800 p-6 rounded-lg shadow-lg max-w-3xl w-full relative overflow-auto">
@@ -172,8 +193,9 @@ function Page() {
               {selectedAnnouncement.subject}
             </h2>
             <p className="mt-2 text-xs text-gray-500 dark:text-gray-400">
-              Announced on {new Date(selectedAnnouncement.created_at).toLocaleDateString()}
+              Announced on {new Date(selectedAnnouncement.created_at).toLocaleString()}
             </p>
+
             <div className="text-sm text-gray-600 mt-2 dark:text-gray-300 max-h-96 overflow-y-auto">
               <p dangerouslySetInnerHTML={{ __html: selectedAnnouncement.content }} />
             </div>

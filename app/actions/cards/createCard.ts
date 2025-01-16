@@ -10,7 +10,12 @@ export async function createCardAction(
 ) {
   try {
     console.log("Thumbnail image:", thumbnailImage);
-    const filePath = `cards/${Date.now()}_${thumbnailImage.name}`;
+
+
+    const formattedFileName = thumbnailImage.name.replace(/\s+/g, "-");
+
+    const filePath = `cards/${Date.now()}_${formattedFileName}`;
+
     const { data: uploadData, error: uploadError } = await supabase.storage
       .from("thumbnails")
       .upload(filePath, thumbnailImage);
@@ -43,8 +48,7 @@ export async function createCardAction(
       toast.error("Failed to create card.");
       return;
     }
-  
-    
+
     return { cardData, success: true };
   } catch (error) {
     toast.error("An unexpected error occurred.");

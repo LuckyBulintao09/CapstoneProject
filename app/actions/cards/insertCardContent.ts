@@ -5,7 +5,7 @@ export const insertCardContent = async (
   parent_card_id: string,
   subject: string,
   content: string,
-  files: File[] // Multiple files
+  files: File[]
 ) => {
   try {
     const fileUrls: string[] = []; // Array to store file URLs
@@ -20,17 +20,20 @@ export const insertCardContent = async (
         files: [] // Initialize files as an empty array first
       })
       .select()
-      .single(); 
+      .single();
 
     if (insertError) {
       throw new Error(`Database insertion failed: ${insertError.message}`);
     }
 
-    const cardContentId = newCardContent.id; 
+    const cardContentId = newCardContent.id;
 
     // Upload the files to the folder named after the new card_content id
     const fileUploadPromises = files.map((file) => {
-      const filePath = `${cardContentId}/${file.name}`; 
+      // Replace spaces with hyphens in the file name
+      const formattedFileName = file.name.replace(/\s+/g, "-");
+
+      const filePath = `${cardContentId}/${formattedFileName}`;
       return supabase.storage
         .from("card_content")
         .upload(filePath, file)
@@ -44,7 +47,6 @@ export const insertCardContent = async (
           throw new Error(`File upload failed: ${error.message}`);
         });
     });
-
 
     await Promise.all(fileUploadPromises);
     const { error: updateError } = await supabase

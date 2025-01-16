@@ -204,7 +204,7 @@ export default function Page({ params }: { params: Promise<{ id: string }> }) {
                       {format(new Date(item.created_at), "hh:mm a")}
                     </CardDescription>
                   </CardHeader>
-                  <CardContent className="pt-0">
+                  <CardContent className="pt-0 break-words">
                     <p className="text-sm" dangerouslySetInnerHTML={{ __html: item.content }}></p>
                     {item.files && item.files.length > 0 && (
                       <div className="mt-4 grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4">
@@ -219,7 +219,7 @@ export default function Page({ params }: { params: Promise<{ id: string }> }) {
                               key={index}
                               className="flex items-center border rounded-lg shadow-md p-4 bg-white break-words"
                             >
-                              <div className="w-16 h-16 bg-gray-100 flex items-center justify-center rounded-md mr-4">
+                              <div className="w-16 h-16 bg-gray-100 flex items-center justify-center rounded-md mr-4 break-words">
                                 <span className="text-sm font-bold text-gray-500">
                                   {fileExtension}
                                 </span>
@@ -228,7 +228,7 @@ export default function Page({ params }: { params: Promise<{ id: string }> }) {
                                 <p className="text-sm font-medium text-gray-800 break-words">
                                   {fileName}
                                 </p>
-                                <p className="text-xs text-gray-500">{fileExtension}</p>
+                                <p className="text-xs text-gray-500 p-1">{fileExtension}</p>
                                 <a
                                   href={file}
                                   target="_blank"
@@ -270,10 +270,10 @@ export default function Page({ params }: { params: Promise<{ id: string }> }) {
                 <button
                   type="button"
                   onClick={handleDeleteConfirm}
-                  disabled={isSubmitting}  // Disable button while submitting
+                  disabled={isSubmitting}  
                   className={`px-4 py-2 text-white rounded-md ${isSubmitting ? 'bg-gray-500' : 'bg-red-600'}`}
                 >
-                  {isSubmitting ? "Deleting..." : "Delete"} {/* Change button text */}
+                  {isSubmitting ? "Deleting..." : "Delete"}
                 </button>
               </div>
             </div>

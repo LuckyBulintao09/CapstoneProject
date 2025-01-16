@@ -77,7 +77,7 @@ const Page = () => {
               </CardHeader>
               <CardContent className="pt-1">
                   <p
-                    className="text-xs text-gray-850"
+                    className="text-xs text-gray-850 break-words"
                     dangerouslySetInnerHTML={{ __html: item.content }}
                   ></p>
                   {item.files && item.files.length > 0 && (
@@ -91,15 +91,15 @@ const Page = () => {
                         return (
                           <div
                             key={index}
-                            className="flex items-center border rounded-lg shadow-md p-4 bg-transparent"
+                            className="flex items-center border rounded-lg shadow-md p-4 bg-transparent break-words"
                           >
-                            <div className="w-16 h-16  flex items-center bg-gray-200 justify-center rounded-md mr-4">
-                              <span className="text-sm font-bold text-gray-500">
+                            <div className="w-16 h-16 flex items-center bg-gray-200 justify-center rounded-md mr-4 p-4">
+                              <span className="text-sm font-bold text-gray-500 break-words p-4">
                                 {fileExtension}
                               </span>
                             </div>
-                            <div className="flex flex-col">
-                              <p className="text-sm font-medium truncate">{fileName}</p>
+                            <div className="flex flex-col w-full p-4">
+                              <p className="text-xs break-words whitespace-normal">{fileName}</p>
                               <p className="text-xs text-gray-500">{fileExtension}</p>
                               <a
                                 href={file}

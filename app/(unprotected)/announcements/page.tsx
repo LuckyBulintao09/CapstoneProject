@@ -125,7 +125,7 @@ function Page() {
               {selectedAnnouncement.subject}
             </h2>
             <p className="mt-2 text-xs text-gray-500 dark:text-gray-400">
-              Announced on {new Date(selectedAnnouncement.created_at).toLocaleDateString()}
+              Announced on {new Date(selectedAnnouncement.created_at).toLocaleString()}
             </p>
             <div className="text-sm text-gray-600 mt-2 dark:text-gray-300 max-h-96 overflow-y-auto">
               <p
