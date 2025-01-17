@@ -16,8 +16,8 @@ export const deleteSingleCardContent = async (id: string) => {
   }
 
   // Log the fetched data for debugging
-  toast.info(`Fetched card content data: ${JSON.stringify(data)}`);
-  console.log(`Fetched card content data: ${JSON.stringify(data)}`);
+  // toast.info(`Fetched card content data: ${JSON.stringify(data)}`);
+  // console.log(`Fetched card content data: ${JSON.stringify(data)}`);
 
   // Delete associated files if any
   await Promise.all(

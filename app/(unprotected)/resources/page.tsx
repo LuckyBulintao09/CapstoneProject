@@ -100,7 +100,14 @@ function Page() {
             </Link>
           ))
         ) : (
-          <p>No content found.</p>
+    
+          <div className="flex items-center justify-center min-h-screen">
+          <p className="text-gray-500 text-xl font-semibold text-center">
+            No content found.
+          </p>
+        </div>
+        
+        
         )}
       </div>
     </div>

@@ -8,7 +8,6 @@ function extractImageName(url: string): string {
   const parts = url.split('/');
   const lastSegment = parts[parts.length - 1];
   const imageName = lastSegment.split('?')[0];
-  toast.info(imageName);
   return imageName;
 }
 

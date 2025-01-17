@@ -3,10 +3,11 @@
 import { getCardContent } from "@/app/actions/cards/getCardContent";
 import { useEffect, useState } from "react";
 import { Spinner } from "@nextui-org/spinner";
-import { Card, CardHeader, CardContent, CardFooter, CardDescription } from "@/components/ui/card";
+import { Card, CardHeader, CardContent, CardDescription } from "@/components/ui/card";
 import SectionBanner from "@/components/global-components/SectionBanner";
 import { formatDistanceToNow, format } from "date-fns";
 import { useSearchParams } from "next/navigation";
+import { createAnalytics } from "@/app/actions/analytics/createAnalytics";
 
 const Page = () => {
   const [id, setId] = useState<string | null>(null);
@@ -48,6 +49,27 @@ const Page = () => {
     fetchData();
   }, []);
 
+  const handleDownload = async (file: string, fileName: string, parentCard: string) => {
+    try {
+      const response = await fetch(file);
+      const blob = await response.blob();
+  
+      const link = document.createElement("a");
+      link.href = URL.createObjectURL(blob);
+      link.download = fileName;
+      link.style.display = "none";
+      document.body.appendChild(link);
+      link.click();
+      document.body.removeChild(link);
+  
+      // Run createAnalytics in the background (fire-and-forget)
+      createAnalytics(parentCard).catch(console.error);
+    } catch (error) {
+      console.error("Error downloading file:", error);
+    }
+  };
+  
+
   if (isLoading) {
     return (
       <div className="flex justify-center items-center min-h-screen">
@@ -59,64 +81,59 @@ const Page = () => {
   return (
     <>
       <div className="m-2">
-        <SectionBanner 
-          title={title || null} 
-          short_description={short_desc || null} 
-        />
+        <SectionBanner title={title || null} short_description={short_desc || null} />
       </div>
       <div className="p-6">
         {contentList.length > 0 ? (
           contentList.map((item) => (
             <Card key={item.id} className="w-full mb-4 break-words">
               <CardHeader className="pb-0">
-                <h3 className="text-l">{item.subject || "No subject"}</h3>
+                <h3 className="text-l">{item.subject || "[No subject]"}</h3>
                 <CardDescription className="text-xs text-gray-500">
                   {format(new Date(item.created_at), "MMMM d, yyyy • h:mm a")} •{" "}
                   {formatDistanceToNow(new Date(item.created_at), { addSuffix: true })}
                 </CardDescription>
               </CardHeader>
-              <CardContent className="pt-1">
-                  <p
-                    className="text-xs text-gray-850 break-words"
-                    dangerouslySetInnerHTML={{ __html: item.content }}
-                  ></p>
-                  {item.files && item.files.length > 0 && (
-                    <div className="mt-4 grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4">
-                      {item.files.map((file: string, index: number) => {
-                        const fileName = file.split("/").pop() || "File";
-                        const fileExtension = fileName.includes(".")
-                          ? fileName.slice(fileName.lastIndexOf(".") + 1).toUpperCase()
-                          : "Unknown";
 
-                        return (
-                          <div
-                            key={index}
-                            className="flex items-center border rounded-lg shadow-md p-4 bg-transparent break-words"
-                          >
-                            <div className="w-16 h-16 flex items-center bg-gray-200 justify-center rounded-md mr-4 p-4">
-                              <span className="text-sm font-bold text-gray-500 break-words p-4">
-                                {fileExtension}
-                              </span>
-                            </div>
-                            <div className="flex flex-col w-full p-4">
-                              <p className="text-xs break-words whitespace-normal">{fileName}</p>
-                              <p className="text-xs text-gray-500">{fileExtension}</p>
-                              <a
-                                href={file}
-                                target="_blank"
-                                rel="noopener noreferrer"
-                                className="text-blue-600 text-xs underline mt-1"
+              <CardContent className="pt-1">
+                {item.files && item.files.length > 0 && (
+                  <div className="mt-4 grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4">
+                    {item.files.map((file: string, index: number) => {
+                      const fileName = file.split("/").pop() || "File";
+                      const fileExtension = fileName.includes(".")
+                        ? fileName.slice(fileName.lastIndexOf(".") + 1).toUpperCase()
+                        : "Unknown";
+
+                      return (
+                        <div
+                          key={index}
+                          className="flex items-center border rounded-lg shadow-md p-4 bg-transparent break-words"
+                        >
+                          <div className="w-16 h-16 flex items-center bg-gray-200 justify-center rounded-md mr-4 p-4">
+                            <span className="text-sm font-bold text-gray-500 break-words p-4">
+                              {fileExtension}
+                            </span>
+                          </div>
+
+                          <div className="flex flex-col w-full p-4">
+                            <p className="text-xs break-words whitespace-normal">{fileName}</p>
+                            <p className="text-xs text-gray-500">{fileExtension}</p>
+
+                            <div className="flex justify-start mt-1">
+                              <button
+                                onClick={() => handleDownload(file, fileName, item.parent_card)}
+                                className="text-blue-600 text-xs underline"
                               >
                                 Download
-                              </a>
+                              </button>
                             </div>
                           </div>
-                        );
-                      })}
-                    </div>
-                  )}
-                </CardContent>
-
+                        </div>
+                      );
+                    })}
+                  </div>
+                )}
+              </CardContent>
             </Card>
           ))
         ) : (

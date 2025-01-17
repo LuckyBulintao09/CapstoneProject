@@ -185,7 +185,7 @@ export default function Page({ params }: { params: Promise<{ id: string }> }) {
                 <Card key={item.id} className="w-full mb-4 break-words">
                   <CardHeader className="pb-0">
                     <div className="flex justify-between items-center">
-                      <h3 className="text-l">{item.subject || "No subject"}</h3>
+                      <h3 className="text-l">{item.subject || "[No subject]"}</h3>
                       <button
                         onClick={() => handleDeleteClick(item.id)} 
                         className="text-gray-500 hover:text-red-500"
