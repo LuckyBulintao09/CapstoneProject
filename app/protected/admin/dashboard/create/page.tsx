@@ -46,12 +46,12 @@ export default function Page() {
   };
 
   const handleTitleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const value = e.target.value.slice(0, 40);
+    const value = e.target.value.slice(0, 50);
     setTitle(value);
   };
 
   const handleShortDescriptionChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const value = e.target.value.slice(0, 60);
+    const value = e.target.value.slice(0, 200);
     setShortDescription(value);
   };
 
@@ -109,7 +109,7 @@ export default function Page() {
       </Breadcrumb>
 
       <div className="flex justify-center mt-4">
-        <Card className="w-full sm:w-1/2 md:w-1/3 lg:w-1/4 p-2 hover:shadow-lg transition-shadow">
+        <Card className="w-full sm:w-1/2 md:w-1/3 lg:w-1/4 p-2 hover:shadow-lg transition-shadow break-words">
           <CardHeader className="p-1">
             <CardTitle className="text-sm break-words whitespace-normal">
               {title || "Program Title"}
@@ -149,10 +149,10 @@ export default function Page() {
             value={title}
             onChange={handleTitleChange}
             className="mt-1 w-full px-3 py-2 border border-gray-300 rounded-md"
-            placeholder="Enter card title (max 40 characters)"
+            placeholder="Enter card title (max 50 characters)"
           />
           <p className="text-xs text-gray-500">
-            {40 - title.length} characters left
+            {50 - title.length} characters left
           </p>
         </div>
         <div>
@@ -162,10 +162,10 @@ export default function Page() {
             value={shortDescription}
             onChange={handleShortDescriptionChange}
             className="mt-1 w-full px-3 py-2 border border-gray-300 rounded-md"
-            placeholder="Enter short description (max 60 characters)"
+            placeholder="Enter short description (max 200 characters)"
           />
           <p className="text-xs text-gray-500">
-            {60 - shortDescription.length} characters left
+            {200 - shortDescription.length} characters left
           </p>
         </div>
         <div>

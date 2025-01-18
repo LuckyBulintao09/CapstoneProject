@@ -50,13 +50,13 @@ const EditProgramPage = () => {
 
   // Handle title change (with max length of 40)
   const handleTitleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const value = e.target.value.slice(0, 40);
+    const value = e.target.value.slice(0, 50);
     setTitle(value);
   };
 
-  // Handle short description change (with max length of 60)
+  // Handle short description change (with max length of 200)
   const handleShortDescriptionChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const value = e.target.value.slice(0, 60);
+    const value = e.target.value.slice(0, 200);
     setShortDescription(value);
   };
 
@@ -97,7 +97,7 @@ const EditProgramPage = () => {
       </Breadcrumb>
 
       <div className="flex justify-center mt-4">
-        <Card className="w-full sm:w-1/2 md:w-1/3 lg:w-1/4 p-2 hover:shadow-lg transition-shadow">
+        <Card className="w-full sm:w-1/2 md:w-1/3 lg:w-1/4 p-2 hover:shadow-lg transition-shadow break-words">
           <CardHeader className="p-1">
             <CardTitle className="text-sm break-words whitespace-normal">
               {title || "Program Title"}
@@ -137,10 +137,10 @@ const EditProgramPage = () => {
             value={title}
             onChange={handleTitleChange}
             className="mt-1 w-full px-3 py-2 border border-gray-300 rounded-md"
-            placeholder="Enter card title (max 40 characters)"
+            placeholder="Enter card title (max 50 characters)"
           />
           <p className="text-xs text-gray-500">
-            {40 - title.length} characters left
+            {50 - title.length} characters left
           </p>
         </div>
         <div>
@@ -150,10 +150,10 @@ const EditProgramPage = () => {
             value={shortDescription}
             onChange={handleShortDescriptionChange}
             className="mt-1 w-full px-3 py-2 border border-gray-300 rounded-md"
-            placeholder="Enter short description (max 60 characters)"
+            placeholder="Enter short description (max 200 characters)"
           />
           <p className="text-xs text-gray-500">
-            {60 - shortDescription.length} characters left
+            {200 - shortDescription.length} characters left
           </p>
         </div>
         <div>
