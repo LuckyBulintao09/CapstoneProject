@@ -1,4 +1,5 @@
 import { createClient } from "@/utils/supabase/client";
+import { toast } from "sonner";
 const supabase = createClient();
 
 export const insertCardContent = async (
@@ -7,6 +8,11 @@ export const insertCardContent = async (
   content: string,
   files: File[]
 ) => {
+  if (!subject.trim()) { 
+    toast.error('Subject is required.');
+    return;
+  }
+  
   try {
     const fileUrls: string[] = []; // Array to store file URLs
 
@@ -68,7 +74,7 @@ export const insertCardContent = async (
     if (updateParentCardError) {
       throw new Error(`Failed to update parent card: ${updateParentCardError.message}`);
     }
-
+    toast.success("Content added successfully.");
     return newCardContent; // Return the new card content with all files uploaded
   } catch (error) {
     console.error("Error inserting card content:", error);

@@ -131,8 +131,6 @@ export default function Page({ params }: { params: Promise<{ id: string }> }) {
       );
 
       await fetchData();
-
-      toast.success("Content added successfully.");
       handleCloseModal();
     } catch (error) {
       console.error("Error inserting content:", error);

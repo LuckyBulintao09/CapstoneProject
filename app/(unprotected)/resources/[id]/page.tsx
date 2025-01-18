@@ -89,6 +89,7 @@ const Page = () => {
             <Card key={item.id} className="w-full mb-4 break-words">
               <CardHeader className="pb-0">
                 <h3 className="text-l">{item.subject || "[No subject]"}</h3>
+                <p className="text-sm" dangerouslySetInnerHTML={{ __html: item.content }}></p>
                 <CardDescription className="text-xs text-gray-500">
                   {format(new Date(item.created_at), "MMMM d, yyyy • h:mm a")} •{" "}
                   {formatDistanceToNow(new Date(item.created_at), { addSuffix: true })}
